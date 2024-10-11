@@ -6,7 +6,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // app.setGlobalPrefix('api-fenix/2.0');
+  // app.setGlobalPrefix('api-bonnadona_hub/2.0');
 
   app.useGlobalPipes(
     new ValidationPipe({
