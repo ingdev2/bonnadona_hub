@@ -12,7 +12,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fénix",
+  title: "Bonnadona HUB",
   description: "Software de Clínica Bonnadona",
   icons: {
     icon: "/favicon.ico",

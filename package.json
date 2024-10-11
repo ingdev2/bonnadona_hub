@@ -1,8 +1,8 @@
 {
-  "name": "fenix_2",
-  "version": "2.0.0",
+  "name": "bonnadona_hub",
+  "version": "1.0.0",
   "private": true,
-  "description": "<img src=\"./apps/client/public/logos/fenix-ver-naranja-sin-fondo-ok.png\" alt=\"logo-fenix_2\">",
+  "description": "<img src=\"./apps/client/public/logos/logo_horizontal.png\" alt=\"logo-bonnadona_hub\">",
   "main": "index.js",
   "dependencies": {
     "turbo": "^2.1.2",
