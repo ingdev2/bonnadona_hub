@@ -19,9 +19,9 @@ async function bootstrap() {
   app.enableCors();
 
   const config = new DocumentBuilder()
-    .setTitle('Fénix')
+    .setTitle('Bonnadona HUB')
     .setDescription(
-      'Creación de plataforma para reportar casos de riesgos e incidentes clínicos',
+      'Centro de gestión de acceso a aplicaciones internas de clínica Bonnadona',
     )
     .setVersion('2.0')
     .addBearerAuth()
