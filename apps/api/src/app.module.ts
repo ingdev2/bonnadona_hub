@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 require('dotenv').config();
 
 import { UsersModule } from './users/users.module';
+import { IdTypesModule } from './id_types/id_types.module';
+import { GenderTypesModule } from './gender_types/gender_types.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { UsersModule } from './users/users.module';
       logging: false,
     }),
     UsersModule,
+    IdTypesModule,
+    GenderTypesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
