@@ -1,15 +1,15 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { IdTypeEnum } from '../../utils/enums/id_types.enum';
+import { GenderTypeEnums } from 'src/utils/enums/gender.enum';
 
 @Entity()
-export class IdType {
+export class GenderType {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ enum: IdTypeEnum })
-  name: IdTypeEnum;
+  @Column({ enum: GenderTypeEnums })
+  name: GenderTypeEnums;
 
-  @OneToMany(() => User, (user) => user.id_type)
+  @OneToMany(() => User, (user) => user.gender)
   user: User[];
 }

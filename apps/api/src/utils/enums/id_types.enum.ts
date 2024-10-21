@@ -1,4 +1,4 @@
-export enum IdType {
+export enum IdTypeEnum {
   CITIZENSHIP_CARD = 'CÉDULA DE CIUDADANÍA',
   FOREIGNER_ID = 'CÉDULA DE EXTRANJERÍA',
   IDENTITY_CARD = 'TARJETA DE IDENTIDAD',

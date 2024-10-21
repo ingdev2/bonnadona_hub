@@ -8,6 +8,7 @@ require('dotenv').config();
 import { UsersModule } from './users/users.module';
 import { IdTypesModule } from './id_types/id_types.module';
 import { GenderTypesModule } from './gender_types/gender_types.module';
+import { BloodGroupsModule } from './blood_groups/blood_groups.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { GenderTypesModule } from './gender_types/gender_types.module';
     UsersModule,
     IdTypesModule,
     GenderTypesModule,
+    BloodGroupsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

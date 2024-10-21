@@ -3,13 +3,13 @@ import { CreateIdTypeDto } from '../dto/create-id_type.dto';
 import { UpdateIdTypeDto } from '../dto/update-id_type.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { IdTypeEntity } from '../entities/id_type.entity';
+import { IdType } from '../entities/id_type.entity';
 
 @Injectable()
 export class IdTypesService {
   constructor(
-    @InjectRepository(IdTypeEntity)
-    private idTypeRepository: Repository<IdTypeEntity>,
+    @InjectRepository(IdType)
+    private idTypeRepository: Repository<IdType>,
   ) {}
 
   // CREATE FUNTIONS //
@@ -45,7 +45,7 @@ export class IdTypesService {
     if (allIdTypes.length === 0) {
       return new HttpException(
         `No hay tipos de id registrados en la base de datos`,
-        HttpStatus.CONFLICT,
+        HttpStatus.NOT_FOUND,
       );
     } else {
       return allIdTypes;
@@ -62,7 +62,7 @@ export class IdTypesService {
     if (!idTypeFound) {
       return new HttpException(
         `El tipo de identificación con número de ID: ${id} no esta registrado.`,
-        HttpStatus.CONFLICT,
+        HttpStatus.NOT_FOUND,
       );
     } else {
       return idTypeFound;
@@ -77,7 +77,7 @@ export class IdTypesService {
     if (!idTypeFound) {
       return new HttpException(
         `Tipo de id no encontrado.`,
-        HttpStatus.UNAUTHORIZED,
+        HttpStatus.NOT_FOUND,
       );
     }
 
@@ -98,7 +98,7 @@ export class IdTypesService {
     if (updateIdType.affected === 0) {
       return new HttpException(
         `Tipo de id no encontrado.`,
-        HttpStatus.CONFLICT,
+        HttpStatus.NOT_FOUND,
       );
     }
 

@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { IdTypesService } from './services/id_types.service';
 import { IdTypesController } from './controllers/id_types.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IdTypeEntity } from './entities/id_type.entity';
+import { IdType } from './entities/id_type.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IdTypeEntity])],
+  imports: [TypeOrmModule.forFeature([IdType])],
   controllers: [IdTypesController],
   providers: [IdTypesService],
 })

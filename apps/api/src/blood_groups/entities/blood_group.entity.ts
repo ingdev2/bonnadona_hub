@@ -1,15 +1,15 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { IdTypeEnum } from '../../utils/enums/id_types.enum';
+import { BloodGroupEnums } from '../enums/blood_group.enum';
 
 @Entity()
-export class IdType {
+export class BloodGroup {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ enum: IdTypeEnum })
-  name: IdTypeEnum;
+  @Column({ enum: BloodGroupEnums })
+  name: BloodGroupEnums;
 
-  @OneToMany(() => User, (user) => user.id_type)
+  @OneToMany(() => User, (user) => user.blood_group)
   user: User[];
 }
