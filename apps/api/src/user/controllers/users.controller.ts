@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -20,8 +21,20 @@ export class UsersController {
   // POST METHODS //
 
   // @EnableAuditLog()
+  @Post('/validateThatTheCollaboratorExist')
+  async validateThatTheCollaboratorExist(
+    @Body()
+    { idType, idNumber }: ValidateCollaboratorDto,
+  ) {
+    return await this.usersService.validateThatTheCollaboratorExist({
+      idType,
+      idNumber,
+    });
+  }
+
+  // @EnableAuditLog()
   @Post('/createUser')
-  async transformGenderNumber() {
+  async createUser() {
     return await this.usersService.createUser();
   }
 

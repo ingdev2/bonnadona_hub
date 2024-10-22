@@ -7,10 +7,16 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
+  OneToOne,
 } from 'typeorm';
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
 import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
+import { Role } from 'src/role/entities/role.entity';
+import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
+import { ServiceType } from 'src/service_types/entities/service_type.entity';
 
 @Entity()
 export class User {
@@ -37,24 +43,46 @@ export class User {
   @JoinColumn({ name: 'user_gender', referencedColumnName: 'id' })
   gender: GenderType;
 
-  @Column({ nullable: true })
+  @Column()
   user_gender: number;
 
-  @ManyToOne(() => BloodGroup, (blood_group) => blood_group.user)
-  @JoinColumn({ name: 'user_blood_group', referencedColumnName: 'id' })
-  blood_group: BloodGroup;
-
-  @Column({ nullable: true })
-  user_blood_group: number;
-
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'date' })
   birthdate: Date;
+
+  @ManyToMany(() => Role, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinTable({ name: 'User_Roles' })
+  role: Role[];
 
   @Column({ type: 'text', nullable: true })
   corporate_email: string;
 
   @Column({ type: 'bigint', nullable: true })
   corporate_cellphone: number;
+
+  @ManyToOne(() => ServiceType, (service_type) => service_type.user)
+  @JoinColumn({ name: 'collaborator_service_type', referencedColumnName: 'id' })
+  service_type: ServiceType;
+
+  @Column({ type: 'text' })
+  collaborator_service_type: number;
+
+  @Column({ type: 'text', nullable: true })
+  collaborator_immediate_boss: string;
+
+  @Column({ type: 'text', nullable: true })
+  collaborator_unit: string;
+
+  @Column({ type: 'text', nullable: true })
+  collaborator_service: string;
+
+  @Column({ type: 'text', nullable: true })
+  collaborator_position: string;
+
+  @Column({ type: 'text', nullable: true })
+  collaborator_position_level: string;
 
   @Column({ select: false })
   password: string;
@@ -67,6 +95,10 @@ export class User {
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
+
+  @OneToOne(() => UserProfile, (user_profile) => user_profile.user)
+  @JoinColumn()
+  user_profile: UserProfile;
 
   @CreateDateColumn()
   createdAt: Date;

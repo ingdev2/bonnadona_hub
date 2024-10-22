@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
+import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { BloodGroupEnums } from '../enums/blood_group.enum';
 
 @Entity()
@@ -10,6 +10,6 @@ export class BloodGroup {
   @Column({ enum: BloodGroupEnums })
   name: BloodGroupEnums;
 
-  @OneToMany(() => User, (user) => user.blood_group)
-  user: User[];
+  @OneToMany(() => UserProfile, (user_profile) => user_profile.blood_group)
+  user_profile: UserProfile[];
 }
