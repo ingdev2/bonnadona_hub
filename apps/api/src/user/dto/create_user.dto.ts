@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class CreateUserPatientDto {
+export class CreateUserDto {
   @IsOptional()
   @IsString()
   name: string;
@@ -22,7 +22,7 @@ export class CreateUserPatientDto {
   @IsNotEmpty()
   id_number: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   user_gender: number;
 
   @IsOptional()
@@ -31,13 +31,46 @@ export class CreateUserPatientDto {
 
   @IsOptional()
   @IsEmail()
+  principal_email: string;
+
+  @IsOptional()
+  @IsEmail()
   corporate_email: string;
 
   @IsOptional()
   corporate_cellphone: number;
 
+  @IsOptional()
+  @IsEmail()
+  personal_email: string;
+
+  @IsOptional()
+  personal_cellphone: number;
+
   @Transform(({ value }) => value.trim())
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   password: string;
+
+  @IsOptional()
+  collaborator_service_type: number;
+
+  @IsOptional()
+  @IsString()
+  collaborator_immediate_boss: string;
+
+  @IsOptional()
+  @IsString()
+  collaborator_unit: string;
+
+  @IsOptional()
+  @IsString()
+  collaborator_service: string;
+
+  @IsOptional()
+  @IsString()
+  collaborator_position: string;
+
+  @IsOptional()
+  collaborator_position_level: number;
 }

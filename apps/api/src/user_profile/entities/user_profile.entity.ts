@@ -30,12 +30,6 @@ export class UserProfile {
   @Column({ type: 'text', nullable: true })
   affiliation_eps: string;
 
-  @Column({ type: 'text', nullable: true })
-  personal_email: string;
-
-  @Column({ type: 'bigint', nullable: true })
-  personal_cellphone: number;
-
   @Column({ nullable: true })
   residence_department: string;
 
@@ -66,7 +60,9 @@ export class UserProfile {
   @Column({ type: 'text', nullable: true })
   user_shoe_size: string;
 
-  @OneToOne(() => User, (user) => user.user_profile)
+  @OneToOne(() => User, (user) => user.user_profile, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   user: User;
 

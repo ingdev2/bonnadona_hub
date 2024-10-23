@@ -13,13 +13,6 @@ export class CreateUserProfileDto {
   affiliation_eps: string;
 
   @IsOptional()
-  @IsEmail()
-  personal_email: string;
-
-  @IsOptional()
-  personal_cellphone: number;
-
-  @IsOptional()
   @IsString()
   residence_department: string;
 

@@ -13,10 +13,10 @@ import {
 } from 'typeorm';
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
-import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
+import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 
 @Entity()
 export class User {
@@ -56,17 +56,26 @@ export class User {
   @JoinTable({ name: 'User_Roles' })
   role: Role[];
 
+  @Column({ type: 'text', unique: true })
+  principal_email: string;
+
   @Column({ type: 'text', nullable: true })
   corporate_email: string;
 
   @Column({ type: 'bigint', nullable: true })
   corporate_cellphone: number;
 
+  @Column({ type: 'text', nullable: true, unique: true })
+  personal_email: string;
+
+  @Column({ type: 'bigint', nullable: true, unique: true })
+  personal_cellphone: number;
+
   @ManyToOne(() => ServiceType, (service_type) => service_type.user)
   @JoinColumn({ name: 'collaborator_service_type', referencedColumnName: 'id' })
   service_type: ServiceType;
 
-  @Column({ type: 'text' })
+  @Column()
   collaborator_service_type: number;
 
   @Column({ type: 'text', nullable: true })
@@ -81,8 +90,15 @@ export class User {
   @Column({ type: 'text', nullable: true })
   collaborator_position: string;
 
-  @Column({ type: 'text', nullable: true })
-  collaborator_position_level: string;
+  @ManyToOne(() => PositionLevel, (position_level) => position_level.user)
+  @JoinColumn({
+    name: 'collaborator_position_level',
+    referencedColumnName: 'id',
+  })
+  position_level: PositionLevel;
+
+  @Column()
+  collaborator_position_level: number;
 
   @Column({ select: false })
   password: string;
@@ -91,12 +107,16 @@ export class User {
   reset_password_token: string;
 
   @Column({ nullable: true })
-  authentication_method: number;
+  verification_code: number;
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
-  @OneToOne(() => UserProfile, (user_profile) => user_profile.user)
+  @OneToOne(() => UserProfile, (user_profile) => user_profile.user, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   user_profile: UserProfile;
 

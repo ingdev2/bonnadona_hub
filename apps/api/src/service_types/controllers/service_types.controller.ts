@@ -42,8 +42,8 @@ export class ServiceTypesController {
   @Patch('/update/:id')
   updateServiceType(
     @Param('id') id: number,
-    @Body() updateRole: UpdateServiceTypeDto,
+    @Body() updateServiceType: UpdateServiceTypeDto,
   ) {
-    return this.serviceTypesService.updateServiceType(id, updateRole);
+    return this.serviceTypesService.updateServiceType(id, updateServiceType);
   }
 }

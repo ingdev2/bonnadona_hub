@@ -11,6 +11,11 @@ import {
 import { UsersService } from '../services/users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
+import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
+import { CreateUserDto } from '../dto/create_user.dto';
+
+import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { UpdateUserDto } from '../dto/update_user.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -20,7 +25,6 @@ export class UsersController {
 
   // POST METHODS //
 
-  // @EnableAuditLog()
   @Post('/validateThatTheCollaboratorExist')
   async validateThatTheCollaboratorExist(
     @Body()
@@ -32,10 +36,21 @@ export class UsersController {
     });
   }
 
+  @Post('/searchCollaborator')
+  async searchCollaborator(
+    @Body() { idType, idNumber }: SearchCollaboratorDto,
+  ) {
+    return await this.usersService.searchCollaborator({ idType, idNumber });
+  }
+
   // @EnableAuditLog()
-  @Post('/createUser')
-  async createUser() {
-    return await this.usersService.createUser();
+  @Post('/createUserCollaborator')
+  async createUserCollaborator(
+    @Body() registerUserCollaborator: CreateUserDto,
+  ) {
+    return await this.usersService.createUserCollaborator(
+      registerUserCollaborator,
+    );
   }
 
   // GET METHODS //
@@ -48,8 +63,65 @@ export class UsersController {
 
   // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
   @Get('/getUser/:id')
-  async getUsersById() {
-    return await this.usersService.getUsersById();
+  async getUserById(@Param('id') id: string) {
+    return await this.usersService.getUserById(id);
+  }
+
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Get('/getCollaboratorUserByIdNumber/:idNumber')
+  async getCollaboratorUserByIdNumber(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserByIdNumberAndRole(idNumber, [
+      RolesEnum.COLLABORATOR,
+    ]);
+  }
+
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Get('/getSuperAdminUserByIdNumber/:idNumber')
+  async getSuperAdminUserByIdNumber(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserByIdNumberAndRole(idNumber, [
+      RolesEnum.SUPER_ADMIN,
+    ]);
+  }
+
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Get('/getAdminUserByIdNumber/:idNumber')
+  async getAdminUserByIdNumber(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserByIdNumberAndRole(idNumber, [
+      RolesEnum.ADMIN,
+    ]);
+  }
+
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Get('/getAdminsUserByIdNumber/:idNumber')
+  async getAdminsUserByIdNumber(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserByIdNumberAndRole(idNumber, [
+      RolesEnum.SUPER_ADMIN,
+      RolesEnum.ADMIN,
+    ]);
+  }
+
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Get('/getAuditorUserByIdNumber/:idNumber')
+  async getAuditorUserByIdNumber(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserByIdNumberAndRole(idNumber, [
+      RolesEnum.AUDITOR,
+    ]);
+  }
+
+  @Get('/getUserActiveByTypeAndIdNumber/:idType/:idNumber')
+  async getUserActiveByTypeAndIdNumber(
+    @Param('idType') idType: number,
+    @Param('idNumber') idNumber: number,
+  ) {
+    return await this.usersService.getUserActiveByTypeAndIdNumber(
+      idType,
+      idNumber,
+    );
+  }
+
+  @Get('/getUserRoles/:id')
+  async getUserRoles(@Param('id') id: string) {
+    return await this.usersService.getUserRoles(id);
   }
 
   // PATCH METHODS //
@@ -57,14 +129,23 @@ export class UsersController {
   // @EnableAuditLog()
   // @Auth(
   //   AdminRolType.SUPER_ADMIN,
-  //   UserRolType.USER,
   // )
-  @Patch('/updatePassword/:id')
+  @Patch('/updateUser/:id')
+  async updateUser(@Param('id') id: string, @Body() updateUser: UpdateUserDto) {
+    return await this.usersService.updateUser(id, updateUser);
+  }
+
+  @Patch('/updateUserPassword/:id')
   async updateUserPassword() {
     return await this.usersService.updateUserPassword();
   }
 
-  @Patch('/resetPassword')
+  @Patch('/forgotUserPassword')
+  async forgotUserPassword() {
+    return await this.usersService.forgotUserPassword();
+  }
+
+  @Patch('/resetUserPassword')
   async resetUserPassword() {
     return await this.usersService.resetUserPassword();
   }

@@ -10,6 +10,6 @@ export class ServiceType {
   @Column({ enum: ServiceTypesEnum })
   name: ServiceTypesEnum;
 
-  @OneToMany(() => User, (user) => user.gender)
+  @OneToMany(() => User, (user) => user.service_type)
   user: User[];
 }
