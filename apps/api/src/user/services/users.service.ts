@@ -353,6 +353,72 @@ export class UsersService {
     return userCollaboratorCreated;
   }
 
+  async updateUserDataFromKactus(userId: string) {
+    const userFound = await this.userRepository.findOne({
+      where: { id: userId, is_active: true },
+    });
+
+    if (!userFound) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    const data = await this.searchCollaborator({
+      idType: userFound.user_id_type,
+      idNumber: userFound.id_number,
+    });
+
+    const collaboratorData = data[0]?.data?.[0];
+
+    if (!collaboratorData) {
+      throw new HttpException(
+        `No se encontraron datos en Kactus para el usuario con número de identificación: ${userFound.id_number}.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    let hasChanges = false;
+
+    if (userFound.birthdate !== collaboratorData.empBirthDate.trim()) {
+      userFound.birthdate = collaboratorData.empBirthDate.trim();
+      hasChanges = true;
+    }
+
+    if (
+      userFound.collaborator_immediate_boss !==
+      collaboratorData.empImmediateBoss.trim()
+    ) {
+      userFound.collaborator_immediate_boss =
+        collaboratorData.empImmediateBoss.trim();
+      hasChanges = true;
+    }
+
+    if (
+      userFound.collaborator_position !== collaboratorData.empPosition.trim()
+    ) {
+      userFound.collaborator_position = collaboratorData.empPosition.trim();
+      hasChanges = true;
+    }
+
+    const serviceOfCompany = collaboratorData.empCostCenter
+      .replace(/\d+/g, '')
+      .trim();
+
+    if (userFound.collaborator_service !== serviceOfCompany) {
+      userFound.collaborator_service = serviceOfCompany;
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      await this.userRepository.save(userFound);
+
+      return { message: 'Datos del usuario actualizados correctamente.' };
+    }
+
+    return {
+      message: 'No se detectaron cambios en los datos del usuario.',
+    };
+  }
+
   // GET FUNTIONS //
 
   async getAllUsers() {
@@ -370,7 +436,7 @@ export class UsersService {
     if (!allUsers.length) {
       return new HttpException(
         `No hay usuarios registrados en la base de datos`,
-        HttpStatus.CONFLICT,
+        HttpStatus.NOT_FOUND,
       );
     } else {
       return allUsers;
@@ -386,10 +452,7 @@ export class UsersService {
     });
 
     if (!userFound) {
-      return new HttpException(
-        `El usuario con número de ID: ${id} no esta registrado.`,
-        HttpStatus.CONFLICT,
-      );
+      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     } else {
       return userFound;
     }
@@ -483,10 +546,7 @@ export class UsersService {
     });
 
     if (!userFound) {
-      return new HttpException(
-        `Usuario no encontrado.`,
-        HttpStatus.UNAUTHORIZED,
-      );
+      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
     const principalEmailUserValidate = await this.userRepository.findOne({
@@ -639,5 +699,25 @@ export class UsersService {
 
   // DELETED-BAN FUNTIONS //
 
-  async banUsers() {}
+  async banUser(id: string) {
+    const userFound = await this.userRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (!userFound) {
+      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    userFound.is_active = !userFound.is_active;
+
+    await this.userRepository.save(userFound);
+
+    const statusMessage = userFound.is_active
+      ? `El usuario con número de ID: ${userFound.id_number} se ha ACTIVADO.`
+      : `El usuario con número de ID: ${userFound.id_number} se ha INACTIVADO.`;
+
+    throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
+  }
 }

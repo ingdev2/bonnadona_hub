@@ -53,6 +53,12 @@ export class UsersController {
     );
   }
 
+  // @EnableAuditLog()
+  @Post('/updateUserDataFromKactus/:userId')
+  async updateUserDataFromKactus(@Param('userId') userId: string) {
+    return await this.usersService.updateUserDataFromKactus(userId);
+  }
+
   // GET METHODS //
 
   // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
@@ -152,8 +158,8 @@ export class UsersController {
 
   // @EnableAuditLog()
   // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
-  @Patch()
-  async banUsers() {
-    return await this.usersService.banUsers();
+  @Patch('/ban/:id')
+  async banUser(@Param('id') id: string) {
+    return await this.usersService.banUser(id);
   }
 }
