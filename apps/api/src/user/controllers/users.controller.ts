@@ -17,6 +17,7 @@ import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 
 import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -145,6 +146,17 @@ export class UsersController {
   @Patch('/updateUser/:id')
   async updateUser(@Param('id') id: string, @Body() updateUser: UpdateUserDto) {
     return await this.usersService.updateUser(id, updateUser);
+  }
+
+  // @Auth(
+  //   AdminRolType.SUPER_ADMIN,
+  // )
+  @Patch('/updateUserProfile/:id')
+  async updateUserProfile(
+    @Param('id') id: string,
+    @Body() updateUser: UpdateUserProfileDto,
+  ) {
+    return await this.usersService.updateUserProfile(id, updateUser);
   }
 
   @Patch('/updateUserPassword/:id')

@@ -11,6 +11,7 @@ import { User } from '../entities/user.entity';
 import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
+import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
@@ -25,9 +26,9 @@ import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
+import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 
 import axios from 'axios';
-import * as bcryptjs from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -42,6 +43,9 @@ export class UsersService {
 
     @InjectRepository(GenderType)
     private genderRepository: Repository<GenderType>,
+
+    @InjectRepository(BloodGroup)
+    private bloodGroupRepository: Repository<BloodGroup>,
 
     @InjectRepository(Role) private roleRepository: Repository<Role>,
 
@@ -938,6 +942,60 @@ export class UsersService {
     }
 
     throw new HttpException(
+      `¡Datos guardados correctamente!`,
+      HttpStatus.ACCEPTED,
+    );
+  }
+
+  async updateUserProfile(id: string, userProfile: UpdateUserProfileDto) {
+    const userFound = await this.userRepository.findOneBy({
+      id,
+      is_active: true,
+    });
+
+    if (!userFound) {
+      return new HttpException(
+        `Usuario no encontrado.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const requiredRoles = [RolesEnum.COLLABORATOR];
+
+    const hasRequiredRole = userFound.role.some((role) =>
+      requiredRoles.includes(role.name),
+    );
+
+    if (!hasRequiredRole) {
+      return new HttpException(
+        `No tienes permiso para actualizar este usuario.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const bloodGroupFound = await this.bloodGroupRepository.findOne({
+      where: {
+        id: userProfile.user_blood_group,
+      },
+    });
+
+    if (userProfile.user_blood_group && !bloodGroupFound) {
+      throw new HttpException(
+        `Grupo sanguíneo no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const updateUserEps = await this.userProfileRepository.update(
+      { id: userFound.user_profile.id },
+      userProfile,
+    );
+
+    if (updateUserEps.affected === 0) {
+      return new HttpException(`Usuario no encontrado`, HttpStatus.CONFLICT);
+    }
+
+    return new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );
