@@ -22,7 +22,7 @@ export class BloodGroupsService {
     });
 
     if (bloodGroupFound) {
-      return new HttpException(
+      throw new HttpException(
         `El grupo sanguíneo: ${bloodGroup.name} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -43,7 +43,7 @@ export class BloodGroupsService {
     });
 
     if (allBloodGroup.length === 0) {
-      return new HttpException(
+      throw new HttpException(
         `No hay grupos sanguíneos registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -60,7 +60,7 @@ export class BloodGroupsService {
     });
 
     if (!bloodGroupFound) {
-      return new HttpException(
+      throw new HttpException(
         `El grupo sanguíneo con número de ID: ${id} no esta registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -75,7 +75,7 @@ export class BloodGroupsService {
     const bloodGroupFound = await this.bloodGroupRepository.findOneBy({ id });
 
     if (!bloodGroupFound) {
-      return new HttpException(
+      throw new HttpException(
         `Grupo sanguíneo no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
@@ -89,7 +89,7 @@ export class BloodGroupsService {
       });
 
       if (duplicateBloodGroup) {
-        return new HttpException(
+        throw new HttpException(
           `Grupo sanguíneo duplicado.`,
           HttpStatus.CONFLICT,
         );
@@ -102,13 +102,13 @@ export class BloodGroupsService {
     );
 
     if (updateBloodGroup.affected === 0) {
-      return new HttpException(
+      throw new HttpException(
         `Grupo sanguíneo no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
     }
 
-    return new HttpException(
+    throw new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );

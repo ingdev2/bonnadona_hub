@@ -72,7 +72,7 @@ export class UsersService {
       const allData = response?.data;
 
       if (!allData) {
-        return new HttpException(
+        throw new HttpException(
           `El colaborador con número de identificación ${idNumber} no esta registrado en la base de datos de la clínica.`,
           HttpStatus.NOT_FOUND,
         );
@@ -106,7 +106,7 @@ export class UsersService {
       });
 
       if (!idTypeOfUserIdNumber) {
-        return new HttpException(
+        throw new HttpException(
           `Tipo de identificación no encontrado en base de datos.`,
           HttpStatus.CONFLICT,
         );
@@ -134,7 +134,7 @@ export class UsersService {
       });
 
       if (!genderTypeOfUserIdNumber) {
-        return new HttpException(
+        throw new HttpException(
           `Género no encontrado en base de datos.`,
           HttpStatus.CONFLICT,
         );
@@ -166,7 +166,7 @@ export class UsersService {
     });
 
     if (!idTypeOfUser) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de identificación no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -199,7 +199,7 @@ export class UsersService {
     const collaboratorData = data[0]?.data;
 
     if (!collaboratorData) {
-      return new HttpException(
+      throw new HttpException(
         `El colaborador con número de identificación ${idNumber} no esta registrado en la base de datos de la clínica.`,
         HttpStatus.NOT_FOUND,
       );
@@ -220,7 +220,7 @@ export class UsersService {
     const genderTypeIdNumber: number = data[1]?.genderTypeIdNumber;
 
     if (!collaboratorData) {
-      return new HttpException(
+      throw new HttpException(
         `El colaborador con número de identificación ${userCollaborator.id_number} no esta registrado en la base de datos de la clínica.`,
         HttpStatus.NOT_FOUND,
       );
@@ -252,7 +252,7 @@ export class UsersService {
     });
 
     if (userCollaboratorFound) {
-      return new HttpException(
+      throw new HttpException(
         `El usuario con número de identificación ${userCollaborator.id_number} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -266,7 +266,7 @@ export class UsersService {
       });
 
     if (userCollaboratorPrincipalEmailFound) {
-      return new HttpException(
+      throw new HttpException(
         `El correo principal ${userCollaborator.principal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -280,7 +280,7 @@ export class UsersService {
       });
 
     if (userCollaboratorPersonalEmailFound) {
-      return new HttpException(
+      throw new HttpException(
         `El correo personal ${userCollaborator.personal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -294,7 +294,7 @@ export class UsersService {
       });
 
     if (!collaboratorServiceTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de servicio no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -308,7 +308,7 @@ export class UsersService {
       });
 
     if (!collaboratorPositionLevelFound) {
-      return new HttpException(
+      throw new HttpException(
         `Nivel de cargo no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -322,7 +322,7 @@ export class UsersService {
     });
 
     if (!collaboratorRole) {
-      return new HttpException(
+      throw new HttpException(
         `El role ${RolesEnum.COLLABORATOR} no existe.`,
         HttpStatus.CONFLICT,
       );
@@ -434,7 +434,7 @@ export class UsersService {
     });
 
     if (!allUsers.length) {
-      return new HttpException(
+      throw new HttpException(
         `No hay usuarios registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -452,7 +452,7 @@ export class UsersService {
     });
 
     if (!userFound) {
-      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     } else {
       return userFound;
     }
@@ -467,9 +467,9 @@ export class UsersService {
       .andWhere('user.is_active = :isActive', { isActive: true })
       .getOne();
 
-    if (!userFound) {
+    if (userFound) {
       throw new HttpException(
-        `No se encontró ningún usuario activo con el número de identificación: ${idNumber} y roles proporcionados.`,
+        `El usuario con número de identificación: ${idNumber} ya esta registrado.`,
         HttpStatus.NOT_FOUND,
       );
     }
@@ -485,12 +485,12 @@ export class UsersService {
     });
   }
 
-  async getUserFoundByIdNumberWithPassword(
-    userIdType: number,
-    idNumber: number,
-  ) {
+  async getUserFoundByIdNumberWithPassword(principalEmail: string) {
     return await this.userRepository.findOne({
-      where: { user_id_type: userIdType, id_number: idNumber, is_active: true },
+      where: {
+        principal_email: principalEmail,
+        is_active: true,
+      },
       select: [
         'id',
         'name',
@@ -546,7 +546,7 @@ export class UsersService {
     });
 
     if (!userFound) {
-      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
     const principalEmailUserValidate = await this.userRepository.findOne({
@@ -557,7 +557,7 @@ export class UsersService {
     });
 
     if (updateUser.principal_email && principalEmailUserValidate) {
-      return new HttpException(
+      throw new HttpException(
         `El correo electrónico ${updateUser.principal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -571,7 +571,7 @@ export class UsersService {
     });
 
     if (updateUser.personal_email && personalEmailUserValidate) {
-      return new HttpException(
+      throw new HttpException(
         `El correo electrónico ${updateUser.personal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -585,7 +585,7 @@ export class UsersService {
     });
 
     if (updateUser.personal_cellphone && personalCellphoneUserValidate) {
-      return new HttpException(
+      throw new HttpException(
         `El número de celular ${updateUser.personal_cellphone} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -602,7 +602,7 @@ export class UsersService {
       updateUser.collaborator_service_type &&
       !collaboratorServiceTypeValidate
     ) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de servicio no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -619,7 +619,7 @@ export class UsersService {
       updateUser.collaborator_position_level &&
       !collaboratorPositionLevelValidate
     ) {
-      return new HttpException(
+      throw new HttpException(
         `Nivel de cargo no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -634,10 +634,10 @@ export class UsersService {
     }
 
     if (userUpdate.affected === 0) {
-      return new HttpException(`Usuario no encontrado`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado`, HttpStatus.NOT_FOUND);
     }
 
-    return new HttpException(
+    throw new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );
@@ -685,7 +685,7 @@ export class UsersService {
 
     await this.userRepository.save(userFound);
 
-    return new HttpException(
+    throw new HttpException(
       `Roles actualizados correctamente.`,
       HttpStatus.ACCEPTED,
     );
@@ -707,7 +707,7 @@ export class UsersService {
     });
 
     if (!userFound) {
-      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
     userFound.is_active = !userFound.is_active;

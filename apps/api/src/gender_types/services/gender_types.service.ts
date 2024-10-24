@@ -22,7 +22,7 @@ export class GenderTypesService {
     });
 
     if (genderTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `El tipo de género: ${genderType.name} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -43,7 +43,7 @@ export class GenderTypesService {
     });
 
     if (allGenderTypes.length === 0) {
-      return new HttpException(
+      throw new HttpException(
         `No hay tipos de géneros registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -60,7 +60,7 @@ export class GenderTypesService {
     });
 
     if (!genderFound) {
-      return new HttpException(
+      throw new HttpException(
         `El tipo de género con número de ID: ${id} no esta registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -75,7 +75,7 @@ export class GenderTypesService {
     const genderTypeFound = await this.genderTypeRepository.findOneBy({ id });
 
     if (!genderTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de género no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
@@ -89,7 +89,7 @@ export class GenderTypesService {
       });
 
       if (duplicateGenderType) {
-        return new HttpException(
+        throw new HttpException(
           `Tipo de género duplicado.`,
           HttpStatus.CONFLICT,
         );
@@ -102,13 +102,13 @@ export class GenderTypesService {
     );
 
     if (updateGenderType.affected === 0) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de género no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
     }
 
-    return new HttpException(
+    throw new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );

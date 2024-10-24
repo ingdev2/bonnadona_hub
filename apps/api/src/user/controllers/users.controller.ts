@@ -10,12 +10,13 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { CreateUserDto } from '../dto/create_user.dto';
+import { UpdateUserDto } from '../dto/update_user.dto';
 
 import { RolesEnum } from 'src/utils/enums/roles.enum';
-import { UpdateUserDto } from '../dto/update_user.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -36,6 +37,7 @@ export class UsersController {
     });
   }
 
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
   @Post('/searchCollaborator')
   async searchCollaborator(
     @Body() { idType, idNumber }: SearchCollaboratorDto,
@@ -44,16 +46,7 @@ export class UsersController {
   }
 
   // @EnableAuditLog()
-  @Post('/createUserCollaborator')
-  async createUserCollaborator(
-    @Body() registerUserCollaborator: CreateUserDto,
-  ) {
-    return await this.usersService.createUserCollaborator(
-      registerUserCollaborator,
-    );
-  }
-
-  // @EnableAuditLog()
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
   @Post('/updateUserDataFromKactus/:userId')
   async updateUserDataFromKactus(@Param('userId') userId: string) {
     return await this.usersService.updateUserDataFromKactus(userId);

@@ -22,7 +22,7 @@ export class ServiceTypesService {
     });
 
     if (serviceTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `El tipo de servicio: ${serviceType.name} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -43,7 +43,7 @@ export class ServiceTypesService {
     });
 
     if (allServiceTypes.length === 0) {
-      return new HttpException(
+      throw new HttpException(
         `No hay tipos de servicio registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -60,7 +60,7 @@ export class ServiceTypesService {
     });
 
     if (!serviceTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `El tipo de servicio con número de ID: ${id} no esta registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -75,7 +75,7 @@ export class ServiceTypesService {
     const serviceTypeFound = await this.serviceTypeRepository.findOneBy({ id });
 
     if (!serviceTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de servicio no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
@@ -89,20 +89,20 @@ export class ServiceTypesService {
       });
 
       if (duplicateServiceType) {
-        return new HttpException(`Role duplicado.`, HttpStatus.CONFLICT);
+        throw new HttpException(`Role duplicado.`, HttpStatus.CONFLICT);
       }
     }
 
     const updateRole = await this.serviceTypeRepository.update(id, serviceType);
 
     if (updateRole.affected === 0) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de servicio no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
     }
 
-    return new HttpException(
+    throw new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );

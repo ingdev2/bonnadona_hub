@@ -22,7 +22,7 @@ export class RoleService {
     });
 
     if (rolesFound) {
-      return new HttpException(
+      throw new HttpException(
         `El role: ${role.name} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -43,7 +43,7 @@ export class RoleService {
     });
 
     if (allRoles.length === 0) {
-      return new HttpException(
+      throw new HttpException(
         `No hay roles registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -60,7 +60,7 @@ export class RoleService {
     });
 
     if (!roleFound) {
-      return new HttpException(
+      throw new HttpException(
         `El role con número de ID: ${id} no esta registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -75,7 +75,7 @@ export class RoleService {
     const roleFound = await this.roleRepository.findOneBy({ id });
 
     if (!roleFound) {
-      return new HttpException(`Role no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Role no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
     if (role.name) {
@@ -86,17 +86,17 @@ export class RoleService {
       });
 
       if (duplicateRole) {
-        return new HttpException(`Role duplicado.`, HttpStatus.CONFLICT);
+        throw new HttpException(`Role duplicado.`, HttpStatus.CONFLICT);
       }
     }
 
     const updateRole = await this.roleRepository.update(id, role);
 
     if (updateRole.affected === 0) {
-      return new HttpException(`Role no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Role no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
-    return new HttpException(
+    throw new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );
