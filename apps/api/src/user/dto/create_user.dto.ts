@@ -73,4 +73,8 @@ export class CreateUserDto {
 
   @IsOptional()
   collaborator_position_level: number;
+
+  @IsOptional()
+  @IsString()
+  residence_address: string;
 }

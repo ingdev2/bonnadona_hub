@@ -27,6 +27,7 @@ import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 
 import axios from 'axios';
+import * as bcryptjs from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -53,6 +54,108 @@ export class UsersService {
 
   // CREATE FUNTIONS //
 
+  async getAllCollaboratorFromKactus() {
+    try {
+      const AUTH_VALUE = process.env.X_AUTH_VALUE;
+
+      const response = await axios.get(
+        `http://190.131.222.108:8088/api/v1/hub/get/employees-database/status/A`,
+        {
+          headers: {
+            'X-Authorization': AUTH_VALUE,
+          },
+        },
+      );
+
+      const allData = response?.data;
+
+      if (!allData?.data || allData.data.length === 0) {
+        throw new HttpException(
+          'No se encontraron datos de colaboradores.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const idTypeAbbreviations: Record<IdTypeAbbrev, IdTypeEnum> = {
+        [IdTypeAbbrev.CÉDULA_DE_CIUDADANÍA]: IdTypeEnum.CITIZENSHIP_CARD,
+        [IdTypeAbbrev.CÉDULA_DE_EXTRANJERÍA]: IdTypeEnum.FOREIGNER_ID,
+        [IdTypeAbbrev.TARJETA_DE_IDENTIDAD]: IdTypeEnum.IDENTITY_CARD,
+        [IdTypeAbbrev.REGISTRO_CIVIL]: IdTypeEnum.CIVIL_REGISTRATION,
+        [IdTypeAbbrev.PASAPORTE]: IdTypeEnum.PASSPORT,
+        [IdTypeAbbrev.PERMISO_ESPECIAL]: IdTypeEnum.SPECIAL_PERMIT,
+        [IdTypeAbbrev.PERMISO_PROTECCIÓN_TEMPORAL]:
+          IdTypeEnum.TEMPORARY_PROTECTION_PERMIT,
+        [IdTypeAbbrev.CARNET_DIPLOMÁTICO]: IdTypeEnum.DIPLOMATIC_CARD,
+        [IdTypeAbbrev.NIT]: IdTypeEnum.NIT,
+        [IdTypeAbbrev.SALVOCONDUCTO]: IdTypeEnum.PASS,
+        [IdTypeAbbrev.NO_APLICA]: IdTypeEnum.NOT_APPLICABLE,
+      };
+
+      const genderTypeAbbreviations: Record<GenderTypeAbbrev, GenderTypeEnums> =
+        {
+          [GenderTypeAbbrev.MASCULINO]: GenderTypeEnums.MALE,
+          [GenderTypeAbbrev.FEMENINO]: GenderTypeEnums.FEMALE,
+        };
+
+      const transformedData = await Promise.all(
+        allData.data.map(async (collaborator: any) => {
+          const idTypeEnum = idTypeAbbreviations[collaborator.empDocType];
+          const genderEnum = genderTypeAbbreviations[collaborator.empGender];
+
+          if (!idTypeEnum) {
+            throw new HttpException(
+              `Tipo de identificación no reconocido para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          if (!genderEnum) {
+            throw new HttpException(
+              `Género no reconocido para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          const idTypeOfUserIdNumber = await this.idTypeRepository.findOne({
+            where: { name: idTypeEnum },
+          });
+
+          if (!idTypeOfUserIdNumber) {
+            throw new HttpException(
+              `Tipo de identificación no encontrado para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.CONFLICT,
+            );
+          }
+
+          const genderTypeOfUserIdNumber = await this.genderRepository.findOne({
+            where: { name: genderEnum },
+          });
+
+          if (!genderTypeOfUserIdNumber) {
+            throw new HttpException(
+              `Género no encontrado para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.CONFLICT,
+            );
+          }
+
+          return {
+            ...collaborator,
+            idTypeIdNumber: idTypeOfUserIdNumber.id,
+            genderTypeIdNumber: genderTypeOfUserIdNumber.id,
+          };
+        }),
+      );
+
+      return transformedData;
+    } catch (error) {
+      throw new HttpException(
+        'Hubo un error al consultar en la base de datos.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
+    }
+  }
+
   async validateThatTheCollaboratorExist({
     idType,
     idNumber,
@@ -61,7 +164,7 @@ export class UsersService {
       const AUTH_VALUE = process.env.X_AUTH_VALUE;
 
       const response = await axios.get(
-        `http://190.131.222.108:8088/api/v1/eva-des/get/employees-information/${idNumber}/${idType}`,
+        `http://190.131.222.108:8088/api/v1/hub/get/employees-information/${idNumber}/${idType}`,
         {
           headers: {
             'X-Authorization': AUTH_VALUE,
@@ -233,6 +336,7 @@ export class UsersService {
     userCollaborator.last_name = collaboratorData?.empLastName.trim();
     userCollaborator.principal_email = collaboratorData?.empEmail.trim();
     userCollaborator.personal_email = collaboratorData?.empEmail.trim();
+    userCollaborator.personal_cellphone = collaboratorData?.empPhone.trim();
     userCollaborator.birthdate = collaboratorData?.empBirthDate.trim();
     userCollaborator.collaborator_immediate_boss =
       collaboratorData?.empImmediateBoss.trim();
@@ -335,7 +439,122 @@ export class UsersService {
     );
 
     const userProfile = new UserProfile();
+
     userProfile.user = userCollaboratorSave;
+    userProfile.residence_address = collaboratorData?.empAddress;
+
+    const userProfileCreate =
+      await this.userProfileRepository.create(userProfile);
+
+    userCollaboratorSave.user_profile = userProfileCreate;
+
+    await this.userRepository.save(userCollaboratorSave);
+
+    const userCollaboratorCreated = await this.userRepository.findOne({
+      where: { id: userCollaboratorSave.id },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    return userCollaboratorCreated;
+  }
+
+  async createAllNewUsersCollaboratorsFromKactus(
+    userCollaborator: CreateUserDto,
+  ) {
+    const userCollaboratorFound = await this.userRepository.findOne({
+      where: {
+        id_number: userCollaborator.id_number,
+      },
+    });
+
+    if (userCollaboratorFound) {
+      throw new HttpException(
+        `El usuario con número de identificación ${userCollaborator.id_number} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPrincipalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          principal_email: userCollaborator.principal_email,
+        },
+      });
+
+    if (userCollaboratorPrincipalEmailFound) {
+      throw new HttpException(
+        `El correo principal ${userCollaborator.principal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPersonalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          personal_email: userCollaborator.personal_email,
+        },
+      });
+
+    if (userCollaboratorPersonalEmailFound) {
+      throw new HttpException(
+        `El correo personal ${userCollaborator.personal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const collaboratorServiceTypeFound =
+      await this.serviceTypeRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_service_type,
+        },
+      });
+
+    if (!collaboratorServiceTypeFound) {
+      throw new HttpException(
+        `Tipo de servicio no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const collaboratorPositionLevelFound =
+      await this.positionLevelRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_position_level,
+        },
+      });
+
+    if (!collaboratorPositionLevelFound) {
+      throw new HttpException(
+        `Nivel de cargo no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorCreate =
+      await this.userRepository.create(userCollaborator);
+
+    const collaboratorRole = await this.roleRepository.findOne({
+      where: { name: RolesEnum.COLLABORATOR },
+    });
+
+    if (!collaboratorRole) {
+      throw new HttpException(
+        `El role ${RolesEnum.COLLABORATOR} no existe.`,
+        HttpStatus.CONFLICT,
+      );
+    } else {
+      userCollaboratorCreate.role = [collaboratorRole];
+    }
+
+    const userCollaboratorSave = await this.userRepository.save(
+      userCollaboratorCreate,
+    );
+
+    const userProfile = new UserProfile();
+
+    userProfile.user = userCollaboratorSave;
+    userProfile.residence_address = userCollaborator?.residence_address;
 
     const userProfileCreate =
       await this.userProfileRepository.create(userProfile);
@@ -417,6 +636,87 @@ export class UsersService {
     return {
       message: 'No se detectaron cambios en los datos del usuario.',
     };
+  }
+
+  async updateAllUsersDataFromKactus() {
+    try {
+      const allUsers = await this.userRepository.find({
+        where: { is_active: true },
+      });
+
+      if (allUsers.length === 0) {
+        throw new HttpException(
+          'No hay usuarios activos para actualizar.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const updatedUsers = [];
+
+      for (const user of allUsers) {
+        const data = await this.searchCollaborator({
+          idType: user.user_id_type,
+          idNumber: user.id_number,
+        });
+
+        const collaboratorData = data[0]?.data?.[0];
+
+        if (!collaboratorData) {
+          console.log(
+            `No se encontraron datos en Kactus para el usuario con número de identificación: ${user.id_number}.`,
+          );
+          continue;
+        }
+
+        let hasChanges = false;
+
+        if (user.birthdate !== collaboratorData.empBirthDate.trim()) {
+          user.birthdate = collaboratorData.empBirthDate.trim();
+          hasChanges = true;
+        }
+
+        if (
+          user.collaborator_immediate_boss !==
+          collaboratorData.empImmediateBoss.trim()
+        ) {
+          user.collaborator_immediate_boss =
+            collaboratorData.empImmediateBoss.trim();
+          hasChanges = true;
+        }
+
+        if (
+          user.collaborator_position !== collaboratorData.empPosition.trim()
+        ) {
+          user.collaborator_position = collaboratorData.empPosition.trim();
+          hasChanges = true;
+        }
+
+        const serviceOfCompany = collaboratorData.empCostCenter
+          .replace(/\d+/g, '')
+          .trim();
+
+        if (user.collaborator_service !== serviceOfCompany) {
+          user.collaborator_service = serviceOfCompany;
+          hasChanges = true;
+        }
+
+        if (hasChanges) {
+          await this.userRepository.save(user);
+
+          updatedUsers.push(user);
+        }
+      }
+
+      return {
+        message: `Se actualizaron los datos de ${updatedUsers.length} usuario(s).`,
+        updatedUsers,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Hubo un error al actualizar los datos de los usuarios.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // GET FUNTIONS //

@@ -35,6 +35,11 @@ export class AuthController {
     );
   }
 
+  @Post('/createAllNewUsersFromKactus')
+  async createAllNewUsersFromKactus() {
+    return await this.authService.createAllNewUsersFromKactus();
+  }
+
   // LOGIN //
 
   @Post('loginCollaboratorUser')

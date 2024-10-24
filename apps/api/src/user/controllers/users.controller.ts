@@ -26,6 +26,7 @@ export class UsersController {
 
   // POST METHODS //
 
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
   @Post('/validateThatTheCollaboratorExist')
   async validateThatTheCollaboratorExist(
     @Body()
@@ -45,11 +46,23 @@ export class UsersController {
     return await this.usersService.searchCollaborator({ idType, idNumber });
   }
 
+  @Post('/getAllCollaboratorFromKactus')
+  async getAllCollaboratorFromKactus() {
+    return await this.usersService.getAllCollaboratorFromKactus();
+  }
+
   // @EnableAuditLog()
   // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
   @Post('/updateUserDataFromKactus/:userId')
   async updateUserDataFromKactus(@Param('userId') userId: string) {
     return await this.usersService.updateUserDataFromKactus(userId);
+  }
+
+  // @EnableAuditLog()
+  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Post('/updateAllUsersDataFromKactus')
+  async updateAllUsersDataFromKactus() {
+    return await this.usersService.updateAllUsersDataFromKactus();
   }
 
   // GET METHODS //

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
@@ -48,6 +53,7 @@ export class AuthService {
     collaborator_position,
     collaborator_position_level,
     collaborator_immediate_boss,
+    residence_address,
   }: CreateUserDto) {
     await this.userService.getUserByIdNumberAndRole(id_number, [
       RolesEnum.COLLABORATOR,
@@ -72,7 +78,72 @@ export class AuthService {
       collaborator_position,
       collaborator_position_level,
       collaborator_immediate_boss,
+      residence_address,
     });
+  }
+
+  async createAllNewUsersFromKactus() {
+    try {
+      const collaborators =
+        await this.userService.getAllCollaboratorFromKactus();
+
+      const createdUsers = [];
+
+      for (const collaborator of collaborators) {
+        const userFound = await this.userRepository.findOne({
+          where: {
+            id_number: collaborator.empDoc,
+          },
+        });
+
+        if (!userFound) {
+          const userCollaborator = new CreateUserDto();
+
+          userCollaborator.user_id_type = collaborator?.idTypeIdNumber;
+          userCollaborator.id_number = collaborator?.empDoc;
+          userCollaborator.user_gender = collaborator?.genderTypeIdNumber;
+
+          userCollaborator.name = collaborator?.empName.trim();
+          userCollaborator.last_name = collaborator?.empLastName.trim();
+          userCollaborator.principal_email = collaborator?.empEmail.trim();
+          userCollaborator.personal_email = collaborator?.empEmail.trim();
+          userCollaborator.personal_cellphone = collaborator?.empPhone
+            ? collaborator?.empPhone.trim()
+            : null;
+          userCollaborator.birthdate = collaborator?.empBirthDate.trim();
+          userCollaborator.residence_address = collaborator?.empAddress.trim();
+          userCollaborator.collaborator_immediate_boss =
+            collaborator?.empImmediateBoss.trim();
+          userCollaborator.collaborator_position =
+            collaborator?.empPosition.trim();
+
+          const serviceOfCompany = collaborator?.empCostCenter
+            .replace(/\d+/g, '')
+            .trim();
+
+          userCollaborator.collaborator_service = serviceOfCompany;
+
+          const password = collaborator.empDoc;
+
+          userCollaborator.password = await bcryptjs.hash(password, 10);
+
+          const createdUser =
+            await this.userService.createAllNewUsersCollaboratorsFromKactus(
+              userCollaborator,
+            );
+
+          createdUsers.push(createdUser);
+        }
+      }
+
+      return createdUsers;
+    } catch (error) {
+      throw new HttpException(
+        'Hubo un error al crear los usuarios.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
+    }
   }
 
   async loginCollaboratorUser({ principal_email, password }: LoginDto) {
@@ -115,6 +186,15 @@ export class AuthService {
     if (!isCorrectPassword) {
       throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
     }
+
+    const verificationCode = Math.floor(1000 + Math.random() * 9999);
+
+    await this.userRepository.update(
+      {
+        id: collaboratorFound.id,
+      },
+      { verification_code: verificationCode },
+    );
 
     return { message: 'INGRESO CORRECTO' };
   }

@@ -75,7 +75,7 @@ export class User {
   @JoinColumn({ name: 'collaborator_service_type', referencedColumnName: 'id' })
   service_type: ServiceType;
 
-  @Column()
+  @Column({ nullable: true })
   collaborator_service_type: number;
 
   @Column({ type: 'text', nullable: true })
@@ -97,7 +97,7 @@ export class User {
   })
   position_level: PositionLevel;
 
-  @Column()
+  @Column({ nullable: true })
   collaborator_position_level: number;
 
   @Column({ select: false })
