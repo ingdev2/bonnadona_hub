@@ -54,7 +54,6 @@ export class UsersController {
     return await this.usersService.getAllCollaboratorFromKactus();
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/updateUserDataFromKactus/:userId')
   async updateUserDataFromKactus(@Param('userId') userId: string) {
     return await this.usersService.updateUserDataFromKactus(userId);

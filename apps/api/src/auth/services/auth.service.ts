@@ -19,6 +19,7 @@ import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RolesEnum } from 'src/utils/enums/roles.enum';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
+import { IdUserDto } from '../dto/id_user.dto';
 
 const schedule = require('node-schedule');
 
@@ -236,10 +237,86 @@ export class AuthService {
     return { principal_email };
   }
 
-  async verifyCodeAndLoginCollaborator(
-    id_number: number,
-    verification_code: number,
-  ) {
+  async loginAdminAndAuditorUser({ principal_email, password }: LoginDto) {
+    const adminOrAuditorUserRoleFound = await this.roleRepository.find({
+      where: {
+        name: In([RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR]),
+      },
+    });
+
+    if (!adminOrAuditorUserRoleFound) {
+      throw new UnauthorizedException(`¡Role de usuario no encontrado!`);
+    }
+
+    const adminOrAuditorFound =
+      await this.userService.getUserFoundByIdNumberWithPassword(
+        principal_email,
+      );
+
+    if (!adminOrAuditorFound) {
+      throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
+    }
+
+    const verifiedAdminOrAuditorRole = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.role', 'role')
+      .where('user.principal_email = :principal_email', { principal_email })
+      .andWhere('role.id IN (:...roleIds)', {
+        roleIds: adminOrAuditorUserRoleFound.map((role) => role.id),
+      })
+      .andWhere('user.is_active = :isActive', { isActive: true })
+      .getOne();
+
+    if (!verifiedAdminOrAuditorRole) {
+      throw new UnauthorizedException(`¡Usuario no autorizado!`);
+    }
+
+    const isCorrectPassword = await bcryptjs.compare(
+      password,
+      adminOrAuditorFound.password,
+    );
+
+    if (!isCorrectPassword) {
+      throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
+    }
+
+    const verificationCode = Math.floor(1000 + Math.random() * 9999);
+
+    await this.userRepository.update(
+      {
+        id: adminOrAuditorFound.id,
+      },
+      { verification_code: verificationCode },
+    );
+
+    const userAdminOrAuditorWithCode = await this.userRepository.findOne({
+      where: {
+        id: adminOrAuditorFound.id,
+      },
+    });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [adminOrAuditorFound.principal_email];
+    emailDetailsToSend.userNameToEmail = adminOrAuditorFound.name;
+    emailDetailsToSend.subject = SUBJECT_EMAIL_VERIFICATION_CODE;
+    emailDetailsToSend.emailTemplate = EMAIL_VERIFICATION_CODE;
+    emailDetailsToSend.verificationCode =
+      userAdminOrAuditorWithCode.verification_code;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    schedule.scheduleJob(new Date(Date.now() + 5 * 60 * 1000), async () => {
+      await this.userRepository.update(
+        { id: adminOrAuditorFound.id },
+        { verification_code: null },
+      );
+    });
+
+    return { principal_email };
+  }
+
+  async verifyCodeAndLoginUser(id_number: number, verification_code: number) {
     const collaboratorFound = await this.userService.getUserActiveByIdAndCode(
       id_number,
       verification_code,
@@ -278,6 +355,50 @@ export class AuthService {
       principal_email: collaboratorFound.principal_email,
       role: collaboratorFound.role,
     };
+  }
+
+  async resendVerificationUserCode({ id_type, id_number }: IdUserDto) {
+    const collaboratorFound =
+      await this.userService.getUserActiveByTypeAndIdNumber(id_type, id_number);
+
+    if (!collaboratorFound) {
+      throw new UnauthorizedException(`¡Usuario no encontrado!`);
+    }
+
+    const verificationCode = Math.floor(1000 + Math.random() * 9999);
+
+    await this.userRepository.update(
+      {
+        id: collaboratorFound.id,
+      },
+      { verification_code: verificationCode },
+    );
+
+    const userCollaboratorWithCode = await this.userRepository.findOne({
+      where: {
+        id: collaboratorFound.id,
+      },
+    });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [collaboratorFound.principal_email];
+    emailDetailsToSend.userNameToEmail = collaboratorFound.name;
+    emailDetailsToSend.subject = SUBJECT_EMAIL_VERIFICATION_CODE;
+    emailDetailsToSend.emailTemplate = EMAIL_VERIFICATION_CODE;
+    emailDetailsToSend.verificationCode =
+      userCollaboratorWithCode.verification_code;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    schedule.scheduleJob(new Date(Date.now() + 5 * 60 * 1000), async () => {
+      await this.userRepository.update(
+        { id: collaboratorFound.id },
+        { verification_code: null },
+      );
+    });
+
+    return userCollaboratorWithCode.principal_email;
   }
 
   private getExpirationInSeconds(expiresIn: string): number {
