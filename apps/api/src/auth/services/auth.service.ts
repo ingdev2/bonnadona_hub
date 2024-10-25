@@ -26,6 +26,8 @@ import {
   SUBJECT_EMAIL_VERIFICATION_CODE,
   EMAIL_VERIFICATION_CODE,
 } from 'src/nodemailer/constants/email_config.constant';
+import { Payload } from '../interfaces/payload.interface';
+import { Tokens } from '../interfaces/tokens.interface';
 
 @Injectable()
 export class AuthService {
@@ -231,6 +233,121 @@ export class AuthService {
       );
     });
 
-    return { message: 'CÓDIGO ENVIADO' };
+    return { principal_email };
+  }
+
+  async verifyCodeAndLoginCollaborator(
+    id_number: number,
+    verification_code: number,
+  ) {
+    const collaboratorFound = await this.userService.getUserActiveByIdAndCode(
+      id_number,
+      verification_code,
+    );
+
+    if (!collaboratorFound) {
+      throw new UnauthorizedException(`¡Código de verificación incorrecto!`);
+    }
+
+    await this.userRepository.update(
+      {
+        id: collaboratorFound.id,
+      },
+      { verification_code: null },
+    );
+
+    const payload: Payload = {
+      sub: collaboratorFound.id,
+      name: collaboratorFound.name,
+      principal_email: collaboratorFound.principal_email,
+      user_id_type: collaboratorFound.user_id_type,
+      id_number: collaboratorFound.id_number,
+      role: collaboratorFound.role,
+      user_profile: collaboratorFound.user_profile,
+    };
+
+    const { access_token, refresh_token, access_token_expires_in } =
+      await this.generateTokens(payload);
+
+    return {
+      access_token,
+      refresh_token,
+      access_token_expires_in,
+      id_type: collaboratorFound.user_id_type,
+      id_number: collaboratorFound.id_number,
+      principal_email: collaboratorFound.principal_email,
+      role: collaboratorFound.role,
+    };
+  }
+
+  private getExpirationInSeconds(expiresIn: string): number {
+    const expiresInInSeconds = parseInt(expiresIn, 10) * 60;
+
+    return expiresInInSeconds;
+  }
+
+  private async generateTokens(user: Partial<User>): Promise<Tokens> {
+    const jwtUserPayload: Payload = {
+      sub: user.id,
+      name: user.name,
+      principal_email: user.principal_email,
+      user_id_type: user.user_id_type,
+      id_number: user.id_number,
+      role: user.role,
+      user_profile: user.user_profile,
+    };
+
+    const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
+      [
+        await this.jwtService.signAsync(jwtUserPayload, {
+          secret: process.env.JWT_CONSTANTS_SECRET,
+          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+        }),
+
+        await this.jwtService.signAsync(jwtUserPayload, {
+          secret: process.env.JWT_CONSTANTS_SECRET,
+          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
+        }),
+
+        await this.getExpirationInSeconds(process.env.ACCESS_TOKEN_EXPIRES_IN),
+      ],
+    );
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      access_token_expires_in: accessTokenExpiresIn,
+    };
+  }
+
+  async refreshToken(refreshToken: string): Promise<any> {
+    try {
+      const user: Partial<User> = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_CONSTANTS_SECRET,
+      });
+
+      const payload: Payload = {
+        sub: user.id,
+        name: user.name,
+        principal_email: user.principal_email,
+        user_id_type: user.user_id_type,
+        id_number: user.id_number,
+        role: user.role,
+        user_profile: user.user_profile,
+      };
+
+      const { access_token, refresh_token, access_token_expires_in } =
+        await this.generateTokens(payload);
+
+      return {
+        access_token,
+        refresh_token,
+        access_token_expires_in,
+        status: HttpStatus.CREATED,
+        message: '¡Refresh Token Successfully!',
+      };
+    } catch (error) {
+      throw new UnauthorizedException(`¡Refresh Token Failed!`);
+    }
   }
 }

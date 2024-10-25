@@ -132,7 +132,6 @@ export class UsersController {
     );
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUserRoles/:id')
   async getUserRoles(@Param('id') id: string) {
     return await this.usersService.getUserRoles(id);

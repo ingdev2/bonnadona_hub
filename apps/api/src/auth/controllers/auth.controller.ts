@@ -45,4 +45,15 @@ export class AuthController {
   async loginCollaboratorUser(@Body() loginCollaborator: LoginDto) {
     return await this.authService.loginCollaboratorUser(loginCollaborator);
   }
+
+  @Post('verifyCodeAndLoginCollaborator/:id_number')
+  async verifyCodeAndLoginCollaborator(
+    @Param('id_number') id_number: number,
+    @Body('verification_code') verification_code: number,
+  ) {
+    return await this.authService.verifyCodeAndLoginCollaborator(
+      id_number,
+      verification_code,
+    );
+  }
 }
