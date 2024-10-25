@@ -24,8 +24,7 @@ export class AuthController {
 
   // REGISTER //
 
-  // @EnableAuditLog()
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/registerUserCollaborator')
   async registerUserCollaborator(
     @Body() registerUserCollaborator: CreateUserDto,

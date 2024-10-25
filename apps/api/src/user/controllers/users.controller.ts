@@ -13,11 +13,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
-import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 
 import { RolesEnum } from 'src/utils/enums/roles.enum';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
+
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -27,7 +28,7 @@ export class UsersController {
 
   // POST METHODS //
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/validateThatTheCollaboratorExist')
   async validateThatTheCollaboratorExist(
     @Body()
@@ -39,7 +40,7 @@ export class UsersController {
     });
   }
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/searchCollaborator')
   async searchCollaborator(
     @Body() { idType, idNumber }: SearchCollaboratorDto,
@@ -47,20 +48,18 @@ export class UsersController {
     return await this.usersService.searchCollaborator({ idType, idNumber });
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/getAllCollaboratorFromKactus')
   async getAllCollaboratorFromKactus() {
     return await this.usersService.getAllCollaboratorFromKactus();
   }
 
-  // @EnableAuditLog()
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/updateUserDataFromKactus/:userId')
   async updateUserDataFromKactus(@Param('userId') userId: string) {
     return await this.usersService.updateUserDataFromKactus(userId);
   }
 
-  // @EnableAuditLog()
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
   @Post('/updateAllUsersDataFromKactus')
   async updateAllUsersDataFromKactus() {
     return await this.usersService.updateAllUsersDataFromKactus();
@@ -68,19 +67,19 @@ export class UsersController {
 
   // GET METHODS //
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAllUsers')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUser/:id')
   async getUserById(@Param('id') id: string) {
     return await this.usersService.getUserById(id);
   }
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getCollaboratorUserByIdNumber/:idNumber')
   async getCollaboratorUserByIdNumber(@Param('idNumber') idNumber: number) {
     return await this.usersService.getUserByIdNumberAndRole(idNumber, [
@@ -88,7 +87,7 @@ export class UsersController {
     ]);
   }
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN)
   @Get('/getSuperAdminUserByIdNumber/:idNumber')
   async getSuperAdminUserByIdNumber(@Param('idNumber') idNumber: number) {
     return await this.usersService.getUserByIdNumberAndRole(idNumber, [
@@ -96,7 +95,7 @@ export class UsersController {
     ]);
   }
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAdminUserByIdNumber/:idNumber')
   async getAdminUserByIdNumber(@Param('idNumber') idNumber: number) {
     return await this.usersService.getUserByIdNumberAndRole(idNumber, [
@@ -104,7 +103,7 @@ export class UsersController {
     ]);
   }
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAdminsUserByIdNumber/:idNumber')
   async getAdminsUserByIdNumber(@Param('idNumber') idNumber: number) {
     return await this.usersService.getUserByIdNumberAndRole(idNumber, [
@@ -113,7 +112,7 @@ export class UsersController {
     ]);
   }
 
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAuditorUserByIdNumber/:idNumber')
   async getAuditorUserByIdNumber(@Param('idNumber') idNumber: number) {
     return await this.usersService.getUserByIdNumberAndRole(idNumber, [
@@ -121,6 +120,7 @@ export class UsersController {
     ]);
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUserActiveByTypeAndIdNumber/:idType/:idNumber')
   async getUserActiveByTypeAndIdNumber(
     @Param('idType') idType: number,
@@ -132,6 +132,7 @@ export class UsersController {
     );
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUserRoles/:id')
   async getUserRoles(@Param('id') id: string) {
     return await this.usersService.getUserRoles(id);
@@ -139,18 +140,13 @@ export class UsersController {
 
   // PATCH METHODS //
 
-  // @EnableAuditLog()
-  // @Auth(
-  //   AdminRolType.SUPER_ADMIN,
-  // )
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.COLLABORATOR)
   @Patch('/updateUser/:id')
   async updateUser(@Param('id') id: string, @Body() updateUser: UpdateUserDto) {
     return await this.usersService.updateUser(id, updateUser);
   }
 
-  // @Auth(
-  //   AdminRolType.SUPER_ADMIN,
-  // )
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.COLLABORATOR)
   @Patch('/updateUserProfile/:id')
   async updateUserProfile(
     @Param('id') id: string,
@@ -159,6 +155,7 @@ export class UsersController {
     return await this.usersService.updateUserProfile(id, updateUser);
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.COLLABORATOR)
   @Patch('/updateUserPassword/:id')
   async updateUserPassword() {
     return await this.usersService.updateUserPassword();
@@ -174,8 +171,7 @@ export class UsersController {
     return await this.usersService.resetUserPassword();
   }
 
-  // @EnableAuditLog()
-  // @Auth(AdminRolType.SUPER_ADMIN, AdminRolType.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/ban/:id')
   async banUser(@Param('id') id: string) {
     return await this.usersService.banUser(id);

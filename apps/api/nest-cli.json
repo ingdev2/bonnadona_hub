@@ -5,6 +5,7 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "plugins": ["@nestjs/swagger"],
+    "assets": ["nodemailer/templates/**/*"],
     "watchAssets": true
   }
 }

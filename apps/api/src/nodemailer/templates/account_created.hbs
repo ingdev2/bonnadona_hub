@@ -2,7 +2,7 @@
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-    <title>Cuenta creada en portal web</title>
+    <title>Cuenta creada en Bonnadona HUB</title>
     <style>
       body { font-family: Arial, Helvetica, sans-serif; line-height: 2.0;
       margin: 0; padding: 0; } .container { max-width: 609px; margin: 0 auto;
@@ -21,30 +21,37 @@
     <div class='container'>
       <div style='text-align: center;'>
         <img
-          src='cid:logo_portal@bonnadona.co'
-          alt='LogoPortal'
-          class='logo-portal'
-          style='width: 213px; height: auto; display: block; margin: 0 auto;'
+          src='cid:logo_bonna_hub@bonnadona.co'
+          alt='LogoBonnaHUB'
+          class='logo-bonna-hub'
+          style='width: 301px; height: auto; display: block; margin: 0 auto;'
         />
       </div>
       <h1>CUENTA CREADA CORRECTAMENTE</h1>
       <p>Cordial saludo,</p>
-      <p>Señor(a) <span class='highlight'>{{userNameToEmail}}</span>,</p>
-      <p>Le informamos que se ha creado satisfactoriamente su cuenta en nuestro
-        portal web, lo invitamos a ingresar para que puedas crear y gestionar
-        solicitudes de documentos médicos tales como: historias clínicas,
-        resultados de laboratorio, órdenes e incapacidades médicas, además
-        puedes actualizar tus datos personales, interponer una petición, queja,
-        reclamo, sugerencia o felicitación a cualquiera de nuestros servicios.
+      <p>Estimado(a) <span class='highlight'>{{userNameToEmail}}</span>,</p>
+      <p>Nos complace informarle que su cuenta ha sido creada exitosamente en
+        <span class='highlight'>Bonnadona HUB.</span>
+        Ahora podrá acceder a todas las herramientas y aplicaciones de gestión
+        administrativa y asistencial de nuestra clínica.
+        <p>A continuación, le proporcionamos las credenciales de acceso:</p>
+        <ul>
+          <li><span class='highlight'>Usuario:</span>
+            El correo electrónico donde ha recibido este mensaje.</li>
+          <li><span class='highlight'>Contraseña:</span>
+            Su número de identificación personal.</li>
+        </ul>
+        <p>Haga clic en el siguiente enlace para acceda a Bonnadona HUB:</p>
         <p class='button-container'>
-          <a href={{portalWebUrl}} class='button'>Ingresar al Portal Web</a>
+          <a href={{bonnaHubUrl}} class='button'>Ingresar a Bonnadona HUB</a>
         </p>
       </p>
-      <p class='p-center'>Si usted no ha realizado esta acción lo invitamos a
-        comunicarse a nuestra línea PBX:
-        <span class='highlight'>{{contactPbx}}</span></p>
-      <p>Att: Clínica Bonnadona Prevenir</p>
       <br />
+      <p class='p-center'>Si usted no hace parte de este proceso lo invitamos a
+        comunicarse al siguiente correo de soporte para informar el error:
+        <span class='highlight'>{{supportContactEmail}}</span></p>
+      <br />
+      <p>Att: Clínica Bonnadona Prevenir</p>
       <div style='text-align: center;'>
         <img
           src='cid:logo_bonnadona@bonnadona.co'

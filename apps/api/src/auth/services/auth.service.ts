@@ -13,11 +13,19 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcryptjs from 'bcryptjs';
 
 import { UsersService } from 'src/user/services/users.service';
+import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 
 import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
-
 import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
+
+const schedule = require('node-schedule');
+
+import {
+  SUBJECT_EMAIL_VERIFICATION_CODE,
+  EMAIL_VERIFICATION_CODE,
+} from 'src/nodemailer/constants/email_config.constant';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +38,7 @@ export class AuthService {
 
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
+    private readonly nodemailerService: NodemailerService,
   ) {}
 
   // REGISTER FUNTIONS //
@@ -146,6 +155,8 @@ export class AuthService {
     }
   }
 
+  // LOGIN FUNTIONS //
+
   async loginCollaboratorUser({ principal_email, password }: LoginDto) {
     const collaboratorUserRoleFound = await this.roleRepository.find({
       where: { name: In([RolesEnum.COLLABORATOR]) },
@@ -196,6 +207,30 @@ export class AuthService {
       { verification_code: verificationCode },
     );
 
-    return { message: 'INGRESO CORRECTO' };
+    const userCollaboratorWithCode = await this.userRepository.findOne({
+      where: {
+        id: collaboratorFound.id,
+      },
+    });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [collaboratorFound.principal_email];
+    emailDetailsToSend.userNameToEmail = collaboratorFound.name;
+    emailDetailsToSend.subject = SUBJECT_EMAIL_VERIFICATION_CODE;
+    emailDetailsToSend.emailTemplate = EMAIL_VERIFICATION_CODE;
+    emailDetailsToSend.verificationCode =
+      userCollaboratorWithCode.verification_code;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    schedule.scheduleJob(new Date(Date.now() + 5 * 60 * 1000), async () => {
+      await this.userRepository.update(
+        { id: collaboratorFound.id },
+        { verification_code: null },
+      );
+    });
+
+    return { message: 'CÓDIGO ENVIADO' };
   }
 }

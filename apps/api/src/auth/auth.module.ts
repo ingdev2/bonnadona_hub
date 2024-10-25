@@ -6,11 +6,13 @@ import { User } from 'src/user/entities/user.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/user/users.module';
+import { NodemailerModule } from 'src/nodemailer/nodemailer.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role]),
     UsersModule,
+    NodemailerModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_CONSTANTS_SECRET,

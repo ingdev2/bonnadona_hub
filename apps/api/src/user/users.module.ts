@@ -10,6 +10,7 @@ import { GenderType } from 'src/gender_types/entities/gender_type.entity';
 import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
+import { NodemailerModule } from 'src/nodemailer/nodemailer.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PositionLevel } from 'src/position_levels/entities/position_level.entit
       ServiceType,
       PositionLevel,
     ]),
+    NodemailerModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

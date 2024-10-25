@@ -1,4 +1,9 @@
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
+import { UserHeightEnum } from 'src/utils/enums/user_height.enum';
+import { UserPantsSizeEnum } from 'src/utils/enums/user_pants_size.enum';
+import { UserShirtSizeEnum } from 'src/utils/enums/user_shirt_size.enum';
+import { UserShoeSizeEnum } from 'src/utils/enums/user_shoe_size.enum';
+import { UserWeightEnum } from 'src/utils/enums/user_weight.enum';
 
 export class UpdateUserProfileDto {
   @IsOptional()
@@ -33,22 +38,22 @@ export class UpdateUserProfileDto {
   digital_signature: string[];
 
   @IsOptional()
-  @IsString()
-  user_height: string;
+  @IsEnum(UserHeightEnum)
+  user_height: UserHeightEnum;
 
   @IsOptional()
-  @IsString()
-  user_weight: string;
+  @IsEnum(UserWeightEnum)
+  user_weight: UserWeightEnum;
 
   @IsOptional()
-  @IsString()
-  user_shirt_size: string;
+  @IsEnum(UserShirtSizeEnum)
+  user_shirt_size: UserShirtSizeEnum;
 
   @IsOptional()
-  @IsString()
-  user_pants_size: string;
+  @IsEnum(UserPantsSizeEnum)
+  user_pants_size: UserPantsSizeEnum;
 
   @IsOptional()
-  @IsString()
-  user_shoe_size: string;
+  @IsEnum(UserShoeSizeEnum)
+  user_shoe_size: UserShoeSizeEnum;
 }

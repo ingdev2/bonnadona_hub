@@ -15,6 +15,7 @@ import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 
 import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
 import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
@@ -27,8 +28,14 @@ import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
+import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
 
 import axios from 'axios';
+import {
+  ACCOUNT_CREATED,
+  SUBJECT_ACCOUNT_CREATED,
+} from 'src/nodemailer/constants/email_config.constant';
+import { SUPPORT_CONTACT_EMAIL } from 'src/utils/constants/constants';
 
 @Injectable()
 export class UsersService {
@@ -54,6 +61,8 @@ export class UsersService {
 
     @InjectRepository(PositionLevel)
     private positionLevelRepository: Repository<PositionLevel>,
+
+    private readonly nodemailerService: NodemailerService,
   ) {}
 
   // CREATE FUNTIONS //
@@ -460,6 +469,17 @@ export class UsersService {
       loadRelationIds: true,
     });
 
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
     return userCollaboratorCreated;
   }
 
@@ -572,6 +592,17 @@ export class UsersService {
       loadEagerRelations: false,
       loadRelationIds: true,
     });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
 
     return userCollaboratorCreated;
   }

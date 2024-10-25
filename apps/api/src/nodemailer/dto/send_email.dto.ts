@@ -20,55 +20,23 @@ export class SendEmailDto {
 
   @IsNotEmpty()
   @IsString()
-  userNameToEmail: string;
-
-  @IsOptional()
-  @IsString()
-  familiarNameToEmail: string;
-
-  @IsOptional()
-  @IsString()
-  patientNameToEmail: string;
-
-  @IsOptional()
-  @IsNumber()
-  patientIdNumberToEmail: number;
-
-  @IsOptional()
-  @IsString()
-  emailOfEps: string;
-
-  @IsOptional()
-  @IsString()
-  emailOfFamiliar: string;
-
-  @IsOptional()
-  @IsString()
-  relationshipWithPatient: string;
-
-  @IsOptional()
-  @IsString()
-  medicalReqFilingNumber: string;
-
-  @IsOptional()
-  @IsString()
-  requirementType: string;
+  emailTemplate: string;
 
   @IsNotEmpty()
   @IsString()
-  emailTemplate: string;
+  userNameToEmail: string;
+
+  @IsOptional()
+  @IsNumber()
+  userIdNumberToEmail: number;
 
   @IsOptional()
   @IsString()
-  requestStatusReq?: string;
+  bonnaHubUrl: string;
 
   @IsOptional()
   @IsString()
-  portalWebUrl: string;
-
-  @IsOptional()
-  @IsString()
-  personalDataProcessingPolicy: string;
+  supportContactEmail: string;
 
   @IsOptional()
   @IsNumber()
@@ -77,8 +45,4 @@ export class SendEmailDto {
   @IsOptional()
   @IsString()
   resetPasswordUrl: string;
-
-  @IsOptional()
-  @IsString()
-  contactPbx: string;
 }
