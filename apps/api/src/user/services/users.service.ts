@@ -16,6 +16,7 @@ import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
+import { validateCorporateEmail } from '../helpers/validate_corporate_email';
 
 import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
 import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
@@ -359,7 +360,6 @@ export class UsersService {
     const serviceOfCompany = collaboratorData?.empCostCenter
       .replace(/\d+/g, '')
       .trim();
-
     userCollaborator.collaborator_service = serviceOfCompany;
 
     const userCollaboratorFound = await this.userRepository.findOne({
@@ -400,6 +400,17 @@ export class UsersService {
       throw new HttpException(
         `El correo personal ${userCollaborator.personal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
+      );
+    }
+
+    const isCorporateEmail = await validateCorporateEmail(
+      userCollaborator.corporate_email,
+    );
+
+    if (!isCorporateEmail) {
+      throw new HttpException(
+        `El email : ${userCollaborator.corporate_email} no es un correo corporativo válido.`,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -784,6 +795,8 @@ export class UsersService {
         id: id,
         is_active: true,
       },
+      loadEagerRelations: false,
+      loadRelationIds: true,
     });
 
     if (!userFound) {
@@ -791,6 +804,18 @@ export class UsersService {
     } else {
       return userFound;
     }
+  }
+
+  async getUserProfileById(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, is_active: true },
+    });
+
+    if (!user) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    return user.user_profile;
   }
 
   async getUserByIdNumberAndRole(idNumber: number, userRoles: RolesEnum[]) {
@@ -912,6 +937,17 @@ export class UsersService {
       );
     }
 
+    const isCorporateEmail = await validateCorporateEmail(
+      updateUser.corporate_email,
+    );
+
+    if (!isCorporateEmail) {
+      throw new HttpException(
+        `El email : ${updateUser.corporate_email} no es un correo corporativo válido.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const personalCellphoneUserValidate = await this.userRepository.findOne({
       where: {
         id: Not(userFound.id),
@@ -973,7 +1009,7 @@ export class UsersService {
     }
 
     throw new HttpException(
-      `¡Datos guardados correctamente!`,
+      `¡Datos y roles guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );
   }
@@ -1073,11 +1109,6 @@ export class UsersService {
     }
 
     await this.userRepository.save(userFound);
-
-    throw new HttpException(
-      `Roles actualizados correctamente.`,
-      HttpStatus.ACCEPTED,
-    );
   }
 
   async updateUserPassword() {}

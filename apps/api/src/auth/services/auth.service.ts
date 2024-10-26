@@ -132,11 +132,9 @@ export class AuthService {
           const serviceOfCompany = collaborator?.empCostCenter
             .replace(/\d+/g, '')
             .trim();
-
           userCollaborator.collaborator_service = serviceOfCompany;
 
           const password = collaborator.empDoc;
-
           userCollaborator.password = await bcryptjs.hash(password, 10);
 
           const createdUser =
@@ -340,7 +338,6 @@ export class AuthService {
       user_id_type: collaboratorFound.user_id_type,
       id_number: collaboratorFound.id_number,
       role: collaboratorFound.role,
-      user_profile: collaboratorFound.user_profile,
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -415,7 +412,6 @@ export class AuthService {
       user_id_type: user.user_id_type,
       id_number: user.id_number,
       role: user.role,
-      user_profile: user.user_profile,
     };
 
     const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
@@ -454,7 +450,6 @@ export class AuthService {
         user_id_type: user.user_id_type,
         id_number: user.id_number,
         role: user.role,
-        user_profile: user.user_profile,
       };
 
       const { access_token, refresh_token, access_token_expires_in } =
