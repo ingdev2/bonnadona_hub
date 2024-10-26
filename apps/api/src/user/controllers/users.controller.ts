@@ -17,8 +17,10 @@ import { UpdateUserDto } from '../dto/update_user.dto';
 
 import { RolesEnum } from 'src/utils/enums/roles.enum';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
+import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
+import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -138,25 +140,62 @@ export class UsersController {
 
   // PATCH METHODS //
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.COLLABORATOR)
+  @EnableAuditLog()
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Patch('/updateUser/:id')
-  async updateUser(@Param('id') id: string, @Body() updateUser: UpdateUserDto) {
-    return await this.usersService.updateUser(id, updateUser);
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUser: UpdateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    return await this.usersService.updateUser(id, updateUser, requestAuditLog);
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.COLLABORATOR)
+  @EnableAuditLog()
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Patch('/updateUserProfile/:id')
   async updateUserProfile(
     @Param('id') id: string,
     @Body() updateUser: UpdateUserProfileDto,
+    @Req() requestAuditLog: any,
   ) {
-    return await this.usersService.updateUserProfile(id, updateUser);
+    return await this.usersService.updateUserProfile(
+      id,
+      updateUser,
+      requestAuditLog,
+    );
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.COLLABORATOR)
+  @EnableAuditLog()
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Patch('/updateUserPassword/:id')
-  async updateUserPassword() {
-    return await this.usersService.updateUserPassword();
+  async updateUserPassword(
+    @Param('id')
+    id: string,
+    @Body()
+    passwords: UpdatePasswordUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    return await this.usersService.updateUserPassword(
+      id,
+      passwords,
+      requestAuditLog,
+    );
   }
 
   @Patch('/forgotUserPassword')
@@ -169,9 +208,10 @@ export class UsersController {
     return await this.usersService.resetUserPassword();
   }
 
+  @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/ban/:id')
-  async banUser(@Param('id') id: string) {
-    return await this.usersService.banUser(id);
+  async banUser(@Param('id') id: string, @Req() requestAuditLog: any) {
+    return await this.usersService.banUser(id, requestAuditLog);
   }
 }

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -52,14 +53,27 @@ export class AuthController {
     return await this.authService.loginAdminAndAuditorUser(loginCollaborator);
   }
 
-  @Post('verifyCodeAndLoginUser/:id_number')
-  async verifyCodeAndLoginUser(
+  @Post('verifyCodeAndLoginCollaboratorUser/:id_number')
+  async verifyCodeAndLoginCollaboratorUser(
     @Param('id_number') id_number: number,
     @Body('verification_code') verification_code: number,
   ) {
-    return await this.authService.verifyCodeAndLoginUser(
+    return await this.authService.verifyCodeAndLoginCollaboratorUser(
       id_number,
       verification_code,
+    );
+  }
+
+  @Post('verifyCodeAndLoginAdminAndAuditorUser/:id_number')
+  async verifyCodeAndLoginAdminAndAuditorUser(
+    @Param('id_number') id_number: number,
+    @Body('verification_code') verification_code: number,
+    @Req() requestAuditLog: any,
+  ) {
+    return await this.authService.verifyCodeAndLoginAdminAndAuditorUser(
+      id_number,
+      verification_code,
+      requestAuditLog,
     );
   }
 

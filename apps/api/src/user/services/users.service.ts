@@ -17,24 +17,32 @@ import { PositionLevel } from 'src/position_levels/entities/position_level.entit
 import { Role } from 'src/role/entities/role.entity';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 import { validateCorporateEmail } from '../helpers/validate_corporate_email';
+import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
 import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
 import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
 import { GenderTypeEnums } from 'src/utils/enums/gender_types.enum';
 import { GenderTypeAbbrev } from 'src/utils/enums/gender_types_abbrev.enum';
 import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
+import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
+import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
+import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
 
 import axios from 'axios';
+import * as bcryptjs from 'bcryptjs';
 import {
   ACCOUNT_CREATED,
+  PASSWORD_UPDATED,
   SUBJECT_ACCOUNT_CREATED,
+  UPDATED_PASSWORD_TEMPLATE,
 } from 'src/nodemailer/constants/email_config.constant';
 import { SUPPORT_CONTACT_EMAIL } from 'src/utils/constants/constants';
 
@@ -64,6 +72,8 @@ export class UsersService {
     private positionLevelRepository: Repository<PositionLevel>,
 
     private readonly nodemailerService: NodemailerService,
+
+    private readonly auditLogService: AuditLogsService,
   ) {}
 
   // CREATE FUNTIONS //
@@ -899,7 +909,11 @@ export class UsersService {
 
   // UPDATE FUNTIONS //
 
-  async updateUser(id: string, updateUser: UpdateUserDto) {
+  async updateUser(
+    id: string,
+    updateUser: UpdateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
     const userFound = await this.userRepository.findOneBy({
       id,
       is_active: true,
@@ -1008,13 +1022,27 @@ export class UsersService {
       throw new HttpException(`Usuario no encontrado`, HttpStatus.NOT_FOUND);
     }
 
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_DATA_USER,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
     throw new HttpException(
       `¡Datos y roles guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );
   }
 
-  async updateUserProfile(id: string, userProfile: UpdateUserProfileDto) {
+  async updateUserProfile(
+    id: string,
+    userProfile: UpdateUserProfileDto,
+    @Req() requestAuditLog: any,
+  ) {
     const userFound = await this.userRepository.findOneBy({
       id,
       is_active: true,
@@ -1027,7 +1055,11 @@ export class UsersService {
       );
     }
 
-    const requiredRoles = [RolesEnum.COLLABORATOR];
+    const requiredRoles = [
+      RolesEnum.SUPER_ADMIN,
+      RolesEnum.ADMIN,
+      RolesEnum.COLLABORATOR,
+    ];
 
     const hasRequiredRole = userFound.role.some((role) =>
       requiredRoles.includes(role.name),
@@ -1061,6 +1093,16 @@ export class UsersService {
     if (updateUserEps.affected === 0) {
       return new HttpException(`Usuario no encontrado`, HttpStatus.CONFLICT);
     }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_DATA_USER_PROFILE,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     return new HttpException(
       `¡Datos guardados correctamente!`,
@@ -1111,7 +1153,78 @@ export class UsersService {
     await this.userRepository.save(userFound);
   }
 
-  async updateUserPassword() {}
+  async updateUserPassword(
+    id: string,
+    passwords: UpdatePasswordUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    const userFound = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect(['user.password'])
+      .where('user.id = :id', { id })
+      .getOne();
+
+    if (!userFound) {
+      throw new HttpException(
+        `Usuario no encontrado.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const isPasswordValid = await bcryptjs.compare(
+      passwords.oldPassword,
+      userFound.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new HttpException(
+        `Contraseña antigua incorrecta.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const isNewPasswordSameAsOld = await bcryptjs.compare(
+      passwords.newPassword,
+      userFound.password,
+    );
+
+    if (isNewPasswordSameAsOld) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a la antigua.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const hashedNewPassword = await bcryptjs.hash(passwords.newPassword, 10);
+
+    await this.userRepository.update(id, { password: hashedNewPassword });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userFound.principal_email];
+    emailDetailsToSend.userNameToEmail = userFound.name;
+    emailDetailsToSend.subject = PASSWORD_UPDATED;
+    emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_PASSWORD_ACCOUNT,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
+    return new HttpException(
+      `¡Contraseña actualizada correctamente!`,
+      HttpStatus.ACCEPTED,
+    );
+  }
 
   async forgotUserPassword() {}
 
@@ -1119,7 +1232,7 @@ export class UsersService {
 
   // DELETED-BAN FUNTIONS //
 
-  async banUser(id: string) {
+  async banUser(id: string, @Req() requestAuditLog: any) {
     const userFound = await this.userRepository.findOne({
       where: {
         id: id,
@@ -1133,6 +1246,19 @@ export class UsersService {
     userFound.is_active = !userFound.is_active;
 
     await this.userRepository.save(userFound);
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type:
+        userFound.is_active === false
+          ? ActionTypesEnum.BAN_USER
+          : ActionTypesEnum.UNBAN_USER,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     const statusMessage = userFound.is_active
       ? `El usuario con número de ID: ${userFound.id_number} se ha ACTIVADO.`

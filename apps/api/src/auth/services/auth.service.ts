@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,6 +15,7 @@ import * as bcryptjs from 'bcryptjs';
 
 import { UsersService } from 'src/user/services/users.service';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
+import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
 import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
@@ -29,6 +31,9 @@ import {
 } from 'src/nodemailer/constants/email_config.constant';
 import { Payload } from '../interfaces/payload.interface';
 import { Tokens } from '../interfaces/tokens.interface';
+import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
+import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
+import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 
 @Injectable()
 export class AuthService {
@@ -42,6 +47,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
     private readonly nodemailerService: NodemailerService,
+    private readonly auditLogService: AuditLogsService,
   ) {}
 
   // REGISTER FUNTIONS //
@@ -314,7 +320,32 @@ export class AuthService {
     return { principal_email };
   }
 
-  async verifyCodeAndLoginUser(id_number: number, verification_code: number) {
+  async verifyCodeAndLoginCollaboratorUser(
+    id_number: number,
+    verification_code: number,
+  ) {
+    const collaboratorUserRoleFound = await this.roleRepository.find({
+      where: { name: In([RolesEnum.COLLABORATOR]) },
+    });
+
+    if (!collaboratorUserRoleFound) {
+      throw new UnauthorizedException(`¡Role de usuario no encontrado!`);
+    }
+
+    const verifiedCollaboratorRole = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.role', 'role')
+      .where('user.id_number = :id_number', { id_number })
+      .andWhere('role.id IN (:...roleIds)', {
+        roleIds: collaboratorUserRoleFound.map((role) => role.id),
+      })
+      .andWhere('user.is_active = :isActive', { isActive: true })
+      .getOne();
+
+    if (!verifiedCollaboratorRole) {
+      throw new UnauthorizedException(`¡Usuario no autorizado!`);
+    }
+
     const collaboratorFound = await this.userService.getUserActiveByIdAndCode(
       id_number,
       verification_code,
@@ -333,7 +364,7 @@ export class AuthService {
 
     const payload: Payload = {
       sub: collaboratorFound.id,
-      name: collaboratorFound.name,
+      name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
       principal_email: collaboratorFound.principal_email,
       user_id_type: collaboratorFound.user_id_type,
       id_number: collaboratorFound.id_number,
@@ -351,6 +382,98 @@ export class AuthService {
       id_number: collaboratorFound.id_number,
       principal_email: collaboratorFound.principal_email,
       role: collaboratorFound.role,
+    };
+  }
+
+  async verifyCodeAndLoginAdminAndAuditorUser(
+    id_number: number,
+    verification_code: number,
+    @Req() requestAuditLog: any,
+  ) {
+    const adminOrAuditorUserRoleFound = await this.roleRepository.find({
+      where: {
+        name: In([RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR]),
+      },
+    });
+
+    if (!adminOrAuditorUserRoleFound) {
+      throw new UnauthorizedException(`¡Role de usuario no encontrado!`);
+    }
+
+    const verifiedAdminOrAuditorRole = await this.userRepository
+      .createQueryBuilder('user')
+      .innerJoinAndSelect('user.role', 'role')
+      .where('user.id_number = :id_number', { id_number })
+      .andWhere('role.id IN (:...roleIds)', {
+        roleIds: adminOrAuditorUserRoleFound.map((role) => role.id),
+      })
+      .andWhere('user.is_active = :isActive', { isActive: true })
+      .getOne();
+
+    if (!verifiedAdminOrAuditorRole) {
+      throw new UnauthorizedException(`¡Usuario no autorizado!`);
+    }
+
+    const adminOrAuditorFound = await this.userService.getUserActiveByIdAndCode(
+      id_number,
+      verification_code,
+    );
+
+    if (!adminOrAuditorFound) {
+      throw new UnauthorizedException(`¡Código de verificación incorrecto!`);
+    }
+
+    await this.userRepository.update(
+      {
+        id: adminOrAuditorFound.id,
+      },
+      { verification_code: null },
+    );
+
+    const payload: Payload = {
+      sub: adminOrAuditorFound.id,
+      name: `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}`,
+      principal_email: adminOrAuditorFound.principal_email,
+      user_id_type: adminOrAuditorFound.user_id_type,
+      id_number: adminOrAuditorFound.id_number,
+      role: adminOrAuditorFound.role,
+    };
+
+    const { access_token, refresh_token, access_token_expires_in } =
+      await this.generateTokens(payload);
+
+    const roleNames = adminOrAuditorFound?.role.map((role) => role.name) || [
+      'NO REGISTRA',
+    ];
+
+    const auditLogData = {
+      user_name:
+        `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}` ||
+        'NO REGISTRA',
+      user_id_number: adminOrAuditorFound.id_number.toString(),
+      user_email: adminOrAuditorFound.principal_email || 'NO REGISTRA',
+      user_role: roleNames,
+      is_mobile: requestAuditLog.headers['sec-ch-ua-mobile'] || 'NO REGISTRA',
+      browser_version: requestAuditLog.headers['sec-ch-ua'] || 'NO REGISTRA',
+      operating_system:
+        requestAuditLog.headers['sec-ch-ua-platform'] || 'NO REGISTRA',
+      ip_address: requestAuditLog.ip || 'NO REGISTRA',
+      action_type: ActionTypesEnum.LOGIN,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: 'NO REGISTRA',
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
+    return {
+      access_token,
+      refresh_token,
+      access_token_expires_in,
+      id_type: adminOrAuditorFound.user_id_type,
+      id_number: adminOrAuditorFound.id_number,
+      principal_email: adminOrAuditorFound.principal_email,
+      role: adminOrAuditorFound.role,
     };
   }
 

@@ -11,6 +11,7 @@ import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { NodemailerModule } from 'src/nodemailer/nodemailer.module';
+import { AuditLogsModule } from 'src/audit_logs/audit_logs.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { NodemailerModule } from 'src/nodemailer/nodemailer.module';
       PositionLevel,
     ]),
     NodemailerModule,
+    AuditLogsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
