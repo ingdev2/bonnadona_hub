@@ -5,7 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 require('dotenv').config();
 
-import { UsersModule } from './users/users.module';
+import { UsersModule } from './user/users.module';
+import { IdTypesModule } from './id_types/id_types.module';
+import { GenderTypesModule } from './gender_types/gender_types.module';
+import { BloodGroupsModule } from './blood_groups/blood_groups.module';
+import { RoleModule } from './role/role.module';
+import { UserProfileModule } from './user_profile/user_profile.module';
+import { ServiceTypesModule } from './service_types/service_types.module';
+import { PositionLevelModule } from './position_levels/position_level.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +30,14 @@ import { UsersModule } from './users/users.module';
       logging: false,
     }),
     UsersModule,
+    IdTypesModule,
+    GenderTypesModule,
+    BloodGroupsModule,
+    RoleModule,
+    UserProfileModule,
+    ServiceTypesModule,
+    PositionLevelModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
