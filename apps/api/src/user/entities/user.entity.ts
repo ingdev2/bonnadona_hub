@@ -17,6 +17,7 @@ import { Role } from 'src/role/entities/role.entity';
 import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
+import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
 
 @Entity()
 export class User {
@@ -112,6 +113,9 @@ export class User {
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
+  @Column({ type: 'timestamp', nullable: true })
+  banned_user_until: Date;
+
   @OneToOne(() => UserProfile, (user_profile) => user_profile.user, {
     eager: true,
     cascade: true,
@@ -119,6 +123,14 @@ export class User {
   })
   @JoinColumn()
   user_profile: UserProfile;
+
+  @OneToOne(() => UserSessionLog, (user_session_log) => user_session_log.user, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  user_session_log: UserSessionLog;
 
   @CreateDateColumn()
   createdAt: Date;

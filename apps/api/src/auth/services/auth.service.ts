@@ -34,6 +34,7 @@ import { Tokens } from '../interfaces/tokens.interface';
 import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
 import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
+import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +47,7 @@ export class AuthService {
 
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
+    private readonly userSessionLogService: UserSessionLogService,
     private readonly nodemailerService: NodemailerService,
     private readonly auditLogService: AuditLogsService,
   ) {}
@@ -181,6 +183,11 @@ export class AuthService {
     if (!collaboratorFound) {
       throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
     }
+
+    await this.userSessionLogService.updateUserSessionLog(
+      collaboratorFound.id,
+      false,
+    );
 
     const verifiedCollaboratorRole = await this.userRepository
       .createQueryBuilder('user')

@@ -15,6 +15,7 @@ import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 import { validateCorporateEmail } from '../helpers/validate_corporate_email';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
@@ -53,6 +54,9 @@ export class UsersService {
 
     @InjectRepository(UserProfile)
     private userProfileRepository: Repository<UserProfile>,
+
+    @InjectRepository(UserSessionLog)
+    private userSessionLogRepository: Repository<UserSessionLog>,
 
     @InjectRepository(IdType)
     private idTypeRepository: Repository<IdType>,
@@ -482,6 +486,15 @@ export class UsersService {
 
     userCollaboratorSave.user_profile = userProfileCreate;
 
+    const userSessionLog = new UserSessionLog();
+
+    userSessionLog.user = userCollaboratorSave;
+
+    const userSessionCreate =
+      await this.userSessionLogRepository.create(userSessionLog);
+
+    userCollaboratorSave.user_session_log = userSessionCreate;
+
     await this.userRepository.save(userCollaboratorSave);
 
     const userCollaboratorCreated = await this.userRepository.findOne({
@@ -614,16 +627,16 @@ export class UsersService {
       loadRelationIds: true,
     });
 
-    const emailDetailsToSend = new SendEmailDto();
+    // const emailDetailsToSend = new SendEmailDto();
 
-    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
-    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
-    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
-    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
-    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
-    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+    // emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    // emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    // emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    // emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    // emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    // emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
 
-    await this.nodemailerService.sendEmail(emailDetailsToSend);
+    // await this.nodemailerService.sendEmail(emailDetailsToSend);
 
     return userCollaboratorCreated;
   }
@@ -1085,12 +1098,12 @@ export class UsersService {
       );
     }
 
-    const updateUserEps = await this.userProfileRepository.update(
+    const updateUserProfile = await this.userProfileRepository.update(
       { id: userFound.user_profile.id },
       userProfile,
     );
 
-    if (updateUserEps.affected === 0) {
+    if (updateUserProfile.affected === 0) {
       return new HttpException(`Usuario no encontrado`, HttpStatus.CONFLICT);
     }
 

@@ -4,6 +4,7 @@ import { UsersController } from './controllers/users.controller';
 import { UsersService } from './services/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
+import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
@@ -18,6 +19,7 @@ import { AuditLogsModule } from 'src/audit_logs/audit_logs.module';
     TypeOrmModule.forFeature([
       User,
       UserProfile,
+      UserSessionLog,
       Role,
       IdType,
       GenderType,

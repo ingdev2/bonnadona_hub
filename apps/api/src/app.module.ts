@@ -14,6 +14,7 @@ import { UserProfileModule } from './user_profile/user_profile.module';
 import { ServiceTypesModule } from './service_types/service_types.module';
 import { PositionLevelModule } from './position_levels/position_level.module';
 import { AuthModule } from './auth/auth.module';
+import { UserSessionLogModule } from './user_session_log/user_session_log.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AuthModule } from './auth/auth.module';
     ServiceTypesModule,
     PositionLevelModule,
     AuthModule,
+    UserSessionLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
