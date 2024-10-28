@@ -1,103 +1,121 @@
+"use client";
+
+import React from "react";
+
 import Image from "next/image";
-import styles from "./page.module.css";
+import { Col } from "antd";
 
-export default function Home() {
+import ButtonAuth from "@/components/auth/user/button/ButtonAuth";
+import LoginUserForm from "@/components/auth/user/form/LoginUserForm";
+
+import { ImagesLinksApp } from "../../public/images_apps/imagesLinksApp";
+
+import "../app/globals.css";
+
+const HomePage: React.FC = () => {
   return (
-    <div className={styles.page} style={{ backgroundColor: "black" }}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol style={{ color: "white" }}>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <>
+      <LoginUserForm />
+    </>
+    // <div
+    //   className="homepage"
+    //   style={{
+    //     width: "100%",
+    //     height: "100%",
+    //     display: "flex",
+    //     flexFlow: "column wrap",
+    //   }}
+    // >
+    //   <div
+    //     className="background-page"
+    //     style={{
+    //       position: "fixed",
+    //       width: "100%",
+    //       height: "100%",
+    //       backgroundImage: "url('/background/back-soft-blue-lines-wave.jpg')",
+    //       backgroundSize: "cover",
+    //       backgroundPosition: "center",
+    //       opacity: 0.4,
+    //     }}
+    //   />
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            style={{
-              backgroundColor: "blueviolet",
-              color: "white",
-            }}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            style={{
-              backgroundColor: "Highlight",
-              color: "white",
-            }}
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    //   <div
+    //     className="content-homepage"
+    //     style={{
+    //       zIndex: 1,
+    //       display: "flex",
+    //       flexFlow: "column wrap",
+    //       justifyContent: "center",
+    //       alignItems: "center",
+    //       minHeight: "100vh",
+    //     }}
+    //   >
+    //     <div
+    //       className="bonna-logo"
+    //       style={{
+    //         // display: "flex",
+    //         // justifyContent: "left",
+    //         // paddingTop: "22px",
+    //         position: "absolute",
+    //         top: "22px",
+    //         right: "22px",
+    //       }}
+    //     >
+    //       <img
+    //         src="/logos/LOGO-BONNADONA.png"
+    //         alt="Logo de Bonnadona"
+    //         style={{ height: 80 }}
+    //       />
+    //     </div>
+
+    //     <Col
+    //       xs={24}
+    //       lg={24}
+    //       style={{
+    //         padding: "0px 7px",
+    //         width: "100vw",
+    //         maxWidth: "450px",
+    //         minWidth: "231px",
+    //       }}
+    //     >
+    //       <div
+    //         className="bonnadona-hub-logo fade-in"
+    //         style={{
+    //           display: "flex",
+    //           justifyContent: "center",
+    //           paddingBlock: "1px",
+    //         }}
+    //       >
+    //         <img
+    //           src="/logos/LOGO-BONNADONA-HUB.png"
+    //           alt="Logo de Bonnadona HUB"
+    //           style={{ height: 120, marginBottom: 30 }}
+    //         />
+    //       </div>
+
+    //       <div className="text">
+    //         <h3
+    //           className="presentation-text"
+    //           style={{
+    //             textAlign: "center",
+    //             fontWeight: "bold",
+    //             lineHeight: 1.3,
+    //             marginBottom: 15,
+    //           }}
+    //         >
+    //           Plataforma de acceso a las aplicaciones de la Clínica Bonnadona
+    //         </h3>
+    //         <div
+    //           className="auth-button"
+    //           style={{ display: "flex", justifyContent: "center" }}
+    //         >
+    //           <ButtonAuth />
+    //         </div>
+    //       </div>
+    //     </Col>
+    //   </div>
+    // </div>
   );
-}
+};
+
+export default HomePage;

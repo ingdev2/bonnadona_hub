@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "Bonnadona HUB",
   description: "Software de Clínica Bonnadona",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/logos/icono.png",
   },
 };
 
