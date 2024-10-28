@@ -22,7 +22,7 @@ export class IdTypesService {
     });
 
     if (idTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `El tipo de id: ${idType.name} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -43,7 +43,7 @@ export class IdTypesService {
     });
 
     if (allIdTypes.length === 0) {
-      return new HttpException(
+      throw new HttpException(
         `No hay tipos de id registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -60,7 +60,7 @@ export class IdTypesService {
     });
 
     if (!idTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `El tipo de identificación con número de ID: ${id} no esta registrado.`,
         HttpStatus.NOT_FOUND,
       );
@@ -75,7 +75,7 @@ export class IdTypesService {
     const idTypeFound = await this.idTypeRepository.findOneBy({ id });
 
     if (!idTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de id no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
@@ -89,20 +89,20 @@ export class IdTypesService {
       });
 
       if (duplicateIdType) {
-        return new HttpException(`Tipo de id duplicado.`, HttpStatus.CONFLICT);
+        throw new HttpException(`Tipo de id duplicado.`, HttpStatus.CONFLICT);
       }
     }
 
     const updateIdType = await this.idTypeRepository.update(id, idType);
 
     if (updateIdType.affected === 0) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de id no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
     }
 
-    return new HttpException(
+    throw new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );

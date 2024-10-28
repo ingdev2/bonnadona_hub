@@ -13,6 +13,7 @@ import { RoleModule } from './role/role.module';
 import { UserProfileModule } from './user_profile/user_profile.module';
 import { ServiceTypesModule } from './service_types/service_types.module';
 import { PositionLevelModule } from './position_levels/position_level.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PositionLevelModule } from './position_levels/position_level.module';
     UserProfileModule,
     ServiceTypesModule,
     PositionLevelModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

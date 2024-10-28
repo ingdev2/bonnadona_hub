@@ -22,7 +22,7 @@ export class PositionLevelService {
     });
 
     if (positionLevelFound) {
-      return new HttpException(
+      throw new HttpException(
         `El nivel de cargo: ${positionLevel.name} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -44,7 +44,7 @@ export class PositionLevelService {
     });
 
     if (allPositionLevels.length === 0) {
-      return new HttpException(
+      throw new HttpException(
         `No hay niveles de cargo registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -61,7 +61,7 @@ export class PositionLevelService {
     });
 
     if (!positionLevelFound) {
-      return new HttpException(
+      throw new HttpException(
         `El nivel de cargo con número de ID: ${id} no esta registrado.`,
         HttpStatus.NOT_FOUND,
       );
@@ -78,7 +78,7 @@ export class PositionLevelService {
     });
 
     if (!positionLevelFound) {
-      return new HttpException(
+      throw new HttpException(
         `Nivel de cargo no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
@@ -94,7 +94,7 @@ export class PositionLevelService {
       );
 
       if (duplicatePositionLevel) {
-        return new HttpException(
+        throw new HttpException(
           `Nivel de cargo duplicado.`,
           HttpStatus.CONFLICT,
         );
@@ -107,13 +107,13 @@ export class PositionLevelService {
     );
 
     if (updatePositionLevel.affected === 0) {
-      return new HttpException(
+      throw new HttpException(
         `Nivel de cargo no encontrado.`,
         HttpStatus.NOT_FOUND,
       );
     }
 
-    return new HttpException(
+    throw new HttpException(
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );

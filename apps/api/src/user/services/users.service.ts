@@ -11,22 +11,40 @@ import { User } from '../entities/user.entity';
 import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
+import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
+import { validateCorporateEmail } from '../helpers/validate_corporate_email';
+import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
 import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
 import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
 import { GenderTypeEnums } from 'src/utils/enums/gender_types.enum';
 import { GenderTypeAbbrev } from 'src/utils/enums/gender_types_abbrev.enum';
 import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
+import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
+import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
+import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
+import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
 
 import axios from 'axios';
+import * as bcryptjs from 'bcryptjs';
+import {
+  ACCOUNT_CREATED,
+  PASSWORD_UPDATED,
+  SUBJECT_ACCOUNT_CREATED,
+  UPDATED_PASSWORD_TEMPLATE,
+} from 'src/nodemailer/constants/email_config.constant';
+import { SUPPORT_CONTACT_EMAIL } from 'src/utils/constants/constants';
 
 @Injectable()
 export class UsersService {
@@ -42,6 +60,9 @@ export class UsersService {
     @InjectRepository(GenderType)
     private genderRepository: Repository<GenderType>,
 
+    @InjectRepository(BloodGroup)
+    private bloodGroupRepository: Repository<BloodGroup>,
+
     @InjectRepository(Role) private roleRepository: Repository<Role>,
 
     @InjectRepository(ServiceType)
@@ -49,9 +70,115 @@ export class UsersService {
 
     @InjectRepository(PositionLevel)
     private positionLevelRepository: Repository<PositionLevel>,
+
+    private readonly nodemailerService: NodemailerService,
+
+    private readonly auditLogService: AuditLogsService,
   ) {}
 
   // CREATE FUNTIONS //
+
+  async getAllCollaboratorFromKactus() {
+    try {
+      const AUTH_VALUE = process.env.X_AUTH_VALUE;
+
+      const response = await axios.get(
+        `http://190.131.222.108:8088/api/v1/hub/get/employees-database/status/A`,
+        {
+          headers: {
+            'X-Authorization': AUTH_VALUE,
+          },
+        },
+      );
+
+      const allData = response?.data;
+
+      if (!allData?.data || allData.data.length === 0) {
+        throw new HttpException(
+          'No se encontraron datos de colaboradores.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const idTypeAbbreviations: Record<IdTypeAbbrev, IdTypeEnum> = {
+        [IdTypeAbbrev.CÉDULA_DE_CIUDADANÍA]: IdTypeEnum.CITIZENSHIP_CARD,
+        [IdTypeAbbrev.CÉDULA_DE_EXTRANJERÍA]: IdTypeEnum.FOREIGNER_ID,
+        [IdTypeAbbrev.TARJETA_DE_IDENTIDAD]: IdTypeEnum.IDENTITY_CARD,
+        [IdTypeAbbrev.REGISTRO_CIVIL]: IdTypeEnum.CIVIL_REGISTRATION,
+        [IdTypeAbbrev.PASAPORTE]: IdTypeEnum.PASSPORT,
+        [IdTypeAbbrev.PERMISO_ESPECIAL]: IdTypeEnum.SPECIAL_PERMIT,
+        [IdTypeAbbrev.PERMISO_PROTECCIÓN_TEMPORAL]:
+          IdTypeEnum.TEMPORARY_PROTECTION_PERMIT,
+        [IdTypeAbbrev.CARNET_DIPLOMÁTICO]: IdTypeEnum.DIPLOMATIC_CARD,
+        [IdTypeAbbrev.NIT]: IdTypeEnum.NIT,
+        [IdTypeAbbrev.SALVOCONDUCTO]: IdTypeEnum.PASS,
+        [IdTypeAbbrev.NO_APLICA]: IdTypeEnum.NOT_APPLICABLE,
+      };
+
+      const genderTypeAbbreviations: Record<GenderTypeAbbrev, GenderTypeEnums> =
+        {
+          [GenderTypeAbbrev.MASCULINO]: GenderTypeEnums.MALE,
+          [GenderTypeAbbrev.FEMENINO]: GenderTypeEnums.FEMALE,
+        };
+
+      const transformedData = await Promise.all(
+        allData.data.map(async (collaborator: any) => {
+          const idTypeEnum = idTypeAbbreviations[collaborator.empDocType];
+          const genderEnum = genderTypeAbbreviations[collaborator.empGender];
+
+          if (!idTypeEnum) {
+            throw new HttpException(
+              `Tipo de identificación no reconocido para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          if (!genderEnum) {
+            throw new HttpException(
+              `Género no reconocido para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.BAD_REQUEST,
+            );
+          }
+
+          const idTypeOfUserIdNumber = await this.idTypeRepository.findOne({
+            where: { name: idTypeEnum },
+          });
+
+          if (!idTypeOfUserIdNumber) {
+            throw new HttpException(
+              `Tipo de identificación no encontrado para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.CONFLICT,
+            );
+          }
+
+          const genderTypeOfUserIdNumber = await this.genderRepository.findOne({
+            where: { name: genderEnum },
+          });
+
+          if (!genderTypeOfUserIdNumber) {
+            throw new HttpException(
+              `Género no encontrado para el usuario con documento: ${collaborator.empDoc}.`,
+              HttpStatus.CONFLICT,
+            );
+          }
+
+          return {
+            ...collaborator,
+            idTypeIdNumber: idTypeOfUserIdNumber.id,
+            genderTypeIdNumber: genderTypeOfUserIdNumber.id,
+          };
+        }),
+      );
+
+      return transformedData;
+    } catch (error) {
+      throw new HttpException(
+        'Hubo un error al consultar en la base de datos.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        error,
+      );
+    }
+  }
 
   async validateThatTheCollaboratorExist({
     idType,
@@ -61,7 +188,7 @@ export class UsersService {
       const AUTH_VALUE = process.env.X_AUTH_VALUE;
 
       const response = await axios.get(
-        `http://190.131.222.108:8088/api/v1/eva-des/get/employees-information/${idNumber}/${idType}`,
+        `http://190.131.222.108:8088/api/v1/hub/get/employees-information/${idNumber}/${idType}`,
         {
           headers: {
             'X-Authorization': AUTH_VALUE,
@@ -72,7 +199,7 @@ export class UsersService {
       const allData = response?.data;
 
       if (!allData) {
-        return new HttpException(
+        throw new HttpException(
           `El colaborador con número de identificación ${idNumber} no esta registrado en la base de datos de la clínica.`,
           HttpStatus.NOT_FOUND,
         );
@@ -106,7 +233,7 @@ export class UsersService {
       });
 
       if (!idTypeOfUserIdNumber) {
-        return new HttpException(
+        throw new HttpException(
           `Tipo de identificación no encontrado en base de datos.`,
           HttpStatus.CONFLICT,
         );
@@ -134,7 +261,7 @@ export class UsersService {
       });
 
       if (!genderTypeOfUserIdNumber) {
-        return new HttpException(
+        throw new HttpException(
           `Género no encontrado en base de datos.`,
           HttpStatus.CONFLICT,
         );
@@ -166,7 +293,7 @@ export class UsersService {
     });
 
     if (!idTypeOfUser) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de identificación no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -199,7 +326,7 @@ export class UsersService {
     const collaboratorData = data[0]?.data;
 
     if (!collaboratorData) {
-      return new HttpException(
+      throw new HttpException(
         `El colaborador con número de identificación ${idNumber} no esta registrado en la base de datos de la clínica.`,
         HttpStatus.NOT_FOUND,
       );
@@ -220,7 +347,7 @@ export class UsersService {
     const genderTypeIdNumber: number = data[1]?.genderTypeIdNumber;
 
     if (!collaboratorData) {
-      return new HttpException(
+      throw new HttpException(
         `El colaborador con número de identificación ${userCollaborator.id_number} no esta registrado en la base de datos de la clínica.`,
         HttpStatus.NOT_FOUND,
       );
@@ -233,6 +360,7 @@ export class UsersService {
     userCollaborator.last_name = collaboratorData?.empLastName.trim();
     userCollaborator.principal_email = collaboratorData?.empEmail.trim();
     userCollaborator.personal_email = collaboratorData?.empEmail.trim();
+    userCollaborator.personal_cellphone = collaboratorData?.empPhone.trim();
     userCollaborator.birthdate = collaboratorData?.empBirthDate.trim();
     userCollaborator.collaborator_immediate_boss =
       collaboratorData?.empImmediateBoss.trim();
@@ -242,7 +370,6 @@ export class UsersService {
     const serviceOfCompany = collaboratorData?.empCostCenter
       .replace(/\d+/g, '')
       .trim();
-
     userCollaborator.collaborator_service = serviceOfCompany;
 
     const userCollaboratorFound = await this.userRepository.findOne({
@@ -252,7 +379,7 @@ export class UsersService {
     });
 
     if (userCollaboratorFound) {
-      return new HttpException(
+      throw new HttpException(
         `El usuario con número de identificación ${userCollaborator.id_number} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -266,7 +393,7 @@ export class UsersService {
       });
 
     if (userCollaboratorPrincipalEmailFound) {
-      return new HttpException(
+      throw new HttpException(
         `El correo principal ${userCollaborator.principal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -280,9 +407,20 @@ export class UsersService {
       });
 
     if (userCollaboratorPersonalEmailFound) {
-      return new HttpException(
+      throw new HttpException(
         `El correo personal ${userCollaborator.personal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
+      );
+    }
+
+    const isCorporateEmail = await validateCorporateEmail(
+      userCollaborator.corporate_email,
+    );
+
+    if (!isCorporateEmail) {
+      throw new HttpException(
+        `El email : ${userCollaborator.corporate_email} no es un correo corporativo válido.`,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -294,7 +432,7 @@ export class UsersService {
       });
 
     if (!collaboratorServiceTypeFound) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de servicio no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -308,7 +446,7 @@ export class UsersService {
       });
 
     if (!collaboratorPositionLevelFound) {
-      return new HttpException(
+      throw new HttpException(
         `Nivel de cargo no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -322,7 +460,7 @@ export class UsersService {
     });
 
     if (!collaboratorRole) {
-      return new HttpException(
+      throw new HttpException(
         `El role ${RolesEnum.COLLABORATOR} no existe.`,
         HttpStatus.CONFLICT,
       );
@@ -335,7 +473,9 @@ export class UsersService {
     );
 
     const userProfile = new UserProfile();
+
     userProfile.user = userCollaboratorSave;
+    userProfile.residence_address = collaboratorData?.empAddress;
 
     const userProfileCreate =
       await this.userProfileRepository.create(userProfile);
@@ -349,6 +489,141 @@ export class UsersService {
       loadEagerRelations: false,
       loadRelationIds: true,
     });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    return userCollaboratorCreated;
+  }
+
+  async createAllNewUsersCollaboratorsFromKactus(
+    userCollaborator: CreateUserDto,
+  ) {
+    const userCollaboratorFound = await this.userRepository.findOne({
+      where: {
+        id_number: userCollaborator.id_number,
+      },
+    });
+
+    if (userCollaboratorFound) {
+      throw new HttpException(
+        `El usuario con número de identificación ${userCollaborator.id_number} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPrincipalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          principal_email: userCollaborator.principal_email,
+        },
+      });
+
+    if (userCollaboratorPrincipalEmailFound) {
+      throw new HttpException(
+        `El correo principal ${userCollaborator.principal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPersonalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          personal_email: userCollaborator.personal_email,
+        },
+      });
+
+    if (userCollaboratorPersonalEmailFound) {
+      throw new HttpException(
+        `El correo personal ${userCollaborator.personal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const collaboratorServiceTypeFound =
+      await this.serviceTypeRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_service_type,
+        },
+      });
+
+    if (!collaboratorServiceTypeFound) {
+      throw new HttpException(
+        `Tipo de servicio no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const collaboratorPositionLevelFound =
+      await this.positionLevelRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_position_level,
+        },
+      });
+
+    if (!collaboratorPositionLevelFound) {
+      throw new HttpException(
+        `Nivel de cargo no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorCreate =
+      await this.userRepository.create(userCollaborator);
+
+    const collaboratorRole = await this.roleRepository.findOne({
+      where: { name: RolesEnum.COLLABORATOR },
+    });
+
+    if (!collaboratorRole) {
+      throw new HttpException(
+        `El role ${RolesEnum.COLLABORATOR} no existe.`,
+        HttpStatus.CONFLICT,
+      );
+    } else {
+      userCollaboratorCreate.role = [collaboratorRole];
+    }
+
+    const userCollaboratorSave = await this.userRepository.save(
+      userCollaboratorCreate,
+    );
+
+    const userProfile = new UserProfile();
+
+    userProfile.user = userCollaboratorSave;
+    userProfile.residence_address = userCollaborator?.residence_address;
+
+    const userProfileCreate =
+      await this.userProfileRepository.create(userProfile);
+
+    userCollaboratorSave.user_profile = userProfileCreate;
+
+    await this.userRepository.save(userCollaboratorSave);
+
+    const userCollaboratorCreated = await this.userRepository.findOne({
+      where: { id: userCollaboratorSave.id },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
 
     return userCollaboratorCreated;
   }
@@ -419,6 +694,87 @@ export class UsersService {
     };
   }
 
+  async updateAllUsersDataFromKactus() {
+    try {
+      const allUsers = await this.userRepository.find({
+        where: { is_active: true },
+      });
+
+      if (allUsers.length === 0) {
+        throw new HttpException(
+          'No hay usuarios activos para actualizar.',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      const updatedUsers = [];
+
+      for (const user of allUsers) {
+        const data = await this.searchCollaborator({
+          idType: user.user_id_type,
+          idNumber: user.id_number,
+        });
+
+        const collaboratorData = data[0]?.data?.[0];
+
+        if (!collaboratorData) {
+          console.log(
+            `No se encontraron datos en Kactus para el usuario con número de identificación: ${user.id_number}.`,
+          );
+          continue;
+        }
+
+        let hasChanges = false;
+
+        if (user.birthdate !== collaboratorData.empBirthDate.trim()) {
+          user.birthdate = collaboratorData.empBirthDate.trim();
+          hasChanges = true;
+        }
+
+        if (
+          user.collaborator_immediate_boss !==
+          collaboratorData.empImmediateBoss.trim()
+        ) {
+          user.collaborator_immediate_boss =
+            collaboratorData.empImmediateBoss.trim();
+          hasChanges = true;
+        }
+
+        if (
+          user.collaborator_position !== collaboratorData.empPosition.trim()
+        ) {
+          user.collaborator_position = collaboratorData.empPosition.trim();
+          hasChanges = true;
+        }
+
+        const serviceOfCompany = collaboratorData.empCostCenter
+          .replace(/\d+/g, '')
+          .trim();
+
+        if (user.collaborator_service !== serviceOfCompany) {
+          user.collaborator_service = serviceOfCompany;
+          hasChanges = true;
+        }
+
+        if (hasChanges) {
+          await this.userRepository.save(user);
+
+          updatedUsers.push(user);
+        }
+      }
+
+      return {
+        message: `Se actualizaron los datos de ${updatedUsers.length} usuario(s).`,
+        updatedUsers,
+      };
+    } catch (error) {
+      throw new HttpException(
+        'Hubo un error al actualizar los datos de los usuarios.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   // GET FUNTIONS //
 
   async getAllUsers() {
@@ -434,7 +790,7 @@ export class UsersService {
     });
 
     if (!allUsers.length) {
-      return new HttpException(
+      throw new HttpException(
         `No hay usuarios registrados en la base de datos`,
         HttpStatus.NOT_FOUND,
       );
@@ -449,13 +805,27 @@ export class UsersService {
         id: id,
         is_active: true,
       },
+      loadEagerRelations: false,
+      loadRelationIds: true,
     });
 
     if (!userFound) {
-      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     } else {
       return userFound;
     }
+  }
+
+  async getUserProfileById(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, is_active: true },
+    });
+
+    if (!user) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    return user.user_profile;
   }
 
   async getUserByIdNumberAndRole(idNumber: number, userRoles: RolesEnum[]) {
@@ -467,9 +837,9 @@ export class UsersService {
       .andWhere('user.is_active = :isActive', { isActive: true })
       .getOne();
 
-    if (!userFound) {
+    if (userFound) {
       throw new HttpException(
-        `No se encontró ningún usuario activo con el número de identificación: ${idNumber} y roles proporcionados.`,
+        `El usuario con número de identificación: ${idNumber} ya esta registrado.`,
         HttpStatus.NOT_FOUND,
       );
     }
@@ -485,12 +855,12 @@ export class UsersService {
     });
   }
 
-  async getUserFoundByIdNumberWithPassword(
-    userIdType: number,
-    idNumber: number,
-  ) {
+  async getUserFoundByIdNumberWithPassword(principalEmail: string) {
     return await this.userRepository.findOne({
-      where: { user_id_type: userIdType, id_number: idNumber, is_active: true },
+      where: {
+        principal_email: principalEmail,
+        is_active: true,
+      },
       select: [
         'id',
         'name',
@@ -539,14 +909,18 @@ export class UsersService {
 
   // UPDATE FUNTIONS //
 
-  async updateUser(id: string, updateUser: UpdateUserDto) {
+  async updateUser(
+    id: string,
+    updateUser: UpdateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
     const userFound = await this.userRepository.findOneBy({
       id,
       is_active: true,
     });
 
     if (!userFound) {
-      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
     const principalEmailUserValidate = await this.userRepository.findOne({
@@ -557,7 +931,7 @@ export class UsersService {
     });
 
     if (updateUser.principal_email && principalEmailUserValidate) {
-      return new HttpException(
+      throw new HttpException(
         `El correo electrónico ${updateUser.principal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -571,9 +945,20 @@ export class UsersService {
     });
 
     if (updateUser.personal_email && personalEmailUserValidate) {
-      return new HttpException(
+      throw new HttpException(
         `El correo electrónico ${updateUser.personal_email} ya está registrado.`,
         HttpStatus.CONFLICT,
+      );
+    }
+
+    const isCorporateEmail = await validateCorporateEmail(
+      updateUser.corporate_email,
+    );
+
+    if (!isCorporateEmail) {
+      throw new HttpException(
+        `El email : ${updateUser.corporate_email} no es un correo corporativo válido.`,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
@@ -585,7 +970,7 @@ export class UsersService {
     });
 
     if (updateUser.personal_cellphone && personalCellphoneUserValidate) {
-      return new HttpException(
+      throw new HttpException(
         `El número de celular ${updateUser.personal_cellphone} ya está registrado.`,
         HttpStatus.CONFLICT,
       );
@@ -602,7 +987,7 @@ export class UsersService {
       updateUser.collaborator_service_type &&
       !collaboratorServiceTypeValidate
     ) {
-      return new HttpException(
+      throw new HttpException(
         `Tipo de servicio no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -619,7 +1004,7 @@ export class UsersService {
       updateUser.collaborator_position_level &&
       !collaboratorPositionLevelValidate
     ) {
-      return new HttpException(
+      throw new HttpException(
         `Nivel de cargo no encontrado en base de datos.`,
         HttpStatus.CONFLICT,
       );
@@ -634,8 +1019,90 @@ export class UsersService {
     }
 
     if (userUpdate.affected === 0) {
-      return new HttpException(`Usuario no encontrado`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado`, HttpStatus.NOT_FOUND);
     }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_DATA_USER,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
+    throw new HttpException(
+      `¡Datos y roles guardados correctamente!`,
+      HttpStatus.ACCEPTED,
+    );
+  }
+
+  async updateUserProfile(
+    id: string,
+    userProfile: UpdateUserProfileDto,
+    @Req() requestAuditLog: any,
+  ) {
+    const userFound = await this.userRepository.findOneBy({
+      id,
+      is_active: true,
+    });
+
+    if (!userFound) {
+      return new HttpException(
+        `Usuario no encontrado.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const requiredRoles = [
+      RolesEnum.SUPER_ADMIN,
+      RolesEnum.ADMIN,
+      RolesEnum.COLLABORATOR,
+    ];
+
+    const hasRequiredRole = userFound.role.some((role) =>
+      requiredRoles.includes(role.name),
+    );
+
+    if (!hasRequiredRole) {
+      return new HttpException(
+        `No tienes permiso para actualizar este usuario.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const bloodGroupFound = await this.bloodGroupRepository.findOne({
+      where: {
+        id: userProfile.user_blood_group,
+      },
+    });
+
+    if (userProfile.user_blood_group && !bloodGroupFound) {
+      throw new HttpException(
+        `Grupo sanguíneo no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const updateUserEps = await this.userProfileRepository.update(
+      { id: userFound.user_profile.id },
+      userProfile,
+    );
+
+    if (updateUserEps.affected === 0) {
+      return new HttpException(`Usuario no encontrado`, HttpStatus.CONFLICT);
+    }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_DATA_USER_PROFILE,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     return new HttpException(
       `¡Datos guardados correctamente!`,
@@ -684,14 +1151,80 @@ export class UsersService {
     }
 
     await this.userRepository.save(userFound);
+  }
+
+  async updateUserPassword(
+    id: string,
+    passwords: UpdatePasswordUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    const userFound = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect(['user.password'])
+      .where('user.id = :id', { id })
+      .getOne();
+
+    if (!userFound) {
+      throw new HttpException(
+        `Usuario no encontrado.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const isPasswordValid = await bcryptjs.compare(
+      passwords.oldPassword,
+      userFound.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new HttpException(
+        `Contraseña antigua incorrecta.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const isNewPasswordSameAsOld = await bcryptjs.compare(
+      passwords.newPassword,
+      userFound.password,
+    );
+
+    if (isNewPasswordSameAsOld) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a la antigua.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const hashedNewPassword = await bcryptjs.hash(passwords.newPassword, 10);
+
+    await this.userRepository.update(id, { password: hashedNewPassword });
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userFound.principal_email];
+    emailDetailsToSend.userNameToEmail = userFound.name;
+    emailDetailsToSend.subject = PASSWORD_UPDATED;
+    emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_PASSWORD_ACCOUNT,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     return new HttpException(
-      `Roles actualizados correctamente.`,
+      `¡Contraseña actualizada correctamente!`,
       HttpStatus.ACCEPTED,
     );
   }
-
-  async updateUserPassword() {}
 
   async forgotUserPassword() {}
 
@@ -699,7 +1232,7 @@ export class UsersService {
 
   // DELETED-BAN FUNTIONS //
 
-  async banUser(id: string) {
+  async banUser(id: string, @Req() requestAuditLog: any) {
     const userFound = await this.userRepository.findOne({
       where: {
         id: id,
@@ -707,12 +1240,25 @@ export class UsersService {
     });
 
     if (!userFound) {
-      return new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
     userFound.is_active = !userFound.is_active;
 
     await this.userRepository.save(userFound);
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type:
+        userFound.is_active === false
+          ? ActionTypesEnum.BAN_USER
+          : ActionTypesEnum.UNBAN_USER,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     const statusMessage = userFound.is_active
       ? `El usuario con número de ID: ${userFound.id_number} se ha ACTIVADO.`
