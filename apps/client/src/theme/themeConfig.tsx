@@ -3,7 +3,7 @@ import { type ThemeConfig } from "antd";
 const themeConfig: ThemeConfig = {
   token: {
     fontSize: 14,
-    colorPrimary: "#FF7700",
+    colorPrimary: "#015E90",
     colorText: "#070707",
   },
   components: {
