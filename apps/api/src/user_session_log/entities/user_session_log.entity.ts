@@ -24,6 +24,9 @@ export class UserSessionLog {
   @Column({ type: 'bigint', nullable: true, default: '0' })
   failed_login_attempts_counter: number;
 
+  @Column({ type: 'bigint', nullable: true, default: '0' })
+  number_of_user_bans: number;
+
   @OneToOne(() => User, (user) => user.user_session_log, {
     onDelete: 'CASCADE',
   })

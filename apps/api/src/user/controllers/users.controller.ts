@@ -85,6 +85,11 @@ export class UsersController {
     return await this.usersService.getUserProfileById(id);
   }
 
+  @Get('/getUserSessionLogById/:id')
+  async getUserSessionLogById(@Param('id') id: string) {
+    return await this.usersService.getUserSessionLogById(id);
+  }
+
   @Get('/getCollaboratorUserByIdNumber/:idNumber')
   async getCollaboratorUserByIdNumber(@Param('idNumber') idNumber: number) {
     return await this.usersService.getUserByIdNumberAndRole(idNumber, [
@@ -213,5 +218,10 @@ export class UsersController {
   @Patch('/ban/:id')
   async banUser(@Param('id') id: string, @Req() requestAuditLog: any) {
     return await this.usersService.banUser(id, requestAuditLog);
+  }
+
+  @Patch('/banAllUsersForInactivity')
+  async banAllUsersForInactivity() {
+    return await this.usersService.banAllUsersForInactivity();
   }
 }

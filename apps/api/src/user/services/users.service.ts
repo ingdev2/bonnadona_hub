@@ -20,6 +20,8 @@ import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 import { validateCorporateEmail } from '../helpers/validate_corporate_email';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
+import { Cron } from '@nestjs/schedule';
+
 import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
 import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
 import { GenderTypeEnums } from 'src/utils/enums/gender_types.enum';
@@ -79,6 +81,22 @@ export class UsersService {
 
     private readonly auditLogService: AuditLogsService,
   ) {}
+
+  // @Cron('0 20 * * *', {
+  //   name: 'UPDATE ALL USERS DATA FROM KACTUS',
+  //   timeZone: 'America/Bogota',
+  // })
+  // async handleCron() {
+  //   await this.updateAllUsersDataFromKactus();
+  // }
+
+  // @Cron('0 21 * * *', {
+  //   name: 'BAN ALL USERS FOR INACTIVITY',
+  //   timeZone: 'America/Bogota',
+  // })
+  // async handleCron() {
+  //   await this.banAllUsersForInactivity();
+  // }
 
   // CREATE FUNTIONS //
 
@@ -619,6 +637,15 @@ export class UsersService {
 
     userCollaboratorSave.user_profile = userProfileCreate;
 
+    const userSessionLog = new UserSessionLog();
+
+    userSessionLog.user = userCollaboratorSave;
+
+    const userSessionCreate =
+      await this.userSessionLogRepository.create(userSessionLog);
+
+    userCollaboratorSave.user_session_log = userSessionCreate;
+
     await this.userRepository.save(userCollaboratorSave);
 
     const userCollaboratorCreated = await this.userRepository.findOne({
@@ -839,6 +866,18 @@ export class UsersService {
     }
 
     return user.user_profile;
+  }
+
+  async getUserSessionLogById(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, is_active: true },
+    });
+
+    if (!user) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    return user.user_session_log;
   }
 
   async getUserByIdNumberAndRole(idNumber: number, userRoles: RolesEnum[]) {
@@ -1256,9 +1295,25 @@ export class UsersService {
       throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
+    const sessionLog = await this.userSessionLogRepository.findOne({
+      where: { id: userFound.user_session_log.id },
+    });
+
+    if (!sessionLog) {
+      throw new HttpException(
+        `Session de usuario no encontrada.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     userFound.is_active = !userFound.is_active;
 
     await this.userRepository.save(userFound);
+
+    sessionLog.failed_login_attempts_counter = 0;
+    sessionLog.number_of_user_bans = 0;
+
+    await this.userSessionLogRepository.save(sessionLog);
 
     const auditLogData = {
       ...requestAuditLog.auditLogData,
@@ -1278,5 +1333,54 @@ export class UsersService {
       : `El usuario con número de ID: ${userFound.id_number} se ha INACTIVADO.`;
 
     throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
+  }
+
+  async banAllUsersForInactivity() {
+    const users = await this.userRepository.find({
+      where: { is_active: true },
+    });
+
+    const currentDate = new Date();
+    const inactivityThreshold = new Date(currentDate);
+    inactivityThreshold.setDate(currentDate.getDate() - 15); // TODO CAMBIAR POR NÚMERO DE DÍAS DE MAESTRO EN BASE DE DATOS
+
+    const inactiveUsers = [];
+
+    for (const user of users) {
+      if (
+        user.user_session_log &&
+        user.user_session_log.last_login !== null &&
+        user.user_session_log.successful_login_counter >= 1
+      ) {
+        const sessionLog = await this.userSessionLogRepository.findOne({
+          where: { id: user.user_session_log.id },
+        });
+
+        if (!sessionLog) {
+          throw new HttpException(
+            `Session de usuario no encontrada para el ID: ${user.id_number}.`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        if (sessionLog.last_login < inactivityThreshold) {
+          user.is_active = false;
+          inactiveUsers.push(user);
+        }
+      }
+    }
+
+    if (inactiveUsers.length > 0) {
+      await this.userRepository.save(inactiveUsers);
+
+      const statusMessage = `Se han inactivado ${inactiveUsers.length} usuarios por inactividad.`;
+
+      throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
+    } else {
+      throw new HttpException(
+        'No se encontraron usuarios para inactivar.',
+        HttpStatus.OK,
+      );
+    }
   }
 }
