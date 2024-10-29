@@ -1248,8 +1248,12 @@ export class UsersService {
     }
 
     const hashedNewPassword = await bcryptjs.hash(passwords.newPassword, 10);
+    const lastPasswordUpdateDate = await new Date();
 
-    await this.userRepository.update(id, { password: hashedNewPassword });
+    await this.userRepository.update(id, {
+      password: hashedNewPassword,
+      last_password_update: lastPasswordUpdateDate,
+    });
 
     const emailDetailsToSend = new SendEmailDto();
 

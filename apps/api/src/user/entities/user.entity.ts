@@ -107,6 +107,9 @@ export class User {
   @Column({ nullable: true })
   reset_password_token: string;
 
+  @Column({ type: 'timestamp', nullable: true })
+  last_password_update: Date;
+
   @Column({ nullable: true })
   verification_code: number;
 
