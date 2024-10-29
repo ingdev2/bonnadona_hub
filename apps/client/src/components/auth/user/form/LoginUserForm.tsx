@@ -201,7 +201,7 @@ const LoginUserForm = () => {
                 <img
                   src="/logos/logo_horizontal.png"
                   alt="Logo de Bonnadona HUB"
-                  style={{ width: "270px", marginBlock: "7px" }}
+                  style={{ width: "270px", marginBlock: "25px" }}
                 />
               </div>
               <Title
