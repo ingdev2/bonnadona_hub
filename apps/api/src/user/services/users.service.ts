@@ -24,6 +24,7 @@ import { validateCorporateEmail } from '../helpers/validate_corporate_email';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
 import { Cron } from '@nestjs/schedule';
+import { nanoid } from 'nanoid';
 
 import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
 import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
@@ -40,17 +41,25 @@ import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
+import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
 
 import axios from 'axios';
 import * as bcryptjs from 'bcryptjs';
+
 import {
   ACCOUNT_CREATED,
+  PASSWORD_RESET,
   PASSWORD_UPDATED,
+  RESET_PASSWORD_TEMPLATE,
   SUBJECT_ACCOUNT_CREATED,
   UPDATED_PASSWORD_TEMPLATE,
 } from 'src/nodemailer/constants/email_config.constant';
 import { SUPPORT_CONTACT_EMAIL } from 'src/utils/constants/constants';
+import { maskEmailUser } from '../helpers/mask_email';
+
+const schedule = require('node-schedule');
 
 @Injectable()
 export class UsersService {
@@ -1256,6 +1265,13 @@ export class UsersService {
 
     const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
 
+    if (!passwordPolicy) {
+      throw new HttpException(
+        `No hay política de contraseña definida`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
     this.validatePasswordPolicy(passwords.newPassword, passwordPolicy);
 
     const isPasswordInHistory =
@@ -1287,16 +1303,16 @@ export class UsersService {
       hashedNewPassword,
     );
 
-    // const emailDetailsToSend = new SendEmailDto();
+    const emailDetailsToSend = new SendEmailDto();
 
-    // emailDetailsToSend.recipients = [userFound.principal_email];
-    // emailDetailsToSend.userNameToEmail = userFound.name;
-    // emailDetailsToSend.subject = PASSWORD_UPDATED;
-    // emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
-    // emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
-    // emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+    emailDetailsToSend.recipients = [userFound.principal_email];
+    emailDetailsToSend.userNameToEmail = userFound.name;
+    emailDetailsToSend.subject = PASSWORD_UPDATED;
+    emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
 
-    // await this.nodemailerService.sendEmail(emailDetailsToSend);
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
 
     const auditLogData = {
       ...requestAuditLog.auditLogData,
@@ -1415,9 +1431,143 @@ export class UsersService {
     }
   }
 
-  async forgotUserPassword() {}
+  async forgotUserPassword({
+    id_type,
+    id_number,
+    birthdate,
+  }: ForgotPasswordUserDto) {
+    const userFound = await this.userRepository.findOne({
+      where: {
+        user_id_type: id_type,
+        id_number: id_number,
+        birthdate: birthdate,
+        is_active: true,
+      },
+    });
 
-  async resetUserPassword() {}
+    if (userFound) {
+      const resetPasswordToken = nanoid(64);
+
+      await this.userRepository.update(
+        {
+          id: userFound.id,
+        },
+        { reset_password_token: resetPasswordToken },
+      );
+
+      const emailDetailsToSend = new SendEmailDto();
+
+      emailDetailsToSend.recipients = [userFound.principal_email];
+      emailDetailsToSend.userNameToEmail = userFound.name;
+      emailDetailsToSend.subject = PASSWORD_RESET;
+      emailDetailsToSend.emailTemplate = RESET_PASSWORD_TEMPLATE;
+      emailDetailsToSend.resetPasswordUrl = `${process.env.RESET_PASSWORD_URL_USER}?token=${resetPasswordToken}`;
+
+      await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+      schedule.scheduleJob(new Date(Date.now() + 5 * 60 * 1000), async () => {
+        await this.userRepository.update(
+          { id: userFound.id },
+          { reset_password_token: null },
+        );
+      });
+
+      const maskedEmail = maskEmailUser(userFound.principal_email);
+
+      return new HttpException(
+        `Se ha enviado al correo: ${maskedEmail} el link de restablecimiento de contraseña`,
+        HttpStatus.ACCEPTED,
+      );
+    } else {
+      throw new UnauthorizedException(
+        `¡Datos incorrectos o no esta registrado!`,
+      );
+    }
+  }
+
+  async resetUserPassword(
+    token: string,
+    { newPassword }: ResetPasswordUserDto,
+  ) {
+    const tokenFound = await this.userRepository.findOne({
+      where: {
+        reset_password_token: token,
+        is_active: true,
+      },
+    });
+
+    if (!tokenFound) {
+      throw new UnauthorizedException('¡Link invalido o caducado!');
+    }
+
+    const userFound = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect(['user.password'])
+      .where('user.reset_password_token = :token', { token })
+      .getOne();
+
+    if (!userFound) {
+      throw new HttpException(
+        `Usuario no encontrado.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const isNewPasswordSameAsOld = await bcryptjs.compare(
+      newPassword,
+      userFound.password,
+    );
+
+    if (isNewPasswordSameAsOld) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a la antigua.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
+
+    if (!passwordPolicy) {
+      throw new HttpException(
+        `No hay política de contraseña definida`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    this.validatePasswordPolicy(newPassword, passwordPolicy);
+
+    this.validatePersonalDataInPassword(userFound, newPassword);
+
+    const hashedNewPassword = await bcryptjs.hash(newPassword, 10);
+    const lastPasswordUpdateDate = await new Date();
+
+    await this.userRepository.update(userFound.id, {
+      password: hashedNewPassword,
+      last_password_update: lastPasswordUpdateDate,
+      reset_password_token: null,
+    });
+
+    await this.passwordHistoryService.addPasswordToHistory(
+      userFound.id,
+      hashedNewPassword,
+    );
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userFound.principal_email];
+    emailDetailsToSend.userNameToEmail = userFound.name;
+    emailDetailsToSend.subject = PASSWORD_UPDATED;
+    emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    return new HttpException(
+      `¡Contraseña restablecida correctamente!`,
+      HttpStatus.ACCEPTED,
+    );
+  }
 
   // DELETED-BAN FUNTIONS //
 
@@ -1477,9 +1627,20 @@ export class UsersService {
       where: { is_active: true },
     });
 
+    const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
+
+    if (!passwordPolicy) {
+      throw new HttpException(
+        `No hay política de contraseña definida`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
     const currentDate = new Date();
     const inactivityThreshold = new Date(currentDate);
-    inactivityThreshold.setDate(currentDate.getDate() - 15); // TODO CAMBIAR POR NÚMERO DE DÍAS DE MAESTRO EN BASE DE DATOS
+    inactivityThreshold.setDate(
+      currentDate.getDate() - passwordPolicy.inactivity_days,
+    );
 
     const inactiveUsers = [];
 

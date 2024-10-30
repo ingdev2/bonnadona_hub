@@ -14,10 +14,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
-
-import { RolesEnum } from 'src/utils/enums/roles.enum';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
+import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
+
+import { RolesEnum } from 'src/utils/enums/roles.enum';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
@@ -182,12 +184,12 @@ export class UsersController {
   }
 
   @EnableAuditLog()
-  // @Auth(
-  //   RolesEnum.SUPER_ADMIN,
-  //   RolesEnum.ADMIN,
-  //   RolesEnum.COLLABORATOR,
-  //   RolesEnum.AUDITOR,
-  // )
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Patch('/updateUserPassword/:id')
   async updateUserPassword(
     @Param('id')
@@ -204,13 +206,24 @@ export class UsersController {
   }
 
   @Patch('/forgotUserPassword')
-  async forgotUserPassword() {
-    return await this.usersService.forgotUserPassword();
+  async forgotUserPassword(
+    @Body()
+    { id_type, id_number, birthdate }: ForgotPasswordUserDto,
+  ) {
+    return await this.usersService.forgotUserPassword({
+      id_type,
+      id_number,
+      birthdate,
+    });
   }
 
   @Patch('/resetUserPassword')
-  async resetUserPassword() {
-    return await this.usersService.resetUserPassword();
+  async resetUserPassword(
+    @Query('token') token: string,
+    @Body()
+    { newPassword }: ResetPasswordUserDto,
+  ) {
+    return await this.usersService.resetUserPassword(token, { newPassword });
   }
 
   @EnableAuditLog()
