@@ -10,6 +10,7 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
@@ -17,6 +18,8 @@ import { Role } from 'src/role/entities/role.entity';
 import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
+import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
+import { PasswordHistory } from 'src/password_history/entities/password_history.entity';
 
 @Entity()
 export class User {
@@ -106,11 +109,24 @@ export class User {
   @Column({ nullable: true })
   reset_password_token: string;
 
+  @Column({ type: 'timestamp', nullable: true })
+  last_password_update: Date;
+
+  @OneToMany(() => PasswordHistory, (passwordHistory) => passwordHistory.user, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  password_history: PasswordHistory[];
+
   @Column({ nullable: true })
   verification_code: number;
 
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  banned_user_until: Date;
 
   @OneToOne(() => UserProfile, (user_profile) => user_profile.user, {
     eager: true,
@@ -119,6 +135,14 @@ export class User {
   })
   @JoinColumn()
   user_profile: UserProfile;
+
+  @OneToOne(() => UserSessionLog, (user_session_log) => user_session_log.user, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  user_session_log: UserSessionLog;
 
   @CreateDateColumn()
   createdAt: Date;

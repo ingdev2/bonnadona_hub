@@ -14,10 +14,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
-
-import { RolesEnum } from 'src/utils/enums/roles.enum';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
+import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
+
+import { RolesEnum } from 'src/utils/enums/roles.enum';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
@@ -83,6 +85,11 @@ export class UsersController {
   @Get('/getUserProfileById/:id')
   async getUserProfileById(@Param('id') id: string) {
     return await this.usersService.getUserProfileById(id);
+  }
+
+  @Get('/getUserSessionLogById/:id')
+  async getUserSessionLogById(@Param('id') id: string) {
+    return await this.usersService.getUserSessionLogById(id);
   }
 
   @Get('/getCollaboratorUserByIdNumber/:idNumber')
@@ -199,13 +206,24 @@ export class UsersController {
   }
 
   @Patch('/forgotUserPassword')
-  async forgotUserPassword() {
-    return await this.usersService.forgotUserPassword();
+  async forgotUserPassword(
+    @Body()
+    { id_type, id_number, birthdate }: ForgotPasswordUserDto,
+  ) {
+    return await this.usersService.forgotUserPassword({
+      id_type,
+      id_number,
+      birthdate,
+    });
   }
 
   @Patch('/resetUserPassword')
-  async resetUserPassword() {
-    return await this.usersService.resetUserPassword();
+  async resetUserPassword(
+    @Query('token') token: string,
+    @Body()
+    { newPassword }: ResetPasswordUserDto,
+  ) {
+    return await this.usersService.resetUserPassword(token, { newPassword });
   }
 
   @EnableAuditLog()
@@ -213,5 +231,10 @@ export class UsersController {
   @Patch('/ban/:id')
   async banUser(@Param('id') id: string, @Req() requestAuditLog: any) {
     return await this.usersService.banUser(id, requestAuditLog);
+  }
+
+  @Patch('/banAllUsersForInactivity')
+  async banAllUsersForInactivity() {
+    return await this.usersService.banAllUsersForInactivity();
   }
 }

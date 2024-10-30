@@ -8,11 +8,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/user/users.module';
 import { NodemailerModule } from 'src/nodemailer/nodemailer.module';
 import { AuditLogsModule } from 'src/audit_logs/audit_logs.module';
+import { UserSessionLogModule } from 'src/user_session_log/user_session_log.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role]),
     UsersModule,
+    UserSessionLogModule,
     NodemailerModule,
     AuditLogsModule,
     JwtModule.register({

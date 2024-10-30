@@ -1,4 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { PositionLevelEnum } from 'src/utils/enums/position_level.enum';
 
@@ -12,4 +20,13 @@ export class PositionLevel {
 
   @OneToMany(() => User, (user) => user.position_level)
   user: User[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updateAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

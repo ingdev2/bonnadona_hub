@@ -13,6 +13,8 @@ import { Role } from 'src/role/entities/role.entity';
 import { JwtService } from '@nestjs/jwt';
 import * as bcryptjs from 'bcryptjs';
 
+import { Cron } from '@nestjs/schedule';
+
 import { UsersService } from 'src/user/services/users.service';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
@@ -34,6 +36,7 @@ import { Tokens } from '../interfaces/tokens.interface';
 import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
 import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
+import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
 
 @Injectable()
 export class AuthService {
@@ -46,9 +49,18 @@ export class AuthService {
 
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
+    private readonly userSessionLogService: UserSessionLogService,
     private readonly nodemailerService: NodemailerService,
     private readonly auditLogService: AuditLogsService,
   ) {}
+
+  // @Cron('0 19 * * *', {
+  //   name: 'CREATE NEW USERS FROM KACTUS',
+  //   timeZone: 'America/Bogota',
+  // })
+  // async handleCron() {
+  //   await this.createAllNewUsersFromKactus();
+  // }
 
   // REGISTER FUNTIONS //
 
@@ -173,6 +185,16 @@ export class AuthService {
       throw new UnauthorizedException(`¡Role de usuario no encontrado!`);
     }
 
+    const bannedUserFound = await this.userRepository.findOne({
+      where: { principal_email: principal_email, is_active: false },
+    });
+
+    if (bannedUserFound) {
+      throw new UnauthorizedException(
+        `¡Usuario bloqueado, por favor intente más tarde!`,
+      );
+    }
+
     const collaboratorFound =
       await this.userService.getUserFoundByIdNumberWithPassword(
         principal_email,
@@ -202,6 +224,11 @@ export class AuthService {
     );
 
     if (!isCorrectPassword) {
+      await this.userSessionLogService.updateUserSessionLog(
+        collaboratorFound.id,
+        false,
+      );
+
       throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
     }
 
@@ -252,6 +279,16 @@ export class AuthService {
       throw new UnauthorizedException(`¡Role de usuario no encontrado!`);
     }
 
+    const bannedAdminOrAuditorFound = await this.userRepository.findOne({
+      where: { principal_email: principal_email, is_active: false },
+    });
+
+    if (bannedAdminOrAuditorFound) {
+      throw new UnauthorizedException(
+        `¡Usuario bloqueado, por favor intente más tarde!`,
+      );
+    }
+
     const adminOrAuditorFound =
       await this.userService.getUserFoundByIdNumberWithPassword(
         principal_email,
@@ -281,6 +318,11 @@ export class AuthService {
     );
 
     if (!isCorrectPassword) {
+      await this.userSessionLogService.updateUserSessionLog(
+        adminOrAuditorFound.id,
+        false,
+      );
+
       throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
     }
 
@@ -362,6 +404,11 @@ export class AuthService {
       { verification_code: null },
     );
 
+    await this.userSessionLogService.updateUserSessionLog(
+      collaboratorFound.id,
+      true,
+    );
+
     const payload: Payload = {
       sub: collaboratorFound.id,
       name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
@@ -428,6 +475,11 @@ export class AuthService {
         id: adminOrAuditorFound.id,
       },
       { verification_code: null },
+    );
+
+    await this.userSessionLogService.updateUserSessionLog(
+      adminOrAuditorFound.id,
+      true,
     );
 
     const payload: Payload = {
