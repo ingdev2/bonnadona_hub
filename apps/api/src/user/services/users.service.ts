@@ -16,6 +16,9 @@ import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
 import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
+import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
+import { PasswordPolicyService } from 'src/password_policy/services/password_policy.service';
+import { PasswordHistoryService } from 'src/password_history/services/password_history.service';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 import { validateCorporateEmail } from '../helpers/validate_corporate_email';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
@@ -76,6 +79,10 @@ export class UsersService {
 
     @InjectRepository(PositionLevel)
     private positionLevelRepository: Repository<PositionLevel>,
+
+    private readonly passwordPolicyService: PasswordPolicyService,
+
+    private readonly passwordHistoryService: PasswordHistoryService,
 
     private readonly nodemailerService: NodemailerService,
 
@@ -1247,6 +1254,26 @@ export class UsersService {
       );
     }
 
+    const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
+
+    this.validatePasswordPolicy(passwords.newPassword, passwordPolicy);
+
+    const isPasswordInHistory =
+      await this.passwordHistoryService.isPasswordInHistory(
+        id,
+        passwords.newPassword,
+        passwordPolicy.password_history_limit,
+      );
+
+    if (isPasswordInHistory) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a ninguna de las últimas ${passwordPolicy.password_history_limit} contraseñas utilizadas.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    this.validatePersonalDataInPassword(userFound, passwords.newPassword);
+
     const hashedNewPassword = await bcryptjs.hash(passwords.newPassword, 10);
     const lastPasswordUpdateDate = await new Date();
 
@@ -1255,16 +1282,21 @@ export class UsersService {
       last_password_update: lastPasswordUpdateDate,
     });
 
-    const emailDetailsToSend = new SendEmailDto();
+    await this.passwordHistoryService.addPasswordToHistory(
+      id,
+      hashedNewPassword,
+    );
 
-    emailDetailsToSend.recipients = [userFound.principal_email];
-    emailDetailsToSend.userNameToEmail = userFound.name;
-    emailDetailsToSend.subject = PASSWORD_UPDATED;
-    emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
-    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
-    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+    // const emailDetailsToSend = new SendEmailDto();
 
-    await this.nodemailerService.sendEmail(emailDetailsToSend);
+    // emailDetailsToSend.recipients = [userFound.principal_email];
+    // emailDetailsToSend.userNameToEmail = userFound.name;
+    // emailDetailsToSend.subject = PASSWORD_UPDATED;
+    // emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
+    // emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    // emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    // await this.nodemailerService.sendEmail(emailDetailsToSend);
 
     const auditLogData = {
       ...requestAuditLog.auditLogData,
@@ -1280,6 +1312,107 @@ export class UsersService {
       `¡Contraseña actualizada correctamente!`,
       HttpStatus.ACCEPTED,
     );
+  }
+
+  private validatePasswordPolicy(password: string, policy: PasswordPolicy) {
+    if (password.length < policy.min_length) {
+      throw new HttpException(
+        `La contraseña debe tener al menos ${policy.min_length} caracteres.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (policy.require_uppercase && !/[A-Z]/.test(password)) {
+      throw new HttpException(
+        `La contraseña debe contener al menos una letra mayúscula.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (policy.require_lowercase && !/[a-z]/.test(password)) {
+      throw new HttpException(
+        `La contraseña debe contener al menos una letra minúscula.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (policy.require_numbers && !/[0-9]/.test(password)) {
+      throw new HttpException(
+        `La contraseña debe contener al menos un número.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (
+      policy.require_special_characters &&
+      !/[!@#$%^&*(),.?":{}|<>]/.test(password)
+    ) {
+      throw new HttpException(
+        `La contraseña debe contener al menos un carácter especial.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  private validatePersonalDataInPassword(user: User, newPassword: string) {
+    const passwordUpperCase = newPassword.toUpperCase();
+
+    const fullName = `${user.name} ${user.last_name}`.toUpperCase();
+
+    if (fullName.split(' ').some((word) => passwordUpperCase.includes(word))) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos del nombre del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const idNumber = String(user.id_number);
+    if (passwordUpperCase.includes(idNumber)) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos del número de identificación del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const cellphoneNumber = String(user.corporate_cellphone);
+    const personalCellphoneNumber = String(user.personal_cellphone);
+
+    if (
+      passwordUpperCase.includes(cellphoneNumber) ||
+      passwordUpperCase.includes(personalCellphoneNumber)
+    ) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos del número de celular del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const principalEmail = user.principal_email.toUpperCase();
+
+    if (passwordUpperCase.includes(principalEmail)) {
+      throw new HttpException(
+        `¡La contraseña no puede contener el correo electrónico principal del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const corporateEmail = user.corporate_email?.toUpperCase();
+
+    if (corporateEmail && passwordUpperCase.includes(corporateEmail)) {
+      throw new HttpException(
+        `¡La contraseña no puede contener el correo electrónico corporativo del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const birthdate = user?.birthdate.toString().replace(/\s+/g, '').split('-');
+
+    if (birthdate?.some((date) => passwordUpperCase?.includes(date))) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos de la fecha de nacimiento del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async forgotUserPassword() {}

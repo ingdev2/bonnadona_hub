@@ -10,6 +10,7 @@ import {
   ManyToMany,
   JoinTable,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
@@ -18,6 +19,7 @@ import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
+import { PasswordHistory } from 'src/password_history/entities/password_history.entity';
 
 @Entity()
 export class User {
@@ -109,6 +111,13 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   last_password_update: Date;
+
+  @OneToMany(() => PasswordHistory, (passwordHistory) => passwordHistory.user, {
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  password_history: PasswordHistory[];
 
   @Column({ nullable: true })
   verification_code: number;

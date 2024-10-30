@@ -8,5 +8,6 @@ import { PasswordPolicy } from './entities/password_policy.entity';
   imports: [TypeOrmModule.forFeature([PasswordPolicy])],
   controllers: [PasswordPolicyController],
   providers: [PasswordPolicyService],
+  exports: [PasswordPolicyService],
 })
 export class PasswordPolicyModule {}

@@ -30,7 +30,7 @@ export class UpdatePasswordPolicyDto {
 
   @IsOptional()
   @Min(1, { message: 'El tiempo de caducidad debe ser al menos de 1 día' })
-  @Max(60, { message: 'El tiempo de caducidad no puede superar los 60 días' })
+  @Max(100, { message: 'El tiempo de caducidad no puede superar los 100 días' })
   password_expiry_days: number;
 
   @IsOptional()

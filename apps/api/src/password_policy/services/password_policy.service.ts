@@ -41,7 +41,7 @@ export class PasswordPolicyService {
       );
     }
 
-    return policy;
+    return policy[0];
   }
 
   // UPDATE FUNTIONS //

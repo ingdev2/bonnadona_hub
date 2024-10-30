@@ -16,6 +16,7 @@ import { PositionLevelModule } from './position_levels/position_level.module';
 import { AuthModule } from './auth/auth.module';
 import { UserSessionLogModule } from './user_session_log/user_session_log.module';
 import { PasswordPolicyModule } from './password_policy/password_policy.module';
+import { PasswordHistoryModule } from './password_history/password_history.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { PasswordPolicyModule } from './password_policy/password_policy.module';
     AuthModule,
     UserSessionLogModule,
     PasswordPolicyModule,
+    PasswordHistoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

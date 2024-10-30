@@ -182,12 +182,12 @@ export class UsersController {
   }
 
   @EnableAuditLog()
-  @Auth(
-    RolesEnum.SUPER_ADMIN,
-    RolesEnum.ADMIN,
-    RolesEnum.COLLABORATOR,
-    RolesEnum.AUDITOR,
-  )
+  // @Auth(
+  //   RolesEnum.SUPER_ADMIN,
+  //   RolesEnum.ADMIN,
+  //   RolesEnum.COLLABORATOR,
+  //   RolesEnum.AUDITOR,
+  // )
   @Patch('/updateUserPassword/:id')
   async updateUserPassword(
     @Param('id')

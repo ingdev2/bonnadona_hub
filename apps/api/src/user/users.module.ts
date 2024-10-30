@@ -13,6 +13,9 @@ import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { NodemailerModule } from 'src/nodemailer/nodemailer.module';
 import { AuditLogsModule } from 'src/audit_logs/audit_logs.module';
+import { PasswordPolicyModule } from 'src/password_policy/password_policy.module';
+import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
+import { PasswordHistoryModule } from 'src/password_history/password_history.module';
 
 @Module({
   imports: [
@@ -26,7 +29,10 @@ import { AuditLogsModule } from 'src/audit_logs/audit_logs.module';
       BloodGroup,
       ServiceType,
       PositionLevel,
+      PasswordPolicy,
     ]),
+    PasswordPolicyModule,
+    PasswordHistoryModule,
     NodemailerModule,
     AuditLogsModule,
   ],
