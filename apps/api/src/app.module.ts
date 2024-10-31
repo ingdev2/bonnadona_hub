@@ -17,6 +17,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserSessionLogModule } from './user_session_log/user_session_log.module';
 import { PasswordPolicyModule } from './password_policy/password_policy.module';
 import { PasswordHistoryModule } from './password_history/password_history.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { ApplicationModule } from './application/application.module';
+import { ApplicationModuleModule } from './application_module/application_module.module';
+import { ModuleActionModule } from './module_action/module_action.module';
 
 @Module({
   imports: [
@@ -44,6 +48,11 @@ import { PasswordHistoryModule } from './password_history/password_history.modul
     UserSessionLogModule,
     PasswordPolicyModule,
     PasswordHistoryModule,
+    PermissionsModule,
+    AppModule,
+    ApplicationModule,
+    ApplicationModuleModule,
+    ModuleActionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

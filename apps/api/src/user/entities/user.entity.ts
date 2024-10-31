@@ -15,6 +15,7 @@ import {
 import { IdType } from 'src/id_types/entities/id_type.entity';
 import { GenderType } from 'src/gender_types/entities/gender_type.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { Permissions } from 'src/permissions/entities/permissions.entity';
 import { UserProfile } from 'src/user_profile/entities/user_profile.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
@@ -58,6 +59,13 @@ export class User {
   })
   @JoinTable({ name: 'User_Roles' })
   role: Role[];
+
+  @ManyToMany(() => Permissions, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinTable({ name: 'User_Permissions' })
+  permission: Permissions[];
 
   @Column({ type: 'text', unique: true })
   principal_email: string;
