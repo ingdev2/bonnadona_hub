@@ -61,7 +61,7 @@ export class ApplicationService {
 
     if (!applicationFound) {
       throw new HttpException(
-        `La aplicación con número de ID: ${id} no esta registrada.`,
+        `La aplicacion con número de ID: ${id} no esta registrada.`,
         HttpStatus.CONFLICT,
       );
     } else {
@@ -76,7 +76,7 @@ export class ApplicationService {
 
     if (!applicationFound) {
       throw new HttpException(
-        `Aplicación no encontrada.`,
+        `Aplicacion no encontrada.`,
         HttpStatus.NOT_FOUND,
       );
     }
