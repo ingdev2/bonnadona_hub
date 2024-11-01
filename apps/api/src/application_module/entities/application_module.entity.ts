@@ -21,15 +21,7 @@ export class ApplicationModule {
   @Column({ type: 'text', unique: true })
   name: string;
 
-  @OneToMany(
-    () => Permissions,
-    (permissions) => permissions.application_module,
-    {
-      eager: true,
-      cascade: true,
-      onDelete: 'CASCADE',
-    },
-  )
+  @OneToMany(() => Permissions, (permissions) => permissions.application_module)
   permissions: Permissions[];
 
   @ManyToOne(
@@ -48,11 +40,6 @@ export class ApplicationModule {
   @OneToMany(
     () => ModuleAction,
     (module_action) => module_action.application_module,
-    {
-      eager: true,
-      cascade: true,
-      onDelete: 'CASCADE',
-    },
   )
   module_action: ModuleAction[];
 

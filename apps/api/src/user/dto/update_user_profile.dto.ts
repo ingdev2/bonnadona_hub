@@ -1,9 +1,9 @@
 import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
-import { UserHeightEnum } from 'src/utils/enums/user_height.enum';
-import { UserPantsSizeEnum } from 'src/utils/enums/user_pants_size.enum';
-import { UserShirtSizeEnum } from 'src/utils/enums/user_shirt_size.enum';
-import { UserShoeSizeEnum } from 'src/utils/enums/user_shoe_size.enum';
-import { UserWeightEnum } from 'src/utils/enums/user_weight.enum';
+import { UserHeightEnum } from 'src/utils/enums/user_profile/user_height.enum';
+import { UserPantsSizeEnum } from 'src/utils/enums/user_profile/user_pants_size.enum';
+import { UserShirtSizeEnum } from 'src/utils/enums/user_profile/user_shirt_size.enum';
+import { UserShoeSizeEnum } from 'src/utils/enums/user_profile/user_shoe_size.enum';
+import { UserWeightEnum } from 'src/utils/enums/user_profile/user_weight.enum';
 
 export class UpdateUserProfileDto {
   @IsOptional()

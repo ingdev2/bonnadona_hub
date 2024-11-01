@@ -26,11 +26,11 @@ import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 import { Cron } from '@nestjs/schedule';
 import { nanoid } from 'nanoid';
 
-import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
-import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
-import { GenderTypeEnums } from 'src/utils/enums/gender_types.enum';
-import { GenderTypeAbbrev } from 'src/utils/enums/gender_types_abbrev.enum';
-import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { IdTypeEnum } from 'src/utils/enums/user/id_types.enum';
+import { IdTypeAbbrev } from 'src/utils/enums/user/id_types_abbrev.enum';
+import { GenderTypeEnums } from 'src/utils/enums/user/gender_types.enum';
+import { GenderTypeAbbrev } from 'src/utils/enums/user/gender_types_abbrev.enum';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
 import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';

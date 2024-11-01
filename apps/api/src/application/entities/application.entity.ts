@@ -18,21 +18,12 @@ export class Application {
   @Column({ type: 'text', unique: true })
   name: string;
 
-  @OneToMany(() => Permissions, (permissions) => permissions.application, {
-    eager: true,
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => Permissions, (permissions) => permissions.application)
   permissions: Permissions[];
 
   @OneToMany(
     () => ApplicationModule,
     (application_module) => application_module.application,
-    {
-      eager: true,
-      cascade: true,
-      onDelete: 'CASCADE',
-    },
   )
   application_module: ApplicationModule[];
 

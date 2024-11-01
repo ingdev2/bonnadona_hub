@@ -120,11 +120,7 @@ export class User {
   @Column({ type: 'timestamp', nullable: true })
   last_password_update: Date;
 
-  @OneToMany(() => PasswordHistory, (passwordHistory) => passwordHistory.user, {
-    eager: true,
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => PasswordHistory, (passwordHistory) => passwordHistory.user)
   password_history: PasswordHistory[];
 
   @Column({ nullable: true })

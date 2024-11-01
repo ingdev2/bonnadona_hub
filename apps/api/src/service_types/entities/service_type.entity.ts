@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ServiceTypesEnum } from 'src/utils/enums/service_types.enum';
+import { ServiceTypesEnum } from 'src/utils/enums/user/service_types.enum';
 import { User } from 'src/user/entities/user.entity';
 
 @Entity()

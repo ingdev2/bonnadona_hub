@@ -11,6 +11,8 @@ import { GenderTypesService } from '../services/gender_types.service';
 import { CreateGenderTypeDto } from '../dto/create-gender_type.dto';
 import { UpdateGenderTypeDto } from '../dto/update-gender_type.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 @ApiTags('gender-types')
 @ApiBearerAuth()
@@ -20,6 +22,7 @@ export class GenderTypesController {
 
   // POST METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
   createGenderType(@Body() createGenderType: CreateGenderTypeDto) {
     return this.genderTypesService.createGenderType(createGenderType);
@@ -39,6 +42,7 @@ export class GenderTypesController {
 
   // PATCH METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   updateGenderType(
     @Param('id') id: number,

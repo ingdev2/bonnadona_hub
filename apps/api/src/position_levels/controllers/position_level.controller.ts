@@ -11,6 +11,8 @@ import { PositionLevelService } from '../services/position_level.service';
 import { CreatePositionLevelDto } from '../dto/create-position_level.dto';
 import { UpdatePositionLevelDto } from '../dto/update-position_level.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 @ApiTags('position-level')
 @ApiBearerAuth()
@@ -20,6 +22,7 @@ export class PositionLevelController {
 
   // POST METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
   createPositionLevel(@Body() createPositionLevel: CreatePositionLevelDto) {
     return this.positionLevelService.createPositionLevel(createPositionLevel);
@@ -39,6 +42,7 @@ export class PositionLevelController {
 
   // PATCH METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   updatePositionLevel(
     @Param('id') id: number,

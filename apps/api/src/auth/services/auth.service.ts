@@ -21,7 +21,7 @@ import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
 import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
-import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
 import { IdUserDto } from '../dto/id_user.dto';
 

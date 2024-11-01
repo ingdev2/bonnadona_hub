@@ -20,11 +20,7 @@ export class ModuleAction {
   @Column({ type: 'text', unique: true })
   name: string;
 
-  @OneToMany(() => Permissions, (permissions) => permissions.module_action, {
-    eager: true,
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToMany(() => Permissions, (permissions) => permissions.module_action)
   permissions: Permissions[];
 
   @ManyToOne(

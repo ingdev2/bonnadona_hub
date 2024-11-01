@@ -19,7 +19,7 @@ import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
 import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
 import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
 
-import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
@@ -70,13 +70,13 @@ export class UsersController {
 
   // GET METHODS //
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
   @Get('/getAllUsers')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUser/:id')
   async getUserById(@Param('id') id: string) {
     return await this.usersService.getUserById(id);
