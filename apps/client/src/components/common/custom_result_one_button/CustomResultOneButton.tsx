@@ -48,7 +48,7 @@ const CustomResultOneButton: React.FC<{
             className="button-custom-result"
             style={{
               borderRadius: "30px",
-              backgroundColor: "#0085c8",
+              backgroundColor: "#015E90",
               color: "#f2f2f2",
             }}
             onClick={handleClickCustomResult}

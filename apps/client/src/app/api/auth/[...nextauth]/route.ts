@@ -8,7 +8,7 @@ const handler = NextAuth({
       id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       credentials: {
-        email: {
+        principal_email: {
           label: "Correo",
           type: "email",
           pattern: "^[w.-]+@[a-zA-Zd.-]+.[a-zA-Z]{2,}$",
@@ -26,16 +26,15 @@ const handler = NextAuth({
         if (!credentials) {
           throw new Error("Credenciales no definidas.");
         }
-        // Add logic here to look up the user from the credentials supplied
 
-        const { email, password, verification_code } = credentials;
+        const { principal_email, password, verification_code } = credentials;
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/.../`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/`, {
           method: "POST",
           body: JSON.stringify({
-            email,
+            principal_email,
             password,
-            verification_code,
+            // verification_code,
           }),
           headers: { "Content-Type": "application/json" },
         });
@@ -47,12 +46,9 @@ const handler = NextAuth({
         }
 
         if (user) {
-          // Any object returned will be saved in `user` property of the JWT
           return user;
         } else {
-          // If you return null then an error will be displayed advising the user to check their details.
           return null;
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
         }
       },
     }),

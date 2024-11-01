@@ -154,7 +154,7 @@ const LoginUserForm = () => {
             className="col-carousel"
             span={12}
             style={{
-              backgroundColor: "#0085c8",
+              backgroundColor: "#017DC0",
               borderRadius: "20px",
               boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
             }}
@@ -317,7 +317,7 @@ const LoginUserForm = () => {
                     style={{
                       borderRadius: "30px",
                       textAlign: "center",
-                      backgroundColor: "#0085c8",
+                      backgroundColor: "#015E90",
                     }}
                     onClick={() => ({})}
                   >

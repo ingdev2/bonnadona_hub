@@ -166,7 +166,7 @@ const UserForgotPasswordForm: React.FC<{
               style={{
                 paddingInline: 45,
                 borderRadius: "30px",
-                backgroundColor: "#0085c8",
+                backgroundColor: "#015E90",
                 color: "#f2f2f2",
                 marginTop: "13px",
               }}

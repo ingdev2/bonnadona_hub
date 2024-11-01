@@ -53,7 +53,7 @@ const CustomDashboardLayout: React.FC<{
         <Header
           className="custom--dashboard-layout-header"
           style={{
-            background: "#0085c8",
+            background: "#015E90",
             padding: "0px",
             position: "fixed",
             width: "100%",

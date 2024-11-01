@@ -108,7 +108,7 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
             style={{
               fontWeight: "bold",
               fontSize: 13,
-              color: "#0085c8",
+              color: "#015E90",
               lineHeight: 1.7,
               letterSpacing: 1.3,
               marginBlock: 7,
@@ -170,7 +170,7 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
                 prefix={
                   <TbPasswordUser
                     className="input-code-item-icon"
-                    style={{ paddingInline: "1px", color: "#0085c8" }}
+                    style={{ paddingInline: "1px", color: "#017DC0" }}
                   />
                 }
                 style={{
@@ -197,7 +197,7 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
                 key={"confirm-code-button"}
                 className="confirm-code-button"
                 style={{
-                  backgroundColor: "#0085c8",
+                  backgroundColor: "#015E90",
                   color: "#f2f2f2",
                   borderRadius: 31,
                   marginTop: 5,
@@ -220,8 +220,8 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
               disabled={resendCodeDisable}
               style={{
                 backgroundColor: resendCodeDisable ? "#D8D8D8" : "transparent",
-                color: resendCodeDisable ? "#A0A0A0" : "#0085c8",
-                borderColor: resendCodeDisable ? "#A0A0A0" : "#0085c8",
+                color: resendCodeDisable ? "#A7BAB7" : "#015E90",
+                borderColor: resendCodeDisable ? "#A7AFBA" : "#015E90",
                 paddingInline: 13,
                 borderRadius: 31,
                 borderWidth: 1.3,
