@@ -27,7 +27,7 @@ export class AuthController {
 
   // REGISTER //
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/registerUserCollaborator')
   async registerUserCollaborator(
     @Body() registerUserCollaborator: CreateUserDto,
@@ -43,6 +43,13 @@ export class AuthController {
   }
 
   // LOGIN //
+
+  @Post('refreshToken')
+  async refreshToken(@Req() request: Request) {
+    const [type, token] = request.headers['authorization']?.split(' ') || [];
+
+    return this.authService.refreshToken(token);
+  }
 
   @Post('loginCollaboratorUser')
   async loginCollaboratorUser(@Body() loginCollaborator: LoginDto) {
