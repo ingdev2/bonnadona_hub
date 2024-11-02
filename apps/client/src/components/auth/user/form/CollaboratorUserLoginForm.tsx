@@ -26,7 +26,7 @@ import { titleStyleCss } from "@/theme/text_styles";
 
 const { Title } = Typography;
 
-const LoginUserForm = () => {
+const CollaboratorUserLoginForm = () => {
   const [emailLocalState, setEmailLocalState] = useState("");
   const [passwordLocalState, setPasswordLocalState] = useState("");
 
@@ -338,4 +338,4 @@ const LoginUserForm = () => {
   );
 };
 
-export default LoginUserForm;
+export default CollaboratorUserLoginForm;

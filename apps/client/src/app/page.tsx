@@ -46,9 +46,6 @@ const HomePage: React.FC = () => {
         <div
           className="bonna-logo"
           style={{
-            // display: "flex",
-            // justifyContent: "left",
-            // paddingTop: "22px",
             position: "absolute",
             top: "22px",
             right: "22px",
@@ -57,7 +54,7 @@ const HomePage: React.FC = () => {
           <img
             src="/logos/LOGO-BONNADONA.png"
             alt="Logo de Bonnadona"
-            style={{ height: 80 }}
+            style={{ width: "170px" }}
           />
         </div>
 
@@ -82,7 +79,7 @@ const HomePage: React.FC = () => {
             <img
               src="/logos/logo_vertical.png"
               alt="Logo de Bonnadona HUB"
-              style={{ width: "50%", marginBottom: 30 }}
+              style={{ width: "50%", marginBottom: "30px" }}
             />
           </div>
 
@@ -96,7 +93,7 @@ const HomePage: React.FC = () => {
                 marginBottom: 15,
               }}
             >
-              Plataforma de acceso a las aplicaciones de la Clínica Bonnadona
+              Plataforma de acceso a las aplicaciones internas de la Clínica Bonnadona
             </h3>
             <div
               className="auth-button"

@@ -1,13 +1,14 @@
 "use client";
 
-import LoginUserForm from "@/components/auth/user/form/LoginUserForm";
+import CollaboratorUserLoginForm from "@/components/auth/user/form/CollaboratorUserLoginForm";
 
-const UserLoginPage: React.FC = () => {
+const UsersLoginPage: React.FC = () => {
+
   return (
     <>
-      <LoginUserForm />
+      <CollaboratorUserLoginForm />
     </>
   );
 };
 
-export default UserLoginPage;
+export default UsersLoginPage;
