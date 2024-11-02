@@ -12,7 +12,7 @@ import CustomResultOneButton from "@/components/common/custom_result_one_button/
 
 import { maskEmail } from "@/helpers/mask_email/mask_email";
 
-const UserForgotPasswordForm: React.FC<{
+const CollaboratorForgotPasswordForm: React.FC<{
   setOpenModalForgotPassword: (value: React.SetStateAction<boolean>) => void;
 }> = ({ setOpenModalForgotPassword }) => {
   const router = useRouter();
@@ -119,7 +119,7 @@ const UserForgotPasswordForm: React.FC<{
 
           <Form.Item
             name="corporate-email-forgot-password-user"
-            label="Correo electrónico corporativo:"
+            label="Correo electrónico asociado:"
             style={{ marginBottom: "13px" }}
             normalize={(value) => {
               if (!value) return "";
@@ -183,4 +183,4 @@ const UserForgotPasswordForm: React.FC<{
   );
 };
 
-export default UserForgotPasswordForm;
+export default CollaboratorForgotPasswordForm;

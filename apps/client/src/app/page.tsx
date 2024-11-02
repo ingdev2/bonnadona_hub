@@ -4,7 +4,7 @@ import React from "react";
 
 import { Col } from "antd";
 
-import ButtonAuth from "@/components/auth/user/button/ButtonAuth";
+import ButtonAuth from "@/components/auth/ButtonAuth";
 
 import "../app/globals.css";
 

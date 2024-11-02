@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useAppDispatch } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -16,23 +19,36 @@ import {
 import { UserOutlined } from "@ant-design/icons";
 import { RiLockPasswordLine } from "react-icons/ri";
 
-import TwoFactorAuthModal from "../modal/TwoFactorAuthModal";
-import UserForgotPasswordForm from "./UserForgotPasswordForm";
+import CollaboratorModalVerificationCode from "../CollaboratorModalVerificationCode";
+import CollaboratorForgotPasswordForm from "../CollaboratorForgotPasswordForm";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
 
 import { titleStyleCss } from "@/theme/text_styles";
+import { useLoginCollaboratorUserMutation } from "@/redux/apis/auth/loginUsersApi";
+import { UserRolType } from "@/utils/enums/user_roles.enum";
 
 const { Title } = Typography;
 
 const CollaboratorUserLoginForm = () => {
-  const [emailLocalState, setEmailLocalState] = useState("");
-  const [passwordLocalState, setPasswordLocalState] = useState("");
+  const { data: session, status } = useSession();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
-  const [isModalVerifyCodeVisible, setIsModalVerifyCodeVisible] =
+  const [emailCollaboratorLocalState, setEmailCollaboratorLocalState] =
+    useState("");
+  const [passwordCollaboratorLocalState, setPasswordCollaboratorLocalState] =
+    useState("");
+
+  const [isModalVerifyCodeVisible, setIsModalVerifyCodeVisible] = // <-- revisar
     useState(false);
   const [modalForgotMyPasswordIsOpen, setModalForgotMyPasswordIsOpen] =
+    useState(false);
+
+  const [isSubmittingCollaborator, setIsSubmittingCollaborator] =
+    useState(false);
+  const [showErrorMessageCollaborator, setShowErrorMessageCollaborator] =
     useState(false);
 
   const [showWarningMessage, setShowWarningMessage] = useState(false);
@@ -41,42 +57,68 @@ const CollaboratorUserLoginForm = () => {
   const [failedAttemptsCounterLocalState, setFailedAttemptsCounterLocalState] =
     useState(1);
 
+  const [
+    loginCollaboratorUsers,
+    {
+      data: isloginCollaboratorData,
+      isLoading: isloginCollaboratorLoading,
+      isSuccess: isloginCollaboratorSuccess,
+      isError: isloginCollaboratorError,
+    },
+  ] = useLoginCollaboratorUserMutation({
+    fixedCacheKey: "loginCollaboratorData",
+  });
+
+  // useEffect(() => {
+  //   if (
+  //     status === "authenticated" &&
+  //     session?.user.role === UserRolType.COLLABORATOR
+  //   ) {
+  //     signOut();
+  //   }
+  // }, []);
+
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmailLocalState(event.target.value);
+    setEmailCollaboratorLocalState(event.target.value);
   };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordLocalState(event.target.value);
+    setPasswordCollaboratorLocalState(event.target.value);
   };
 
   const handleSubmit = () => {
-    if (
-      emailLocalState === "andres@gmail.com" &&
-      passwordLocalState === "1234"
-    ) {
-      if (failedAttemptsCounterLocalState >= 5) {
-        setShowWarningMessage(false);
-        setShowErrorMessage(true);
-        setIsModalVerifyCodeVisible(false);
-      } else {
-        setIsModalVerifyCodeVisible(true);
-        setShowWarningMessage(false);
-        setShowErrorMessage(false);
-      }
-    } else {
-      var count = failedAttemptsCounterLocalState;
-      setFailedAttemptsCounterLocalState((count += 1));
-      console.log("failedAttemptsCounter", failedAttemptsCounterLocalState);
+    try {
+      setIsSubmittingCollaborator(true);
 
-      if (failedAttemptsCounterLocalState === 3) {
-        setShowWarningMessage(true);
-      }
+      
+    } catch (error) {}
+    // if (
+    //   emailCollaboratorLocalState === "andres@gmail.com" &&
+    //   passwordCollaboratorLocalState === "1234"
+    // ) {
+    //   if (failedAttemptsCounterLocalState >= 5) {
+    //     setShowWarningMessage(false);
+    //     setShowErrorMessage(true);
+    //     setIsModalVerifyCodeVisible(false);
+    //   } else {
+    //     setIsModalVerifyCodeVisible(true);
+    //     setShowWarningMessage(false);
+    //     setShowErrorMessage(false);
+    //   }
+    // } else {
+    //   var count = failedAttemptsCounterLocalState;
+    //   setFailedAttemptsCounterLocalState((count += 1));
+    //   console.log("failedAttemptsCounter", failedAttemptsCounterLocalState);
 
-      if (failedAttemptsCounterLocalState >= 5) {
-        setShowWarningMessage(false);
-        setShowErrorMessage(true);
-      }
-    }
+    //   if (failedAttemptsCounterLocalState === 3) {
+    //     setShowWarningMessage(true);
+    //   }
+
+    //   if (failedAttemptsCounterLocalState >= 5) {
+    //     setShowWarningMessage(false);
+    //     setShowErrorMessage(true);
+    //   }
+    // }
   };
 
   const handleModalVerifyCodeClose = () => {
@@ -160,7 +202,13 @@ const CollaboratorUserLoginForm = () => {
             }}
           >
             <div style={{ padding: "32px" }}>
-              <Carousel autoplay arrows fade className="carousel-images-2FA">
+              <Carousel
+                autoplaySpeed={3000}
+                autoplay
+                arrows
+                fade
+                className="carousel-images-2FA"
+              >
                 {imagesCarousel.map((image, index) => (
                   <div key={index}>
                     <img
@@ -244,7 +292,7 @@ const CollaboratorUserLoginForm = () => {
                     prefix={
                       <UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />
                     }
-                    value={emailLocalState}
+                    value={emailCollaboratorLocalState}
                     style={{ borderRadius: "30px" }}
                     onChange={handleEmailChange}
                   />
@@ -268,7 +316,7 @@ const CollaboratorUserLoginForm = () => {
                         style={{ color: "rgba(0,0,0,.25)" }}
                       />
                     }
-                    value={passwordLocalState}
+                    value={passwordCollaboratorLocalState}
                     placeholder="Contraseña"
                     style={{ borderRadius: "30px" }}
                     onChange={handlePasswordChange}
@@ -299,7 +347,7 @@ const CollaboratorUserLoginForm = () => {
                       setModalForgotMyPasswordIsOpen(false)
                     }
                     contentCustomModal={
-                      <UserForgotPasswordForm
+                      <CollaboratorForgotPasswordForm
                         setOpenModalForgotPassword={
                           setModalForgotMyPasswordIsOpen
                         }
@@ -328,7 +376,7 @@ const CollaboratorUserLoginForm = () => {
             </div>
           </Col>
         </Row>
-        <TwoFactorAuthModal
+        <CollaboratorModalVerificationCode
           visible={isModalVerifyCodeVisible}
           onClose={handleModalVerifyCodeClose}
           onVerify={handleVerifyCode}

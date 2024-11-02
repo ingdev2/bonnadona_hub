@@ -17,17 +17,15 @@ import { maskEmail } from "@/helpers/mask_email/mask_email";
 
 const { Title } = Typography;
 
-interface TwoFactorAuthModalProps {
+interface CollaboratorModalVerificationCode {
   visible: boolean;
   onClose: () => void;
   onVerify: (code: string) => void;
 }
 
-const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
-  visible,
-  onClose,
-  onVerify,
-}) => {
+const CollaboratorModalVerificationCode: React.FC<
+  CollaboratorModalVerificationCode
+> = ({ visible, onClose, onVerify }) => {
   const [code, setCode] = useState("");
 
   const [isSubmittingConfirm, setIsSubmittingConfirm] = useState(false);
@@ -261,4 +259,4 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
   );
 };
 
-export default TwoFactorAuthModal;
+export default CollaboratorModalVerificationCode;

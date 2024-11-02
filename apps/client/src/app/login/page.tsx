@@ -1,6 +1,6 @@
 "use client";
 
-import CollaboratorUserLoginForm from "@/components/auth/user/form/CollaboratorUserLoginForm";
+import CollaboratorUserLoginForm from "@/components/auth/user/collaborator_user_login_form/CollaboratorUserLoginForm";
 
 const UsersLoginPage: React.FC = () => {
 

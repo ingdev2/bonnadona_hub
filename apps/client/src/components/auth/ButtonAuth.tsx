@@ -13,7 +13,6 @@ import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 const ButtonAuth = () => {
   const { data: session, status } = useSession();
 
-  console.log("session, status: ", session, status);
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

@@ -1,0 +1,5 @@
+export enum AdminRolType {
+  SUPER_ADMIN = "SUPER ADMINISTRADOR",
+  ADMIN = "ADMINISTRADOR",
+  AUDITOR = "AUDITOR",
+}

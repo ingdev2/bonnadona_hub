@@ -5,7 +5,7 @@ import storage from "./storage/storage";
 
 import userReducer from "./features/user/userSlice";
 
-import { userApi } from "./apis/user/userApi";
+import { userApi } from "./apis/users/userApi";
 
 const persistConfig = {
   key: "root",
