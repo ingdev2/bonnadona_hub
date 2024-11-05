@@ -8,6 +8,7 @@ import { Application } from 'src/application/entities/application.entity';
 import { ApplicationModule } from 'src/application_module/entities/application_module.entity';
 import { ModuleAction } from 'src/module_action/entities/module_action.entity';
 import { UsersModule } from 'src/user/users.module';
+import { AuditLogsModule } from 'src/audit_logs/audit_logs.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UsersModule } from 'src/user/users.module';
       ModuleAction,
     ]),
     forwardRef(() => UsersModule),
+    AuditLogsModule,
   ],
   controllers: [PermissionsController],
   providers: [PermissionsService],

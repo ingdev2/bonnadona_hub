@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { PasswordPolicyService } from '../services/password_policy.service';
 import { CreatePasswordPolicyDto } from '../dto/create-password_policy.dto';
@@ -44,10 +45,12 @@ export class PasswordPolicyController {
   updatePasswordPolicy(
     @Param('id') id: number,
     @Body() updatePasswordPolicy: UpdatePasswordPolicyDto,
+    @Req() requestAuditLog: any,
   ) {
     return this.passwordPolicyService.updatePasswordPolicy(
       id,
       updatePasswordPolicy,
+      requestAuditLog,
     );
   }
 }

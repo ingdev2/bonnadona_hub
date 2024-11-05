@@ -1129,7 +1129,12 @@ export class UsersService {
     const userUpdate = await this.userRepository.update(id, userUpdates);
 
     if (roleIdsToAdd || roleIdsToRemove) {
-      await this.updateUserRoles(id, roleIdsToAdd, roleIdsToRemove);
+      await this.updateUserRoles(
+        id,
+        roleIdsToAdd,
+        roleIdsToRemove,
+        requestAuditLog,
+      );
     }
 
     if (userUpdate.affected === 0) {
@@ -1228,6 +1233,7 @@ export class UsersService {
     id: string,
     roleIdsToAdd: number[],
     roleIdsToRemove: number[],
+    @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
       where: { id, is_active: true },
@@ -1263,6 +1269,16 @@ export class UsersService {
         );
       }
     }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_DATA_USER,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     await this.userRepository.save(userFound);
   }
