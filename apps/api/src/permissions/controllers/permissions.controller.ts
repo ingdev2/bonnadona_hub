@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { PermissionsService } from '../services/permissions.service';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
@@ -49,7 +50,12 @@ export class PermissionsController {
   modifyPermission(
     @Param('id') id: string,
     @Body() updatePermission: UpdatePermissionDto,
+    @Req() requestAuditLog: any,
   ) {
-    return this.permissionsService.modifyPermission(id, updatePermission);
+    return this.permissionsService.modifyPermission(
+      id,
+      updatePermission,
+      requestAuditLog,
+    );
   }
 }

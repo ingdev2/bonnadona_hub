@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Req,
 } from '@nestjs/common';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { UpdatePermissionDto } from '../dto/update-permission.dto';
@@ -15,6 +16,11 @@ import { ApplicationModule } from 'src/application_module/entities/application_m
 import { ModuleAction } from 'src/module_action/entities/module_action.entity';
 import { User } from 'src/user/entities/user.entity';
 import { UsersService } from 'src/user/services/users.service';
+import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
+
+import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
+import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
+import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 
 @Injectable()
 export class PermissionsService {
@@ -35,6 +41,8 @@ export class PermissionsService {
 
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+
+    private readonly auditLogService: AuditLogsService,
   ) {}
 
   // CREATE FUNTIONS //
@@ -164,6 +172,7 @@ export class PermissionsService {
   async modifyPermission(
     permissionId: string,
     updatePermission: UpdatePermissionDto,
+    @Req() requestAuditLog: any,
   ) {
     const permission = await this.permissionRepo.findOne({
       where: { id: permissionId },
@@ -221,6 +230,16 @@ export class PermissionsService {
 
       permission.module_actions = actions;
     }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.PERMISSION_UPDATE,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.PERMISSIONS_MODULE,
+      module_record_id: permissionId,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     return await this.permissionRepo.save(permission);
   }
