@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { PositionLevelEnum } from 'src/utils/enums/position_level.enum';
+import { PositionLevelEnum } from 'src/utils/enums/user/position_level.enum';
 
 @Entity()
 export class PositionLevel {

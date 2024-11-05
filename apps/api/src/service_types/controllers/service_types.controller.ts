@@ -11,6 +11,8 @@ import { ServiceTypesService } from '../services/service_types.service';
 import { CreateServiceTypeDto } from '../dto/create-service_type.dto';
 import { UpdateServiceTypeDto } from '../dto/update-service_type.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 @ApiTags('service-types')
 @ApiBearerAuth()
@@ -20,6 +22,7 @@ export class ServiceTypesController {
 
   // POST METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
   createServiceType(@Body() createServiceType: CreateServiceTypeDto) {
     return this.serviceTypesService.createServiceType(createServiceType);
@@ -39,6 +42,7 @@ export class ServiceTypesController {
 
   // PATCH METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   updateServiceType(
     @Param('id') id: number,

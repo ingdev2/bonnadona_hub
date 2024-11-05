@@ -16,7 +16,7 @@ import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
 import { IdUserDto } from '../dto/id_user.dto';
 
-import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 @ApiTags('auth')
 @ApiBearerAuth()

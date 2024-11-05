@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { IdTypeEnum } from '../../utils/enums/id_types.enum';
+import { IdTypeEnum } from '../../utils/enums/user/id_types.enum';
 
 @Entity()
 export class IdType {

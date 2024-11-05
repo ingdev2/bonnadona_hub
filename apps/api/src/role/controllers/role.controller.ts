@@ -11,6 +11,8 @@ import { RoleService } from '../services/role.service';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { UpdateRoleDto } from '../dto/update-role.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 @ApiTags('role')
 @ApiBearerAuth()
@@ -20,6 +22,7 @@ export class RoleController {
 
   // POST METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
   createRole(@Body() createRole: CreateRoleDto) {
     return this.roleService.createRole(createRole);
@@ -39,6 +42,7 @@ export class RoleController {
 
   // PATCH METHODS //
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   updateRole(@Param('id') id: number, @Body() updateRole: UpdateRoleDto) {
     return this.roleService.updateRole(id, updateRole);

@@ -12,7 +12,7 @@ import { CreatePasswordPolicyDto } from '../dto/create-password_policy.dto';
 import { UpdatePasswordPolicyDto } from '../dto/update-password_policy.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
-import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 @ApiTags('password-policy')
 @ApiBearerAuth()

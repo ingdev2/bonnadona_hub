@@ -1,5 +1,5 @@
 import { User } from './entities/user.entity';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersController } from './controllers/users.controller';
 import { UsersService } from './services/users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +16,7 @@ import { AuditLogsModule } from 'src/audit_logs/audit_logs.module';
 import { PasswordPolicyModule } from 'src/password_policy/password_policy.module';
 import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
 import { PasswordHistoryModule } from 'src/password_history/password_history.module';
+import { PermissionsModule } from 'src/permissions/permissions.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { PasswordHistoryModule } from 'src/password_history/password_history.mod
       PositionLevel,
       PasswordPolicy,
     ]),
+    forwardRef(() => PermissionsModule),
     PasswordPolicyModule,
     PasswordHistoryModule,
     NodemailerModule,
