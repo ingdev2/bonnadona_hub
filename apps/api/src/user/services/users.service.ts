@@ -4,6 +4,8 @@ import {
   HttpStatus,
   UnauthorizedException,
   Req,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
@@ -15,6 +17,7 @@ import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { PermissionsService } from 'src/permissions/services/permissions.service';
 import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
 import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
 import { PasswordPolicyService } from 'src/password_policy/services/password_policy.service';
@@ -88,6 +91,9 @@ export class UsersService {
 
     @InjectRepository(PositionLevel)
     private positionLevelRepository: Repository<PositionLevel>,
+
+    @Inject(forwardRef(() => PermissionsService))
+    private readonly permissionsService: PermissionsService,
 
     private readonly passwordPolicyService: PasswordPolicyService,
 
@@ -520,6 +526,11 @@ export class UsersService {
 
     userCollaboratorSave.user_profile = userProfileCreate;
 
+    await this.permissionsService.assignDefaultPermissionsToUser(
+      userCollaboratorSave,
+      userCollaborator.collaborator_position,
+    );
+
     const userSessionLog = new UserSessionLog();
 
     userSessionLog.user = userCollaboratorSave;
@@ -652,6 +663,11 @@ export class UsersService {
       await this.userProfileRepository.create(userProfile);
 
     userCollaboratorSave.user_profile = userProfileCreate;
+
+    await this.permissionsService.assignDefaultPermissionsToUser(
+      userCollaboratorSave,
+      userCollaborator.collaborator_position,
+    );
 
     const userSessionLog = new UserSessionLog();
 
@@ -973,6 +989,36 @@ export class UsersService {
       assignedRoles,
       unassignedRoles,
     };
+  }
+
+  async getUserPermissions(id: string) {
+    const userFound = await this.userRepository.findOne({
+      where: { id, is_active: true },
+    });
+
+    if (!userFound) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    if (!userFound.permission.length) {
+      throw new HttpException(
+        `Este usuario no tiene permisos asignados.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return userFound.permission;
+  }
+
+  async getAllColaboratorPositions() {
+    const positions = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.collaborator_position')
+      .orderBy('user.collaborator_position', 'ASC')
+      .distinct(true)
+      .getRawMany();
+
+    return positions.map((position) => position.user_collaborator_position);
   }
 
   // UPDATE FUNTIONS //

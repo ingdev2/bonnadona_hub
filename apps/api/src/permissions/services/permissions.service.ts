@@ -1,26 +1,227 @@
-import { Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { UpdatePermissionDto } from '../dto/update-permission.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+import { Permissions } from '../entities/permissions.entity';
+import { Application } from 'src/application/entities/application.entity';
+import { ApplicationModule } from 'src/application_module/entities/application_module.entity';
+import { ModuleAction } from 'src/module_action/entities/module_action.entity';
+import { User } from 'src/user/entities/user.entity';
+import { UsersService } from 'src/user/services/users.service';
 
 @Injectable()
 export class PermissionsService {
-  create(createPermissionDto: CreatePermissionDto) {
-    return 'This action adds a new permission';
+  constructor(
+    @InjectRepository(Permissions)
+    private permissionRepo: Repository<Permissions>,
+
+    @InjectRepository(Application)
+    private applicationRepo: Repository<Application>,
+
+    @InjectRepository(ApplicationModule)
+    private moduleRepo: Repository<ApplicationModule>,
+
+    @InjectRepository(ModuleAction)
+    private actionRepo: Repository<ModuleAction>,
+
+    @InjectRepository(User) private userRepo: Repository<User>,
+
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
+  ) {}
+
+  // CREATE FUNTIONS //
+
+  async createPermission(permissionDto: CreatePermissionDto) {
+    const { app_ids, app_module_ids, module_action_ids } = permissionDto;
+
+    const permissionFound = await this.permissionRepo.findOne({
+      where: { name: permissionDto.name },
+    });
+
+    if (permissionFound) {
+      throw new HttpException(
+        `El permiso que deseas crear ya existe para el cargo ingresado`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const positions = await this.usersService.getAllColaboratorPositions();
+
+    if (!positions.includes(permissionDto.name)) {
+      throw new HttpException(
+        `El nombre del permiso debe coincidir con uno de los cargos registrados.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const apps = await this.applicationRepo.findBy({ id: In(app_ids) });
+
+    if (apps.length !== app_ids.length) {
+      throw new HttpException(
+        `Una o más aplicaciones no existen.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const modules = await this.moduleRepo.findBy({ id: In(app_module_ids) });
+
+    if (modules.length !== app_module_ids.length) {
+      throw new HttpException(
+        `Uno o más módulos no existen.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const actions = await this.actionRepo.findBy({ id: In(module_action_ids) });
+
+    if (actions.length !== module_action_ids.length) {
+      throw new HttpException(
+        `Una o más acciones no existen.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const permission = this.permissionRepo.create({
+      ...permissionDto,
+      applications: apps,
+      application_modules: modules,
+      module_actions: actions,
+    });
+
+    return await this.permissionRepo.save(permission);
   }
 
-  findAll() {
-    return `This action returns all permissions`;
+  async assignDefaultPermissionsToUser(
+    user: User,
+    collaboratorPosition: string,
+  ) {
+    let positionPermissions = await this.permissionRepo.find({
+      where: { name: collaboratorPosition },
+    });
+
+    if (!positionPermissions.length) {
+      const defaultPermission = this.permissionRepo.create({
+        name: collaboratorPosition,
+        description: `PERMISO POR DEFECTO PARA EL CARGO: ${collaboratorPosition}`,
+        applications: [],
+        application_modules: [],
+        module_actions: [],
+      });
+
+      positionPermissions = [await this.permissionRepo.save(defaultPermission)];
+    }
+
+    user.permission = [...positionPermissions];
+
+    return await this.userRepo.save(user);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} permission`;
+  // GET FUNTIONS //
+
+  async getAllPermissions() {
+    const allPermissions = await this.permissionRepo.find({
+      order: {
+        createdAt: 'ASC',
+      },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    if (!allPermissions.length) {
+      throw new HttpException(
+        `No hay permisos registrados en la base de datos`,
+        HttpStatus.NOT_FOUND,
+      );
+    } else {
+      return allPermissions;
+    }
   }
 
-  update(id: number, updatePermissionDto: UpdatePermissionDto) {
-    return `This action updates a #${id} permission`;
+  async getPermission(permissionid: string) {
+    const permissionFound = await this.permissionRepo.findOne({
+      where: { id: permissionid },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    if (!permissionFound) {
+      throw new HttpException(`Permiso no encontrado`, HttpStatus.CONFLICT);
+    } else {
+      return permissionFound;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} permission`;
+  // UPDATE FUNTIONS //
+
+  async modifyPermission(
+    permissionId: string,
+    updatePermission: UpdatePermissionDto,
+  ) {
+    const permission = await this.permissionRepo.findOne({
+      where: { id: permissionId },
+    });
+
+    if (!permission) {
+      throw new HttpException(`Permiso no encontrado`, HttpStatus.NOT_FOUND);
+    }
+
+    if (updatePermission.description) {
+      permission.description = updatePermission.description;
+    }
+
+    if (updatePermission.app_ids) {
+      const apps = await this.applicationRepo.findBy({
+        id: In(updatePermission.app_ids),
+      });
+
+      if (apps.length !== updatePermission.app_ids.length) {
+        throw new HttpException(
+          `Una o más aplicaciones no existen`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      permission.applications = apps;
+    }
+
+    if (updatePermission.app_module_ids) {
+      const modules = await this.moduleRepo.findBy({
+        id: In(updatePermission.app_module_ids),
+      });
+
+      if (modules.length !== updatePermission.app_module_ids.length) {
+        throw new HttpException(
+          `Uno o más módulos no existen`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      permission.application_modules = modules;
+    }
+
+    if (updatePermission.module_action_ids) {
+      const actions = await this.actionRepo.findBy({
+        id: In(updatePermission.module_action_ids),
+      });
+
+      if (actions.length !== updatePermission.module_action_ids.length) {
+        throw new HttpException(
+          `Una o más acciones no existen`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      permission.module_actions = actions;
+    }
+
+    return await this.permissionRepo.save(permission);
   }
 }

@@ -9,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Permissions } from 'src/permissions/entities/permissions.entity';
 import { Application } from 'src/application/entities/application.entity';
 import { ModuleAction } from 'src/module_action/entities/module_action.entity';
 
@@ -20,9 +19,6 @@ export class ApplicationModule {
 
   @Column({ type: 'text', unique: true })
   name: string;
-
-  @OneToMany(() => Permissions, (permissions) => permissions.application_module)
-  permissions: Permissions[];
 
   @ManyToOne(
     () => Application,

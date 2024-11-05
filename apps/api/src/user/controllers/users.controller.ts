@@ -76,7 +76,7 @@ export class UsersController {
     return await this.usersService.getAllUsers();
   }
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUser/:id')
   async getUserById(@Param('id') id: string) {
     return await this.usersService.getUserById(id);
@@ -143,6 +143,17 @@ export class UsersController {
   @Get('/getUserRoles/:id')
   async getUserRoles(@Param('id') id: string) {
     return await this.usersService.getUserRoles(id);
+  }
+
+  @Get('/getUserPermissions/:id')
+  async getUserPermissions(@Param('id') id: string) {
+    return await this.usersService.getUserPermissions(id);
+  }
+
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Get('/getAllColaboratorPositions')
+  async getAllColaboratorPositions() {
+    return await this.usersService.getAllColaboratorPositions();
   }
 
   // PATCH METHODS //

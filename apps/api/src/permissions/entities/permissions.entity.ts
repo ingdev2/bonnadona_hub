@@ -3,8 +3,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -23,36 +23,26 @@ export class Permissions {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @ManyToOne(() => Application, (application) => application.permissions, {
-    onDelete: 'CASCADE',
+  @ManyToMany(() => Application, {
+    eager: true,
+    cascade: true,
   })
-  @JoinColumn({ name: 'app_id', referencedColumnName: 'id' })
-  application: Application;
+  @JoinTable({ name: 'Permissions_Applications' })
+  applications: Application[];
 
-  @Column()
-  app_id: number;
-
-  @ManyToOne(
-    () => ApplicationModule,
-    (application_module) => application_module.permissions,
-    {
-      onDelete: 'CASCADE',
-    },
-  )
-  @JoinColumn({ name: 'app_module_id', referencedColumnName: 'id' })
-  application_module: ApplicationModule;
-
-  @Column()
-  app_module_id: number;
-
-  @ManyToOne(() => ModuleAction, (module_action) => module_action.permissions, {
-    onDelete: 'CASCADE',
+  @ManyToMany(() => ApplicationModule, {
+    eager: true,
+    cascade: true,
   })
-  @JoinColumn({ name: 'module_action_id', referencedColumnName: 'id' })
-  module_action: ModuleAction;
+  @JoinTable({ name: 'Permissions_AppModules' })
+  application_modules: ApplicationModule[];
 
-  @Column()
-  module_action_id: number;
+  @ManyToMany(() => ModuleAction, {
+    eager: true,
+    cascade: true,
+  })
+  @JoinTable({ name: 'Permissions_ModuleActions' })
+  module_actions: ModuleAction[];
 
   @CreateDateColumn()
   createdAt: Date;
