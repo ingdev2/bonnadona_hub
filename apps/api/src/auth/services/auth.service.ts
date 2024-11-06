@@ -196,9 +196,7 @@ export class AuthService {
     }
 
     const collaboratorFound =
-      await this.userService.getUserFoundByIdNumberWithPassword(
-        principal_email,
-      );
+      await this.userService.getUserFoundByEmailWithPassword(principal_email);
 
     if (!collaboratorFound) {
       throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
@@ -290,9 +288,7 @@ export class AuthService {
     }
 
     const adminOrAuditorFound =
-      await this.userService.getUserFoundByIdNumberWithPassword(
-        principal_email,
-      );
+      await this.userService.getUserFoundByEmailWithPassword(principal_email);
 
     if (!adminOrAuditorFound) {
       throw new UnauthorizedException(`¡Datos ingresados incorrectos!`);
@@ -363,7 +359,7 @@ export class AuthService {
   }
 
   async verifyCodeAndLoginCollaboratorUser(
-    id_number: number,
+    principal_email: string,
     verification_code: number,
   ) {
     const collaboratorUserRoleFound = await this.roleRepository.find({
@@ -377,7 +373,9 @@ export class AuthService {
     const verifiedCollaboratorRole = await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.role', 'role')
-      .where('user.id_number = :id_number', { id_number })
+      .where('user.principal_email = :principal_email', {
+        principal_email: principal_email,
+      })
       .andWhere('role.id IN (:...roleIds)', {
         roleIds: collaboratorUserRoleFound.map((role) => role.id),
       })
@@ -388,10 +386,11 @@ export class AuthService {
       throw new UnauthorizedException(`¡Usuario no autorizado!`);
     }
 
-    const collaboratorFound = await this.userService.getUserActiveByIdAndCode(
-      id_number,
-      verification_code,
-    );
+    const collaboratorFound =
+      await this.userService.getUserActiveByEmailAndCode(
+        principal_email,
+        verification_code,
+      );
 
     if (!collaboratorFound) {
       throw new UnauthorizedException(`¡Código de verificación incorrecto!`);
@@ -433,7 +432,7 @@ export class AuthService {
   }
 
   async verifyCodeAndLoginAdminAndAuditorUser(
-    id_number: number,
+    principal_email: string,
     verification_code: number,
     @Req() requestAuditLog: any,
   ) {
@@ -450,7 +449,9 @@ export class AuthService {
     const verifiedAdminOrAuditorRole = await this.userRepository
       .createQueryBuilder('user')
       .innerJoinAndSelect('user.role', 'role')
-      .where('user.id_number = :id_number', { id_number })
+      .where('user.principal_email = :principal_email', {
+        principal_email: principal_email,
+      })
       .andWhere('role.id IN (:...roleIds)', {
         roleIds: adminOrAuditorUserRoleFound.map((role) => role.id),
       })
@@ -461,10 +462,11 @@ export class AuthService {
       throw new UnauthorizedException(`¡Usuario no autorizado!`);
     }
 
-    const adminOrAuditorFound = await this.userService.getUserActiveByIdAndCode(
-      id_number,
-      verification_code,
-    );
+    const adminOrAuditorFound =
+      await this.userService.getUserActiveByEmailAndCode(
+        principal_email,
+        verification_code,
+      );
 
     if (!adminOrAuditorFound) {
       throw new UnauthorizedException(`¡Código de verificación incorrecto!`);
@@ -529,9 +531,9 @@ export class AuthService {
     };
   }
 
-  async resendVerificationUserCode({ id_type, id_number }: IdUserDto) {
+  async resendVerificationUserCode(principal_email: string) {
     const collaboratorFound =
-      await this.userService.getUserActiveByTypeAndIdNumber(id_type, id_number);
+      await this.userService.getUserActiveByEmail(principal_email);
 
     if (!collaboratorFound) {
       throw new UnauthorizedException(`¡Usuario no encontrado!`);

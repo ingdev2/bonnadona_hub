@@ -14,6 +14,7 @@ import { UpdatePermissionDto } from '../dto/update-permission.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
+import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
 
 @ApiTags('permissions')
 @ApiBearerAuth()
@@ -45,6 +46,7 @@ export class PermissionsController {
 
   // PATCH METHODS //
 
+  @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   modifyPermission(

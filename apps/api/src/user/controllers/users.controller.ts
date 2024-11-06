@@ -129,15 +129,9 @@ export class UsersController {
   }
 
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
-  @Get('/getUserActiveByTypeAndIdNumber/:idType/:idNumber')
-  async getUserActiveByTypeAndIdNumber(
-    @Param('idType') idType: number,
-    @Param('idNumber') idNumber: number,
-  ) {
-    return await this.usersService.getUserActiveByTypeAndIdNumber(
-      idType,
-      idNumber,
-    );
+  @Get('/getUserActiveByEmail/:principalEmail')
+  async getUserActiveByEmail(@Param('principalEmail') principalEmail: string) {
+    return await this.usersService.getUserActiveByEmail(principalEmail);
   }
 
   @Get('/getUserRoles/:id')

@@ -17,6 +17,7 @@ import { LoginDto } from '../dto/login.dto';
 import { IdUserDto } from '../dto/id_user.dto';
 
 import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
+import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
 
 @ApiTags('auth')
 @ApiBearerAuth()
@@ -53,35 +54,33 @@ export class AuthController {
     return await this.authService.loginAdminAndAuditorUser(loginCollaborator);
   }
 
-  @Post('verifyCodeAndLoginCollaboratorUser/:id_number')
+  @Post('verifyCodeAndLoginCollaboratorUser/:principal_email')
   async verifyCodeAndLoginCollaboratorUser(
-    @Param('id_number') id_number: number,
+    @Param('principal_email') principal_email: string,
     @Body('verification_code') verification_code: number,
   ) {
     return await this.authService.verifyCodeAndLoginCollaboratorUser(
-      id_number,
+      principal_email,
       verification_code,
     );
   }
 
-  @Post('verifyCodeAndLoginAdminAndAuditorUser/:id_number')
+  @EnableAuditLog()
+  @Post('verifyCodeAndLoginAdminAndAuditorUser/:principal_email')
   async verifyCodeAndLoginAdminAndAuditorUser(
-    @Param('id_number') id_number: number,
+    @Param('principal_email') principal_email: string,
     @Body('verification_code') verification_code: number,
     @Req() requestAuditLog: any,
   ) {
     return await this.authService.verifyCodeAndLoginAdminAndAuditorUser(
-      id_number,
+      principal_email,
       verification_code,
       requestAuditLog,
     );
   }
 
   @Post('resendVerificationUserCode')
-  async resendVerificationUserCode(@Body() { id_type, id_number }: IdUserDto) {
-    return await this.authService.resendVerificationUserCode({
-      id_type,
-      id_number,
-    });
+  async resendVerificationUserCode(@Body() principal_email: string) {
+    return await this.authService.resendVerificationUserCode(principal_email);
   }
 }

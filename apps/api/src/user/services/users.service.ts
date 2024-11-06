@@ -931,15 +931,14 @@ export class UsersService {
     return userFound;
   }
 
-  async getUserActiveByTypeAndIdNumber(idType: number, idNumber: number) {
+  async getUserActiveByEmail(principalEmail: string) {
     return await this.userRepository.findOneBy({
-      user_id_type: idType,
-      id_number: idNumber,
+      principal_email: principalEmail,
       is_active: true,
     });
   }
 
-  async getUserFoundByIdNumberWithPassword(principalEmail: string) {
+  async getUserFoundByEmailWithPassword(principalEmail: string) {
     return await this.userRepository.findOne({
       where: {
         principal_email: principalEmail,
@@ -958,9 +957,12 @@ export class UsersService {
     });
   }
 
-  async getUserActiveByIdAndCode(idNumber: number, verificationCode: number) {
+  async getUserActiveByEmailAndCode(
+    principalEmail: string,
+    verificationCode: number,
+  ) {
     return await this.userRepository.findOneBy({
-      id_number: idNumber,
+      principal_email: principalEmail,
       verification_code: verificationCode,
       is_active: true,
     });
