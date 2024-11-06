@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: UserLogin = {
   id: "",
-  //   user_id_type: "",
-  //   id_number: 0,
+  user_id_type: "",
+  id_number: 0,
   principal_email: "",
   password: "",
   verification_code: 0,
@@ -11,29 +11,34 @@ const initialState: UserLogin = {
   errors: [],
 };
 
-export const patientUserLoginSlice = createSlice({
-  name: "patientUserLogin",
+export const collaboratorUserLoginSlice = createSlice({
+  name: "collaboratorUserLogin",
   initialState,
   reducers: {
-    setIdLoginPatient: (state, action) => {
+    setIdLoginCollaborator: (state, action) => {
       state.id = action.payload;
     },
-    setPrincipalEmailLoginPatient: (state, action) => {
+    setIdNumberLoginCollaborator: (state, action) => {
+      state.id_number = action.payload;
+    },
+    setPrincipalEmailLoginCollaborator: (state, action) => {
       state.password = action.payload;
     },
-    setPasswordLoginPatient: (state, action) => {
+    setPasswordLoginCollaborator: (state, action) => {
       state.password = action.payload;
     },
-    setVerificationCodeLoginPatient: (state, action) => {
+    setVerificationCodeLoginCollaborator: (state, action) => {
       state.verification_code = action.payload;
     },
-    setIdTypeOptionsLoginPatient: (state, action) => {
+    setIdTypeOptionsLoginCollaborator: (state, action) => {
       state.idTypeOptions = action.payload;
     },
-    setErrorsLoginPatient: (state, action) => {
+    setErrorsLoginCollaborator: (state, action) => {
       state.errors = action.payload;
     },
-    resetLoginStatePatient: (state) => {
+    resetLoginStateCollaborator: (state) => {
+      state.user_id_type = initialState.user_id_type;
+      state.id_number = initialState.id_number;
       state.principal_email = initialState.principal_email;
       state.password = initialState.password;
       state.verification_code = initialState.verification_code;
@@ -43,13 +48,14 @@ export const patientUserLoginSlice = createSlice({
 });
 
 export const {
-  setIdLoginPatient,
-  setPrincipalEmailLoginPatient,
-  setPasswordLoginPatient,
-  setVerificationCodeLoginPatient,
-  setErrorsLoginPatient,
-  setIdTypeOptionsLoginPatient,
-  resetLoginStatePatient,
-} = patientUserLoginSlice.actions;
+  setIdLoginCollaborator,
+  setIdNumberLoginCollaborator,
+  setPrincipalEmailLoginCollaborator,
+  setPasswordLoginCollaborator,
+  setVerificationCodeLoginCollaborator,
+  setErrorsLoginCollaborator,
+  setIdTypeOptionsLoginCollaborator,
+  resetLoginStateCollaborator,
+} = collaboratorUserLoginSlice.actions;
 
-export default patientUserLoginSlice.reducer;
+export default collaboratorUserLoginSlice.reducer;

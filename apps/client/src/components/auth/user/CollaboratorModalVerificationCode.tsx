@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
 
 import { Modal, Input, Button, Typography, Space, Form, Divider } from "antd";
 import Link from "next/link";
@@ -14,47 +16,174 @@ import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/Cus
 import CountdownTimer from "@/components/common/countdown_timer/CountdownTimer";
 
 import { maskEmail } from "@/helpers/mask_email/mask_email";
+import { useGetCollaboratorUserByIdNumberQuery } from "@/redux/apis/users/userApi";
+import { useResendVerificationUserCodeMutation } from "@/redux/apis/auth/loginUsersApi";
+import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import {
+  setErrorsLoginCollaborator,
+  setPasswordLoginCollaborator,
+  setPrincipalEmailLoginCollaborator,
+  setVerificationCodeLoginCollaborator,
+} from "@/redux/features/user/collaboratorUserLoginSlice";
+import { signIn } from "next-auth/react";
+import {
+  setCollaboratorModalIsOpen,
+  setIsPageLoading,
+} from "@/redux/features/common/modal/modalSlice";
 
 const { Title } = Typography;
 
-interface CollaboratorModalVerificationCode {
-  visible: boolean;
-  onClose: () => void;
-  onVerify: (code: string) => void;
-}
+const CollaboratorModalVerificationCode: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
-const CollaboratorModalVerificationCode: React.FC<
-  CollaboratorModalVerificationCode
-> = ({ visible, onClose, onVerify }) => {
-  const [code, setCode] = useState("");
+  const modalIsOpenCollaborator = useAppSelector(
+    (state) => state.modal.collaboratorModalIsOpen
+  );
+
+  const isPageLoadingState = useAppSelector(
+    (state) => state.modal.isPageLoading
+  );
+
+  const idNumberCollaboratorState = useAppSelector(
+    (state) => state.collaboratorUserLogin.id_number
+  );
+  const principalEmailCollaboratorState = useAppSelector(
+    (state) => state.collaboratorUserLogin.principal_email
+  );
+  const verificationCodeCollaboratorState = useAppSelector(
+    (state) => state.collaboratorUserLogin.verification_code
+  );
 
   const [isSubmittingConfirm, setIsSubmittingConfirm] = useState(false);
   const [isSubmittingResendCode, setIsSubmittingResendCode] = useState(false);
 
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [resendCodeDisable, setResendCodeDisable] = useState(true);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCode(e.target.value);
+  // const {
+  //   data: isUserCollaboratorData,
+  //   isLoading: isUserCollaboratorLoading,
+  //   isFetching: isUserCollaboratorFetching,
+  //   isSuccess: isUserCollaboratorSuccess,
+  //   isError: isUserCollaboratorError,
+  // } = useGetCollaboratorUserByIdNumberQuery(idNumberCollaboratorState)
+
+  const [
+    resentUserVerificationCodeCollaborator,
+    {
+      data: resendCodeData,
+      isLoading: isResendCodeLoading,
+      isSuccess: isResendCodeSuccess,
+      isError: isResendCodeError,
+    },
+  ] = useResendVerificationUserCodeMutation({
+    fixedCacheKey: "resendCollaboratorCodeData",
+  });
+
+  // useEffect(() => {
+  //   if (!idNumberCollaboratorState) {
+  //     setShowErrorMessage(true);
+  //     setErrorMessage("¡Error al obtener los datos del usuario!");
+  //   }
+  // }, [idNumberCollaboratorState]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      setIsSubmittingConfirm(true);
+
+      const verificationCode = verificationCodeCollaboratorState
+        ? parseInt(verificationCodeCollaboratorState?.toString(), 10)
+        : "";
+
+      const idNumber = idNumberCollaboratorState
+        ? parseInt(idNumberCollaboratorState?.toString(), 10)
+        : "";
+
+      const responseNextAuth = await signIn(
+        process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
+        {
+          verification_code: verificationCode,
+          // id_number: idNumber,
+          id_number: 1143145099,
+          redirect: false,
+        }
+      );
+
+      if (responseNextAuth?.error) {
+        dispatch(setErrorsLoginCollaborator(responseNextAuth.error.split(",")));
+        setShowErrorMessage(true);
+      }
+
+      if (responseNextAuth?.status === 200) {
+        dispatch(setIsPageLoading(true));
+
+        setShowSuccessMessage(true);
+        setSuccessMessage("Ingresando, por favor espere...");
+        dispatch(setPrincipalEmailLoginCollaborator(""));
+        dispatch(setPasswordLoginCollaborator(""));
+        dispatch(setVerificationCodeLoginCollaborator(0));
+
+        await router.replace("/user/dashboard/all_apps", { scroll: false });
+
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingConfirm(false);
+    }
   };
 
-  const handleSubmit = () => {
-    onVerify(code);
-  };
+  const handleResentCode = async (e: React.MouseEvent<HTMLFormElement>) => {
+    try {
+      setIsSubmittingResendCode(true);
 
-  const handleResentCode = () => {};
+      // const response: any = await resentUserVerificationCodeCollaborator({
+
+      // })
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingResendCode(false);
+    }
+  };
 
   const handleCancel = () => {
+    dispatch(setCollaboratorModalIsOpen(false));
+
     <Link href="/login" scroll={false} />;
     window.location.reload();
   };
 
-  const handleButtonClick = () => {};
+  const handleButtonClick = () => {
+    dispatch(setErrorsLoginCollaborator([]));
+    setShowErrorMessage(false);
+    setShowSuccessMessage(false);
+  };
 
   return (
     <div>
+      {showErrorMessage && (
+        <CustomMessage
+          typeMessage="error"
+          message={errorMessage || "¡Código Incorrecto!"}
+        />
+      )}
+      {showSuccessMessage && (
+        <CustomMessage
+          typeMessage="success"
+          message={successMessage || "¡Código Reenviado Correctamente!"}
+        />
+      )}
+
       <Modal
         className="modal-verification-code"
-        open={visible}
+        open={modalIsOpenCollaborator}
         confirmLoading={isSubmittingConfirm}
         onCancel={handleCancel}
         destroyOnClose={true}
@@ -165,6 +294,7 @@ const CollaboratorModalVerificationCode: React.FC<
               <Input
                 id="input-code"
                 className="input-code"
+                type="tel"
                 prefix={
                   <TbPasswordUser
                     className="input-code-item-icon"
@@ -180,9 +310,11 @@ const CollaboratorModalVerificationCode: React.FC<
                   marginBottom: 4,
                   borderRadius: "30px",
                 }}
-                type="tel"
                 placeholder="Código"
-                onChange={(e) => ({})}
+                value={verificationCodeCollaboratorState}
+                onChange={(e) =>
+                  dispatch(setVerificationCodeLoginCollaborator(e.target.value))
+                }
                 autoComplete="off"
                 min={0}
               />

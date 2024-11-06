@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useAppDispatch } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 
 import {
@@ -28,6 +28,15 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import { titleStyleCss } from "@/theme/text_styles";
 import { useLoginCollaboratorUserMutation } from "@/redux/apis/auth/loginUsersApi";
 import { UserRolType } from "@/utils/enums/user_roles.enum";
+import {
+  resetLoginStateCollaborator,
+  setErrorsLoginCollaborator,
+  setPasswordLoginCollaborator,
+  setPrincipalEmailLoginCollaborator,
+} from "@/redux/features/user/collaboratorUserLoginSlice";
+import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import { setCollaboratorModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 
 const { Title } = Typography;
 
@@ -36,7 +45,15 @@ const CollaboratorUserLoginForm = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const [emailCollaboratorLocalState, setEmailCollaboratorLocalState] =
+  const errorsCollaboratorState = useAppSelector(
+    (state) => state.collaboratorUserLogin.errors
+  );
+
+  const modalIsOpenCollaborator = useAppSelector(
+    (state) => state.modal.collaboratorModalIsOpen
+  );
+
+  const [principalEmailCollaboratorLocalState, setPrincipalEmailCollaboratorLocalState] =
     useState("");
   const [passwordCollaboratorLocalState, setPasswordCollaboratorLocalState] =
     useState("");
@@ -78,20 +95,46 @@ const CollaboratorUserLoginForm = () => {
   //   }
   // }, []);
 
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmailCollaboratorLocalState(event.target.value);
-  };
-
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordCollaboratorLocalState(event.target.value);
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setIsSubmittingCollaborator(true);
+      dispatch(resetLoginStateCollaborator());
+      dispatch(setDefaultValuesUser());
 
-      
-    } catch (error) {}
+      const response: any = await loginCollaboratorUsers({
+        principal_email: principalEmailCollaboratorLocalState,
+        password: passwordCollaboratorLocalState,
+      });
+      console.log("response", response);
+      let isLoginUserError = response.error;
+      let isLoginUserSuccess = response.data;
+
+      if (isLoginUserError) {
+        const errorMessage = isLoginUserError?.data.message;
+
+        if (Array.isArray(errorMessage)) {
+          dispatch(setErrorsLoginCollaborator(errorMessage[0]));
+          setShowErrorMessageCollaborator(true);
+        } else if (typeof errorMessage === "string") {
+          dispatch(setErrorsLoginCollaborator(errorMessage));
+          setShowErrorMessageCollaborator(true);
+        }
+      }
+
+      if (isLoginUserSuccess && !isLoginUserError) {
+        dispatch(
+          setPrincipalEmailLoginCollaborator(principalEmailCollaboratorLocalState)
+        );
+        dispatch(setPasswordLoginCollaborator(passwordCollaboratorLocalState));
+        dispatch(setErrorsLoginCollaborator([]));
+        dispatch(setCollaboratorModalIsOpen(true));
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingCollaborator(false);
+    }
+
     // if (
     //   emailCollaboratorLocalState === "andres@gmail.com" &&
     //   passwordCollaboratorLocalState === "1234"
@@ -121,6 +164,11 @@ const CollaboratorUserLoginForm = () => {
     // }
   };
 
+  const handleButtonClick = () => {
+    dispatch(setErrorsLoginCollaborator([]));
+    setShowErrorMessageCollaborator(false);
+  };
+
   const handleModalVerifyCodeClose = () => {
     setIsModalVerifyCodeVisible(false);
     setShowWarningMessage(false);
@@ -142,17 +190,13 @@ const CollaboratorUserLoginForm = () => {
 
   return (
     <>
-      {showWarningMessage && (
-        <CustomMessage
-          typeMessage="warning"
-          message={"¡Error de autenticación. Le quedan algunos intentos más!"}
-        />
-      )}
-      {showErrorMessage && (
+      {modalIsOpenCollaborator && <CollaboratorModalVerificationCode />}
+
+      {showErrorMessageCollaborator && (
         <CustomMessage
           typeMessage="error"
           message={
-            "¡Esta cuenta se encuentra bloqueada, favor comunicarse con el departamento de sistemas!"
+            errorsCollaboratorState?.toString() || "¡Error en la petición!"
           }
         />
       )}
@@ -292,9 +336,11 @@ const CollaboratorUserLoginForm = () => {
                     prefix={
                       <UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />
                     }
-                    value={emailCollaboratorLocalState}
+                    value={principalEmailCollaboratorLocalState}
                     style={{ borderRadius: "30px" }}
-                    onChange={handleEmailChange}
+                    onChange={(e) =>
+                      setPrincipalEmailCollaboratorLocalState(e.target.value)
+                    }
                   />
                 </Form.Item>
                 <Form.Item
@@ -306,7 +352,6 @@ const CollaboratorUserLoginForm = () => {
                       required: true,
                       message: "Por favor ingrese su contraseña",
                     },
-                    // { pattern: /^[0-9]+$/, message: "El correo es incorrecto" },
                   ]}
                 >
                   <Input.Password
@@ -316,72 +361,71 @@ const CollaboratorUserLoginForm = () => {
                         style={{ color: "rgba(0,0,0,.25)" }}
                       />
                     }
+                    type="password"
                     value={passwordCollaboratorLocalState}
                     placeholder="Contraseña"
                     style={{ borderRadius: "30px" }}
-                    onChange={handlePasswordChange}
+                    onChange={(e) =>
+                      setPasswordCollaboratorLocalState(e.target.value)
+                    }
                   />
                 </Form.Item>
-                <Form.Item>
+
+                <Form.Item style={{ textAlign: "center" }}>
                   <a
                     className="login-forgot-password-form"
                     style={{
                       ...titleStyleCss,
                       display: "flow",
                       fontWeight: 500,
+                      marginTop: "14px",
+                      marginBottom: "25px",
                     }}
                     onClick={() => setModalForgotMyPasswordIsOpen(true)}
                   >
                     ¿Olvidaste tu contraseña?
                   </a>
-                </Form.Item>
 
-                {modalForgotMyPasswordIsOpen && (
-                  <CustomModalNoContent
-                    key={"custom-modal-forgot-my-password"}
-                    widthCustomModalNoContent={"31%"}
-                    openCustomModalState={modalForgotMyPasswordIsOpen}
-                    closableCustomModal={true}
-                    maskClosableCustomModal={true}
-                    handleCancelCustomModal={() =>
-                      setModalForgotMyPasswordIsOpen(false)
-                    }
-                    contentCustomModal={
-                      <CollaboratorForgotPasswordForm
-                        setOpenModalForgotPassword={
-                          setModalForgotMyPasswordIsOpen
-                        }
-                      />
-                    }
-                  />
-                )}
-                <Form.Item style={{ textAlign: "center" }}>
-                  <Button
-                    className="login-button"
-                    name="login-button"
-                    id="login-button"
-                    type="primary"
-                    htmlType="submit"
-                    style={{
-                      borderRadius: "30px",
-                      textAlign: "center",
-                      backgroundColor: "#015E90",
-                    }}
-                    onClick={() => ({})}
-                  >
-                    Iniciar Sesión
-                  </Button>
+                  {isSubmittingCollaborator && isloginCollaboratorLoading ? (
+                    <CustomSpin />
+                  ) : (
+                    <Button
+                      className="login-button"
+                      name="login-button"
+                      id="login-button"
+                      type="primary"
+                      htmlType="submit"
+                      style={{
+                        borderRadius: "30px",
+                        textAlign: "center",
+                        backgroundColor: "#015E90",
+                      }}
+                      onClick={handleButtonClick}
+                    >
+                      Iniciar Sesión
+                    </Button>
+                  )}
                 </Form.Item>
               </Form>
             </div>
           </Col>
         </Row>
-        <CollaboratorModalVerificationCode
-          visible={isModalVerifyCodeVisible}
-          onClose={handleModalVerifyCodeClose}
-          onVerify={handleVerifyCode}
-        />
       </div>
+      {modalForgotMyPasswordIsOpen && (
+        <CustomModalNoContent
+          key={"custom-modal-forgot-my-password"}
+          widthCustomModalNoContent={"31%"}
+          openCustomModalState={modalForgotMyPasswordIsOpen}
+          closableCustomModal={true}
+          maskClosableCustomModal={true}
+          handleCancelCustomModal={() => setModalForgotMyPasswordIsOpen(false)}
+          contentCustomModal={
+            <CollaboratorForgotPasswordForm
+              setOpenModalForgotPassword={setModalForgotMyPasswordIsOpen}
+            />
+          }
+        />
+      )}
     </>
   );
 };

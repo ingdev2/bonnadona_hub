@@ -4,20 +4,26 @@ import { persistReducer } from "redux-persist";
 import storage from "./storage/storage";
 
 import userReducer from "./features/user/userSlice";
+import modalReducer from "./features/common/modal/modalSlice";
+import collaboratorUserLoginReducer from "./features/user/collaboratorUserLoginSlice";
 
 import { userApi } from "./apis/users/userApi";
+import { loginUserApi } from "./apis/auth/loginUsersApi";
 
 const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  whitelist: ["user", "modal"],
+  whitelist: ["user", "modal", "collaboratorUserLogin"],
   blacklist: [],
 };
 
 const rootReducer = combineReducers({
   user: userReducer,
+  collaboratorUserLogin: collaboratorUserLoginReducer,
+  modal: modalReducer,
   [userApi.reducerPath]: userApi.reducer,
+  [loginUserApi.reducerPath]: loginUserApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -28,7 +34,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
       immutableCheck: false,
-    }).concat([userApi.middleware]),
+    }).concat([userApi.middleware, loginUserApi.middleware]),
 });
 
 setupListeners(store.dispatch);
