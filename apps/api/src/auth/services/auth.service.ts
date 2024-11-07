@@ -37,6 +37,7 @@ import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.e
 import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
+import { PrincipalEmailDto } from '../dto/principal_email.dto';
 
 @Injectable()
 export class AuthService {
@@ -531,7 +532,7 @@ export class AuthService {
     };
   }
 
-  async resendVerificationUserCode(principal_email: string) {
+  async resendVerificationUserCode({ principal_email }: PrincipalEmailDto) {
     const collaboratorFound =
       await this.userService.getUserActiveByEmail(principal_email);
 

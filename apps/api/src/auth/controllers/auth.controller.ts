@@ -14,7 +14,7 @@ import { Auth } from '../decorators/auth.decorator';
 
 import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
-import { IdUserDto } from '../dto/id_user.dto';
+import { PrincipalEmailDto } from '../dto/principal_email.dto';
 
 import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
@@ -87,7 +87,7 @@ export class AuthController {
   }
 
   @Post('resendVerificationUserCode')
-  async resendVerificationUserCode(@Body() principal_email: string) {
+  async resendVerificationUserCode(@Body() principal_email: PrincipalEmailDto) {
     return await this.authService.resendVerificationUserCode(principal_email);
   }
 }

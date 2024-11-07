@@ -50,14 +50,6 @@ const CollaboratorModalVerificationCode: React.FC = () => {
     (state) => state.modal.isPageLoading
   );
 
-  const idTypeCollaboratorState = useAppSelector(
-    (state) => state.collaboratorUserLogin.user_id_type
-  );
-
-  const idNumberCollaboratorState = useAppSelector(
-    (state) => state.collaboratorUserLogin.id_number
-  );
-
   const principalEmailCollaboratorState = useAppSelector(
     (state) => state.collaboratorUserLogin.principal_email
   );
@@ -94,12 +86,12 @@ const CollaboratorModalVerificationCode: React.FC = () => {
     error: userActiveError,
   } = useGetUserActiveByEmailQuery(principalEmailCollaboratorState);
 
-  // useEffect(() => {
-  //   if (!idNumberCollaboratorState) {
-  //     setShowErrorMessage(true);
-  //     setErrorMessage("¡Error al obtener los datos del usuario!");
-  //   }
-  // }, [idNumberCollaboratorState]);
+  useEffect(() => {
+    if (!principalEmailCollaboratorState) {
+      setShowErrorMessage(true);
+      setErrorMessage("¡Error al obtener el correo principal del usuario!");
+    }
+  }, [principalEmailCollaboratorState]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -143,7 +135,6 @@ const CollaboratorModalVerificationCode: React.FC = () => {
       console.error(error);
     } finally {
       setIsSubmittingConfirm(false);
-      dispatch(setCollaboratorModalIsOpen(false));
     }
   };
 
@@ -264,7 +255,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
             {maskEmail(principalEmailCollaboratorState)}
           </h5>
 
-          {/* <CustomLoadingOverlay isLoading={isPageLoadingState} /> */}
+          <CustomLoadingOverlay isLoading={isPageLoadingState} />
 
           {resendCodeDisable && (
             <CountdownTimer
@@ -318,7 +309,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
                 prefix={
                   <TbPasswordUser
                     className="input-code-item-icon"
-                    style={{ paddingInline: "1px", color: "#017DC0" }}
+                    style={{ paddingInline: "1px", color: "#3F97AF" }}
                   />
                 }
                 style={{
@@ -346,12 +337,12 @@ const CollaboratorModalVerificationCode: React.FC = () => {
               <Button
                 key={"confirm-code-button"}
                 className="confirm-code-button"
+                disabled={isPageLoadingState}
                 style={{
-                  backgroundColor: "#015E90",
-                  color: "#f2f2f2",
-                  borderRadius: 31,
-                  marginTop: 5,
-                  marginBottom: 13,
+                  backgroundColor: isPageLoadingState ? "#D8D8D8" : "#015E90",
+                  color: isPageLoadingState ? "#A0A0A0" : "#f2f2f2",
+                  borderRadius: "31px",
+                  marginBottom: "13px",
                 }}
                 htmlType="submit"
                 onClick={handleButtonClick}
@@ -383,7 +374,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
             </Button>
           )}
 
-          {/* <div style={{ marginInline: 54 }}>
+          <div style={{ marginInline: 54 }}>
             <Divider
               style={{
                 marginBlock: 13,
@@ -397,14 +388,14 @@ const CollaboratorModalVerificationCode: React.FC = () => {
             className="cancel-button-user"
             style={{
               paddingInline: 45,
-              backgroundColor: "#e33030",
+              backgroundColor: "#8C1111",
               color: "#f2f2f2",
               borderRadius: 31,
             }}
             onClick={handleCancel}
           >
             Cancelar
-          </Button> */}
+          </Button>
         </div>
       </Modal>
     </div>

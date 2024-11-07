@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 
@@ -53,13 +53,13 @@ const CollaboratorUserLoginForm = () => {
     (state) => state.modal.collaboratorModalIsOpen
   );
 
-  const [principalEmailCollaboratorLocalState, setPrincipalEmailCollaboratorLocalState] =
-    useState("");
+  const [
+    principalEmailCollaboratorLocalState,
+    setPrincipalEmailCollaboratorLocalState,
+  ] = useState("");
   const [passwordCollaboratorLocalState, setPasswordCollaboratorLocalState] =
     useState("");
 
-  const [isModalVerifyCodeVisible, setIsModalVerifyCodeVisible] = // <-- revisar
-    useState(false);
   const [modalForgotMyPasswordIsOpen, setModalForgotMyPasswordIsOpen] =
     useState(false);
 
@@ -67,12 +67,6 @@ const CollaboratorUserLoginForm = () => {
     useState(false);
   const [showErrorMessageCollaborator, setShowErrorMessageCollaborator] =
     useState(false);
-
-  const [showWarningMessage, setShowWarningMessage] = useState(false);
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
-
-  const [failedAttemptsCounterLocalState, setFailedAttemptsCounterLocalState] =
-    useState(1);
 
   const [
     loginCollaboratorUsers,
@@ -89,7 +83,7 @@ const CollaboratorUserLoginForm = () => {
   // useEffect(() => {
   //   if (
   //     status === "authenticated" &&
-  //     session?.user.role === UserRolType.COLLABORATOR
+  //     session?.user?.role === UserRolType.COLLABORATOR
   //   ) {
   //     signOut();
   //   }
@@ -105,10 +99,13 @@ const CollaboratorUserLoginForm = () => {
         principal_email: principalEmailCollaboratorLocalState,
         password: passwordCollaboratorLocalState,
       });
+
       let isLoginUserError = response.error;
       let isLoginUserSuccess = response.data;
+      let isLoginUserBan = response.data?.statusCode
 
       if (isLoginUserError) {
+        console.log('response.error:', response.error)
         const errorMessage = isLoginUserError?.data.message;
 
         if (Array.isArray(errorMessage)) {
@@ -119,9 +116,18 @@ const CollaboratorUserLoginForm = () => {
           setShowErrorMessageCollaborator(true);
         }
       }
-      if (isLoginUserSuccess && !isLoginUserError) {
+      if (isLoginUserBan === 202) {
+        console.log('aqui isLoginUserBan:', isLoginUserBan)
+        dispatch(setErrorsLoginCollaborator(response.data?.message));
+        setShowErrorMessageCollaborator(true);
+      }
+
+      if (isLoginUserSuccess && !isLoginUserError && !isLoginUserBan) {
+        console.log('response: ', response)
         dispatch(
-          setPrincipalEmailLoginCollaborator(principalEmailCollaboratorLocalState)
+          setPrincipalEmailLoginCollaborator(
+            principalEmailCollaboratorLocalState
+          )
         );
         dispatch(setPasswordLoginCollaborator(passwordCollaboratorLocalState));
         dispatch(setErrorsLoginCollaborator([]));
@@ -132,34 +138,6 @@ const CollaboratorUserLoginForm = () => {
     } finally {
       setIsSubmittingCollaborator(false);
     }
-
-    // if (
-    //   emailCollaboratorLocalState === "andres@gmail.com" &&
-    //   passwordCollaboratorLocalState === "1234"
-    // ) {
-    //   if (failedAttemptsCounterLocalState >= 5) {
-    //     setShowWarningMessage(false);
-    //     setShowErrorMessage(true);
-    //     setIsModalVerifyCodeVisible(false);
-    //   } else {
-    //     setIsModalVerifyCodeVisible(true);
-    //     setShowWarningMessage(false);
-    //     setShowErrorMessage(false);
-    //   }
-    // } else {
-    //   var count = failedAttemptsCounterLocalState;
-    //   setFailedAttemptsCounterLocalState((count += 1));
-    //   console.log("failedAttemptsCounter", failedAttemptsCounterLocalState);
-
-    //   if (failedAttemptsCounterLocalState === 3) {
-    //     setShowWarningMessage(true);
-    //   }
-
-    //   if (failedAttemptsCounterLocalState >= 5) {
-    //     setShowWarningMessage(false);
-    //     setShowErrorMessage(true);
-    //   }
-    // }
   };
 
   const handleButtonClick = () => {

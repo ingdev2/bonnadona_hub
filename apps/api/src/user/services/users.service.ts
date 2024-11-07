@@ -900,9 +900,9 @@ export class UsersService {
     return user.user_profile;
   }
 
-  async getUserSessionLogById(userId: string) {
+  async getUserSessionLogById(principalEmail: string) {
     const user = await this.userRepository.findOne({
-      where: { id: userId, is_active: true },
+      where: { principal_email: principalEmail, is_active: true },
     });
 
     if (!user) {
@@ -931,9 +931,9 @@ export class UsersService {
     return userFound;
   }
 
-  async getUserActiveByEmail(principalEmail: string) {
+  async getUserActiveByEmail(principal_email: string) {
     return await this.userRepository.findOneBy({
-      principal_email: principalEmail,
+      principal_email: principal_email,
       is_active: true,
     });
   }

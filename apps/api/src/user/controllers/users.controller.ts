@@ -87,9 +87,9 @@ export class UsersController {
     return await this.usersService.getUserProfileById(id);
   }
 
-  @Get('/getUserSessionLogById/:id')
-  async getUserSessionLogById(@Param('id') id: string) {
-    return await this.usersService.getUserSessionLogById(id);
+  @Get('/getUserSessionLogById/:principalEmail')
+  async getUserSessionLogById(@Param('principalEmail') principalEmail: string) {
+    return await this.usersService.getUserSessionLogById(principalEmail);
   }
 
   @Get('/getCollaboratorUserByIdNumber/:idNumber')
@@ -128,10 +128,11 @@ export class UsersController {
     ]);
   }
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
-  @Get('/getUserActiveByEmail/:principalEmail')
-  async getUserActiveByEmail(@Param('principalEmail') principalEmail: string) {
-    return await this.usersService.getUserActiveByEmail(principalEmail);
+  @Get('/getUserActiveByEmail/:principal_email')
+  async getUserActiveByEmail(
+    @Param('principal_email') principal_email: string,
+  ) {
+    return await this.usersService.getUserActiveByEmail(principal_email);
   }
 
   @Get('/getUserRoles/:id')
