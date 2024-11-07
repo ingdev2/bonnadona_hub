@@ -41,11 +41,10 @@ const handler = NextAuth({
       id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       credentials: {
-        id_number: {
-          label: "Número de identificación",
-          type: "number",
-          inputMode: "numeric",
-          pattern: "[0-9]*",
+        principal_email: {
+          label: "Correo",
+          type: "string",
+          inputMode: "text",
         },
         verification_code: {
           label: "Código de verificación",
@@ -60,14 +59,14 @@ const handler = NextAuth({
           throw new Error("Credenciales no definidas.");
         }
 
-        const { id_number } = credentials;
+        const { principal_email } = credentials;
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/loginCollaboratorUser`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verifyCodeAndLoginCollaboratorUser/${principal_email}`,
           {
             method: "POST",
             body: JSON.stringify({
-              id_number: credentials?.id_number,
+              principal_email: credentials?.principal_email,
               verification_code: credentials?.verification_code,
             }),
             headers: { "Content-Type": "application/json" },

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: UserLogin = {
   id: "",
-  user_id_type: "",
+  user_id_type: 0,
   id_number: 0,
   principal_email: "",
   password: "",
@@ -18,11 +18,14 @@ export const collaboratorUserLoginSlice = createSlice({
     setIdLoginCollaborator: (state, action) => {
       state.id = action.payload;
     },
+    setIdTypeLoginCollaborator: ((state, action) => {
+      state.user_id_type = action.payload;
+    }),
     setIdNumberLoginCollaborator: (state, action) => {
       state.id_number = action.payload;
     },
     setPrincipalEmailLoginCollaborator: (state, action) => {
-      state.password = action.payload;
+      state.principal_email = action.payload;
     },
     setPasswordLoginCollaborator: (state, action) => {
       state.password = action.payload;
@@ -49,6 +52,7 @@ export const collaboratorUserLoginSlice = createSlice({
 
 export const {
   setIdLoginCollaborator,
+  setIdTypeLoginCollaborator,
   setIdNumberLoginCollaborator,
   setPrincipalEmailLoginCollaborator,
   setPasswordLoginCollaborator,

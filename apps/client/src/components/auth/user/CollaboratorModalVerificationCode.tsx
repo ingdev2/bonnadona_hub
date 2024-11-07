@@ -16,11 +16,16 @@ import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/Cus
 import CountdownTimer from "@/components/common/countdown_timer/CountdownTimer";
 
 import { maskEmail } from "@/helpers/mask_email/mask_email";
-import { useGetCollaboratorUserByIdNumberQuery } from "@/redux/apis/users/userApi";
+import {
+  useGetCollaboratorUserByIdNumberQuery,
+  useGetUserActiveByEmailQuery,
+} from "@/redux/apis/users/userApi";
 import { useResendVerificationUserCodeMutation } from "@/redux/apis/auth/loginUsersApi";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import {
   setErrorsLoginCollaborator,
+  setIdNumberLoginCollaborator,
+  setIdTypeLoginCollaborator,
   setPasswordLoginCollaborator,
   setPrincipalEmailLoginCollaborator,
   setVerificationCodeLoginCollaborator,
@@ -45,9 +50,14 @@ const CollaboratorModalVerificationCode: React.FC = () => {
     (state) => state.modal.isPageLoading
   );
 
+  const idTypeCollaboratorState = useAppSelector(
+    (state) => state.collaboratorUserLogin.user_id_type
+  );
+
   const idNumberCollaboratorState = useAppSelector(
     (state) => state.collaboratorUserLogin.id_number
   );
+
   const principalEmailCollaboratorState = useAppSelector(
     (state) => state.collaboratorUserLogin.principal_email
   );
@@ -65,14 +75,6 @@ const CollaboratorModalVerificationCode: React.FC = () => {
 
   const [resendCodeDisable, setResendCodeDisable] = useState(true);
 
-  // const {
-  //   data: isUserCollaboratorData,
-  //   isLoading: isUserCollaboratorLoading,
-  //   isFetching: isUserCollaboratorFetching,
-  //   isSuccess: isUserCollaboratorSuccess,
-  //   isError: isUserCollaboratorError,
-  // } = useGetCollaboratorUserByIdNumberQuery(idNumberCollaboratorState)
-
   const [
     resentUserVerificationCodeCollaborator,
     {
@@ -84,6 +86,13 @@ const CollaboratorModalVerificationCode: React.FC = () => {
   ] = useResendVerificationUserCodeMutation({
     fixedCacheKey: "resendCollaboratorCodeData",
   });
+
+  const {
+    data: userActiveData,
+    isLoading: userActiveLoading,
+    isFetching: userActiveFetching,
+    error: userActiveError,
+  } = useGetUserActiveByEmailQuery(principalEmailCollaboratorState);
 
   // useEffect(() => {
   //   if (!idNumberCollaboratorState) {
@@ -100,20 +109,15 @@ const CollaboratorModalVerificationCode: React.FC = () => {
         ? parseInt(verificationCodeCollaboratorState?.toString(), 10)
         : "";
 
-      const idNumber = idNumberCollaboratorState
-        ? parseInt(idNumberCollaboratorState?.toString(), 10)
-        : "";
-
       const responseNextAuth = await signIn(
         process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
         {
           verification_code: verificationCode,
-          // id_number: idNumber,
-          id_number: 1143145099,
+          principal_email: principalEmailCollaboratorState,
           redirect: false,
         }
       );
-
+      console.log("responseNextAuth: ", responseNextAuth);
       if (responseNextAuth?.error) {
         dispatch(setErrorsLoginCollaborator(responseNextAuth.error.split(",")));
         setShowErrorMessage(true);
@@ -121,10 +125,13 @@ const CollaboratorModalVerificationCode: React.FC = () => {
 
       if (responseNextAuth?.status === 200) {
         dispatch(setIsPageLoading(true));
+        console.log("userActiveData:", userActiveData);
 
         setShowSuccessMessage(true);
         setSuccessMessage("Ingresando, por favor espere...");
-        dispatch(setPrincipalEmailLoginCollaborator(""));
+        dispatch(setIdTypeLoginCollaborator(userActiveData?.user_id_type));
+        dispatch(setIdNumberLoginCollaborator(userActiveData?.id_number));
+
         dispatch(setPasswordLoginCollaborator(""));
         dispatch(setVerificationCodeLoginCollaborator(0));
 
@@ -136,6 +143,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
       console.error(error);
     } finally {
       setIsSubmittingConfirm(false);
+      dispatch(setCollaboratorModalIsOpen(false));
     }
   };
 
@@ -143,9 +151,21 @@ const CollaboratorModalVerificationCode: React.FC = () => {
     try {
       setIsSubmittingResendCode(true);
 
-      // const response: any = await resentUserVerificationCodeCollaborator({
+      const response: any = await resentUserVerificationCodeCollaborator({
+        principal_email: principalEmailCollaboratorState,
+      });
 
-      // })
+      let isResponseError = response.error;
+
+      if (!isResendCodeSuccess && !isResendCodeLoading && isResendCodeError) {
+        dispatch(setErrorsLoginCollaborator(isResponseError?.data.message));
+        setShowErrorMessage(true);
+      }
+      if (!isResendCodeError && !isResponseError) {
+        setShowSuccessMessage(true);
+        setSuccessMessage("¡Código Reenviado Correctamente!");
+        setResendCodeDisable(true);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -241,7 +261,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
               marginBlock: 7,
             }}
           >
-            {maskEmail("andressierra@gmail.com")}
+            {maskEmail(principalEmailCollaboratorState)}
           </h5>
 
           {/* <CustomLoadingOverlay isLoading={isPageLoadingState} /> */}

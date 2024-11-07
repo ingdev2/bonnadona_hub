@@ -40,12 +40,8 @@ export const userApi = createApi({
       query: (IdNumber) => `getAuditorUserByIdNumber/${IdNumber}`,
     }),
 
-    getUserActiveByTypeAndIdNumber: builder.query<
-      User,
-      { IdType: string; IdNumber: string }
-    >({
-      query: ({ IdType, IdNumber }) =>
-        `getUserActiveByTypeAndIdNumber/${IdType}/${IdNumber}`,
+    getUserActiveByEmail: builder.query<User, string>({
+      query: (principalEmail) => `getUserActiveByEmail/${principalEmail}`,
     }),
 
     getUserRoles: builder.query<User, string>({
@@ -118,7 +114,7 @@ export const {
   useGetAdminUserByIdNumberQuery,
   useGetAdminsUserByIdNumberQuery,
   useGetAuditorUserByIdNumberQuery,
-  useGetUserActiveByTypeAndIdNumberQuery,
+  useGetUserActiveByEmailQuery,
   useGetUserRolesQuery,
   useUpdateUserMutation,
   useBanUserMutation,

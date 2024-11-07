@@ -105,7 +105,6 @@ const CollaboratorUserLoginForm = () => {
         principal_email: principalEmailCollaboratorLocalState,
         password: passwordCollaboratorLocalState,
       });
-      console.log("response", response);
       let isLoginUserError = response.error;
       let isLoginUserSuccess = response.data;
 
@@ -120,7 +119,6 @@ const CollaboratorUserLoginForm = () => {
           setShowErrorMessageCollaborator(true);
         }
       }
-
       if (isLoginUserSuccess && !isLoginUserError) {
         dispatch(
           setPrincipalEmailLoginCollaborator(principalEmailCollaboratorLocalState)
@@ -167,17 +165,6 @@ const CollaboratorUserLoginForm = () => {
   const handleButtonClick = () => {
     dispatch(setErrorsLoginCollaborator([]));
     setShowErrorMessageCollaborator(false);
-  };
-
-  const handleModalVerifyCodeClose = () => {
-    setIsModalVerifyCodeVisible(false);
-    setShowWarningMessage(false);
-  };
-
-  const handleVerifyCode = (code: string) => {
-    console.log("Código verificado:", code);
-    setIsModalVerifyCodeVisible(false);
-    setShowWarningMessage(false);
   };
 
   const imagesCarousel = [

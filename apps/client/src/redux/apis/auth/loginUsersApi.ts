@@ -21,24 +21,24 @@ export const loginUserApi = createApi({
 
     verifyCodeAndLoginCollaboratorUser: builder.mutation<
       Partial<UserLogin>,
-      { verification_code: number; id_number: number }
+      { verification_code: number; principalEmail: string }
     >({
-      query: ({ verification_code, id_number }) => ({
-        url: `verifyCodeAndLoginCollaboratorUser/${id_number}`,
+      query: ({ verification_code, principalEmail }) => ({
+        url: `verifyCodeAndLoginCollaboratorUser/${principalEmail}`,
         method: "POST",
-        params: { id_number },
+        params: { principalEmail },
         body: { verification_code },
       }),
     }),
 
     resendVerificationUserCode: builder.mutation<
       Partial<UserLogin>,
-      { id_type: number; id_number: number }
+      { principal_email: string }
     >({
-      query: ({ id_type, id_number }) => ({
+      query: ({ principal_email }) => ({
         url: `resendVerificationUserCode`,
         method: "POST",
-        body: { id_type, id_number },
+        body: { principal_email },
       }),
     }),
   }),
