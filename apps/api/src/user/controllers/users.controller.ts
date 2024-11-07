@@ -128,7 +128,7 @@ export class UsersController {
     ]);
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUserActiveByEmail/:principalEmail')
   async getUserActiveByEmail(@Param('principalEmail') principalEmail: string) {
     return await this.usersService.getUserActiveByEmail(principalEmail);
