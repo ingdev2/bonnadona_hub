@@ -14,7 +14,7 @@ const ButtonAuth = () => {
   const { data: session, status } = useSession();
 
   const principalEmailCollaboratorState = useAppSelector(
-    (state) => state.collaboratorUserLogin.principal_email
+    (state) => state.userLogin.principal_email
   );
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -33,7 +33,7 @@ const ButtonAuth = () => {
             message={errorMessage || "¡Error en la petición!"}
           />
         )}
-        <div style={{textAlign: "center",}}>
+        <div style={{ textAlign: "center" }}>
           <h4
             style={{
               ...subtitleStyleCss,

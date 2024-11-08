@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+// import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 // import { getFirstName } from "@/helpers/get_first_name/get_first_name";
@@ -27,7 +27,7 @@ import { UserOutlined } from "@ant-design/icons";
 // import { useGetAdminByIdNumberQuery } from "@/redux/apis/admins/adminsApi";
 
 const UserHeaderLayout: React.FC = () => {
-    const dispatch = useAppDispatch();
+  //   const dispatch = useAppDispatch();
   const router = useRouter();
 
   //   const idNumberAdminState = useAppSelector(

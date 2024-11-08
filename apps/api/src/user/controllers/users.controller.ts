@@ -88,7 +88,9 @@ export class UsersController {
   }
 
   @Get('/getUserSessionLogByEmail/:principalEmail')
-  async getUserSessionLogByEmail(@Param('principalEmail') principalEmail: string) {
+  async getUserSessionLogByEmail(
+    @Param('principalEmail') principalEmail: string,
+  ) {
     return await this.usersService.getUserSessionLogByEmail(principalEmail);
   }
 

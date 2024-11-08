@@ -13,35 +13,35 @@ const initialState: UserLogin = {
   errors: [],
 };
 
-export const collaboratorUserLoginSlice = createSlice({
-  name: "collaboratorUserLogin",
+export const userLoginSlice = createSlice({
+  name: "userLogin",
   initialState,
   reducers: {
-    setIdLoginCollaborator: (state, action) => {
+    setIdLoginUser: (state, action) => {
       state.id = action.payload;
     },
-    setIdTypeLoginCollaborator: ((state, action) => {
+    setIdTypeLoginUser: (state, action) => {
       state.user_id_type = action.payload;
-    }),
-    setIdNumberLoginCollaborator: (state, action) => {
+    },
+    setIdNumberLoginUser: (state, action) => {
       state.id_number = action.payload;
     },
-    setPrincipalEmailLoginCollaborator: (state, action) => {
+    setPrincipalEmailLoginUser: (state, action) => {
       state.principal_email = action.payload;
     },
-    setPasswordLoginCollaborator: (state, action) => {
+    setPasswordLoginUser: (state, action) => {
       state.password = action.payload;
     },
-    setVerificationCodeLoginCollaborator: (state, action) => {
+    setVerificationCodeLoginUser: (state, action) => {
       state.verification_code = action.payload;
     },
-    setIdTypeOptionsLoginCollaborator: (state, action) => {
+    setIdTypeOptionsLoginUser: (state, action) => {
       state.idTypeOptions = action.payload;
     },
-    setErrorsLoginCollaborator: (state, action) => {
+    setErrorsLoginUser: (state, action) => {
       state.errors = action.payload;
     },
-    resetLoginStateCollaborator: (state) => {
+    resetLoginStateUser: (state) => {
       state.user_id_type = initialState.user_id_type;
       state.id_number = initialState.id_number;
       state.principal_email = initialState.principal_email;
@@ -53,15 +53,15 @@ export const collaboratorUserLoginSlice = createSlice({
 });
 
 export const {
-  setIdLoginCollaborator,
-  setIdTypeLoginCollaborator,
-  setIdNumberLoginCollaborator,
-  setPrincipalEmailLoginCollaborator,
-  setPasswordLoginCollaborator,
-  setVerificationCodeLoginCollaborator,
-  setErrorsLoginCollaborator,
-  setIdTypeOptionsLoginCollaborator,
-  resetLoginStateCollaborator,
-} = collaboratorUserLoginSlice.actions;
+  setIdLoginUser,
+  setIdTypeLoginUser,
+  setIdNumberLoginUser,
+  setPrincipalEmailLoginUser,
+  setPasswordLoginUser,
+  setVerificationCodeLoginUser,
+  setErrorsLoginUser,
+  setIdTypeOptionsLoginUser,
+  resetLoginStateUser,
+} = userLoginSlice.actions;
 
-export default collaboratorUserLoginSlice.reducer;
+export default userLoginSlice.reducer;

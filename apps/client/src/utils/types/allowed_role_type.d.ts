@@ -1,4 +1,3 @@
-import { AdminRolType } from "../enums/admin_roles.enum";
-import { UserRolType } from "../enums/user_roles.enum";
+import { RolesEnum } from "../enums/roles/roles.enum";
 
-type AllowedRoleType = UserRolType | AdminRolType
+type AllowedRoleType = RolesEnum

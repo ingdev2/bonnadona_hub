@@ -27,13 +27,13 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 
 import { titleStyleCss } from "@/theme/text_styles";
 import { useLoginCollaboratorUserMutation } from "@/redux/apis/auth/loginUsersApi";
-import { UserRolType } from "@/utils/enums/user_roles.enum";
+import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import {
-  resetLoginStateCollaborator,
-  setErrorsLoginCollaborator,
-  setPasswordLoginCollaborator,
-  setPrincipalEmailLoginCollaborator,
-} from "@/redux/features/user/collaboratorUserLoginSlice";
+  resetLoginStateUser,
+  setErrorsLoginUser,
+  setPasswordLoginUser,
+  setPrincipalEmailLoginUser,
+} from "@/redux/features/login/userLoginSlice";
 import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { setCollaboratorModalIsOpen } from "@/redux/features/common/modal/modalSlice";
@@ -46,7 +46,7 @@ const CollaboratorUserLoginForm = () => {
   const router = useRouter();
 
   const errorsCollaboratorState = useAppSelector(
-    (state) => state.collaboratorUserLogin.errors
+    (state) => state.userLogin.errors
   );
 
   const modalIsOpenCollaborator = useAppSelector(
@@ -82,7 +82,7 @@ const CollaboratorUserLoginForm = () => {
   useEffect(() => {
     if (
       status === "authenticated" &&
-      session.user.role === UserRolType.COLLABORATOR
+      session.user.role === RolesEnum.COLLABORATOR
     ) {
       signOut();
     }
@@ -91,7 +91,7 @@ const CollaboratorUserLoginForm = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setIsSubmittingCollaborator(true);
-      dispatch(resetLoginStateCollaborator());
+      dispatch(resetLoginStateUser());
       dispatch(setDefaultValuesUser());
 
       const response: any = await loginCollaboratorUsers({
@@ -101,32 +101,30 @@ const CollaboratorUserLoginForm = () => {
 
       let isLoginUserError = response.error;
       let isLoginUserSuccess = response.data;
-      let isLoginUserBan = response.data?.statusCode
+      let isLoginUserBan = response.data?.statusCode;
 
       if (isLoginUserError) {
         const errorMessage = isLoginUserError?.data.message;
 
         if (Array.isArray(errorMessage)) {
-          dispatch(setErrorsLoginCollaborator(errorMessage[0]));
+          dispatch(setErrorsLoginUser(errorMessage[0]));
           setShowErrorMessageCollaborator(true);
         } else if (typeof errorMessage === "string") {
-          dispatch(setErrorsLoginCollaborator(errorMessage));
+          dispatch(setErrorsLoginUser(errorMessage));
           setShowErrorMessageCollaborator(true);
         }
       }
       if (isLoginUserBan === 202) {
-        dispatch(setErrorsLoginCollaborator(response.data?.message));
+        dispatch(setErrorsLoginUser(response.data?.message));
         setShowErrorMessageCollaborator(true);
       }
 
       if (isLoginUserSuccess && !isLoginUserError && !isLoginUserBan) {
         dispatch(
-          setPrincipalEmailLoginCollaborator(
-            principalEmailCollaboratorLocalState
-          )
+          setPrincipalEmailLoginUser(principalEmailCollaboratorLocalState)
         );
-        dispatch(setPasswordLoginCollaborator(passwordCollaboratorLocalState));
-        dispatch(setErrorsLoginCollaborator([]));
+        dispatch(setPasswordLoginUser(passwordCollaboratorLocalState));
+        dispatch(setErrorsLoginUser([]));
         dispatch(setCollaboratorModalIsOpen(true));
         setShowErrorMessageCollaborator(false);
       }
@@ -138,7 +136,7 @@ const CollaboratorUserLoginForm = () => {
   };
 
   const handleButtonClick = () => {
-    dispatch(setErrorsLoginCollaborator([]));
+    dispatch(setErrorsLoginUser([]));
     setShowErrorMessageCollaborator(false);
   };
 

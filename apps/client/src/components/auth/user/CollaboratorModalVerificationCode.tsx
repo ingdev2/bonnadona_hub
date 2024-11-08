@@ -16,24 +16,24 @@ import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/Cus
 import CountdownTimer from "@/components/common/countdown_timer/CountdownTimer";
 
 import { maskEmail } from "@/helpers/mask_email/mask_email";
-import {
-  useGetUserActiveByEmailQuery,
-} from "@/redux/apis/users/userApi";
+import { useGetUserActiveByEmailQuery } from "@/redux/apis/users/userApi";
 import { useResendVerificationUserCodeMutation } from "@/redux/apis/auth/loginUsersApi";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import {
-  setErrorsLoginCollaborator,
-  setIdNumberLoginCollaborator,
-  setIdTypeLoginCollaborator,
-  setPasswordLoginCollaborator,
-  setVerificationCodeLoginCollaborator,
-} from "@/redux/features/user/collaboratorUserLoginSlice";
+  setErrorsLoginUser,
+  setPasswordLoginUser,
+  setVerificationCodeLoginUser,
+} from "@/redux/features/login/userLoginSlice";
 import { signIn } from "next-auth/react";
 import {
   setCollaboratorModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
-import { setIdUser, setLastNameUser, setNameUser } from "@/redux/features/user/userSlice";
+import {
+  setIdUser,
+  setLastNameUser,
+  setNameUser,
+} from "@/redux/features/user/userSlice";
 
 const CollaboratorModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -47,11 +47,12 @@ const CollaboratorModalVerificationCode: React.FC = () => {
     (state) => state.modal.isPageLoading
   );
 
-  const principalEmailCollaboratorState = useAppSelector(
-    (state) => state.collaboratorUserLogin.principal_email
+  const principalEmailUserLoginState = useAppSelector(
+    (state) => state.userLogin.principal_email
   );
-  const verificationCodeCollaboratorState = useAppSelector(
-    (state) => state.collaboratorUserLogin.verification_code
+
+  const verificationCodeUserLoginState = useAppSelector(
+    (state) => state.userLogin.verification_code
   );
 
   const [isSubmittingConfirm, setIsSubmittingConfirm] = useState(false);
@@ -73,56 +74,45 @@ const CollaboratorModalVerificationCode: React.FC = () => {
       isError: isResendCodeError,
     },
   ] = useResendVerificationUserCodeMutation({
-    fixedCacheKey: "resendCollaboratorCodeData",
+    fixedCacheKey: "resendUserCodeData",
   });
 
-  const {
-    data: userActiveData,
-    isLoading: userActiveLoading,
-    isFetching: userActiveFetching,
-    error: userActiveError,
-  } = useGetUserActiveByEmailQuery(principalEmailCollaboratorState);
-
   useEffect(() => {
-    if (!principalEmailCollaboratorState) {
+    if (!principalEmailUserLoginState) {
       setShowErrorMessage(true);
       setErrorMessage("¡Error al obtener el correo principal del usuario!");
     }
-  }, [principalEmailCollaboratorState]);
+  }, [principalEmailUserLoginState]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setIsSubmittingConfirm(true);
 
-      const verificationCode = verificationCodeCollaboratorState
-        ? parseInt(verificationCodeCollaboratorState?.toString(), 10)
+      const verificationCode = verificationCodeUserLoginState
+        ? parseInt(verificationCodeUserLoginState?.toString(), 10)
         : "";
 
       const responseNextAuth = await signIn(
         process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
         {
           verification_code: verificationCode,
-          principal_email: principalEmailCollaboratorState,
+          principal_email: principalEmailUserLoginState,
           redirect: false,
         }
       );
       if (responseNextAuth?.error) {
-        dispatch(setErrorsLoginCollaborator(responseNextAuth.error.split(",")));
+        dispatch(setErrorsLoginUser(responseNextAuth.error.split(",")));
         setShowErrorMessage(true);
       }
 
       if (responseNextAuth?.status === 200) {
         dispatch(setIsPageLoading(true));
-        console.log("userActiveData:", userActiveData);
 
         setShowSuccessMessage(true);
         setSuccessMessage("Ingresando, por favor espere...");
-        dispatch(setIdUser(userActiveData?.id))
-        dispatch(setNameUser(userActiveData?.name));
-        dispatch(setLastNameUser(userActiveData?.last_name));
 
-        dispatch(setPasswordLoginCollaborator(""));
-        dispatch(setVerificationCodeLoginCollaborator(0));
+        dispatch(setPasswordLoginUser(""));
+        dispatch(setVerificationCodeLoginUser(0));
 
         await router.replace("/user/dashboard/all_apps", { scroll: false });
 
@@ -140,13 +130,13 @@ const CollaboratorModalVerificationCode: React.FC = () => {
       setIsSubmittingResendCode(true);
 
       const response: any = await resentUserVerificationCodeCollaborator({
-        principal_email: principalEmailCollaboratorState,
+        principal_email: principalEmailUserLoginState,
       });
 
       let isResponseError = response.error;
 
       if (!isResendCodeSuccess && !isResendCodeLoading && isResendCodeError) {
-        dispatch(setErrorsLoginCollaborator(isResponseError?.data.message));
+        dispatch(setErrorsLoginUser(isResponseError?.data.message));
         setShowErrorMessage(true);
       }
       if (!isResendCodeError && !isResponseError) {
@@ -169,7 +159,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
   };
 
   const handleButtonClick = () => {
-    dispatch(setErrorsLoginCollaborator([]));
+    dispatch(setErrorsLoginUser([]));
     setShowErrorMessage(false);
     setShowSuccessMessage(false);
   };
@@ -249,7 +239,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
               marginBlock: 7,
             }}
           >
-            {maskEmail(principalEmailCollaboratorState)}
+            {maskEmail(principalEmailUserLoginState)}
           </h5>
 
           <CustomLoadingOverlay isLoading={isPageLoadingState} />
@@ -319,9 +309,9 @@ const CollaboratorModalVerificationCode: React.FC = () => {
                   borderRadius: "30px",
                 }}
                 placeholder="Código"
-                value={verificationCodeCollaboratorState}
+                value={verificationCodeUserLoginState}
                 onChange={(e) =>
-                  dispatch(setVerificationCodeLoginCollaborator(e.target.value))
+                  dispatch(setVerificationCodeLoginUser(e.target.value))
                 }
                 autoComplete="off"
                 min={0}
