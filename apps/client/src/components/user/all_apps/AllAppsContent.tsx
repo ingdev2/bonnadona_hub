@@ -4,10 +4,19 @@ import { Card, Col, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
 
 import CustomDashboardLayout from "@/components/common/custom_dashboard_layout/CustomDashboardLayout";
+import CollaboratorModalFirstSuccessfulLogin from "./collaborator_modal_first_successful_login/CollaboratorModalFirstSuccessfulLogin";
+import { useAppSelector } from "@/redux/hooks";
 
 const AllAppsContent: React.FC = () => {
+  const idUserState = useAppSelector((state) => state.user.id);
+  const modalIsOpenFirstSuccessfullCollaboratorLogin = useAppSelector(
+    (state) => state.modal.firstSuccessLoginModalIsOpen
+  );
   return (
     <>
+      {modalIsOpenFirstSuccessfullCollaboratorLogin && (
+        <CollaboratorModalFirstSuccessfulLogin />
+      )}
       <CustomDashboardLayout
         customLayoutContent={
           <div style={{ width: "100%" }}>

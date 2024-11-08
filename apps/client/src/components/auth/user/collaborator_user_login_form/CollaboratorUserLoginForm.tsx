@@ -19,8 +19,8 @@ import {
 import { UserOutlined } from "@ant-design/icons";
 import { RiLockPasswordLine } from "react-icons/ri";
 
-import CollaboratorModalVerificationCode from "../CollaboratorModalVerificationCode";
-import CollaboratorForgotPasswordForm from "../CollaboratorForgotPasswordForm";
+import CollaboratorModalVerificationCode from "../collaborator_modal_verification_code/CollaboratorModalVerificationCode";
+import CollaboratorForgotPasswordForm from "../collaborator_forgot_password_form/CollaboratorForgotPasswordForm";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
