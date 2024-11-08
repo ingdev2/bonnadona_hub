@@ -900,7 +900,7 @@ export class UsersService {
     return user.user_profile;
   }
 
-  async getUserSessionLogById(principalEmail: string) {
+  async getUserSessionLogByEmail(principalEmail: string) {
     const user = await this.userRepository.findOne({
       where: { principal_email: principalEmail, is_active: true },
     });

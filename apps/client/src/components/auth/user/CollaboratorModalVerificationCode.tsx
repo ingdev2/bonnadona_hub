@@ -17,7 +17,6 @@ import CountdownTimer from "@/components/common/countdown_timer/CountdownTimer";
 
 import { maskEmail } from "@/helpers/mask_email/mask_email";
 import {
-  useGetCollaboratorUserByIdNumberQuery,
   useGetUserActiveByEmailQuery,
 } from "@/redux/apis/users/userApi";
 import { useResendVerificationUserCodeMutation } from "@/redux/apis/auth/loginUsersApi";
@@ -27,7 +26,6 @@ import {
   setIdNumberLoginCollaborator,
   setIdTypeLoginCollaborator,
   setPasswordLoginCollaborator,
-  setPrincipalEmailLoginCollaborator,
   setVerificationCodeLoginCollaborator,
 } from "@/redux/features/user/collaboratorUserLoginSlice";
 import { signIn } from "next-auth/react";
@@ -35,8 +33,7 @@ import {
   setCollaboratorModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
-
-const { Title } = Typography;
+import { setIdUser, setLastNameUser, setNameUser } from "@/redux/features/user/userSlice";
 
 const CollaboratorModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -109,7 +106,6 @@ const CollaboratorModalVerificationCode: React.FC = () => {
           redirect: false,
         }
       );
-      console.log("responseNextAuth: ", responseNextAuth);
       if (responseNextAuth?.error) {
         dispatch(setErrorsLoginCollaborator(responseNextAuth.error.split(",")));
         setShowErrorMessage(true);
@@ -121,8 +117,9 @@ const CollaboratorModalVerificationCode: React.FC = () => {
 
         setShowSuccessMessage(true);
         setSuccessMessage("Ingresando, por favor espere...");
-        dispatch(setIdTypeLoginCollaborator(userActiveData?.user_id_type));
-        dispatch(setIdNumberLoginCollaborator(userActiveData?.id_number));
+        dispatch(setIdUser(userActiveData?.id))
+        dispatch(setNameUser(userActiveData?.name));
+        dispatch(setLastNameUser(userActiveData?.last_name));
 
         dispatch(setPasswordLoginCollaborator(""));
         dispatch(setVerificationCodeLoginCollaborator(0));

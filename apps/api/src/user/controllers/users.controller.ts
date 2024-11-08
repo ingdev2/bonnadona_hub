@@ -87,9 +87,9 @@ export class UsersController {
     return await this.usersService.getUserProfileById(id);
   }
 
-  @Get('/getUserSessionLogById/:principalEmail')
-  async getUserSessionLogById(@Param('principalEmail') principalEmail: string) {
-    return await this.usersService.getUserSessionLogById(principalEmail);
+  @Get('/getUserSessionLogByEmail/:principalEmail')
+  async getUserSessionLogByEmail(@Param('principalEmail') principalEmail: string) {
+    return await this.usersService.getUserSessionLogByEmail(principalEmail);
   }
 
   @Get('/getCollaboratorUserByIdNumber/:idNumber')

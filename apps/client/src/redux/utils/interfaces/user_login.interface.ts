@@ -1,5 +1,7 @@
 interface UserLogin {
   id: string;
+  name: string,
+  last_name: string,
   user_id_type: number;
   id_number: number;
   principal_email: string;
