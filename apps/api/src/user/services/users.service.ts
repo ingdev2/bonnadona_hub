@@ -931,6 +931,13 @@ export class UsersService {
     return userFound;
   }
 
+  async getUserActiveByIdNumber(id_number: number) {
+    return await this.userRepository.findOneBy({
+      id_number: id_number,
+      is_active: true,
+    });
+  }
+
   async getUserActiveByEmail(principal_email: string) {
     return await this.userRepository.findOneBy({
       principal_email: principal_email,
@@ -1496,13 +1503,13 @@ export class UsersService {
   }
 
   async forgotUserPassword({
-    id_type,
+    user_id_type,
     id_number,
     birthdate,
   }: ForgotPasswordUserDto) {
     const userFound = await this.userRepository.findOne({
       where: {
-        user_id_type: id_type,
+        user_id_type: user_id_type,
         id_number: id_number,
         birthdate: birthdate,
         is_active: true,

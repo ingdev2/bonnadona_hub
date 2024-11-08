@@ -128,6 +128,11 @@ export class UsersController {
     ]);
   }
 
+  @Get('/getUserActiveByIdNumber/:id_number')
+  async getUserActiveByIdNumber(@Param('id_number') id_number: number) {
+    return await this.usersService.getUserActiveByIdNumber(id_number);
+  }
+
   @Get('/getUserActiveByEmail/:principal_email')
   async getUserActiveByEmail(
     @Param('principal_email') principal_email: string,
@@ -214,10 +219,10 @@ export class UsersController {
   @Patch('/forgotUserPassword')
   async forgotUserPassword(
     @Body()
-    { id_type, id_number, birthdate }: ForgotPasswordUserDto,
+    { user_id_type, id_number, birthdate }: ForgotPasswordUserDto,
   ) {
     return await this.usersService.forgotUserPassword({
-      id_type,
+      user_id_type,
       id_number,
       birthdate,
     });

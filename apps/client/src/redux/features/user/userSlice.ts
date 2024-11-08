@@ -4,10 +4,15 @@ const initialState: User = {
   id: "",
   name: "",
   last_name: "",
+  user_id_type: 0,
   id_number: 0,
+  user_gender: 0,
   birthdate: "",
-  email: "",
-  cellphone: 0,
+  principal_email: "",
+  corporate_email: "",
+  corporate_cellphone: "",
+  personal_email: "",
+  personal_cellphone: "",
   password: "",
   residence_department: "",
   residence_city: "",
@@ -33,17 +38,32 @@ export const userSlice = createSlice({
     setLastNameUser: (state, action) => {
       state.last_name = action.payload;
     },
+    setIdTypeUser: (state, action) => {
+      state.user_id_type = action.payload;
+    },
     setIdNumberUser: (state, action) => {
       state.id_number = action.payload;
+    },
+    setGenderUser: (state, action) => {
+      state.user_gender = action.payload;
     },
     setBirthdateUser: (state, action) => {
       state.birthdate = action.payload;
     },
-    setEmailUser: (state, action) => {
-      state.email = action.payload;
+    setPrincipalEmailUser: (state, action) => {
+      state.principal_email = action.payload;
     },
-    setCellphoneUser: (state, action) => {
-      state.cellphone = action.payload;
+    setCorporateEmailUser: (state, action) => {
+      state.corporate_email = action.payload;
+    },
+    setCorporateCellphoneUser: (state, action) => {
+      state.corporate_cellphone = action.payload;
+    },
+    setPersonalEmailUser: (state, action) => {
+      state.personal_email = action.payload;
+    },
+    setPersonalCellphoneUser: (state, action) => {
+      state.personal_cellphone = action.payload;
     },
     setPasswordUser: (state, action) => {
       state.password = action.payload;
@@ -70,10 +90,15 @@ export const userSlice = createSlice({
       state.id = "";
       state.name = "";
       state.last_name = "";
+      state.user_id_type = 0;
       state.id_number = 0;
+      state.user_gender = 0;
       state.birthdate = "";
-      state.email = "";
-      state.cellphone = 0;
+      state.principal_email = "";
+      state.corporate_email = "";
+      state.corporate_cellphone = "";
+      state.personal_email = "";
+      state.personal_cellphone = "";
       state.password = "";
       state.residence_department = "";
       state.residence_city = "";
@@ -90,8 +115,13 @@ export const {
   setLastNameUser,
   setIdNumberUser,
   setBirthdateUser,
-  setEmailUser,
-  setCellphoneUser,
+  setPrincipalEmailUser,
+  setCorporateCellphoneUser,
+  setCorporateEmailUser,
+  setGenderUser,
+  setIdTypeUser,
+  setPersonalCellphoneUser,
+  setPersonalEmailUser,
   setPasswordUser,
   setResidenceDepartmentUser,
   setResidenceCityUser,

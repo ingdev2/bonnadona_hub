@@ -62,7 +62,6 @@ const CollaboratorUserLoginForm = () => {
 
   const [modalForgotMyPasswordIsOpen, setModalForgotMyPasswordIsOpen] =
     useState(false);
-
   const [isSubmittingCollaborator, setIsSubmittingCollaborator] =
     useState(false);
   const [showErrorMessageCollaborator, setShowErrorMessageCollaborator] =
@@ -80,14 +79,14 @@ const CollaboratorUserLoginForm = () => {
     fixedCacheKey: "loginCollaboratorData",
   });
 
-  // useEffect(() => {
-  //   if (
-  //     status === "authenticated" &&
-  //     session?.user?.role === UserRolType.COLLABORATOR
-  //   ) {
-  //     signOut();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      session.user.role === UserRolType.COLLABORATOR
+    ) {
+      signOut();
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -105,7 +104,6 @@ const CollaboratorUserLoginForm = () => {
       let isLoginUserBan = response.data?.statusCode
 
       if (isLoginUserError) {
-        console.log('response.error:', response.error)
         const errorMessage = isLoginUserError?.data.message;
 
         if (Array.isArray(errorMessage)) {
@@ -117,13 +115,11 @@ const CollaboratorUserLoginForm = () => {
         }
       }
       if (isLoginUserBan === 202) {
-        console.log('aqui isLoginUserBan:', isLoginUserBan)
         dispatch(setErrorsLoginCollaborator(response.data?.message));
         setShowErrorMessageCollaborator(true);
       }
 
       if (isLoginUserSuccess && !isLoginUserError && !isLoginUserBan) {
-        console.log('response: ', response)
         dispatch(
           setPrincipalEmailLoginCollaborator(
             principalEmailCollaboratorLocalState
@@ -132,6 +128,7 @@ const CollaboratorUserLoginForm = () => {
         dispatch(setPasswordLoginCollaborator(passwordCollaboratorLocalState));
         dispatch(setErrorsLoginCollaborator([]));
         dispatch(setCollaboratorModalIsOpen(true));
+        setShowErrorMessageCollaborator(false);
       }
     } catch (error) {
       console.error(error);
@@ -302,7 +299,6 @@ const CollaboratorUserLoginForm = () => {
                       <UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />
                     }
                     value={principalEmailCollaboratorLocalState}
-                    style={{ borderRadius: "30px" }}
                     onChange={(e) =>
                       setPrincipalEmailCollaboratorLocalState(e.target.value)
                     }
@@ -329,7 +325,6 @@ const CollaboratorUserLoginForm = () => {
                     type="password"
                     value={passwordCollaboratorLocalState}
                     placeholder="Contraseña"
-                    style={{ borderRadius: "30px" }}
                     onChange={(e) =>
                       setPasswordCollaboratorLocalState(e.target.value)
                     }
@@ -338,7 +333,7 @@ const CollaboratorUserLoginForm = () => {
 
                 <Form.Item style={{ textAlign: "center" }}>
                   <a
-                    className="login-forgot-password-form"
+                    className="login-forgot-password-form-user"
                     style={{
                       ...titleStyleCss,
                       display: "flow",

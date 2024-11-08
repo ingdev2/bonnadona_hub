@@ -9,6 +9,7 @@ import collaboratorUserLoginReducer from "./features/user/collaboratorUserLoginS
 
 import { userApi } from "./apis/users/userApi";
 import { loginUserApi } from "./apis/auth/loginUsersApi";
+import { idTypesApi } from "./apis/id_types/idTypesApi";
 
 const persistConfig = {
   key: "root",
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   modal: modalReducer,
   [userApi.reducerPath]: userApi.reducer,
   [loginUserApi.reducerPath]: loginUserApi.reducer,
+  [idTypesApi.reducerPath]: idTypesApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -34,7 +36,11 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
       immutableCheck: false,
-    }).concat([userApi.middleware, loginUserApi.middleware]),
+    }).concat([
+      userApi.middleware,
+      loginUserApi.middleware,
+      idTypesApi.middleware,
+    ]),
 });
 
 setupListeners(store.dispatch);

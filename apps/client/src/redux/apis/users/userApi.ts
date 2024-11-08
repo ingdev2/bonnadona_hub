@@ -44,6 +44,10 @@ export const userApi = createApi({
       query: (principalEmail) => `getUserActiveByEmail/${principalEmail}`,
     }),
 
+    getUserActiveByIdNumber: builder.query<User, number>({
+      query: (id_number) => `getUserActiveByIdNumber/${id_number}`,
+    }),
+
     getUserRoles: builder.query<User, string>({
       query: (Id) => `getUserRoles/${Id}`,
     }),
@@ -115,7 +119,11 @@ export const {
   useGetAdminsUserByIdNumberQuery,
   useGetAuditorUserByIdNumberQuery,
   useGetUserActiveByEmailQuery,
+  useGetUserActiveByIdNumberQuery,
   useGetUserRolesQuery,
   useUpdateUserMutation,
   useBanUserMutation,
+  useForgotUserPasswordMutation,
+  useUpdateUserPasswordMutation,
+  useUpdateUserProfileMutation,
 } = userApi;
