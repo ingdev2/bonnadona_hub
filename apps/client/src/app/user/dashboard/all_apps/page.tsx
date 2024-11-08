@@ -35,7 +35,7 @@ const AllAppsPage: React.FC = () => {
     (state) => state.user.principal_email
   );
 
-  const collaboratorModalState = useAppSelector(
+  const modalIsOpenCollaborator = useAppSelector(
     (state) => state.modal.collaboratorModalIsOpen
   );
 
@@ -74,7 +74,7 @@ const AllAppsPage: React.FC = () => {
       setErrorMessage("¡No autenticado!");
       redirect("/login");
     }
-    if (collaboratorModalState) {
+    if (modalIsOpenCollaborator) {
       dispatch(setCollaboratorModalIsOpen(false));
     }
     if (isPageLoadingState) {
