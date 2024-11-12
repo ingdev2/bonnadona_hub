@@ -1,10 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { getSession } from "next-auth/react";
+
+const addTokenToRequest = async (headers: any, { getState }: any) => {
+  const session: any = await getSession();
+
+  if (session?.user?.access_token) {
+    headers.set("Authorization", `Bearer ${session.user.access_token}`);
+  }
+  return headers;
+};
 
 export const userApi = createApi({
   reducerPath: "userApi",
 
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_BACKEND_URL}/users`,
+    prepareHeaders(headers, { getState }) {
+      return addTokenToRequest(headers, { getState });
+    },
   }),
 
   endpoints: (builder) => ({
@@ -44,7 +57,7 @@ export const userApi = createApi({
       query: (principalEmail) => `getUserActiveByEmail/${principalEmail}`,
     }),
 
-    getUserSessionLogByEmail: builder.query<User, string>({
+    getUserSessionLogByEmail: builder.query<UserSessionLog, string>({
       query: (principalEmail) => `getUserSessionLogByEmail/${principalEmail}`,
     }),
 
@@ -82,13 +95,13 @@ export const userApi = createApi({
 
     updateUserPassword: builder.mutation<
       any,
-      { id: number; updateUserPassword: Partial<User> }
+      { id: string; passwords: UpdatePassword }
     >({
-      query: ({ id, updateUserPassword }) => ({
+      query: ({ id, passwords }) => ({
         url: `updateUserPassword/${id}`,
         method: "PATCH",
         params: { id },
-        body: updateUserPassword,
+        body: passwords,
       }),
     }),
 
