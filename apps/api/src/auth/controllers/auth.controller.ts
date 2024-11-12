@@ -14,7 +14,7 @@ import { Auth } from '../decorators/auth.decorator';
 
 import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
-import { IdUserDto } from '../dto/id_user.dto';
+import { PrincipalEmailDto } from '../dto/principal_email.dto';
 
 import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
@@ -27,7 +27,7 @@ export class AuthController {
 
   // REGISTER //
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/registerUserCollaborator')
   async registerUserCollaborator(
     @Body() registerUserCollaborator: CreateUserDto,
@@ -43,6 +43,13 @@ export class AuthController {
   }
 
   // LOGIN //
+
+  @Post('refreshToken')
+  async refreshToken(@Req() request: Request) {
+    const [type, token] = request.headers['authorization']?.split(' ') || [];
+
+    return this.authService.refreshToken(token);
+  }
 
   @Post('loginCollaboratorUser')
   async loginCollaboratorUser(@Body() loginCollaborator: LoginDto) {
@@ -80,7 +87,7 @@ export class AuthController {
   }
 
   @Post('resendVerificationUserCode')
-  async resendVerificationUserCode(@Body() principal_email: string) {
+  async resendVerificationUserCode(@Body() principal_email: PrincipalEmailDto) {
     return await this.authService.resendVerificationUserCode(principal_email);
   }
 }

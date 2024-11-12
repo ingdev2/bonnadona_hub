@@ -1,0 +1,4 @@
+export enum ServiceTypesEnum {
+  ASSISTANCE = 'ASISTENCIAL',
+  ADMINISTRATIVE = 'ADMINISTRATIVO',
+}

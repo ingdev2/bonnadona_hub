@@ -2,16 +2,9 @@
 
 import React, { ReactNode } from "react";
 import { useRouter } from "next/navigation";
-// import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import UserHeaderLayout from "@/components/user/header_layout_dashboard/UserHeaderLayout";
 import { Button, Col, Layout, Row, theme } from "antd";
-// import { ItemKeys } from "./enums/item_names_and_keys.enums";
-// import { useMenuItems } from "@/components/admin/items_menu_dashboard_admin/items_menu_dashboard_admin";
-// import {
-//   setSelectedKey,
-//   setSelectedOpenKeys,
-// } from "@/redux/features/common/modal/modalSlice";
 
 const { Header, Content, Footer } = Layout;
 
@@ -21,17 +14,10 @@ const CustomDashboardLayout: React.FC<{
   customLayoutFooter?: any;
 }> = ({ customLayoutHeader, customLayoutContent, customLayoutFooter }) => {
   const router = useRouter();
-  // const dispatch = useAppDispatch();
-  // const items = useMenuItems();
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-
-  // const selectedKeyState = useAppSelector((state) => state.modal.selectedKey);
-  // const selectedOpenKeysState = useAppSelector(
-  //   (state) => state.modal.selectedOpenKeys
-  // );
 
   return (
     <Layout
@@ -53,7 +39,7 @@ const CustomDashboardLayout: React.FC<{
         <Header
           className="custom--dashboard-layout-header"
           style={{
-            background: "#0085c8",
+            background: "#015E90",
             padding: "0px",
             position: "fixed",
             width: "100%",
@@ -91,10 +77,10 @@ const CustomDashboardLayout: React.FC<{
             </Col>
 
             <Col
-              xs={12}
-              sm={18}
-              md={18}
-              lg={18}
+              xs={20}
+              sm={20}
+              md={20}
+              lg={20}
               style={{
                 display: "flex",
                 flexFlow: "row wrap",

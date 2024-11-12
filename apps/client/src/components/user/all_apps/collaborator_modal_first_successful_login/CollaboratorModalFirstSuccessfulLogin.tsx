@@ -1,62 +1,179 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
 
 import { Modal, Input, Button, Typography, Space, Form, Divider } from "antd";
 import Link from "next/link";
 
-import { MdPassword } from "react-icons/md";
 import { TbPasswordUser } from "react-icons/tb";
 
-import CustomButton from "@/components/common/custom_button/CustomButton";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/CustomLoadingOverlay";
 import CountdownTimer from "@/components/common/countdown_timer/CountdownTimer";
 
 import { maskEmail } from "@/helpers/mask_email/mask_email";
+import { useResendVerificationUserCodeMutation } from "@/redux/apis/auth/loginUsersApi";
+import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import {
+  setErrorsLoginUser,
+  setPasswordLoginUser,
+  setVerificationCodeLoginUser,
+} from "@/redux/features/login/userLoginSlice";
+import { signIn } from "next-auth/react";
+import {
+  setCollaboratorModalIsOpen,
+  setIsPageLoading,
+} from "@/redux/features/common/modal/modalSlice";
 
-const { Title } = Typography;
+const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
-interface TwoFactorAuthModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onVerify: (code: string) => void;
-}
+  const modalIsOpenFirstSuccessfullCollaboratorLogin = useAppSelector(
+    (state) => state.modal.firstSuccessLoginModalIsOpen
+  );
 
-const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
-  visible,
-  onClose,
-  onVerify,
-}) => {
-  const [code, setCode] = useState("");
+  const isPageLoadingState = useAppSelector(
+    (state) => state.modal.isPageLoading
+  );
+
+  const principalEmailUserLoginState = useAppSelector(
+    (state) => state.userLogin.principal_email
+  );
+
+  const verificationCodeUserLoginState = useAppSelector(
+    (state) => state.userLogin.verification_code
+  );
 
   const [isSubmittingConfirm, setIsSubmittingConfirm] = useState(false);
   const [isSubmittingResendCode, setIsSubmittingResendCode] = useState(false);
 
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [resendCodeDisable, setResendCodeDisable] = useState(true);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCode(e.target.value);
+  const [
+    resentUserVerificationCodeCollaborator,
+    {
+      data: resendCodeData,
+      isLoading: isResendCodeLoading,
+      isSuccess: isResendCodeSuccess,
+      isError: isResendCodeError,
+    },
+  ] = useResendVerificationUserCodeMutation({
+    fixedCacheKey: "resendUserCodeData",
+  });
+
+  useEffect(() => {
+    if (!principalEmailUserLoginState) {
+      setShowErrorMessage(true);
+      setErrorMessage("¡Error al obtener el correo principal del usuario!");
+    }
+  }, [principalEmailUserLoginState]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    try {
+      setIsSubmittingConfirm(true);
+
+      const verificationCode = verificationCodeUserLoginState
+        ? parseInt(verificationCodeUserLoginState?.toString(), 10)
+        : "";
+
+      const responseNextAuth = await signIn(
+        process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
+        {
+          verification_code: verificationCode,
+          principal_email: principalEmailUserLoginState,
+          redirect: false,
+        }
+      );
+      if (responseNextAuth?.error) {
+        dispatch(setErrorsLoginUser(responseNextAuth.error.split(",")));
+        setShowErrorMessage(true);
+      }
+
+      if (responseNextAuth?.status === 200) {
+        dispatch(setIsPageLoading(true));
+
+        setShowSuccessMessage(true);
+        setSuccessMessage("Ingresando, por favor espere...");
+
+        dispatch(setPasswordLoginUser(""));
+        dispatch(setVerificationCodeLoginUser(0));
+
+        await router.replace("/user/dashboard/all_apps", { scroll: false });
+
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingConfirm(false);
+    }
   };
 
-  const handleSubmit = () => {
-    onVerify(code);
-  };
+  const handleResentCode = async (e: React.MouseEvent<HTMLFormElement>) => {
+    try {
+      setIsSubmittingResendCode(true);
 
-  const handleResentCode = () => {};
+      const response: any = await resentUserVerificationCodeCollaborator({
+        principal_email: principalEmailUserLoginState,
+      });
+
+      let isResponseError = response.error;
+
+      if (!isResendCodeSuccess && !isResendCodeLoading && isResendCodeError) {
+        dispatch(setErrorsLoginUser(isResponseError?.data.message));
+        setShowErrorMessage(true);
+      }
+      if (!isResendCodeError && !isResponseError) {
+        setShowSuccessMessage(true);
+        setSuccessMessage("¡Código Reenviado Correctamente!");
+        setResendCodeDisable(true);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingResendCode(false);
+    }
+  };
 
   const handleCancel = () => {
+    dispatch(setCollaboratorModalIsOpen(false));
+
     <Link href="/login" scroll={false} />;
     window.location.reload();
   };
 
-  const handleButtonClick = () => {};
+  const handleButtonClick = () => {
+    dispatch(setErrorsLoginUser([]));
+    setShowErrorMessage(false);
+    setShowSuccessMessage(false);
+  };
 
   return (
     <div>
+      {showErrorMessage && (
+        <CustomMessage
+          typeMessage="error"
+          message={errorMessage || "¡Código Incorrecto!"}
+        />
+      )}
+      {showSuccessMessage && (
+        <CustomMessage
+          typeMessage="success"
+          message={successMessage || "¡Código Reenviado Correctamente!"}
+        />
+      )}
+
       <Modal
         className="modal-verification-code"
-        open={visible}
+        open={modalIsOpenFirstSuccessfullCollaboratorLogin}
         confirmLoading={isSubmittingConfirm}
         onCancel={handleCancel}
         destroyOnClose={true}
@@ -108,16 +225,16 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
             style={{
               fontWeight: "bold",
               fontSize: 13,
-              color: "#0085c8",
+              color: "#015E90",
               lineHeight: 1.7,
               letterSpacing: 1.3,
               marginBlock: 7,
             }}
           >
-            {maskEmail("andressierra@gmail.com")}
+            {maskEmail(principalEmailUserLoginState)}
           </h5>
 
-          {/* <CustomLoadingOverlay isLoading={isPageLoadingState} /> */}
+          <CustomLoadingOverlay isLoading={isPageLoadingState} />
 
           {resendCodeDisable && (
             <CountdownTimer
@@ -167,10 +284,11 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
               <Input
                 id="input-code"
                 className="input-code"
+                type="tel"
                 prefix={
                   <TbPasswordUser
                     className="input-code-item-icon"
-                    style={{ paddingInline: "1px", color: "#0085c8" }}
+                    style={{ paddingInline: "1px", color: "#3F97AF" }}
                   />
                 }
                 style={{
@@ -182,9 +300,11 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
                   marginBottom: 4,
                   borderRadius: "30px",
                 }}
-                type="tel"
                 placeholder="Código"
-                onChange={(e) => ({})}
+                value={verificationCodeUserLoginState}
+                onChange={(e) =>
+                  dispatch(setVerificationCodeLoginUser(e.target.value))
+                }
                 autoComplete="off"
                 min={0}
               />
@@ -196,12 +316,12 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
               <Button
                 key={"confirm-code-button"}
                 className="confirm-code-button"
+                disabled={isPageLoadingState}
                 style={{
-                  backgroundColor: "#0085c8",
-                  color: "#f2f2f2",
-                  borderRadius: 31,
-                  marginTop: 5,
-                  marginBottom: 13,
+                  backgroundColor: isPageLoadingState ? "#D8D8D8" : "#015E90",
+                  color: isPageLoadingState ? "#A0A0A0" : "#f2f2f2",
+                  borderRadius: "31px",
+                  marginBottom: "13px",
                 }}
                 htmlType="submit"
                 onClick={handleButtonClick}
@@ -220,8 +340,8 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
               disabled={resendCodeDisable}
               style={{
                 backgroundColor: resendCodeDisable ? "#D8D8D8" : "transparent",
-                color: resendCodeDisable ? "#A0A0A0" : "#0085c8",
-                borderColor: resendCodeDisable ? "#A0A0A0" : "#0085c8",
+                color: resendCodeDisable ? "#A7BAB7" : "#015E90",
+                borderColor: resendCodeDisable ? "#A7AFBA" : "#015E90",
                 paddingInline: 13,
                 borderRadius: 31,
                 borderWidth: 1.3,
@@ -233,7 +353,7 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
             </Button>
           )}
 
-          {/* <div style={{ marginInline: 54 }}>
+          <div style={{ marginInline: 54 }}>
             <Divider
               style={{
                 marginBlock: 13,
@@ -247,18 +367,18 @@ const TwoFactorAuthModal: React.FC<TwoFactorAuthModalProps> = ({
             className="cancel-button-user"
             style={{
               paddingInline: 45,
-              backgroundColor: "#e33030",
+              backgroundColor: "#8C1111",
               color: "#f2f2f2",
               borderRadius: 31,
             }}
             onClick={handleCancel}
           >
             Cancelar
-          </Button> */}
+          </Button>
         </div>
       </Modal>
     </div>
   );
 };
 
-export default TwoFactorAuthModal;
+export default CollaboratorModalFirstSuccessfulLogin;

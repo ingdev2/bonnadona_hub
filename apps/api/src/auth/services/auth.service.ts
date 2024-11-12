@@ -37,6 +37,8 @@ import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.e
 import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
+import { PrincipalEmailDto } from '../dto/principal_email.dto';
+import { permission } from 'process';
 
 @Injectable()
 export class AuthService {
@@ -415,6 +417,7 @@ export class AuthService {
       user_id_type: collaboratorFound.user_id_type,
       id_number: collaboratorFound.id_number,
       role: collaboratorFound.role,
+      permissions: collaboratorFound.permission,
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -428,6 +431,7 @@ export class AuthService {
       id_number: collaboratorFound.id_number,
       principal_email: collaboratorFound.principal_email,
       role: collaboratorFound.role,
+      permission: collaboratorFound.permission,
     };
   }
 
@@ -491,6 +495,7 @@ export class AuthService {
       user_id_type: adminOrAuditorFound.user_id_type,
       id_number: adminOrAuditorFound.id_number,
       role: adminOrAuditorFound.role,
+      permissions: adminOrAuditorFound.permission,
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -528,10 +533,11 @@ export class AuthService {
       id_number: adminOrAuditorFound.id_number,
       principal_email: adminOrAuditorFound.principal_email,
       role: adminOrAuditorFound.role,
+      permission: adminOrAuditorFound.permission,
     };
   }
 
-  async resendVerificationUserCode(principal_email: string) {
+  async resendVerificationUserCode({ principal_email }: PrincipalEmailDto) {
     const collaboratorFound =
       await this.userService.getUserActiveByEmail(principal_email);
 
@@ -589,6 +595,7 @@ export class AuthService {
       user_id_type: user.user_id_type,
       id_number: user.id_number,
       role: user.role,
+      permissions: user.permission,
     };
 
     const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
@@ -627,6 +634,7 @@ export class AuthService {
         user_id_type: user.user_id_type,
         id_number: user.id_number,
         role: user.role,
+        permissions: user.permission,
       };
 
       const { access_token, refresh_token, access_token_expires_in } =

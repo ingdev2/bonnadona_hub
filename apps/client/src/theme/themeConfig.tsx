@@ -39,6 +39,15 @@ const themeConfig: ThemeConfig = {
       colorTextTertiary: "#A7BAB7",
       colorPrimaryHover: "#3F97AF",
     },
+    Select: {
+      borderRadius: 30
+    },
+    Input: {
+      borderRadius: 30
+    },
+    DatePicker: {
+      borderRadius: 30
+    }
   },
 };
 

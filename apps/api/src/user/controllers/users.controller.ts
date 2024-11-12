@@ -87,9 +87,11 @@ export class UsersController {
     return await this.usersService.getUserProfileById(id);
   }
 
-  @Get('/getUserSessionLogById/:id')
-  async getUserSessionLogById(@Param('id') id: string) {
-    return await this.usersService.getUserSessionLogById(id);
+  @Get('/getUserSessionLogByEmail/:principalEmail')
+  async getUserSessionLogByEmail(
+    @Param('principalEmail') principalEmail: string,
+  ) {
+    return await this.usersService.getUserSessionLogByEmail(principalEmail);
   }
 
   @Get('/getCollaboratorUserByIdNumber/:idNumber')
@@ -128,10 +130,16 @@ export class UsersController {
     ]);
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
-  @Get('/getUserActiveByEmail/:principalEmail')
-  async getUserActiveByEmail(@Param('principalEmail') principalEmail: string) {
-    return await this.usersService.getUserActiveByEmail(principalEmail);
+  @Get('/getUserActiveByIdNumber/:id_number')
+  async getUserActiveByIdNumber(@Param('id_number') id_number: number) {
+    return await this.usersService.getUserActiveByIdNumber(id_number);
+  }
+
+  @Get('/getUserActiveByEmail/:principal_email')
+  async getUserActiveByEmail(
+    @Param('principal_email') principal_email: string,
+  ) {
+    return await this.usersService.getUserActiveByEmail(principal_email);
   }
 
   @Get('/getUserRoles/:id')
@@ -213,10 +221,10 @@ export class UsersController {
   @Patch('/forgotUserPassword')
   async forgotUserPassword(
     @Body()
-    { id_type, id_number, birthdate }: ForgotPasswordUserDto,
+    { user_id_type, id_number, birthdate }: ForgotPasswordUserDto,
   ) {
     return await this.usersService.forgotUserPassword({
-      id_type,
+      user_id_type,
       id_number,
       birthdate,
     });

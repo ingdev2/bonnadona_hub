@@ -900,9 +900,9 @@ export class UsersService {
     return user.user_profile;
   }
 
-  async getUserSessionLogById(userId: string) {
+  async getUserSessionLogByEmail(principalEmail: string) {
     const user = await this.userRepository.findOne({
-      where: { id: userId, is_active: true },
+      where: { principal_email: principalEmail, is_active: true },
     });
 
     if (!user) {
@@ -931,9 +931,16 @@ export class UsersService {
     return userFound;
   }
 
-  async getUserActiveByEmail(principalEmail: string) {
+  async getUserActiveByIdNumber(id_number: number) {
     return await this.userRepository.findOneBy({
-      principal_email: principalEmail,
+      id_number: id_number,
+      is_active: true,
+    });
+  }
+
+  async getUserActiveByEmail(principal_email: string) {
+    return await this.userRepository.findOneBy({
+      principal_email: principal_email,
       is_active: true,
     });
   }
@@ -1496,13 +1503,13 @@ export class UsersService {
   }
 
   async forgotUserPassword({
-    id_type,
+    user_id_type,
     id_number,
     birthdate,
   }: ForgotPasswordUserDto) {
     const userFound = await this.userRepository.findOne({
       where: {
-        user_id_type: id_type,
+        user_id_type: user_id_type,
         id_number: id_number,
         birthdate: birthdate,
         is_active: true,

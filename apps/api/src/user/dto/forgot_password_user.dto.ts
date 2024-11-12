@@ -2,7 +2,7 @@ import { IsNotEmpty, IsDateString, Matches } from 'class-validator';
 
 export class ForgotPasswordUserDto {
   @IsNotEmpty({ message: '¡Datos ingresados incorrectos!' })
-  id_type: number;
+  user_id_type: number;
 
   @IsNotEmpty({ message: '¡Datos ingresados incorrectos!' })
   id_number: number;
