@@ -6,6 +6,7 @@ import storage from "./storage/storage";
 import userReducer from "./features/user/userSlice";
 import modalReducer from "./features/common/modal/modalSlice";
 import userLoginReducer from "./features/login/userLoginSlice";
+import adminLoginReducer from "./features/login/adminLoginSlice";
 
 import { userApi } from "./apis/users/userApi";
 import { loginUserApi } from "./apis/auth/loginUsersApi";
@@ -15,13 +16,14 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  whitelist: ["user", "modal", "userLogin"],
+  whitelist: ["user", "modal", "userLogin", "adminLogin"],
   blacklist: [],
 };
 
 const rootReducer = combineReducers({
   user: userReducer,
   userLogin: userLoginReducer,
+  adminLogin: adminLoginReducer,
   modal: modalReducer,
   [userApi.reducerPath]: userApi.reducer,
   [loginUserApi.reducerPath]: loginUserApi.reducer,

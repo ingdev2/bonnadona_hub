@@ -15,6 +15,7 @@ import {
   Row,
   Image,
 } from "antd";
+import { titleStyleCss } from "@/theme/text_styles";
 
 import { UserOutlined } from "@ant-design/icons";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -25,7 +26,6 @@ import UserForgotPasswordForm from "../user_forgot_password_form/UserForgotPassw
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
 
-import { titleStyleCss } from "@/theme/text_styles";
 import { useLoginCollaboratorUserMutation } from "@/redux/apis/auth/loginUsersApi";
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import {
