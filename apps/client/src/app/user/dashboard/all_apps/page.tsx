@@ -10,7 +10,10 @@ import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
 import AllAppsContent from "@/components/user/all_apps/AllAppsContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import { useGetUserActiveByEmailQuery } from "@/redux/apis/users/userApi";
+import {
+  useGetUserActiveByEmailQuery,
+  useGetUserActiveByIdNumberQuery,
+} from "@/redux/apis/users/userApi";
 import {
   setIdUser,
   setLastNameUser,
@@ -49,20 +52,31 @@ const AllAppsPage: React.FC = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // const {
+  //   data: userActiveDatabyIdNumber,
+  //   isLoading: userActiveLoading,
+  //   isFetching: userActiveFetching,
+  //   error: userActiveError,
+  // } = useGetUserActiveByEmailQuery(principalEmailUserLoginState);
+
   const {
-    data: userActiveData,
-    isLoading: userActiveLoading,
-    isFetching: userActiveFetching,
-    error: userActiveError,
-  } = useGetUserActiveByEmailQuery(principalEmailUserLoginState);
+    data: userActiveDatabyIdNumber,
+    isLoading: userActiveDatabyIdNumberLoading,
+    isFetching: userActiveDatabyIdNumberFetching,
+    isError: userActiveDatabyIdNumberError,
+  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
+    skip: !session?.user.id_number,
+  });
 
   useEffect(() => {
     console.log("session: ", session);
-    if (!principalEmailUserState) {
-      dispatch(setPrincipalEmailUser(userActiveData?.principal_email));
-      dispatch(setIdUser(userActiveData?.id));
-      dispatch(setNameUser(userActiveData?.name));
-      dispatch(setLastNameUser(userActiveData?.last_name));
+    if (!principalEmailUserState && userActiveDatabyIdNumber) {
+      dispatch(
+        setPrincipalEmailUser(userActiveDatabyIdNumber?.principal_email)
+      );
+      dispatch(setIdUser(userActiveDatabyIdNumber?.id));
+      dispatch(setNameUser(userActiveDatabyIdNumber?.name));
+      dispatch(setLastNameUser(userActiveDatabyIdNumber?.last_name));
     }
     if (!principalEmailUserLoginState) {
       setShowErrorMessage(true);
@@ -80,7 +94,14 @@ const AllAppsPage: React.FC = () => {
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
-  });
+  }, [
+    userActiveDatabyIdNumber,
+    principalEmailUserState,
+    session,
+    status,
+    modalIsOpenCollaborator,
+    isPageLoadingState,
+  ]);
 
   return (
     <div>
