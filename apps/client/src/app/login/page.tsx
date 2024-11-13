@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setIsPageLoading } from "@/redux/features/common/modal/modalSlice";
 
-import CollaboratorUserLoginForm from "@/components/auth/user/collaborator_user_login_form/CollaboratorUserLoginForm";
+import UserLoginForm from "@/components/auth/user/user_login_form/UserLoginForm";
 
 const UsersLoginPage: React.FC = () => {
   const { data: session, status } = useSession();
@@ -23,7 +23,7 @@ const UsersLoginPage: React.FC = () => {
 
   return (
     <>
-      <CollaboratorUserLoginForm />
+      <UserLoginForm />
     </>
   );
 };

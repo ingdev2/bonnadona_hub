@@ -27,7 +27,7 @@ import {
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 
-const CollaboratorModalVerificationCode: React.FC = () => {
+const UserModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -381,4 +381,4 @@ const CollaboratorModalVerificationCode: React.FC = () => {
   );
 };
 
-export default CollaboratorModalVerificationCode;
+export default UserModalVerificationCode;
