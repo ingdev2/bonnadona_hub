@@ -32,6 +32,8 @@ const AllAppsContent: React.FC = () => {
   useEffect(() => {
     if (userSessionLogData?.successful_login_counter == 1) {
       dispatch(setFirstLoginModalIsOpen(true));
+    } else {
+      dispatch(setFirstLoginModalIsOpen(false));
     }
   }, [userSessionLogData]);
 

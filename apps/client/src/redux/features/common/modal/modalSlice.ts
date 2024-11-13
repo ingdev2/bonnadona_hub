@@ -4,6 +4,7 @@ const initialState = {
   isPageLoading: false,
   passwordResetToken: "",
   collaboratorModalIsOpen: false,
+  adminModalIsOpen: false,
   firstSuccessLoginModalIsOpen: false,
 };
 
@@ -20,6 +21,9 @@ export const modalSlice = createSlice({
     setCollaboratorModalIsOpen: (state, action) => {
       state.collaboratorModalIsOpen = action.payload;
     },
+    setAdminModalIsOpen: (state, action) => {
+      state.adminModalIsOpen = action.payload;
+    },
     setFirstLoginModalIsOpen: (state, action) => {
       state.firstSuccessLoginModalIsOpen = action.payload;
     },
@@ -30,6 +34,7 @@ export const {
   setIsPageLoading,
   setPasswordResetToken,
   setCollaboratorModalIsOpen,
+  setAdminModalIsOpen,
   setFirstLoginModalIsOpen,
 } = modalSlice.actions;
 
