@@ -60,7 +60,7 @@ const AllAppsPage: React.FC = () => {
   // } = useGetUserActiveByEmailQuery(principalEmailUserLoginState);
 
   const {
-    data: userActiveDatabyIdNumber,
+    data: userActiveDatabyIdNumberData,
     isLoading: userActiveDatabyIdNumberLoading,
     isFetching: userActiveDatabyIdNumberFetching,
     isError: userActiveDatabyIdNumberError,
@@ -70,13 +70,13 @@ const AllAppsPage: React.FC = () => {
 
   useEffect(() => {
     console.log("session: ", session);
-    if (!principalEmailUserState && userActiveDatabyIdNumber) {
+    if (!principalEmailUserState && userActiveDatabyIdNumberData) {
       dispatch(
-        setPrincipalEmailUser(userActiveDatabyIdNumber?.principal_email)
+        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
       );
-      dispatch(setIdUser(userActiveDatabyIdNumber?.id));
-      dispatch(setNameUser(userActiveDatabyIdNumber?.name));
-      dispatch(setLastNameUser(userActiveDatabyIdNumber?.last_name));
+      dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
+      dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
+      dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
     }
     if (!principalEmailUserLoginState) {
       setShowErrorMessage(true);
@@ -95,7 +95,7 @@ const AllAppsPage: React.FC = () => {
       dispatch(setIsPageLoading(false));
     }
   }, [
-    userActiveDatabyIdNumber,
+    userActiveDatabyIdNumberData,
     principalEmailUserState,
     session,
     status,

@@ -25,7 +25,7 @@ import { IdcardOutlined } from "@ant-design/icons";
 import CustomDatePicker from "@/components/common/custom_date_picker/CustomDatePicker";
 import { validateRequiredDate } from "@/helpers/validate_required_values/validate_required_files";
 
-const CollaboratorForgotPasswordForm: React.FC<{
+const UserForgotPasswordForm: React.FC<{
   setOpenModalForgotPassword: (value: React.SetStateAction<boolean>) => void;
 }> = ({ setOpenModalForgotPassword }) => {
   const dispatch = useAppDispatch();
@@ -79,7 +79,7 @@ const CollaboratorForgotPasswordForm: React.FC<{
     : 0;
 
   const {
-    data: isCollaboratorActiveData,
+    data: userActiveDatabyIdNumberData,
     isLoading: isCollaboratorActiveLoading,
     isFetching: isCollaboratorActiveFetching,
     isError: isCollaboratorActiveError,
@@ -93,8 +93,8 @@ const CollaboratorForgotPasswordForm: React.FC<{
   } = useGetAllIdTypesQuery(null);
 
   useEffect(() => {
-    if (isCollaboratorActiveData) {
-      setEmailCollaboratorLocalState(isCollaboratorActiveData?.principal_email);
+    if (userActiveDatabyIdNumberData) {
+      setEmailCollaboratorLocalState(userActiveDatabyIdNumberData?.principal_email);
     }
 
     if (
@@ -111,7 +111,7 @@ const CollaboratorForgotPasswordForm: React.FC<{
       );
     }
   }, [
-    isCollaboratorActiveData,
+    userActiveDatabyIdNumberData,
     idTypesCollaboratorData,
     idNumberCollaboratorLocalState,
   ]);
@@ -400,4 +400,4 @@ const CollaboratorForgotPasswordForm: React.FC<{
   );
 };
 
-export default CollaboratorForgotPasswordForm;
+export default UserForgotPasswordForm;

@@ -19,8 +19,8 @@ import {
 import { UserOutlined } from "@ant-design/icons";
 import { RiLockPasswordLine } from "react-icons/ri";
 
-import CollaboratorModalVerificationCode from "../collaborator_modal_verification_code/CollaboratorModalVerificationCode";
-import CollaboratorForgotPasswordForm from "../collaborator_forgot_password_form/CollaboratorForgotPasswordForm";
+import UserModalVerificationCode from "../user_modal_verification_code/UserModalVerificationCode";
+import UserForgotPasswordForm from "../user_forgot_password_form/UserForgotPasswordForm";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
@@ -40,7 +40,7 @@ import { setCollaboratorModalIsOpen } from "@/redux/features/common/modal/modalS
 
 const { Title } = Typography;
 
-const CollaboratorUserLoginForm = () => {
+const UserLoginForm: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -150,7 +150,7 @@ const CollaboratorUserLoginForm = () => {
 
   return (
     <>
-      {modalIsOpenCollaborator && <CollaboratorModalVerificationCode />}
+      {modalIsOpenCollaborator && <UserModalVerificationCode />}
 
       {showErrorMessageCollaborator && (
         <CustomMessage
@@ -378,7 +378,7 @@ const CollaboratorUserLoginForm = () => {
           maskClosableCustomModal={true}
           handleCancelCustomModal={() => setModalForgotMyPasswordIsOpen(false)}
           contentCustomModal={
-            <CollaboratorForgotPasswordForm
+            <UserForgotPasswordForm
               setOpenModalForgotPassword={setModalForgotMyPasswordIsOpen}
             />
           }
@@ -388,4 +388,4 @@ const CollaboratorUserLoginForm = () => {
   );
 };
 
-export default CollaboratorUserLoginForm;
+export default UserLoginForm;
