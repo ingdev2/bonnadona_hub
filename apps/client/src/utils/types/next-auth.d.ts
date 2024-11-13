@@ -9,6 +9,7 @@ declare module "next-auth" {
       access_token_expires_in?: number;
       id_type?: number;
       id_number?: number;
+      principal_email?: string;
       role?: AllowedRoleType;
       permissions?: any[];
     } & DefaultSession["user"];
