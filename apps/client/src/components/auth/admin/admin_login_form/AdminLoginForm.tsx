@@ -122,7 +122,17 @@ const AdminLoginForm: React.FC = () => {
     setShowErrorMessage(false);
   };
 
-  return <div>AdminLoginForm</div>;
+  return (
+    <>
+      {showErrorMessage && (
+        <CustomMessage
+          typeMessage="error"
+          message={errorsAdminState?.toString() || "¡Error en la petición!"}
+        />
+      )}
+      
+    </>
+  );
 };
 
 export default AdminLoginForm;

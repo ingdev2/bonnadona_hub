@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setIsPageLoading } from "@/redux/features/common/modal/modalSlice";
-import AdminLoginForm from "@/components/auth/user/admin_login_form/AdminLoginForm";
+import AdminLoginForm from "@/components/auth/admin/admin_login_form/AdminLoginForm";
 
 const AdminsLoginPage: React.FC = () => {
   const { data: session, status } = useSession();

@@ -23,7 +23,7 @@ import {
 } from "@/redux/features/login/userLoginSlice";
 import { signIn } from "next-auth/react";
 import {
-  setCollaboratorModalIsOpen,
+  setUserModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 
@@ -32,7 +32,7 @@ const UserModalVerificationCode: React.FC = () => {
   const router = useRouter();
 
   const modalIsOpenCollaborator = useAppSelector(
-    (state) => state.modal.collaboratorModalIsOpen
+    (state) => state.modal.userModalIsOpen
   );
 
   const isPageLoadingState = useAppSelector(
@@ -144,7 +144,7 @@ const UserModalVerificationCode: React.FC = () => {
   };
 
   const handleCancel = () => {
-    dispatch(setCollaboratorModalIsOpen(false));
+    dispatch(setUserModalIsOpen(false));
 
     <Link href="/login" scroll={false} />;
     window.location.reload();
