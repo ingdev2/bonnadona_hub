@@ -36,7 +36,7 @@ import {
 } from "@/redux/features/login/userLoginSlice";
 import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import { setCollaboratorModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+import { setUserModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 
 const { Title } = Typography;
 
@@ -49,8 +49,8 @@ const UserLoginForm: React.FC = () => {
     (state) => state.userLogin.errors
   );
 
-  const modalIsOpenCollaborator = useAppSelector(
-    (state) => state.modal.collaboratorModalIsOpen
+  const modalIsOpenUser = useAppSelector(
+    (state) => state.modal.userModalIsOpen
   );
 
   const [
@@ -62,10 +62,8 @@ const UserLoginForm: React.FC = () => {
 
   const [modalForgotMyPasswordIsOpen, setModalForgotMyPasswordIsOpen] =
     useState(false);
-  const [isSubmittingCollaborator, setIsSubmittingCollaborator] =
-    useState(false);
-  const [showErrorMessageCollaborator, setShowErrorMessageCollaborator] =
-    useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const [
     loginCollaboratorUsers,
@@ -90,7 +88,7 @@ const UserLoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
-      setIsSubmittingCollaborator(true);
+      setIsSubmitting(true);
       dispatch(resetLoginStateUser());
       dispatch(setDefaultValuesUser());
 
@@ -108,15 +106,15 @@ const UserLoginForm: React.FC = () => {
 
         if (Array.isArray(errorMessage)) {
           dispatch(setErrorsLoginUser(errorMessage[0]));
-          setShowErrorMessageCollaborator(true);
+          setShowErrorMessage(true);
         } else if (typeof errorMessage === "string") {
           dispatch(setErrorsLoginUser(errorMessage));
-          setShowErrorMessageCollaborator(true);
+          setShowErrorMessage(true);
         }
       }
       if (isLoginUserBan === 202) {
         dispatch(setErrorsLoginUser(response.data?.message));
-        setShowErrorMessageCollaborator(true);
+        setShowErrorMessage(true);
       }
 
       if (isLoginUserSuccess && !isLoginUserError && !isLoginUserBan) {
@@ -125,19 +123,19 @@ const UserLoginForm: React.FC = () => {
         );
         dispatch(setPasswordLoginUser(passwordCollaboratorLocalState));
         dispatch(setErrorsLoginUser([]));
-        dispatch(setCollaboratorModalIsOpen(true));
-        setShowErrorMessageCollaborator(false);
+        dispatch(setUserModalIsOpen(true));
+        setShowErrorMessage(false);
       }
     } catch (error) {
       console.error(error);
     } finally {
-      setIsSubmittingCollaborator(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleButtonClick = () => {
     dispatch(setErrorsLoginUser([]));
-    setShowErrorMessageCollaborator(false);
+    setShowErrorMessage(false);
   };
 
   const imagesCarousel = [
@@ -150,9 +148,9 @@ const UserLoginForm: React.FC = () => {
 
   return (
     <>
-      {modalIsOpenCollaborator && <UserModalVerificationCode />}
+      {modalIsOpenUser && <UserModalVerificationCode />}
 
-      {showErrorMessageCollaborator && (
+      {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
           message={
@@ -344,7 +342,7 @@ const UserLoginForm: React.FC = () => {
                     ¿Olvidaste tu contraseña?
                   </a>
 
-                  {isSubmittingCollaborator && isloginCollaboratorLoading ? (
+                  {isSubmitting && isloginCollaboratorLoading ? (
                     <CustomSpin />
                   ) : (
                     <Button
