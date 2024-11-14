@@ -11,6 +11,7 @@ import adminLoginReducer from "./features/login/adminLoginSlice";
 import { userApi } from "./apis/users/userApi";
 import { loginUserApi } from "./apis/auth/loginUsersApi";
 import { idTypesApi } from "./apis/id_types/idTypesApi";
+import { loginAdminApi } from "./apis/auth/loginAdminApi";
 
 const persistConfig = {
   key: "root",
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   modal: modalReducer,
   [userApi.reducerPath]: userApi.reducer,
   [loginUserApi.reducerPath]: loginUserApi.reducer,
+  [loginAdminApi.reducerPath]: loginAdminApi.reducer,
   [idTypesApi.reducerPath]: idTypesApi.reducer,
 });
 
@@ -41,6 +43,7 @@ export const store = configureStore({
     }).concat([
       userApi.middleware,
       loginUserApi.middleware,
+      loginAdminApi.middleware,
       idTypesApi.middleware,
     ]),
 });
