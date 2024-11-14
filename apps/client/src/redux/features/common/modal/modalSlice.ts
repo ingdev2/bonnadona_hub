@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isPageLoading: false,
   passwordResetToken: "",
-  collaboratorModalIsOpen: false,
+  userModalIsOpen: false,
   adminModalIsOpen: false,
   firstSuccessLoginModalIsOpen: false,
 };
@@ -18,8 +18,8 @@ export const modalSlice = createSlice({
     setPasswordResetToken: (state, action) => {
       state.passwordResetToken = action.payload;
     },
-    setCollaboratorModalIsOpen: (state, action) => {
-      state.collaboratorModalIsOpen = action.payload;
+    setUserModalIsOpen: (state, action) => {
+      state.userModalIsOpen = action.payload;
     },
     setAdminModalIsOpen: (state, action) => {
       state.adminModalIsOpen = action.payload;
@@ -33,7 +33,7 @@ export const modalSlice = createSlice({
 export const {
   setIsPageLoading,
   setPasswordResetToken,
-  setCollaboratorModalIsOpen,
+  setUserModalIsOpen,
   setAdminModalIsOpen,
   setFirstLoginModalIsOpen,
 } = modalSlice.actions;
