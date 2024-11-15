@@ -106,7 +106,7 @@ const UserModalVerificationCode: React.FC = () => {
         dispatch(setPasswordLoginUser(""));
         dispatch(setVerificationCodeLoginUser(0));
 
-        await router.replace("/user/dashboard/all_apps", { scroll: false });
+        await router.replace("/user/dashboard_user", { scroll: false });
 
         await new Promise((resolve) => setTimeout(resolve, 4000));
       }

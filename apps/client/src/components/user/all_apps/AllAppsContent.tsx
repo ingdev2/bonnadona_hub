@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Card, Col, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
 
-import CustomDashboardLayout from "@/components/common/custom_dashboard_layout/CustomDashboardLayout";
+import CustomDashboardLayoutUsers from "@/components/common/custom_dashboard_layout_users/CustomDashboardLayoutUsers";
 import CollaboratorModalFirstSuccessfulLogin from "./collaborator_modal_first_successful_login/CollaboratorModalFirstSuccessfulLogin";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useGetUserSessionLogByEmailQuery } from "@/redux/apis/users/userApi";
@@ -43,7 +43,7 @@ const AllAppsContent: React.FC = () => {
         <CollaboratorModalFirstSuccessfulLogin />
       )}
 
-      <CustomDashboardLayout
+      <CustomDashboardLayoutUsers
         customLayoutContent={
           <div style={{ width: "100%" }}>
             <Row gutter={[24, 24]} justify="center">
