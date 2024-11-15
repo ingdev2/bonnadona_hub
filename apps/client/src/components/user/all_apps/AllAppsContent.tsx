@@ -42,8 +42,7 @@ const AllAppsContent: React.FC = () => {
       {modalIsOpenFirstSuccessfullCollaboratorLogin && (
         <CollaboratorModalFirstSuccessfulLogin />
       )}
-
-      <CustomDashboardLayoutUsers
+      <CustomDashboardLayout
         customLayoutContent={
           <div style={{ width: "100%" }}>
             <Row gutter={[24, 24]} justify="center">
