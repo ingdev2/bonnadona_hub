@@ -43,14 +43,12 @@ export class PasswordPolicyController {
 
   @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
-  @Patch('/update/:id')
+  @Patch('/update')
   updatePasswordPolicy(
-    @Param('id') id: number,
     @Body() updatePasswordPolicy: UpdatePasswordPolicyDto,
     @Req() requestAuditLog: any,
   ) {
     return this.passwordPolicyService.updatePasswordPolicy(
-      id,
       updatePasswordPolicy,
       requestAuditLog,
     );

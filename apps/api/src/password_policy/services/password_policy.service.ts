@@ -54,15 +54,12 @@ export class PasswordPolicyService {
   // UPDATE FUNTIONS //
 
   async updatePasswordPolicy(
-    id: number,
     passwordPolicy: UpdatePasswordPolicyDto,
     @Req() requestAuditLog: any,
   ) {
-    const passwordPolicyFound = await this.passwordPolicyRepository.findOneBy({
-      id,
-    });
+    const passwordPolicyFound = await this.passwordPolicyRepository.find();
 
-    if (!passwordPolicyFound) {
+    if (!passwordPolicyFound && passwordPolicyFound.length >= 2) {
       throw new HttpException(
         `Política de contraseña no encontrada.`,
         HttpStatus.NOT_FOUND,
@@ -70,7 +67,7 @@ export class PasswordPolicyService {
     }
 
     const updatePasswordPolicy = await this.passwordPolicyRepository.update(
-      id,
+      passwordPolicyFound[0].id,
       passwordPolicy,
     );
 
@@ -86,7 +83,7 @@ export class PasswordPolicyService {
       action_type: ActionTypesEnum.PASSWORD_POLICY_UPDATE,
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.PASSWORD_POLICY_MODULE,
-      module_record_id: id,
+      module_record_id: passwordPolicyFound[0].id,
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
