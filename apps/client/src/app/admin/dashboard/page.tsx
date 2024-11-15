@@ -1,63 +1,54 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { redirect } from "next/navigation";
-
-import { RolesEnum } from "@/utils/enums/roles/roles.enum";
-import { useRoleValidation } from "@/utils/hooks/use_role_validation";
-
-import AllAppsContent from "@/components/user/all_apps/AllAppsContent";
-import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import {
-  useGetUserActiveByEmailQuery,
-  useGetUserActiveByIdNumberQuery,
-} from "@/redux/apis/users/userApi";
+import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 import {
   setIdUser,
   setLastNameUser,
   setNameUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { RolesEnum } from "@/utils/enums/roles/roles.enum";
+import { useRoleValidation } from "@/utils/hooks/use_role_validation";
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+import { redirect } from "next/navigation";
 import {
-  setUserModalIsOpen,
+  setAdminModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
+import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 
-const AllAppsPage: React.FC = () => {
+const page: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
-  const principalEmailUserLoginState = useAppSelector(
-    (state) => state.userLogin.principal_email
-  );
-
-  const principalEmailUserState = useAppSelector(
-    (state) => state.user.principal_email
-  );
-
-  const collaboratorModalState = useAppSelector(
-    (state) => state.modal.userModalIsOpen
-  );
-
-  const isPageLoadingState = useAppSelector(
-    (state) => state.modal.isPageLoading
-  );
-
-  const allowedRoles = [RolesEnum.COLLABORATOR];
+  const allowedRoles = [
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.AUDITOR,
+  ];
   useRoleValidation(allowedRoles);
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // const {
-  //   data: userActiveDatabyIdNumber,
-  //   isLoading: userActiveLoading,
-  //   isFetching: userActiveFetching,
-  //   error: userActiveError,
-  // } = useGetUserActiveByEmailQuery(principalEmailUserLoginState);
+  const principalEmailAdminLoginState = useAppSelector(
+    (state) => state.adminLogin.principal_email
+  );
+
+  const principalEmailAdminState = useAppSelector(
+    (state) => state.user.principal_email
+  );
+
+  const adminModalState = useAppSelector(
+    (state) => state.modal.adminModalIsOpen
+  );
+
+  const isPageLoadingState = useAppSelector(
+    (state) => state.modal.isPageLoading
+  );
 
   const {
     data: userActiveDatabyIdNumberData,
@@ -70,7 +61,7 @@ const AllAppsPage: React.FC = () => {
 
   useEffect(() => {
     console.log("session: ", session);
-    if (!principalEmailUserState && userActiveDatabyIdNumberData) {
+    if (!principalEmailAdminState && userActiveDatabyIdNumberData) {
       dispatch(
         setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
       );
@@ -78,28 +69,28 @@ const AllAppsPage: React.FC = () => {
       dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
       dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
     }
-    if (!principalEmailUserLoginState) {
+    if (!principalEmailAdminLoginState) {
       setShowErrorMessage(true);
       setErrorMessage("¡Usuario no encontrado!");
-      redirect("/login");
+      redirect("/login_admin");
     }
     if (status === "unauthenticated") {
       setShowErrorMessage(true);
       setErrorMessage("¡No autenticado!");
-      redirect("/login");
+      redirect("/login_admin");
     }
-    if (collaboratorModalState) {
-      dispatch(setUserModalIsOpen(false));
+    if (adminModalState) {
+      dispatch(setAdminModalIsOpen(false));
     }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
   }, [
     userActiveDatabyIdNumberData,
-    principalEmailUserState,
+    principalEmailAdminState,
     session,
     status,
-    collaboratorModalState,
+    adminModalState,
     isPageLoadingState,
   ]);
 
@@ -111,16 +102,15 @@ const AllAppsPage: React.FC = () => {
           message={errorMessage || "¡Error en la petición!"}
         />
       )}
-
-      {!principalEmailUserLoginState || status === "unauthenticated" ? (
+      {!principalEmailAdminLoginState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
-        <div className="dashboard-all-apps-content">
-          <AllAppsContent />
+        <div className="">
+          dashboardAdmin
         </div>
       )}
     </div>
   );
 };
 
-export default AllAppsPage;
+export default page;
