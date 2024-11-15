@@ -43,7 +43,7 @@ const AdminLoginForm: React.FC = () => {
 
   const errorsAdminState = useAppSelector((state) => state.adminLogin.errors);
 
-  const modalIsOpenAdmin = useAppSelector(
+  const adminModalState = useAppSelector(
     (state) => state.modal.adminModalIsOpen
   );
 
@@ -130,7 +130,7 @@ const AdminLoginForm: React.FC = () => {
 
   return (
     <>
-      {modalIsOpenAdmin && <AdminModalVerificationCode />}
+      {adminModalState && <AdminModalVerificationCode />}
 
       {showErrorMessage && (
         <CustomMessage

@@ -31,7 +31,7 @@ const AdminModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const modalIsOpenAdmin = useAppSelector(
+  const adminModalState = useAppSelector(
     (state) => state.modal.adminModalIsOpen
   );
 
@@ -106,7 +106,7 @@ const AdminModalVerificationCode: React.FC = () => {
         dispatch(setPasswordLoginUser(""));
         dispatch(setVerificationCodeLoginUser(0));
 
-        await router.replace("/user/dashboard/all_apps", { scroll: false });
+        await router.replace("/admin/dashboard", { scroll: false });
 
         await new Promise((resolve) => setTimeout(resolve, 4000));
       }
@@ -173,7 +173,7 @@ const AdminModalVerificationCode: React.FC = () => {
 
       <Modal
         className="modal-verification-code"
-        open={modalIsOpenAdmin}
+        open={adminModalState}
         confirmLoading={isSubmittingConfirm}
         onCancel={handleCancel}
         destroyOnClose={true}

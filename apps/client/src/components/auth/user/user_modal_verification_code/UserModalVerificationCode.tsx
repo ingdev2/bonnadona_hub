@@ -31,7 +31,7 @@ const UserModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const modalIsOpenCollaborator = useAppSelector(
+  const collaboratorModalState = useAppSelector(
     (state) => state.modal.userModalIsOpen
   );
 
@@ -173,7 +173,7 @@ const UserModalVerificationCode: React.FC = () => {
 
       <Modal
         className="modal-verification-code"
-        open={modalIsOpenCollaborator}
+        open={collaboratorModalState}
         confirmLoading={isSubmittingConfirm}
         onCancel={handleCancel}
         destroyOnClose={true}
