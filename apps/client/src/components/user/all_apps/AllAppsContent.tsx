@@ -8,12 +8,17 @@ import CollaboratorModalFirstSuccessfulLogin from "./collaborator_modal_first_su
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useGetUserSessionLogByEmailQuery } from "@/redux/apis/users/userApi";
 import { setFirstLoginModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 
 const AllAppsContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const principalEmailCollaboratorState = useAppSelector(
     (state) => state.user.principal_email
+  );
+
+  const lastPasswordUpdateCollaboratorState = useAppSelector(
+    (state) => state.user.last_password_update
   );
 
   const modalIsOpenFirstSuccessfullCollaboratorLogin = useAppSelector(
@@ -29,20 +34,29 @@ const AllAppsContent: React.FC = () => {
     skip: !principalEmailCollaboratorState,
   });
 
+  const {
+    data: passwordPolicyData,
+    isLoading: passwordPolicyLoading,
+    isFetching: passwordPolicyFetching,
+    error: passwordPolicyError,
+  } = useGetPasswordPolicyQuery(null);
+
   useEffect(() => {
+    console.log("passwordPolicyData: ", passwordPolicyData);
+    console.log("lastPasswordUpdate: ", lastPasswordUpdateCollaboratorState);
     if (userSessionLogData?.successful_login_counter == 1) {
       dispatch(setFirstLoginModalIsOpen(true));
     } else {
       dispatch(setFirstLoginModalIsOpen(false));
     }
-  }, [userSessionLogData]);
+  }, [userSessionLogData, passwordPolicyData]);
 
   return (
     <>
       {modalIsOpenFirstSuccessfullCollaboratorLogin && (
         <CollaboratorModalFirstSuccessfulLogin />
       )}
-      <CustomDashboardLayout
+      <CustomDashboardLayoutUsers
         customLayoutContent={
           <div style={{ width: "100%" }}>
             <Row gutter={[24, 24]} justify="center">

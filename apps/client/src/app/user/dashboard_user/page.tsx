@@ -17,6 +17,7 @@ import {
 import {
   setIdUser,
   setLastNameUser,
+  setLastPasswordUpdateUser,
   setNameUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
@@ -77,6 +78,11 @@ const AllAppsPage: React.FC = () => {
       dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
       dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
       dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
+      dispatch(
+        setLastPasswordUpdateUser(
+          userActiveDatabyIdNumberData?.last_password_update
+        )
+      );
     }
     if (!principalEmailUserLoginState) {
       setShowErrorMessage(true);
