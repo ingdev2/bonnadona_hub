@@ -21,9 +21,9 @@ const AdminsLoginPage: React.FC = () => {
   }, [status, isPageLoadingState]);
 
   return (
-    <>
+    <div className="admins-login">
       <AdminLoginForm />
-    </>
+    </div>
   );
 };
 

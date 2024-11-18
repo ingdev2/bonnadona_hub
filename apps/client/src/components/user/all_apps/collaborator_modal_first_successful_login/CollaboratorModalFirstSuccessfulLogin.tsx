@@ -103,7 +103,7 @@ const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="collaborator-modal-first-successfull-login">
       {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
@@ -118,161 +118,163 @@ const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
         />
       )}
 
-      <Modal
-        className="modal-verification-code"
-        open={modalIsOpenFirstSuccessfullCollaboratorLogin}
-        confirmLoading={isSubmittingConfirm}
-        destroyOnClose={true}
-        width={371}
-        footer={null}
-        maskClosable={false}
-        closable={false}
-        centered
-      >
-        <div
-          className="content-modal"
-          style={{
-            textAlign: "center",
-            flexDirection: "column",
-            alignItems: "center",
-            marginBlock: "10px",
-            marginInline: "7px",
-          }}
+      <div className="modal-verification-code">
+        <Modal
+          className="modal-verification-code"
+          open={modalIsOpenFirstSuccessfullCollaboratorLogin}
+          confirmLoading={isSubmittingConfirm}
+          destroyOnClose={true}
+          width={371}
+          footer={null}
+          maskClosable={false}
+          closable={false}
+          centered
         >
-          <h2
-            className="title-modal"
+          <div
+            className="content-modal"
             style={{
-              fontWeight: "500",
-              lineHeight: 1.3,
-              marginBottom: "7px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              marginTop: "27px",
               textAlign: "center",
+              flexDirection: "column",
+              alignItems: "center",
+              marginBlock: "10px",
+              marginInline: "7px",
             }}
           >
-            Bienvenidos a Bonnadona Hub
-          </h2>
-          <h4
-            className="subtitle-modal"
-            style={{
-              fontWeight: "400",
-              lineHeight: 1.3,
-              marginTop: 0,
-              marginBottom: "7px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              marginBlock: "7px",
-            }}
-          >
-            Debes actualizar tu contraseña si entras por primera vez:
-          </h4>
-
-          <CustomLoadingOverlay isLoading={isPageLoadingState} />
-
-          <Form
-            id="form-update-password-modal"
-            name="form-update-password-modal"
-            initialValues={{ remember: false }}
-            autoComplete="false"
-            onFinish={handleSubmit}
-          >
-            <Form.Item
-              id="current-password-form"
-              className="current-password-form"
-              name={"current-password-form"}
-              style={{ textAlign: "center" }}
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor ingrese su contraseña actual",
-                },
-              ]}
+            <h2
+              className="title-modal"
+              style={{
+                fontWeight: "500",
+                lineHeight: 1.3,
+                marginBottom: "7px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                marginTop: "27px",
+                textAlign: "center",
+              }}
             >
-              <Input
-                id="current-password-input"
-                className="current-password-input"
-                type="password"
-                prefix={
-                  <RiLockPasswordLine
-                    className="current-password-item-icon"
-                    style={{ paddingInline: "1px", color: "#3F97AF" }}
-                  />
-                }
-                style={{
-                  width: "100%",
-                  fontSize: "14px",
-                  borderWidth: "2px",
-                  marginTop: "10px",
-                  borderRadius: "30px",
-                }}
-                placeholder="Contraseña actual"
-                value={currentPasswordLocalState}
-                onChange={(e) => setCurrentPasswordLocalState(e.target.value)}
-                autoComplete="off"
-                min={0}
-              />
-            </Form.Item>
-
-            <Form.Item
-              id="new-password-form"
-              className="new-password-form"
-              name={"new-password-form"}
-              style={{ textAlign: "center" }}
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor ingrese su contraseña nueva",
-                },
-              ]}
+              Bienvenidos a Bonnadona Hub
+            </h2>
+            <h4
+              className="subtitle-modal"
+              style={{
+                fontWeight: "400",
+                lineHeight: 1.3,
+                marginTop: 0,
+                marginBottom: "7px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                marginBlock: "7px",
+              }}
             >
-              <Input
-                id="new-password-input"
-                className="new-password-input"
-                type="password"
-                prefix={
-                  <RiLockPasswordLine
-                    className="new-password-item-icon"
-                    style={{ paddingInline: "1px", color: "#3F97AF" }}
-                  />
-                }
-                style={{
-                  width: "100%",
-                  fontSize: "14px",
-                  borderWidth: "2px",
-                  marginBottom: "4px",
-                  borderRadius: "30px",
-                }}
-                placeholder="Contraseña nueva"
-                value={newPasswordLocalState}
-                onChange={(e) => setNewPasswordLocalState(e.target.value)}
-                autoComplete="off"
-                min={0}
-              />
-            </Form.Item>
+              Debes actualizar tu contraseña si entras por primera vez:
+            </h4>
 
-            {isSubmittingConfirm ? (
-              <CustomSpin />
-            ) : (
-              <Button
-                key={"update-password-button"}
-                className="update-password-button"
-                disabled={isPageLoadingState}
-                style={{
-                  backgroundColor: isPageLoadingState ? "#D8D8D8" : "#015E90",
-                  color: isPageLoadingState ? "#A0A0A0" : "#f2f2f2",
-                  borderRadius: "31px",
-                  marginBottom: "13px",
-                }}
-                htmlType="submit"
-                onClick={handleButtonClick}
+            <CustomLoadingOverlay isLoading={isPageLoadingState} />
+
+            <Form
+              id="form-update-password-modal"
+              name="form-update-password-modal"
+              initialValues={{ remember: false }}
+              autoComplete="false"
+              onFinish={handleSubmit}
+            >
+              <Form.Item
+                id="current-password-form"
+                className="current-password-form"
+                name={"current-password-form"}
+                style={{ textAlign: "center" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor ingrese su contraseña actual",
+                  },
+                ]}
               >
-                Actualizar
-              </Button>
-            )}
-          </Form>
-        </div>
-      </Modal>
+                <Input
+                  id="current-password-input"
+                  className="current-password-input"
+                  type="password"
+                  prefix={
+                    <RiLockPasswordLine
+                      className="current-password-item-icon"
+                      style={{ paddingInline: "1px", color: "#3F97AF" }}
+                    />
+                  }
+                  style={{
+                    width: "100%",
+                    fontSize: "14px",
+                    borderWidth: "2px",
+                    marginTop: "10px",
+                    borderRadius: "30px",
+                  }}
+                  placeholder="Contraseña actual"
+                  value={currentPasswordLocalState}
+                  onChange={(e) => setCurrentPasswordLocalState(e.target.value)}
+                  autoComplete="off"
+                  min={0}
+                />
+              </Form.Item>
+
+              <Form.Item
+                id="new-password-form"
+                className="new-password-form"
+                name={"new-password-form"}
+                style={{ textAlign: "center" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Por favor ingrese su contraseña nueva",
+                  },
+                ]}
+              >
+                <Input
+                  id="new-password-input"
+                  className="new-password-input"
+                  type="password"
+                  prefix={
+                    <RiLockPasswordLine
+                      className="new-password-item-icon"
+                      style={{ paddingInline: "1px", color: "#3F97AF" }}
+                    />
+                  }
+                  style={{
+                    width: "100%",
+                    fontSize: "14px",
+                    borderWidth: "2px",
+                    marginBottom: "4px",
+                    borderRadius: "30px",
+                  }}
+                  placeholder="Contraseña nueva"
+                  value={newPasswordLocalState}
+                  onChange={(e) => setNewPasswordLocalState(e.target.value)}
+                  autoComplete="off"
+                  min={0}
+                />
+              </Form.Item>
+
+              {isSubmittingConfirm ? (
+                <CustomSpin />
+              ) : (
+                <Button
+                  key={"update-password-button"}
+                  className="update-password-button"
+                  disabled={isPageLoadingState}
+                  style={{
+                    backgroundColor: isPageLoadingState ? "#D8D8D8" : "#015E90",
+                    color: isPageLoadingState ? "#A0A0A0" : "#f2f2f2",
+                    borderRadius: "31px",
+                    marginBottom: "13px",
+                  }}
+                  htmlType="submit"
+                  onClick={handleButtonClick}
+                >
+                  Actualizar
+                </Button>
+              )}
+            </Form>
+          </div>
+        </Modal>
+      </div>
     </div>
   );
 };

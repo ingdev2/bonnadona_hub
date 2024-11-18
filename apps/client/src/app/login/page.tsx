@@ -22,9 +22,9 @@ const UsersLoginPage: React.FC = () => {
   }, [status, isPageLoadingState]);
 
   return (
-    <>
+    <div className="users-login">
       <UserLoginForm />
-    </>
+    </div>
   );
 };
 
