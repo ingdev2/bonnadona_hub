@@ -95,7 +95,7 @@ const page: React.FC = () => {
   ]);
 
   return (
-    <div>
+    <div className="dashboard-admin">
       {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
@@ -105,7 +105,7 @@ const page: React.FC = () => {
       {!principalEmailAdminLoginState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
-        <div className="">
+        <div className="dashboard-admin-content">
           dashboardAdmin
         </div>
       )}
