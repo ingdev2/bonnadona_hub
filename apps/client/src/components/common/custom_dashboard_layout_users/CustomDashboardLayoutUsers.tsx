@@ -8,7 +8,7 @@ import { Button, Col, Layout, Row, theme } from "antd";
 
 const { Header, Content, Footer } = Layout;
 
-const CustomDashboardLayout: React.FC<{
+const CustomDashboardLayoutUsers: React.FC<{
   customLayoutHeader?: ReactNode;
   customLayoutContent: ReactNode;
   customLayoutFooter?: any;
@@ -127,4 +127,4 @@ const CustomDashboardLayout: React.FC<{
   );
 };
 
-export default CustomDashboardLayout;
+export default CustomDashboardLayoutUsers;

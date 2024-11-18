@@ -23,28 +23,28 @@ import {
 } from "@/redux/features/login/userLoginSlice";
 import { signIn } from "next-auth/react";
 import {
-  setCollaboratorModalIsOpen,
   setIsPageLoading,
+  setAdminModalIsOpen,
 } from "@/redux/features/common/modal/modalSlice";
 
-const CollaboratorModalVerificationCode: React.FC = () => {
+const AdminModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const modalIsOpenCollaborator = useAppSelector(
-    (state) => state.modal.collaboratorModalIsOpen
+  const adminModalState = useAppSelector(
+    (state) => state.modal.adminModalIsOpen
   );
 
   const isPageLoadingState = useAppSelector(
     (state) => state.modal.isPageLoading
   );
 
-  const principalEmailUserLoginState = useAppSelector(
-    (state) => state.userLogin.principal_email
+  const principalEmailAdminLoginState = useAppSelector(
+    (state) => state.adminLogin.principal_email
   );
 
-  const verificationCodeUserLoginState = useAppSelector(
-    (state) => state.userLogin.verification_code
+  const verificationCodeAdminLoginState = useAppSelector(
+    (state) => state.adminLogin.verification_code
   );
 
   const [isSubmittingConfirm, setIsSubmittingConfirm] = useState(false);
@@ -70,25 +70,25 @@ const CollaboratorModalVerificationCode: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!principalEmailUserLoginState) {
+    if (!principalEmailAdminLoginState) {
       setShowErrorMessage(true);
-      setErrorMessage("¡Error al obtener el correo principal del usuario!");
+      setErrorMessage("¡Error al obtener el correo principal del administrador!");
     }
-  }, [principalEmailUserLoginState]);
+  }, [principalEmailAdminLoginState]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setIsSubmittingConfirm(true);
 
-      const verificationCode = verificationCodeUserLoginState
-        ? parseInt(verificationCodeUserLoginState?.toString(), 10)
+      const verificationCode = verificationCodeAdminLoginState
+        ? parseInt(verificationCodeAdminLoginState?.toString(), 10)
         : "";
 
       const responseNextAuth = await signIn(
         process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
         {
           verification_code: verificationCode,
-          principal_email: principalEmailUserLoginState,
+          principal_email: principalEmailAdminLoginState,
           redirect: false,
         }
       );
@@ -106,7 +106,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
         dispatch(setPasswordLoginUser(""));
         dispatch(setVerificationCodeLoginUser(0));
 
-        await router.replace("/user/dashboard/all_apps", { scroll: false });
+        await router.replace("/admin/dashboard", { scroll: false });
 
         await new Promise((resolve) => setTimeout(resolve, 4000));
       }
@@ -122,7 +122,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
       setIsSubmittingResendCode(true);
 
       const response: any = await resentUserVerificationCodeCollaborator({
-        principal_email: principalEmailUserLoginState,
+        principal_email: principalEmailAdminLoginState,
       });
 
       let isResponseError = response.error;
@@ -144,9 +144,9 @@ const CollaboratorModalVerificationCode: React.FC = () => {
   };
 
   const handleCancel = () => {
-    dispatch(setCollaboratorModalIsOpen(false));
+    dispatch(setAdminModalIsOpen(false));
 
-    <Link href="/login" scroll={false} />;
+    <Link href="/login_admin" scroll={false} />;
     window.location.reload();
   };
 
@@ -173,7 +173,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
 
       <Modal
         className="modal-verification-code"
-        open={modalIsOpenCollaborator}
+        open={adminModalState}
         confirmLoading={isSubmittingConfirm}
         onCancel={handleCancel}
         destroyOnClose={true}
@@ -231,7 +231,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
               marginBlock: 7,
             }}
           >
-            {maskEmail(principalEmailUserLoginState)}
+            {maskEmail(principalEmailAdminLoginState)}
           </h5>
 
           <CustomLoadingOverlay isLoading={isPageLoadingState} />
@@ -301,7 +301,7 @@ const CollaboratorModalVerificationCode: React.FC = () => {
                   borderRadius: "30px",
                 }}
                 placeholder="Código"
-                value={verificationCodeUserLoginState}
+                value={verificationCodeAdminLoginState}
                 onChange={(e) =>
                   dispatch(setVerificationCodeLoginUser(e.target.value))
                 }
@@ -363,8 +363,8 @@ const CollaboratorModalVerificationCode: React.FC = () => {
           </div>
 
           <Button
-            key="cancel-button-user"
-            className="cancel-button-user"
+            key="cancel-button-admin"
+            className="cancel-button-admin"
             style={{
               paddingInline: 45,
               backgroundColor: "#8C1111",
@@ -381,4 +381,4 @@ const CollaboratorModalVerificationCode: React.FC = () => {
   );
 };
 
-export default CollaboratorModalVerificationCode;
+export default AdminModalVerificationCode;

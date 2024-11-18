@@ -25,31 +25,28 @@ import { IdcardOutlined } from "@ant-design/icons";
 import CustomDatePicker from "@/components/common/custom_date_picker/CustomDatePicker";
 import { validateRequiredDate } from "@/helpers/validate_required_values/validate_required_files";
 
-const CollaboratorForgotPasswordForm: React.FC<{
+const AdminForgotPasswordForm: React.FC<{
   setOpenModalForgotPassword: (value: React.SetStateAction<boolean>) => void;
 }> = ({ setOpenModalForgotPassword }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const errorCollaboratorState = useAppSelector((state) => state.user.errors);
+  const errorAdminState = useAppSelector((state) => state.user.errors);
 
   const [linkToResetPasswordSent, setLinkToResetPasswordSent] = useState(false);
   const [isSubmittingGoToLogin, setIsSubmittingGoToLogin] = useState(false);
 
-  const [
-    idTypesListCollaboratorLocalState,
-    setIdTypesListCollaboratorLocalState,
-  ] = useState<IdType[] | undefined>([]);
+  const [idTypesListAdminLocalState, setIdTypesListAdminLocalState] = useState<
+    IdType[] | undefined
+  >([]);
 
-  const [idTypeCollaboratorLocalState, setIdTypeCollaboratorLocalState] =
-    useState(0);
-  const [idNumberCollaboratorLocalState, setIdNumberCollaboratorLocalState] =
-    useState("");
-  const [birthdateCollaboratorLocalState, setBirthdateCollaboratorLocalState] =
-    useState("");
+  const [idTypeAdminLocalState, setIdTypeAdminLocalState] = useState(0);
+  const [idNumberAdminLocalState, setIdNumberAdminLocalState] = useState("");
+  const [birthdateAdminLocalState, setBirthdateAdminLocalState] = useState("");
 
-  const [emailCollaboratorLocalState, setEmailCollaboratorLocalState] =
-    useState<string | undefined>("");
+  const [emailAdminLocalState, setEmailAdminLocalState] = useState<
+    string | undefined
+  >("");
 
   const [isSubmittingForgotPassword, setIsSubmittingForgotPassword] =
     useState(false);
@@ -63,106 +60,92 @@ const CollaboratorForgotPasswordForm: React.FC<{
     useState(false);
 
   const [
-    forgotPasswordCollaborator,
+    forgotPasswordAdmin,
     {
-      data: forgotPasswordCollaboratorData,
-      isLoading: forgotPasswordCollaboratorLoading,
-      isSuccess: forgotPasswordCollaboratorSuccess,
-      isError: forgotPasswordCollaboratorError,
+      data: forgotPasswordAdminData,
+      isLoading: forgotPasswordAdminLoading,
+      isSuccess: forgotPasswordAdminSuccess,
+      isError: forgotPasswordAdminError,
     },
   ] = useForgotUserPasswordMutation({
-    fixedCacheKey: "forgotPasswordCollaboratorData",
+    fixedCacheKey: "forgotPasswordAdminData",
   });
 
-  const idNumberCollaboratorLocalStateInt = idNumberCollaboratorLocalState
-    ? parseInt(idNumberCollaboratorLocalState?.toString(), 10)
+  const idNumberAdminLocalStateInt = idNumberAdminLocalState
+    ? parseInt(idNumberAdminLocalState?.toString(), 10)
     : 0;
 
   const {
-    data: isCollaboratorActiveData,
-    isLoading: isCollaboratorActiveLoading,
-    isFetching: isCollaboratorActiveFetching,
-    isError: isCollaboratorActiveError,
-  } = useGetUserActiveByIdNumberQuery(idNumberCollaboratorLocalStateInt);
+    data: userActiveDatabyIdNumberData,
+    isLoading: isUserActiveLoading,
+    isFetching: isUserActiveFetching,
+    isError: isUserActiveError,
+  } = useGetUserActiveByIdNumberQuery(idNumberAdminLocalStateInt);
 
   const {
-    data: idTypesCollaboratorData,
-    isLoading: idTypesCollaboratorLoading,
-    isFetching: idTypesCollaboratorFetching,
-    error: idTypesCollaboratorError,
+    data: idTypesAdminData,
+    isLoading: idTypesAdminLoading,
+    isFetching: idTypesAdminFetching,
+    error: idTypesAdminError,
   } = useGetAllIdTypesQuery(null);
 
   useEffect(() => {
-    if (isCollaboratorActiveData) {
-      setEmailCollaboratorLocalState(isCollaboratorActiveData?.principal_email);
+    if (userActiveDatabyIdNumberData) {
+      setEmailAdminLocalState(userActiveDatabyIdNumberData?.principal_email);
     }
 
-    if (
-      !idTypesCollaboratorLoading &&
-      !idTypesCollaboratorFetching &&
-      idTypesCollaboratorData
-    ) {
-      setIdTypesListCollaboratorLocalState(idTypesCollaboratorData);
+    if (!idTypesAdminLoading && !idTypesAdminFetching && idTypesAdminData) {
+      setIdTypesListAdminLocalState(idTypesAdminData);
     }
 
-    if (idTypesCollaboratorError) {
+    if (idTypesAdminError) {
       dispatch(
         setErrorsUser("¡No se pudo obtener los tipos de identificación!")
       );
     }
-  }, [
-    isCollaboratorActiveData,
-    idTypesCollaboratorData,
-    idNumberCollaboratorLocalState,
-  ]);
+  }, [userActiveDatabyIdNumberData, idTypesAdminData, idNumberAdminLocalState]);
 
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setIsSubmittingForgotPassword(true);
 
       if (
-        idTypeCollaboratorLocalState &&
-        idNumberCollaboratorLocalState &&
-        birthdateCollaboratorLocalState
+        idTypeAdminLocalState &&
+        idNumberAdminLocalState &&
+        birthdateAdminLocalState
       ) {
-        const idNumberCollaboratorLocalStateInt = idNumberCollaboratorLocalState
-          ? parseInt(idNumberCollaboratorLocalState?.toString(), 10)
+        const idNumberAdminLocalStateInt = idNumberAdminLocalState
+          ? parseInt(idNumberAdminLocalState?.toString(), 10)
           : 0;
 
-        const response: any = await forgotPasswordCollaborator({
+        const response: any = await forgotPasswordAdmin({
           forgotUserPassword: {
-            user_id_type: idTypeCollaboratorLocalState,
-            id_number: idNumberCollaboratorLocalStateInt,
-            birthdate: birthdateCollaboratorLocalState,
+            user_id_type: idTypeAdminLocalState,
+            id_number: idNumberAdminLocalStateInt,
+            birthdate: birthdateAdminLocalState,
           },
         });
 
-        let validationCollaboratorData = response.data?.status;
+        let validationAdminData = response.data?.status;
 
-        let validationCollaboratorError = response.error?.status;
+        let validationAdminError = response.error?.status;
 
-        if (
-          validationCollaboratorError !== 200 &&
-          !validationCollaboratorData
-        ) {
+        if (validationAdminError !== 200 && !validationAdminData) {
           const errorMessage = response.error?.data?.message;
 
           dispatch(setErrorsUser(errorMessage));
           setShowErrorMessageForgotPassword(true);
         }
-        if (
-          validationCollaboratorData === 202 &&
-          !validationCollaboratorError
-        ) {
+        if (validationAdminData === 202 && !validationAdminError) {
           const successMessage = response.data?.message;
 
           setSuccessMessageForgotPassword(successMessage);
           setShowSuccessMessageForgotPassword(true);
           setLinkToResetPasswordSent(true);
 
-          setIdTypeCollaboratorLocalState(0);
-          setIdNumberCollaboratorLocalState("");
-          setBirthdateCollaboratorLocalState("");
+          setIdTypeAdminLocalState(0);
+          setIdNumberAdminLocalState("");
+          setBirthdateAdminLocalState("");
         }
       }
     } catch (error) {
@@ -173,7 +156,7 @@ const CollaboratorForgotPasswordForm: React.FC<{
   };
 
   const onChangeDate: DatePickerProps["onChange"] = (date, dateString) => {
-    setBirthdateCollaboratorLocalState(dateString.toString());
+    setBirthdateAdminLocalState(dateString.toString());
   };
 
   const handleGoToLogin = async () => {
@@ -182,11 +165,11 @@ const CollaboratorForgotPasswordForm: React.FC<{
 
       await new Promise((resolve) => setTimeout(resolve, 700));
 
-      await router.replace("/login", {
+      await router.replace("/login_admin", {
         scroll: false,
       });
 
-      setEmailCollaboratorLocalState("");
+      setEmailAdminLocalState("");
 
       setOpenModalForgotPassword(false);
     } catch (error) {
@@ -217,9 +200,7 @@ const CollaboratorForgotPasswordForm: React.FC<{
       {showErrorMessageForgotPassword && (
         <CustomMessage
           typeMessage="error"
-          message={
-            errorCollaboratorState?.toString() || "¡Error en la petición!"
-          }
+          message={errorAdminState?.toString() || "¡Error en la petición!"}
         />
       )}
 
@@ -241,8 +222,8 @@ const CollaboratorForgotPasswordForm: React.FC<{
           subtitleCustomResult={
             <p>
               Se ha enviado al correo eléctronico{" "}
-              <b>{maskEmail(emailCollaboratorLocalState)}</b> un link para
-              restablecer su contraseña de ingreso.
+              <b>{maskEmail(emailAdminLocalState)}</b> un link para restablecer
+              su contraseña de ingreso.
             </p>
           }
           handleClickCustomResult={handleGoToLogin}
@@ -281,13 +262,13 @@ const CollaboratorForgotPasswordForm: React.FC<{
             eléctronico registrado en tu usuario
           </h4>
 
-          {idTypesCollaboratorLoading || idTypesCollaboratorFetching ? (
+          {idTypesAdminLoading || idTypesAdminFetching ? (
             <CustomSpin />
           ) : (
             <>
               <Form.Item
-                name="user-id-type-forgot-password-collaborator"
-                label="Tipo de identificación del usuario"
+                name="user-id-type-forgot-password-admin"
+                label="Tipo de identificación del administrador"
                 style={{ marginBottom: "13px" }}
                 rules={[
                   {
@@ -297,11 +278,11 @@ const CollaboratorForgotPasswordForm: React.FC<{
                 ]}
               >
                 <Select
-                  value={idTypeCollaboratorLocalState}
+                  value={idTypeAdminLocalState}
                   placeholder="Tipo de identificación"
-                  onChange={(e) => setIdTypeCollaboratorLocalState(e)}
+                  onChange={(e) => setIdTypeAdminLocalState(e)}
                 >
-                  {idTypesListCollaboratorLocalState?.map((option: any) => (
+                  {idTypesListAdminLocalState?.map((option: any) => (
                     <Select.Option key={option.id} value={option.id}>
                       {option.name}
                     </Select.Option>
@@ -310,8 +291,8 @@ const CollaboratorForgotPasswordForm: React.FC<{
               </Form.Item>
 
               <Form.Item
-                name="user-id-number-forgot-password-collaborator"
-                label="Número de identificación del usuario"
+                name="user-id-number-forgot-password-admin"
+                label="Número de identificación del administrador"
                 style={{ marginBottom: 7 }}
                 normalize={(value) => {
                   if (!value) return "";
@@ -341,25 +322,23 @@ const CollaboratorForgotPasswordForm: React.FC<{
                 <Input
                   prefix={<IdcardOutlined className="site-form-item-icon" />}
                   type="tel"
-                  value={idNumberCollaboratorLocalState}
+                  value={idNumberAdminLocalState}
                   placeholder="Número de identificación"
-                  onChange={(e) =>
-                    setIdNumberCollaboratorLocalState(e.target.value)
-                  }
+                  onChange={(e) => setIdNumberAdminLocalState(e.target.value)}
                   autoComplete="off"
                   min={0}
                 />
               </Form.Item>
 
               <Form.Item
-                name="date-picker-forgot-password-collaborator"
-                label="Fecha de nacimiento del usuario"
+                name="date-picker-forgot-password-admin"
+                label="Fecha de nacimiento del administrador"
                 style={{ marginBottom: "13px" }}
                 rules={[
                   {
                     required: true,
                     validator: validateRequiredDate(
-                      birthdateCollaboratorLocalState,
+                      birthdateAdminLocalState,
                       "¡Por favor seleccionar la fecha de nacimiento!"
                     ),
                   },
@@ -400,4 +379,4 @@ const CollaboratorForgotPasswordForm: React.FC<{
   );
 };
 
-export default CollaboratorForgotPasswordForm;
+export default AdminForgotPasswordForm;

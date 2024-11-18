@@ -4,10 +4,9 @@ import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setIsPageLoading } from "@/redux/features/common/modal/modalSlice";
+import AdminLoginForm from "@/components/auth/admin/admin_login_form/AdminLoginForm";
 
-import UserLoginForm from "@/components/auth/user/user_login_form/UserLoginForm";
-
-const UsersLoginPage: React.FC = () => {
+const AdminsLoginPage: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -23,9 +22,9 @@ const UsersLoginPage: React.FC = () => {
 
   return (
     <>
-      <UserLoginForm />
+      <AdminLoginForm />
     </>
   );
 };
 
-export default UsersLoginPage;
+export default AdminsLoginPage;

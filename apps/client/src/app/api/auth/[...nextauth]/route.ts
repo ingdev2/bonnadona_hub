@@ -38,6 +38,49 @@ async function refreshAccessToken(token: any) {
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
+      id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
+      name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
+      credentials: {
+        principal_email: {
+          label: "Correo",
+          type: "string",
+          inputMode: "text",
+        },
+        verification_code: {
+          label: "Código de verificación",
+          type: "number",
+          inputMode: "numeric",
+          pattern: "[0-9]*",
+        },
+      },
+
+      async authorize(credentials) {
+        if (!credentials) {
+          throw new Error("Credenciales no definidas.");
+        }
+
+        const { principal_email } = credentials;
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verifyCodeAndLoginAdminAndAuditorUser/${principal_email}`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              principal_email: credentials?.principal_email,
+              verification_code: credentials?.verification_code,
+            }),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        const admin = await res.json();
+
+        if (admin.error) throw admin;
+
+        return admin;
+      },
+    }),
+    CredentialsProvider({
       id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       credentials: {
@@ -114,7 +157,7 @@ const handler = NextAuth({
           }
         }
       }
-      
+
       return token;
     },
     async session({ session, token }) {

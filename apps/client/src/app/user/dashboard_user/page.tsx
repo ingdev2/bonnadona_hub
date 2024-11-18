@@ -10,15 +10,19 @@ import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
 import AllAppsContent from "@/components/user/all_apps/AllAppsContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import { useGetUserActiveByEmailQuery } from "@/redux/apis/users/userApi";
+import {
+  useGetUserActiveByEmailQuery,
+  useGetUserActiveByIdNumberQuery,
+} from "@/redux/apis/users/userApi";
 import {
   setIdUser,
   setLastNameUser,
+  setLastPasswordUpdateUser,
   setNameUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
 import {
-  setCollaboratorModalIsOpen,
+  setUserModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
@@ -35,8 +39,8 @@ const AllAppsPage: React.FC = () => {
     (state) => state.user.principal_email
   );
 
-  const modalIsOpenCollaborator = useAppSelector(
-    (state) => state.modal.collaboratorModalIsOpen
+  const collaboratorModalState = useAppSelector(
+    (state) => state.modal.userModalIsOpen
   );
 
   const isPageLoadingState = useAppSelector(
@@ -49,20 +53,36 @@ const AllAppsPage: React.FC = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // const {
+  //   data: userActiveDatabyIdNumber,
+  //   isLoading: userActiveLoading,
+  //   isFetching: userActiveFetching,
+  //   error: userActiveError,
+  // } = useGetUserActiveByEmailQuery(principalEmailUserLoginState);
+
   const {
-    data: userActiveData,
-    isLoading: userActiveLoading,
-    isFetching: userActiveFetching,
-    error: userActiveError,
-  } = useGetUserActiveByEmailQuery(principalEmailUserLoginState);
+    data: userActiveDatabyIdNumberData,
+    isLoading: userActiveDatabyIdNumberLoading,
+    isFetching: userActiveDatabyIdNumberFetching,
+    isError: userActiveDatabyIdNumberError,
+  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
+    skip: !session?.user.id_number,
+  });
 
   useEffect(() => {
     console.log("session: ", session);
-    if (!principalEmailUserState) {
-      dispatch(setPrincipalEmailUser(userActiveData?.principal_email));
-      dispatch(setIdUser(userActiveData?.id));
-      dispatch(setNameUser(userActiveData?.name));
-      dispatch(setLastNameUser(userActiveData?.last_name));
+    if (!principalEmailUserState && userActiveDatabyIdNumberData) {
+      dispatch(
+        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
+      );
+      dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
+      dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
+      dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
+      dispatch(
+        setLastPasswordUpdateUser(
+          userActiveDatabyIdNumberData?.last_password_update
+        )
+      );
     }
     if (!principalEmailUserLoginState) {
       setShowErrorMessage(true);
@@ -74,13 +94,20 @@ const AllAppsPage: React.FC = () => {
       setErrorMessage("¡No autenticado!");
       redirect("/login");
     }
-    if (modalIsOpenCollaborator) {
-      dispatch(setCollaboratorModalIsOpen(false));
+    if (collaboratorModalState) {
+      dispatch(setUserModalIsOpen(false));
     }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
-  });
+  }, [
+    userActiveDatabyIdNumberData,
+    principalEmailUserState,
+    session,
+    status,
+    collaboratorModalState,
+    isPageLoadingState,
+  ]);
 
   return (
     <div>
