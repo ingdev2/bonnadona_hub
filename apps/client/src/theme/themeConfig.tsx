@@ -3,7 +3,7 @@ import { type ThemeConfig } from "antd";
 const themeConfig: ThemeConfig = {
   token: {
     fontSize: 14,
-    colorPrimary: "#FF7700",
+    colorPrimary: "#015E90",
     colorText: "#070707",
   },
   components: {
@@ -39,6 +39,15 @@ const themeConfig: ThemeConfig = {
       colorTextTertiary: "#A7BAB7",
       colorPrimaryHover: "#3F97AF",
     },
+    Select: {
+      borderRadius: 30
+    },
+    Input: {
+      borderRadius: 30
+    },
+    DatePicker: {
+      borderRadius: 30
+    }
   },
 };
 

@@ -1,0 +1,17 @@
+Halcon: https://bonnadona-public.s3.amazonaws.com/assets/halcon.svg
+Alicanto: https://bonnadona-public.s3.amazonaws.com/assets/alicanto_logo.svg
+Esparta: https://bonnadona-public.s3.amazonaws.com/assets/esparta.svg
+Caladrius: https://bonnadona-storage.s3.amazonaws.com/projects/caladrius/Logo+caladrius.png
+Exitus: https://bonnadona-storage.s3.amazonaws.com/projects/exitus/EX1.png
+GoodMed: https://bonnadona-public.s3.amazonaws.com/assets/goodmed.svg
+Magna: https://bonnadona-public.s3.amazonaws.com/assets/magna_logo.svg
+Higea: https://hygea.s3.amazonaws.com/images/HYGEA.svg
+Ethereum: https://bonnadona-ethereum.s3.amazonaws.com/Images_project_templates/images_frontend/format_svg/Logo_Ethereum_Bonnadona_Hub.svg
+Hito: https://bonnadona-storage.s3.amazonaws.com/projects/hito/HITO-02.png
+Evaluación y desempeño: https://bonnadona-storage.s3.amazonaws.com/projects/evaluacion-desempeno/profiles/Grupo+626.svg
+Aux. Clinicos: https://bonnadona-storage.s3.amazonaws.com/projects/aux_clinicos/Grupo+3525.png
+Cirugías: https://bonnadona-public.s3.amazonaws.com/assets/Cirugi%CC%81as1.png
+
+Bonnadona: https://bonnadona-public.s3.amazonaws.com/assets/logo-bonadona.png
+
+

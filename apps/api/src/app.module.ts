@@ -13,7 +13,15 @@ import { RoleModule } from './role/role.module';
 import { UserProfileModule } from './user_profile/user_profile.module';
 import { ServiceTypesModule } from './service_types/service_types.module';
 import { PositionLevelModule } from './position_levels/position_level.module';
+import { DeptsAndCitiesModule } from './depts_and_cities/depts_and_cities.module';
 import { AuthModule } from './auth/auth.module';
+import { UserSessionLogModule } from './user_session_log/user_session_log.module';
+import { PasswordPolicyModule } from './password_policy/password_policy.module';
+import { PasswordHistoryModule } from './password_history/password_history.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { ApplicationModule } from './application/application.module';
+import { ApplicationModuleModule } from './application_module/application_module.module';
+import { ModuleActionModule } from './module_action/module_action.module';
 
 @Module({
   imports: [
@@ -25,8 +33,8 @@ import { AuthModule } from './auth/auth.module';
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-      autoLoadEntities: true,
+      synchronize: false,
+      autoLoadEntities: false,
       logging: false,
     }),
     UsersModule,
@@ -37,7 +45,16 @@ import { AuthModule } from './auth/auth.module';
     UserProfileModule,
     ServiceTypesModule,
     PositionLevelModule,
+    DeptsAndCitiesModule,
     AuthModule,
+    UserSessionLogModule,
+    PasswordPolicyModule,
+    PasswordHistoryModule,
+    PermissionsModule,
+    AppModule,
+    ApplicationModule,
+    ApplicationModuleModule,
+    ModuleActionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

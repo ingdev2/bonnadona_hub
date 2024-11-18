@@ -12,11 +12,11 @@ import {
 import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { User } from 'src/user/entities/user.entity';
 
-import { UserHeightEnum } from 'src/utils/enums/user_height.enum';
-import { UserWeightEnum } from 'src/utils/enums/user_weight.enum';
-import { UserShirtSizeEnum } from 'src/utils/enums/user_shirt_size.enum';
-import { UserPantsSizeEnum } from 'src/utils/enums/user_pants_size.enum';
-import { UserShoeSizeEnum } from 'src/utils/enums/user_shoe_size.enum';
+import { UserHeightEnum } from 'src/utils/enums/user_profile/user_height.enum';
+import { UserWeightEnum } from 'src/utils/enums/user_profile/user_weight.enum';
+import { UserShirtSizeEnum } from 'src/utils/enums/user_profile/user_shirt_size.enum';
+import { UserPantsSizeEnum } from 'src/utils/enums/user_profile/user_pants_size.enum';
+import { UserShoeSizeEnum } from 'src/utils/enums/user_profile/user_shoe_size.enum';
 
 @Entity()
 export class UserProfile {

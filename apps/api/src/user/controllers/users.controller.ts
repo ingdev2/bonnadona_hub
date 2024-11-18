@@ -14,10 +14,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
-
-import { RolesEnum } from 'src/utils/enums/roles.enum';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
+import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
+
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { EnableAuditLog } from 'src/audit_logs/decorators/enable-audit-log.decorator';
@@ -68,7 +70,7 @@ export class UsersController {
 
   // GET METHODS //
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
   @Get('/getAllUsers')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
@@ -83,6 +85,13 @@ export class UsersController {
   @Get('/getUserProfileById/:id')
   async getUserProfileById(@Param('id') id: string) {
     return await this.usersService.getUserProfileById(id);
+  }
+
+  @Get('/getUserSessionLogByEmail/:principalEmail')
+  async getUserSessionLogByEmail(
+    @Param('principalEmail') principalEmail: string,
+  ) {
+    return await this.usersService.getUserSessionLogByEmail(principalEmail);
   }
 
   @Get('/getCollaboratorUserByIdNumber/:idNumber')
@@ -121,21 +130,32 @@ export class UsersController {
     ]);
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
-  @Get('/getUserActiveByTypeAndIdNumber/:idType/:idNumber')
-  async getUserActiveByTypeAndIdNumber(
-    @Param('idType') idType: number,
-    @Param('idNumber') idNumber: number,
+  @Get('/getUserActiveByIdNumber/:id_number')
+  async getUserActiveByIdNumber(@Param('id_number') id_number: number) {
+    return await this.usersService.getUserActiveByIdNumber(id_number);
+  }
+
+  @Get('/getUserActiveByEmail/:principal_email')
+  async getUserActiveByEmail(
+    @Param('principal_email') principal_email: string,
   ) {
-    return await this.usersService.getUserActiveByTypeAndIdNumber(
-      idType,
-      idNumber,
-    );
+    return await this.usersService.getUserActiveByEmail(principal_email);
   }
 
   @Get('/getUserRoles/:id')
   async getUserRoles(@Param('id') id: string) {
     return await this.usersService.getUserRoles(id);
+  }
+
+  @Get('/getUserPermissions/:id')
+  async getUserPermissions(@Param('id') id: string) {
+    return await this.usersService.getUserPermissions(id);
+  }
+
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Get('/getAllColaboratorPositions')
+  async getAllColaboratorPositions() {
+    return await this.usersService.getAllColaboratorPositions();
   }
 
   // PATCH METHODS //
@@ -199,13 +219,24 @@ export class UsersController {
   }
 
   @Patch('/forgotUserPassword')
-  async forgotUserPassword() {
-    return await this.usersService.forgotUserPassword();
+  async forgotUserPassword(
+    @Body()
+    { user_id_type, id_number, birthdate }: ForgotPasswordUserDto,
+  ) {
+    return await this.usersService.forgotUserPassword({
+      user_id_type,
+      id_number,
+      birthdate,
+    });
   }
 
   @Patch('/resetUserPassword')
-  async resetUserPassword() {
-    return await this.usersService.resetUserPassword();
+  async resetUserPassword(
+    @Query('token') token: string,
+    @Body()
+    { newPassword }: ResetPasswordUserDto,
+  ) {
+    return await this.usersService.resetUserPassword(token, { newPassword });
   }
 
   @EnableAuditLog()
@@ -213,5 +244,10 @@ export class UsersController {
   @Patch('/ban/:id')
   async banUser(@Param('id') id: string, @Req() requestAuditLog: any) {
     return await this.usersService.banUser(id, requestAuditLog);
+  }
+
+  @Patch('/banAllUsersForInactivity')
+  async banAllUsersForInactivity() {
+    return await this.usersService.banAllUsersForInactivity();
   }
 }

@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
-import { GenderTypeEnums } from 'src/utils/enums/gender_types.enum';
+import { GenderTypeEnums } from 'src/utils/enums/user/gender_types.enum';
 
 @Entity()
 export class GenderType {

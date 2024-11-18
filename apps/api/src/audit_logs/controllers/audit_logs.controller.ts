@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateAuditLogDto } from '../dto/create_audit_log.dto';
 import { EnableAuditLog } from '../decorators/enable-audit-log.decorator';
 import { Auth } from '../../auth/decorators/auth.decorator';
-import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 
 @ApiTags('audit-logs')
 @ApiBearerAuth()
@@ -14,7 +14,7 @@ export class AuditLogsController {
 
   // GET METHODS //
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.AUDITOR)
   @Get('/getAll')
   async getAllAuditLogs() {
     return this.auditLogsService.getAllAuditLogs();

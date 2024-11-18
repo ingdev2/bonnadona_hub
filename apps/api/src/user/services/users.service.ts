@@ -4,6 +4,8 @@ import {
   HttpStatus,
   UnauthorizedException,
   Req,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
@@ -15,15 +17,23 @@ import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { PermissionsService } from 'src/permissions/services/permissions.service';
+import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
+import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
+import { PasswordPolicyService } from 'src/password_policy/services/password_policy.service';
+import { PasswordHistoryService } from 'src/password_history/services/password_history.service';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 import { validateCorporateEmail } from '../helpers/validate_corporate_email';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
-import { IdTypeEnum } from 'src/utils/enums/id_types.enum';
-import { IdTypeAbbrev } from 'src/utils/enums/id_types_abbrev.enum';
-import { GenderTypeEnums } from 'src/utils/enums/gender_types.enum';
-import { GenderTypeAbbrev } from 'src/utils/enums/gender_types_abbrev.enum';
-import { RolesEnum } from 'src/utils/enums/roles.enum';
+import { Cron } from '@nestjs/schedule';
+import { nanoid } from 'nanoid';
+
+import { IdTypeEnum } from 'src/utils/enums/user/id_types.enum';
+import { IdTypeAbbrev } from 'src/utils/enums/user/id_types_abbrev.enum';
+import { GenderTypeEnums } from 'src/utils/enums/user/gender_types.enum';
+import { GenderTypeAbbrev } from 'src/utils/enums/user/gender_types_abbrev.enum';
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
 import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
@@ -34,17 +44,25 @@ import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
+import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
 
 import axios from 'axios';
 import * as bcryptjs from 'bcryptjs';
+
 import {
   ACCOUNT_CREATED,
+  PASSWORD_RESET,
   PASSWORD_UPDATED,
+  RESET_PASSWORD_TEMPLATE,
   SUBJECT_ACCOUNT_CREATED,
   UPDATED_PASSWORD_TEMPLATE,
 } from 'src/nodemailer/constants/email_config.constant';
 import { SUPPORT_CONTACT_EMAIL } from 'src/utils/constants/constants';
+import { maskEmailUser } from '../helpers/mask_email';
+
+const schedule = require('node-schedule');
 
 @Injectable()
 export class UsersService {
@@ -53,6 +71,9 @@ export class UsersService {
 
     @InjectRepository(UserProfile)
     private userProfileRepository: Repository<UserProfile>,
+
+    @InjectRepository(UserSessionLog)
+    private userSessionLogRepository: Repository<UserSessionLog>,
 
     @InjectRepository(IdType)
     private idTypeRepository: Repository<IdType>,
@@ -71,10 +92,33 @@ export class UsersService {
     @InjectRepository(PositionLevel)
     private positionLevelRepository: Repository<PositionLevel>,
 
+    @Inject(forwardRef(() => PermissionsService))
+    private readonly permissionsService: PermissionsService,
+
+    private readonly passwordPolicyService: PasswordPolicyService,
+
+    private readonly passwordHistoryService: PasswordHistoryService,
+
     private readonly nodemailerService: NodemailerService,
 
     private readonly auditLogService: AuditLogsService,
   ) {}
+
+  // @Cron('0 20 * * *', {
+  //   name: 'UPDATE ALL USERS DATA FROM KACTUS',
+  //   timeZone: 'America/Bogota',
+  // })
+  // async handleCron() {
+  //   await this.updateAllUsersDataFromKactus();
+  // }
+
+  // @Cron('0 21 * * *', {
+  //   name: 'BAN ALL USERS FOR INACTIVITY',
+  //   timeZone: 'America/Bogota',
+  // })
+  // async handleCron() {
+  //   await this.banAllUsersForInactivity();
+  // }
 
   // CREATE FUNTIONS //
 
@@ -482,6 +526,20 @@ export class UsersService {
 
     userCollaboratorSave.user_profile = userProfileCreate;
 
+    await this.permissionsService.assignDefaultPermissionsToUser(
+      userCollaboratorSave,
+      userCollaborator.collaborator_position,
+    );
+
+    const userSessionLog = new UserSessionLog();
+
+    userSessionLog.user = userCollaboratorSave;
+
+    const userSessionCreate =
+      await this.userSessionLogRepository.create(userSessionLog);
+
+    userCollaboratorSave.user_session_log = userSessionCreate;
+
     await this.userRepository.save(userCollaboratorSave);
 
     const userCollaboratorCreated = await this.userRepository.findOne({
@@ -606,6 +664,20 @@ export class UsersService {
 
     userCollaboratorSave.user_profile = userProfileCreate;
 
+    await this.permissionsService.assignDefaultPermissionsToUser(
+      userCollaboratorSave,
+      userCollaborator.collaborator_position,
+    );
+
+    const userSessionLog = new UserSessionLog();
+
+    userSessionLog.user = userCollaboratorSave;
+
+    const userSessionCreate =
+      await this.userSessionLogRepository.create(userSessionLog);
+
+    userCollaboratorSave.user_session_log = userSessionCreate;
+
     await this.userRepository.save(userCollaboratorSave);
 
     const userCollaboratorCreated = await this.userRepository.findOne({
@@ -614,16 +686,16 @@ export class UsersService {
       loadRelationIds: true,
     });
 
-    const emailDetailsToSend = new SendEmailDto();
+    // const emailDetailsToSend = new SendEmailDto();
 
-    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
-    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
-    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
-    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
-    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
-    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+    // emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    // emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    // emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    // emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    // emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    // emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
 
-    await this.nodemailerService.sendEmail(emailDetailsToSend);
+    // await this.nodemailerService.sendEmail(emailDetailsToSend);
 
     return userCollaboratorCreated;
   }
@@ -828,6 +900,18 @@ export class UsersService {
     return user.user_profile;
   }
 
+  async getUserSessionLogByEmail(principalEmail: string) {
+    const user = await this.userRepository.findOne({
+      where: { principal_email: principalEmail, is_active: true },
+    });
+
+    if (!user) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    return user.user_session_log;
+  }
+
   async getUserByIdNumberAndRole(idNumber: number, userRoles: RolesEnum[]) {
     const userFound = await this.userRepository
       .createQueryBuilder('user')
@@ -847,15 +931,21 @@ export class UsersService {
     return userFound;
   }
 
-  async getUserActiveByTypeAndIdNumber(idType: number, idNumber: number) {
+  async getUserActiveByIdNumber(id_number: number) {
     return await this.userRepository.findOneBy({
-      user_id_type: idType,
-      id_number: idNumber,
+      id_number: id_number,
       is_active: true,
     });
   }
 
-  async getUserFoundByIdNumberWithPassword(principalEmail: string) {
+  async getUserActiveByEmail(principal_email: string) {
+    return await this.userRepository.findOneBy({
+      principal_email: principal_email,
+      is_active: true,
+    });
+  }
+
+  async getUserFoundByEmailWithPassword(principalEmail: string) {
     return await this.userRepository.findOne({
       where: {
         principal_email: principalEmail,
@@ -874,9 +964,12 @@ export class UsersService {
     });
   }
 
-  async getUserActiveByIdAndCode(idNumber: number, verificationCode: number) {
+  async getUserActiveByEmailAndCode(
+    principalEmail: string,
+    verificationCode: number,
+  ) {
     return await this.userRepository.findOneBy({
-      id_number: idNumber,
+      principal_email: principalEmail,
       verification_code: verificationCode,
       is_active: true,
     });
@@ -905,6 +998,36 @@ export class UsersService {
       assignedRoles,
       unassignedRoles,
     };
+  }
+
+  async getUserPermissions(id: string) {
+    const userFound = await this.userRepository.findOne({
+      where: { id, is_active: true },
+    });
+
+    if (!userFound) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    if (!userFound.permission.length) {
+      throw new HttpException(
+        `Este usuario no tiene permisos asignados.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return userFound.permission;
+  }
+
+  async getAllColaboratorPositions() {
+    const positions = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.collaborator_position')
+      .orderBy('user.collaborator_position', 'ASC')
+      .distinct(true)
+      .getRawMany();
+
+    return positions.map((position) => position.user_collaborator_position);
   }
 
   // UPDATE FUNTIONS //
@@ -1015,7 +1138,12 @@ export class UsersService {
     const userUpdate = await this.userRepository.update(id, userUpdates);
 
     if (roleIdsToAdd || roleIdsToRemove) {
-      await this.updateUserRoles(id, roleIdsToAdd, roleIdsToRemove);
+      await this.updateUserRoles(
+        id,
+        roleIdsToAdd,
+        roleIdsToRemove,
+        requestAuditLog,
+      );
     }
 
     if (userUpdate.affected === 0) {
@@ -1085,12 +1213,12 @@ export class UsersService {
       );
     }
 
-    const updateUserEps = await this.userProfileRepository.update(
+    const updateUserProfile = await this.userProfileRepository.update(
       { id: userFound.user_profile.id },
       userProfile,
     );
 
-    if (updateUserEps.affected === 0) {
+    if (updateUserProfile.affected === 0) {
       return new HttpException(`Usuario no encontrado`, HttpStatus.CONFLICT);
     }
 
@@ -1114,6 +1242,7 @@ export class UsersService {
     id: string,
     roleIdsToAdd: number[],
     roleIdsToRemove: number[],
+    @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
       where: { id, is_active: true },
@@ -1149,6 +1278,16 @@ export class UsersService {
         );
       }
     }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_DATA_USER,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     await this.userRepository.save(userFound);
   }
@@ -1195,9 +1334,45 @@ export class UsersService {
       );
     }
 
-    const hashedNewPassword = await bcryptjs.hash(passwords.newPassword, 10);
+    const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
 
-    await this.userRepository.update(id, { password: hashedNewPassword });
+    if (!passwordPolicy) {
+      throw new HttpException(
+        `No hay política de contraseña definida`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    this.validatePasswordPolicy(passwords.newPassword, passwordPolicy);
+
+    const isPasswordInHistory =
+      await this.passwordHistoryService.isPasswordInHistory(
+        id,
+        passwords.newPassword,
+        passwordPolicy.password_history_limit,
+      );
+
+    if (isPasswordInHistory) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a ninguna de las últimas ${passwordPolicy.password_history_limit} contraseñas utilizadas.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    this.validatePersonalDataInPassword(userFound, passwords.newPassword);
+
+    const hashedNewPassword = await bcryptjs.hash(passwords.newPassword, 10);
+    const lastPasswordUpdateDate = await new Date();
+
+    await this.userRepository.update(id, {
+      password: hashedNewPassword,
+      last_password_update: lastPasswordUpdateDate,
+    });
+
+    await this.passwordHistoryService.addPasswordToHistory(
+      id,
+      hashedNewPassword,
+    );
 
     const emailDetailsToSend = new SendEmailDto();
 
@@ -1226,9 +1401,244 @@ export class UsersService {
     );
   }
 
-  async forgotUserPassword() {}
+  private validatePasswordPolicy(password: string, policy: PasswordPolicy) {
+    if (password.length < policy.min_length) {
+      throw new HttpException(
+        `La contraseña debe tener al menos ${policy.min_length} caracteres.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-  async resetUserPassword() {}
+    if (policy.require_uppercase && !/[A-Z]/.test(password)) {
+      throw new HttpException(
+        `La contraseña debe contener al menos una letra mayúscula.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (policy.require_lowercase && !/[a-z]/.test(password)) {
+      throw new HttpException(
+        `La contraseña debe contener al menos una letra minúscula.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (policy.require_numbers && !/[0-9]/.test(password)) {
+      throw new HttpException(
+        `La contraseña debe contener al menos un número.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    if (
+      policy.require_special_characters &&
+      !/[!@#$%^&*(),.?":{}|<>]/.test(password)
+    ) {
+      throw new HttpException(
+        `La contraseña debe contener al menos un carácter especial.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  private validatePersonalDataInPassword(user: User, newPassword: string) {
+    const passwordUpperCase = newPassword.toUpperCase();
+
+    const fullName = `${user.name} ${user.last_name}`.toUpperCase();
+
+    if (fullName.split(' ').some((word) => passwordUpperCase.includes(word))) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos del nombre del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const idNumber = String(user.id_number);
+    if (passwordUpperCase.includes(idNumber)) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos del número de identificación del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const cellphoneNumber = String(user.corporate_cellphone);
+    const personalCellphoneNumber = String(user.personal_cellphone);
+
+    if (
+      passwordUpperCase.includes(cellphoneNumber) ||
+      passwordUpperCase.includes(personalCellphoneNumber)
+    ) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos del número de celular del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const principalEmail = user.principal_email.toUpperCase();
+
+    if (passwordUpperCase.includes(principalEmail)) {
+      throw new HttpException(
+        `¡La contraseña no puede contener el correo electrónico principal del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const corporateEmail = user.corporate_email?.toUpperCase();
+
+    if (corporateEmail && passwordUpperCase.includes(corporateEmail)) {
+      throw new HttpException(
+        `¡La contraseña no puede contener el correo electrónico corporativo del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const birthdate = user?.birthdate.toString().replace(/\s+/g, '').split('-');
+
+    if (birthdate?.some((date) => passwordUpperCase?.includes(date))) {
+      throw new HttpException(
+        `¡La contraseña no puede contener datos de la fecha de nacimiento del usuario!`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async forgotUserPassword({
+    user_id_type,
+    id_number,
+    birthdate,
+  }: ForgotPasswordUserDto) {
+    const userFound = await this.userRepository.findOne({
+      where: {
+        user_id_type: user_id_type,
+        id_number: id_number,
+        birthdate: birthdate,
+        is_active: true,
+      },
+    });
+
+    if (userFound) {
+      const resetPasswordToken = nanoid(64);
+
+      await this.userRepository.update(
+        {
+          id: userFound.id,
+        },
+        { reset_password_token: resetPasswordToken },
+      );
+
+      const emailDetailsToSend = new SendEmailDto();
+
+      emailDetailsToSend.recipients = [userFound.principal_email];
+      emailDetailsToSend.userNameToEmail = userFound.name;
+      emailDetailsToSend.subject = PASSWORD_RESET;
+      emailDetailsToSend.emailTemplate = RESET_PASSWORD_TEMPLATE;
+      emailDetailsToSend.resetPasswordUrl = `${process.env.RESET_PASSWORD_URL_USER}?token=${resetPasswordToken}`;
+
+      await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+      schedule.scheduleJob(new Date(Date.now() + 5 * 60 * 1000), async () => {
+        await this.userRepository.update(
+          { id: userFound.id },
+          { reset_password_token: null },
+        );
+      });
+
+      const maskedEmail = maskEmailUser(userFound.principal_email);
+
+      return new HttpException(
+        `Se ha enviado al correo: ${maskedEmail} el link de restablecimiento de contraseña`,
+        HttpStatus.ACCEPTED,
+      );
+    } else {
+      throw new UnauthorizedException(
+        `¡Datos incorrectos o no esta registrado!`,
+      );
+    }
+  }
+
+  async resetUserPassword(
+    token: string,
+    { newPassword }: ResetPasswordUserDto,
+  ) {
+    const tokenFound = await this.userRepository.findOne({
+      where: {
+        reset_password_token: token,
+        is_active: true,
+      },
+    });
+
+    if (!tokenFound) {
+      throw new UnauthorizedException('¡Link invalido o caducado!');
+    }
+
+    const userFound = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect(['user.password'])
+      .where('user.reset_password_token = :token', { token })
+      .getOne();
+
+    if (!userFound) {
+      throw new HttpException(
+        `Usuario no encontrado.`,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    const isNewPasswordSameAsOld = await bcryptjs.compare(
+      newPassword,
+      userFound.password,
+    );
+
+    if (isNewPasswordSameAsOld) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a la antigua.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
+
+    if (!passwordPolicy) {
+      throw new HttpException(
+        `No hay política de contraseña definida`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    this.validatePasswordPolicy(newPassword, passwordPolicy);
+
+    this.validatePersonalDataInPassword(userFound, newPassword);
+
+    const hashedNewPassword = await bcryptjs.hash(newPassword, 10);
+    const lastPasswordUpdateDate = await new Date();
+
+    await this.userRepository.update(userFound.id, {
+      password: hashedNewPassword,
+      last_password_update: lastPasswordUpdateDate,
+      reset_password_token: null,
+    });
+
+    await this.passwordHistoryService.addPasswordToHistory(
+      userFound.id,
+      hashedNewPassword,
+    );
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userFound.principal_email];
+    emailDetailsToSend.userNameToEmail = userFound.name;
+    emailDetailsToSend.subject = PASSWORD_UPDATED;
+    emailDetailsToSend.emailTemplate = UPDATED_PASSWORD_TEMPLATE;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    return new HttpException(
+      `¡Contraseña restablecida correctamente!`,
+      HttpStatus.ACCEPTED,
+    );
+  }
 
   // DELETED-BAN FUNTIONS //
 
@@ -1243,9 +1653,25 @@ export class UsersService {
       throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
+    const sessionLog = await this.userSessionLogRepository.findOne({
+      where: { id: userFound.user_session_log.id },
+    });
+
+    if (!sessionLog) {
+      throw new HttpException(
+        `Session de usuario no encontrada.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     userFound.is_active = !userFound.is_active;
 
     await this.userRepository.save(userFound);
+
+    sessionLog.failed_login_attempts_counter = 0;
+    sessionLog.number_of_user_bans = 0;
+
+    await this.userSessionLogRepository.save(sessionLog);
 
     const auditLogData = {
       ...requestAuditLog.auditLogData,
@@ -1265,5 +1691,65 @@ export class UsersService {
       : `El usuario con número de ID: ${userFound.id_number} se ha INACTIVADO.`;
 
     throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
+  }
+
+  async banAllUsersForInactivity() {
+    const users = await this.userRepository.find({
+      where: { is_active: true },
+    });
+
+    const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
+
+    if (!passwordPolicy) {
+      throw new HttpException(
+        `No hay política de contraseña definida`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const currentDate = new Date();
+    const inactivityThreshold = new Date(currentDate);
+    inactivityThreshold.setDate(
+      currentDate.getDate() - passwordPolicy.inactivity_days,
+    );
+
+    const inactiveUsers = [];
+
+    for (const user of users) {
+      if (
+        user.user_session_log &&
+        user.user_session_log.last_login !== null &&
+        user.user_session_log.successful_login_counter >= 1
+      ) {
+        const sessionLog = await this.userSessionLogRepository.findOne({
+          where: { id: user.user_session_log.id },
+        });
+
+        if (!sessionLog) {
+          throw new HttpException(
+            `Session de usuario no encontrada para el ID: ${user.id_number}.`,
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        if (sessionLog.last_login < inactivityThreshold) {
+          user.is_active = false;
+          inactiveUsers.push(user);
+        }
+      }
+    }
+
+    if (inactiveUsers.length > 0) {
+      await this.userRepository.save(inactiveUsers);
+
+      const statusMessage = `Se han inactivado ${inactiveUsers.length} usuarios por inactividad.`;
+
+      throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
+    } else {
+      throw new HttpException(
+        'No se encontraron usuarios para inactivar.',
+        HttpStatus.OK,
+      );
+    }
   }
 }
