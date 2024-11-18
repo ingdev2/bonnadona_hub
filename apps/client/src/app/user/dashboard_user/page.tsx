@@ -53,13 +53,6 @@ const AllAppsPage: React.FC = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // const {
-  //   data: userActiveDatabyIdNumber,
-  //   isLoading: userActiveLoading,
-  //   isFetching: userActiveFetching,
-  //   error: userActiveError,
-  // } = useGetUserActiveByEmailQuery(principalEmailUserLoginState);
-
   const {
     data: userActiveDatabyIdNumberData,
     isLoading: userActiveDatabyIdNumberLoading,
@@ -110,7 +103,7 @@ const AllAppsPage: React.FC = () => {
   ]);
 
   return (
-    <div>
+    <div className="dasboard-user">
       {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
