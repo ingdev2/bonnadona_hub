@@ -12,6 +12,7 @@ interface User {
   personal_email: string;
   personal_cellphone: string;
   password: string;
+  last_password_update: string
   residence_department: string;
   residence_city: string;
   residence_address: string;

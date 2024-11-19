@@ -14,6 +14,7 @@ const initialState: User = {
   personal_email: "",
   personal_cellphone: "",
   password: "",
+  last_password_update: "",
   residence_department: "",
   residence_city: "",
   residence_address: "",
@@ -68,6 +69,9 @@ export const userSlice = createSlice({
     setPasswordUser: (state, action) => {
       state.password = action.payload;
     },
+    setLastPasswordUpdateUser: (state, action) => {
+      state.last_password_update = action.payload;
+    },
     setResidenceDepartmentUser: (state, action) => {
       state.residence_department = action.payload;
     },
@@ -100,6 +104,7 @@ export const userSlice = createSlice({
       state.personal_email = "";
       state.personal_cellphone = "";
       state.password = "";
+      state.last_password_update = "";
       state.residence_department = "";
       state.residence_city = "";
       state.residence_address = "";
@@ -123,6 +128,7 @@ export const {
   setPersonalCellphoneUser,
   setPersonalEmailUser,
   setPasswordUser,
+  setLastPasswordUpdateUser,
   setResidenceDepartmentUser,
   setResidenceCityUser,
   setResidenceAddressUser,

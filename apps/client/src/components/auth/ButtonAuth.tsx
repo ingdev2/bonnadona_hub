@@ -13,8 +13,8 @@ import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 const ButtonAuth = () => {
   const { data: session, status } = useSession();
 
-  const principalEmailCollaboratorState = useAppSelector(
-    (state) => state.userLogin.principal_email
+  const principalEmailUserState = useAppSelector(
+    (state) => state.user.principal_email
   );
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
@@ -51,7 +51,7 @@ const ButtonAuth = () => {
               marginBlock: 13,
             }}
           >
-            {principalEmailCollaboratorState}
+            {principalEmailUserState}
           </h5>
           <Button
             type="primary"
