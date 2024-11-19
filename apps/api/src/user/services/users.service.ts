@@ -932,42 +932,16 @@ export class UsersService {
   }
 
   async getUserActiveByIdNumber(id_number: number) {
-    return await this.userRepository.findOne({
-      where: {
-        id_number: id_number,
-        is_active: true,
-      },
-      select: [
-        'id',
-        'name',
-        'last_name',
-        'user_id_type',
-        'id_number',
-        'principal_email',
-        'role',
-        'permission',
-      ],
-      loadEagerRelations: false,
+    return await this.userRepository.findOneBy({
+      id_number: id_number,
+      is_active: true,
     });
   }
 
   async getUserActiveByEmail(principal_email: string) {
-    return await this.userRepository.findOne({
-      where: {
-        principal_email: principal_email,
-        is_active: true,
-      },
-      select: [
-        'id',
-        'name',
-        'last_name',
-        'user_id_type',
-        'id_number',
-        'principal_email',
-        'role',
-        'permission',
-      ],
-      loadEagerRelations: false,
+    return await this.userRepository.findOneBy({
+      principal_email: principal_email,
+      is_active: true,
     });
   }
 

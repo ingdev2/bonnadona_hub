@@ -130,11 +130,23 @@ export class UsersController {
     ]);
   }
 
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Get('/getUserActiveByIdNumber/:id_number')
   async getUserActiveByIdNumber(@Param('id_number') id_number: number) {
     return await this.usersService.getUserActiveByIdNumber(id_number);
   }
 
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Get('/getUserActiveByEmail/:principal_email')
   async getUserActiveByEmail(
     @Param('principal_email') principal_email: string,
