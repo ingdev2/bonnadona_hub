@@ -18,7 +18,10 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { useUpdateUserPasswordMutation } from "@/redux/apis/users/userApi";
 import { setErrorsUser } from "@/redux/features/user/userSlice";
 
-const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
+const ChangePasswordModal: React.FC<{
+  titleModal: string;
+  subtitleModal: string;
+}> = ({ titleModal, subtitleModal }) => {
   const dispatch = useAppDispatch();
 
   const modalIsOpenFirstSuccessfullCollaboratorLogin = useAppSelector(
@@ -103,7 +106,7 @@ const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
   };
 
   return (
-    <div className="collaborator-modal-first-successfull-login">
+    <div className="change-password-modal">
       {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
@@ -152,7 +155,7 @@ const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
                 textAlign: "center",
               }}
             >
-              Bienvenidos a Bonnadona Hub
+              {titleModal}
             </h2>
             <h4
               className="subtitle-modal"
@@ -166,7 +169,7 @@ const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
                 marginBlock: "7px",
               }}
             >
-              Debes actualizar tu contraseña si entras por primera vez:
+              {subtitleModal}
             </h4>
 
             <CustomLoadingOverlay isLoading={isPageLoadingState} />
@@ -279,4 +282,4 @@ const CollaboratorModalFirstSuccessfulLogin: React.FC = () => {
   );
 };
 
-export default CollaboratorModalFirstSuccessfulLogin;
+export default ChangePasswordModal;

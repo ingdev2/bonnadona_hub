@@ -6,6 +6,7 @@ const initialState = {
   userModalIsOpen: false,
   adminModalIsOpen: false,
   firstSuccessLoginModalIsOpen: false,
+  changePasswordExpiryModalIsOpen: false,
 };
 
 export const modalSlice = createSlice({
@@ -27,6 +28,9 @@ export const modalSlice = createSlice({
     setFirstLoginModalIsOpen: (state, action) => {
       state.firstSuccessLoginModalIsOpen = action.payload;
     },
+    setChangePasswordExpiryModalIsOpen: (state, action) => {
+      state.changePasswordExpiryModalIsOpen = action.payload;
+    },
   },
 });
 
@@ -36,6 +40,7 @@ export const {
   setUserModalIsOpen,
   setAdminModalIsOpen,
   setFirstLoginModalIsOpen,
+  setChangePasswordExpiryModalIsOpen,
 } = modalSlice.actions;
 
 export default modalSlice.reducer;

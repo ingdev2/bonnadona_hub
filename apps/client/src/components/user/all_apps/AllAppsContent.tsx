@@ -4,10 +4,13 @@ import { Card, Col, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
 
 import CustomDashboardLayoutUsers from "@/components/common/custom_dashboard_layout_users/CustomDashboardLayoutUsers";
-import CollaboratorModalFirstSuccessfulLogin from "./collaborator_modal_first_successful_login/CollaboratorModalFirstSuccessfulLogin";
+import ChangePasswordModal from "../../common/change_password_modal/ChangePasswordModal";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useGetUserSessionLogByEmailQuery } from "@/redux/apis/users/userApi";
-import { setFirstLoginModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+import {
+  setChangePasswordExpiryModalIsOpen,
+  setFirstLoginModalIsOpen,
+} from "@/redux/features/common/modal/modalSlice";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 
 const AllAppsContent: React.FC = () => {
@@ -23,6 +26,10 @@ const AllAppsContent: React.FC = () => {
 
   const modalIsOpenFirstSuccessfullCollaboratorLogin = useAppSelector(
     (state) => state.modal.firstSuccessLoginModalIsOpen
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
   );
 
   const {
@@ -41,23 +48,75 @@ const AllAppsContent: React.FC = () => {
     error: passwordPolicyError,
   } = useGetPasswordPolicyQuery(null);
 
+  const checkPasswordExpiry = (
+    lastPasswordUpdate: string,
+    expiryDays: number
+  ): boolean => {
+    const lastUpdateDate = new Date(lastPasswordUpdate);
+    const today = new Date();
+
+    // Calcular la diferencia en milisegundos
+    const differenceInMs = today.getTime() - lastUpdateDate.getTime();
+
+    // Convertir la diferencia a días
+    const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+
+    // Verificar si la diferencia en días es mayor o igual a los días de expiración
+    return differenceInDays >= expiryDays;
+  };
+
   useEffect(() => {
-    console.log("passwordPolicyData: ", passwordPolicyData);
-    console.log("lastPasswordUpdate: ", lastPasswordUpdateCollaboratorState);
     if (userSessionLogData?.successful_login_counter == 1) {
       dispatch(setFirstLoginModalIsOpen(true));
     } else {
       dispatch(setFirstLoginModalIsOpen(false));
     }
-  }, [userSessionLogData, passwordPolicyData]);
+
+    if (
+      passwordPolicyData &&
+      passwordPolicyData.length > 0 &&
+      passwordPolicyData[0].password_expiry_days &&
+      lastPasswordUpdateCollaboratorState &&
+      checkPasswordExpiry(
+        lastPasswordUpdateCollaboratorState,
+        passwordPolicyData[0].password_expiry_days
+      )
+    ) {
+      console.log('estoy aqui en true')
+      dispatch(setChangePasswordExpiryModalIsOpen(true));
+    } else {
+      console.log('estoy aqui en false')
+      dispatch(setChangePasswordExpiryModalIsOpen(false));
+    }
+  }, [
+    userSessionLogData,
+    passwordPolicyData,
+    lastPasswordUpdateCollaboratorState,
+  ]);
 
   return (
     <>
       <div className="collaborator-modal-firts-successfull-login">
         {modalIsOpenFirstSuccessfullCollaboratorLogin && (
-          <CollaboratorModalFirstSuccessfulLogin />
+          <ChangePasswordModal
+            titleModal={"Bienvenidos a Bonnadona Hub"}
+            subtitleModal={
+              "Debes actualizar tu contraseña si entras por primera vez:"
+            }
+          />
         )}
       </div>
+
+      <div className="collaborator-modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
+
+      <div className="collaborator-modal-firts-successfull-login"></div>
 
       <div className="custom-dashboard-layout-users">
         <CustomDashboardLayoutUsers
