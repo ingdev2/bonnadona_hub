@@ -19,6 +19,7 @@ import {
 } from "@/redux/features/common/modal/modalSlice";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 
 const page: React.FC = () => {
   const { data: session, status } = useSession();
@@ -105,7 +106,7 @@ const page: React.FC = () => {
         <CustomSpin />
       ) : (
         <div className="dashboard-admin-content">
-          dashboardAdmin
+          <CustomDashboardLayoutAdmins customLayoutContent={<></>} />
         </div>
       )}
     </div>

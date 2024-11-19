@@ -41,7 +41,7 @@ export const adminLoginSlice = createSlice({
     setErrorsLoginAdmin: (state, action) => {
       state.errors = action.payload;
     },
-    resetLoginStateAdmin: (state) => {
+    resetLoginAdminState: (state) => {
       state.user_id_type = initialState.user_id_type;
       state.id_number = initialState.id_number;
       state.principal_email = initialState.principal_email;
@@ -61,7 +61,7 @@ export const {
   setVerificationCodeLoginAdmin,
   setErrorsLoginAdmin,
   setIdTypeOptionsLoginAdmin,
-  resetLoginStateAdmin,
+  resetLoginAdminState,
 } = adminLoginSlice.actions;
 
 export default adminLoginSlice.reducer;
