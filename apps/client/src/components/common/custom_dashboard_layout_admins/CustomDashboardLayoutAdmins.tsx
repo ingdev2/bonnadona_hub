@@ -89,16 +89,12 @@ const CustomDashboardLayoutAdmins: React.FC<{
             overflow: "hidden",
           }}
           onClick={() => {
-            router.replace("/admin/dashboard", { scroll: true });
+            router.replace("/admin/dashboard_admin", { scroll: true });
           }}
         >
           <img
-            src={
-              collapsed
-                ? "/logos/LOGO-ICONO-130-X-130-PX.png"
-                : "/logos/LOGO-HORIZONTAL-TRANS-130-X-130-PX.png"
-            }
-            alt="Logo de Proced"
+            src={collapsed ? "/logos/icono.png" : "/logos/logo_horizontal.png"}
+            alt="Logo de Bonnadona Hub"
             style={{
               maxWidth: collapsed ? "45%" : "77%",
               height: "auto",
@@ -112,7 +108,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
           mode="inline"
           items={items}
           selectedKeys={[selectedKeyState]}
-          defaultSelectedKeys={[ItemKeys.ITEM_REQUESTS_KEY]}
+          defaultSelectedKeys={[ItemKeys.ITEM_PASSWORD_POLICY_KEY]}
           openKeys={selectedOpenKeysState}
           onOpenChange={handleOpenChange}
           onClick={({ key }) => handleMenuClick(key)}
