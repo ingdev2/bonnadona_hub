@@ -39,7 +39,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
   const handleMenuClick = (key: string) => {
     dispatch(setSelectedKey(key));
 
-    router.push(`/admin/dashboard/${key}`);
+    router.push(`/admin/dashboard_admin/${key}`);
   };
 
   const handleOpenChange: any = (keys: string[]) => {

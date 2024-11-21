@@ -20,28 +20,28 @@ export const passwordPolicySlice = createSlice({
     setIdPasswordPolicy: (state, action) => {
       state.id = action.payload;
     },
-    setNamePasswordPolicy: (state, action) => {
+    setMinLengtPasswordPolicy: (state, action) => {
       state.min_length = action.payload;
     },
-    setLastNamePasswordPolicy: (state, action) => {
+    setRequireUpperCasePasswordPolicy: (state, action) => {
       state.require_uppercase = action.payload;
     },
-    setIdTypePasswordPolicy: (state, action) => {
+    setRequireLowerCasePasswordPolicy: (state, action) => {
       state.require_lowercase = action.payload;
     },
-    setIdNumberPasswordPolicy: (state, action) => {
+    setRequireNumbersPasswordPolicy: (state, action) => {
       state.require_numbers = action.payload;
     },
-    setGenderPasswordPolicy: (state, action) => {
+    setRequireSpecialCharactersPasswordPolicy: (state, action) => {
       state.require_special_characters = action.payload;
     },
-    setBirthdatePasswordPolicy: (state, action) => {
+    setPasswordExpiryDaysPasswordPolicy: (state, action) => {
       state.password_expiry_days = action.payload;
     },
-    setPrincipalEmailPasswordPolicy: (state, action) => {
+    setInactivityDaysEmailPasswordPolicy: (state, action) => {
       state.inactivity_days = action.payload;
     },
-    setCorporateEmailPasswordPolicy: (state, action) => {
+    setPasswordHistoryLimitEmailPasswordPolicy: (state, action) => {
       state.password_history_limit = action.payload;
     },
     setErrorsPasswordPolicy: (state, action) => {
@@ -64,14 +64,14 @@ export const passwordPolicySlice = createSlice({
 
 export const {
   setIdPasswordPolicy,
-  setNamePasswordPolicy,
-  setLastNamePasswordPolicy,
-  setIdNumberPasswordPolicy,
-  setBirthdatePasswordPolicy,
-  setPrincipalEmailPasswordPolicy,
-  setCorporateEmailPasswordPolicy,
-  setGenderPasswordPolicy,
-  setIdTypePasswordPolicy,
+  setMinLengtPasswordPolicy,
+  setRequireUpperCasePasswordPolicy,
+  setRequireNumbersPasswordPolicy,
+  setPasswordExpiryDaysPasswordPolicy,
+  setInactivityDaysEmailPasswordPolicy,
+  setPasswordHistoryLimitEmailPasswordPolicy,
+  setRequireSpecialCharactersPasswordPolicy,
+  setRequireLowerCasePasswordPolicy,
   setErrorsPasswordPolicy,
   setDefaultValuesPasswordPolicy,
 } = passwordPolicySlice.actions;
