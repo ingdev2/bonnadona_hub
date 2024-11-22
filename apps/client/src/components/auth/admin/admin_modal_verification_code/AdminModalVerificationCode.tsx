@@ -72,7 +72,9 @@ const AdminModalVerificationCode: React.FC = () => {
   useEffect(() => {
     if (!principalEmailAdminLoginState) {
       setShowErrorMessage(true);
-      setErrorMessage("¡Error al obtener el correo principal del administrador!");
+      setErrorMessage(
+        "¡Error al obtener el correo principal del administrador!"
+      );
     }
   }, [principalEmailAdminLoginState]);
 
@@ -85,7 +87,7 @@ const AdminModalVerificationCode: React.FC = () => {
         : "";
 
       const responseNextAuth = await signIn(
-        process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
+        process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
         {
           verification_code: verificationCode,
           principal_email: principalEmailAdminLoginState,
@@ -99,14 +101,14 @@ const AdminModalVerificationCode: React.FC = () => {
 
       if (responseNextAuth?.status === 200) {
         dispatch(setIsPageLoading(true));
-
+        console.log("responseNextAuth: ", responseNextAuth);
         setShowSuccessMessage(true);
         setSuccessMessage("Ingresando, por favor espere...");
 
         dispatch(setPasswordLoginUser(""));
         dispatch(setVerificationCodeLoginUser(0));
 
-        await router.replace("/admin/dashboard", { scroll: false });
+        await router.replace("/admin/dashboard_admin", { scroll: false });
 
         await new Promise((resolve) => setTimeout(resolve, 4000));
       }

@@ -45,6 +45,9 @@ const themeConfig: ThemeConfig = {
     Input: {
       borderRadius: 30
     },
+    InputNumber: {
+      borderRadius: 30
+    },
     DatePicker: {
       borderRadius: 30
     }
