@@ -25,6 +25,7 @@ import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enu
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import MainViewContent from "@/components/admin/main_view/MainViewContent";
 
 const page: React.FC = () => {
   const { data: session, status } = useSession();
@@ -116,13 +117,12 @@ const page: React.FC = () => {
           message={errorMessage || "¡Error en la petición!"}
         />
       )}
+      
       {!principalEmailAdminLoginState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
         <div className="dashboard-admin-content">
-          <CustomDashboardLayoutAdmins
-            customLayoutContent={<>Seleccione una opcion del menú</>}
-          />
+          <MainViewContent />
         </div>
       )}
     </div>

@@ -8,7 +8,7 @@ const initialState = {
   adminModalIsOpen: false,
   firstSuccessLoginModalIsOpen: false,
   changePasswordExpiryModalIsOpen: false,
-  selectedKey: ItemKeys.SUB_ALL_REQUESTS_REQ_KEY,
+  selectedKey: ItemKeys.SUB_MANAGE_PASSWORD_KEY,
   selectedOpenKeys: [""],
 };
 
@@ -41,7 +41,7 @@ export const modalSlice = createSlice({
       state.changePasswordExpiryModalIsOpen = action.payload;
     },
     setResetModalAdmin: (state) => {
-      state.selectedKey = ItemKeys.SUB_ALL_REQUESTS_REQ_KEY;
+      state.selectedKey = ItemKeys.SUB_MANAGE_PASSWORD_KEY;
       state.selectedOpenKeys = [""];
     },
   },

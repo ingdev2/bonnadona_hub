@@ -20,7 +20,7 @@ export const passwordPolicySlice = createSlice({
     setIdPasswordPolicy: (state, action) => {
       state.id = action.payload;
     },
-    setMinLengtPasswordPolicy: (state, action) => {
+    setMinLenghtPasswordPolicy: (state, action) => {
       state.min_length = action.payload;
     },
     setRequireUpperCasePasswordPolicy: (state, action) => {
@@ -38,10 +38,10 @@ export const passwordPolicySlice = createSlice({
     setPasswordExpiryDaysPasswordPolicy: (state, action) => {
       state.password_expiry_days = action.payload;
     },
-    setInactivityDaysEmailPasswordPolicy: (state, action) => {
+    setInactivityDaysPasswordPolicy: (state, action) => {
       state.inactivity_days = action.payload;
     },
-    setPasswordHistoryLimitEmailPasswordPolicy: (state, action) => {
+    setPasswordHistoryLimitPasswordPolicy: (state, action) => {
       state.password_history_limit = action.payload;
     },
     setErrorsPasswordPolicy: (state, action) => {
@@ -64,12 +64,12 @@ export const passwordPolicySlice = createSlice({
 
 export const {
   setIdPasswordPolicy,
-  setMinLengtPasswordPolicy,
+  setMinLenghtPasswordPolicy,
   setRequireUpperCasePasswordPolicy,
   setRequireNumbersPasswordPolicy,
   setPasswordExpiryDaysPasswordPolicy,
-  setInactivityDaysEmailPasswordPolicy,
-  setPasswordHistoryLimitEmailPasswordPolicy,
+  setInactivityDaysPasswordPolicy,
+  setPasswordHistoryLimitPasswordPolicy,
   setRequireSpecialCharactersPasswordPolicy,
   setRequireLowerCasePasswordPolicy,
   setErrorsPasswordPolicy,

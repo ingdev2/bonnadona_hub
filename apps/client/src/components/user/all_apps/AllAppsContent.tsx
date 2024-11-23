@@ -81,10 +81,10 @@ const AllAppsContent: React.FC = () => {
         passwordPolicyData.password_expiry_days
       )
     ) {
-      console.log('estoy aqui en true')
+      console.log("estoy aqui en true");
       dispatch(setChangePasswordExpiryModalIsOpen(true));
     } else {
-      console.log('estoy aqui en false')
+      console.log("estoy aqui en false");
       dispatch(setChangePasswordExpiryModalIsOpen(false));
     }
   }, [
@@ -114,8 +114,6 @@ const AllAppsContent: React.FC = () => {
           />
         )}
       </div>
-
-      <div className="collaborator-modal-firts-successfull-login"></div>
 
       <div className="custom-dashboard-layout-users">
         <CustomDashboardLayoutUsers
