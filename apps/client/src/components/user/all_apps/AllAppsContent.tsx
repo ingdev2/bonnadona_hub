@@ -74,12 +74,11 @@ const AllAppsContent: React.FC = () => {
 
     if (
       passwordPolicyData &&
-      passwordPolicyData.length > 0 &&
-      passwordPolicyData[0].password_expiry_days &&
+      passwordPolicyData.password_expiry_days &&
       lastPasswordUpdateCollaboratorState &&
       checkPasswordExpiry(
         lastPasswordUpdateCollaboratorState,
-        passwordPolicyData[0].password_expiry_days
+        passwordPolicyData.password_expiry_days
       )
     ) {
       console.log('estoy aqui en true')

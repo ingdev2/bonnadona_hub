@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 
-import { Modal, Input, Button, Typography, Space, Form, Divider } from "antd";
+import { Modal, Input, Button, Form, Divider } from "antd";
 import Link from "next/link";
 
 import { TbPasswordUser } from "react-icons/tb";
@@ -26,6 +26,7 @@ import {
   setIsPageLoading,
   setAdminModalIsOpen,
 } from "@/redux/features/common/modal/modalSlice";
+import { setVerificationCodeLoginAdmin } from "@/redux/features/login/adminLoginSlice";
 
 const AdminModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -101,7 +102,7 @@ const AdminModalVerificationCode: React.FC = () => {
 
       if (responseNextAuth?.status === 200) {
         dispatch(setIsPageLoading(true));
-        console.log("responseNextAuth: ", responseNextAuth);
+
         setShowSuccessMessage(true);
         setSuccessMessage("Ingresando, por favor espere...");
 
@@ -305,7 +306,7 @@ const AdminModalVerificationCode: React.FC = () => {
                 placeholder="Código"
                 value={verificationCodeAdminLoginState}
                 onChange={(e) =>
-                  dispatch(setVerificationCodeLoginUser(e.target.value))
+                  dispatch(setVerificationCodeLoginAdmin(e.target.value))
                 }
                 autoComplete="off"
                 min={0}

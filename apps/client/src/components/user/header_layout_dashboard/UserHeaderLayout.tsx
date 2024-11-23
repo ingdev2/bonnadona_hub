@@ -38,7 +38,7 @@ const UserHeaderLayout: React.FC = () => {
         <CustomSpin />
       ) : (
         <CustomDropdown
-          titleCustomDropdown={`Hola, ${getFirstName(nameUserState)} ${getFirstName(
+          titleCustomDropdown={`HOLA, ${getFirstName(nameUserState)} ${getFirstName(
             lastNameUserState
           )}`}
           iconCustomItem1={<FaSignOutAlt />}

@@ -30,12 +30,12 @@ const page: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
-  const allowedRoles = [
-    RolesEnum.SUPER_ADMIN,
-    RolesEnum.ADMIN,
-    RolesEnum.AUDITOR,
-  ];
-  useRoleValidation(allowedRoles);
+  // const allowedRoles = [
+  //   RolesEnum.SUPER_ADMIN,
+  //   RolesEnum.ADMIN,
+  //   RolesEnum.AUDITOR,
+  // ];
+  // useRoleValidation(allowedRoles);
 
   const principalEmailAdminLoginState = useAppSelector(
     (state) => state.adminLogin.principal_email
@@ -101,9 +101,9 @@ const page: React.FC = () => {
       dispatch(setSelectedKey(ItemKeys.SUB_MANAGE_PASSWORD_KEY));
     }
   }, [
+    userActiveDatabyIdNumberData,
     principalEmailAdminState,
     principalEmailAdminLoginState,
-    status,
     adminModalState,
     isPageLoadingState,
   ]);
