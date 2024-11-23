@@ -85,7 +85,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
             alignContent: "center",
             alignItems: "center",
             backgroundColor: "#f2f2f2",
-            paddingBlock: "22px",
+            paddingBlock: "9px",
             overflow: "hidden",
           }}
           onClick={() => {
@@ -96,7 +96,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
             src={collapsed ? "/logos/icono.png" : "/logos/logo_horizontal.png"}
             alt="Logo de Bonnadona Hub"
             style={{
-              maxWidth: collapsed ? "45%" : "77%",
+              maxWidth: collapsed ? "63%" : "77%",
               height: "auto",
               objectFit: "contain",
             }}
