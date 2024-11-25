@@ -63,6 +63,7 @@ const AllAppsPage: React.FC = () => {
   });
 
   useEffect(() => {
+    console.log("session:", session);
     if (!principalEmailUserState && userActiveDatabyIdNumberData) {
       dispatch(
         setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
@@ -95,8 +96,7 @@ const AllAppsPage: React.FC = () => {
   }, [
     userActiveDatabyIdNumberData,
     principalEmailUserState,
-    session,
-    status,
+    principalEmailUserLoginState,
     collaboratorModalState,
     isPageLoadingState,
   ]);

@@ -23,7 +23,7 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { useLoginAdminAndAuditorUserMutation } from "@/redux/apis/auth/loginAdminApi";
 import {
-  resetLoginAdminState,
+  resetLoginStateAdmin,
   setErrorsLoginAdmin,
   setPasswordLoginAdmin,
   setPrincipalEmailLoginAdmin,
@@ -81,7 +81,7 @@ const AdminLoginForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setIsSubmitting(true);
-      dispatch(resetLoginAdminState());
+      dispatch(resetLoginStateAdmin());
       dispatch(setDefaultValuesUser());
 
       const response: any = await loginAdminAndAuditorUsers({

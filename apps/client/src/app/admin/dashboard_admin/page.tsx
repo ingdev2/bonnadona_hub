@@ -25,17 +25,18 @@ import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enu
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import MainViewContent from "@/components/admin/main_view/MainViewContent";
 
 const page: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
-  const allowedRoles = [
-    RolesEnum.SUPER_ADMIN,
-    RolesEnum.ADMIN,
-    RolesEnum.AUDITOR,
-  ];
-  useRoleValidation(allowedRoles);
+  // const allowedRoles = [
+  //   RolesEnum.SUPER_ADMIN,
+  //   RolesEnum.ADMIN,
+  //   RolesEnum.AUDITOR,
+  // ];
+  // useRoleValidation(allowedRoles);
 
   const principalEmailAdminLoginState = useAppSelector(
     (state) => state.adminLogin.principal_email
@@ -101,9 +102,9 @@ const page: React.FC = () => {
       dispatch(setSelectedKey(ItemKeys.SUB_MANAGE_PASSWORD_KEY));
     }
   }, [
+    userActiveDatabyIdNumberData,
     principalEmailAdminState,
     principalEmailAdminLoginState,
-    status,
     adminModalState,
     isPageLoadingState,
   ]);
@@ -116,13 +117,12 @@ const page: React.FC = () => {
           message={errorMessage || "¡Error en la petición!"}
         />
       )}
+      
       {!principalEmailAdminLoginState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
         <div className="dashboard-admin-content">
-          <CustomDashboardLayoutAdmins
-            customLayoutContent={<>Seleccione una opcion del menú</>}
-          />
+          <MainViewContent />
         </div>
       )}
     </div>

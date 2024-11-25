@@ -1,9 +1,16 @@
 import React from "react";
-import { Checkbox, Col, Form, Input, Row, Switch, Typography } from "antd";
+
+import { Col, Form, Input, Row, Switch, Typography } from "antd";
+
 import { titleStyleCss } from "@/theme/text_styles";
-import { MdDriveFileRenameOutline } from "react-icons/md";
+
+import { MdOutlineBlock } from "react-icons/md";
 import { FaRegCircleCheck } from "react-icons/fa6";
-import { setRequireNumbersPasswordPolicy } from "@/redux/features/password_policy/passwordPolicySlice";
+import { RiPassExpiredLine } from "react-icons/ri";
+import { IoRecordingOutline } from "react-icons/io5";
+import { FaArrowsAltH } from "react-icons/fa";
+import { LoadingOutlined } from "@ant-design/icons";
+
 import CustomButton from "@/components/common/custom_button/CustomButton";
 
 const ManagePasswordFormData: React.FC<{
@@ -15,14 +22,16 @@ const ManagePasswordFormData: React.FC<{
   passwordExpiryDaysFormData: number;
   inactivityDaysFormData: number;
   passwordHistoryLimitFormData: number;
+  updatePasswordPolicyLoading: boolean;
   setMinLenghtPasswordLocalState: (value: number) => void;
-  setPasswordExpiryDaysLocalState: (value: string) => void;
-  setInactivityDaysLocalState: (value: string) => void;
-  setPasswordHistoryLimitLocalState: (value: string) => void;
+  setPasswordExpiryDaysLocalState: (value: number) => void;
+  setInactivityDaysLocalState: (value: number) => void;
+  setPasswordHistoryLimitLocalState: (value: number) => void;
   setRequireUpperCaseLocalState: (value: boolean) => void;
   setRequireLowerCaseLocalState: (value: boolean) => void;
   setRequireNumbersLocalState: (value: boolean) => void;
   setRequireSpecialCharactersLocalState: (value: boolean) => void;
+  hasChanges: () => boolean;
   handleClickSubmit: () => void;
 }> = ({
   minLenghtPasswordFormData,
@@ -33,6 +42,7 @@ const ManagePasswordFormData: React.FC<{
   passwordExpiryDaysFormData,
   inactivityDaysFormData,
   passwordHistoryLimitFormData,
+  updatePasswordPolicyLoading,
   setMinLenghtPasswordLocalState,
   setPasswordExpiryDaysLocalState,
   setInactivityDaysLocalState,
@@ -41,6 +51,7 @@ const ManagePasswordFormData: React.FC<{
   setRequireLowerCaseLocalState,
   setRequireNumbersLocalState,
   setRequireSpecialCharactersLocalState,
+  hasChanges,
   handleClickSubmit,
 }) => {
   return (
@@ -111,9 +122,7 @@ const ManagePasswordFormData: React.FC<{
                 >
                   <Input
                     id="min-length-input"
-                    prefix={
-                      <MdDriveFileRenameOutline className="site-form-item-icon" />
-                    }
+                    prefix={<FaArrowsAltH className="site-form-item-icon" />}
                     style={{ overflow: "hidden", textOverflow: "ellipsis" }}
                     value={String(minLenghtPasswordFormData)}
                     onChange={(e) =>
@@ -155,12 +164,14 @@ const ManagePasswordFormData: React.FC<{
                   <Input
                     id="password-expiry-days-input"
                     prefix={
-                      <MdDriveFileRenameOutline className="site-form-item-icon" />
+                      <RiPassExpiredLine className="site-form-item-icon" />
                     }
                     style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                    value={passwordExpiryDaysFormData}
+                    value={String(passwordExpiryDaysFormData)}
                     onChange={(e) =>
-                      setPasswordExpiryDaysLocalState(e.target.value)
+                      setPasswordExpiryDaysLocalState(
+                        Number(e.target.value.replace(/[^0-9]/g, ""))
+                      )
                     }
                   />
                 </Form.Item>
@@ -197,13 +208,13 @@ const ManagePasswordFormData: React.FC<{
                 >
                   <Input
                     id="inactivity-days-input"
-                    prefix={
-                      <MdDriveFileRenameOutline className="site-form-item-icon" />
-                    }
+                    prefix={<MdOutlineBlock className="site-form-item-icon" />}
                     style={{ overflow: "hidden", textOverflow: "ellipsis" }}
                     value={passwordHistoryLimitFormData}
                     onChange={(e) =>
-                      setInactivityDaysLocalState(e.target.value)
+                      setInactivityDaysLocalState(
+                        Number(e.target.value.replace(/[^0-9]/g, ""))
+                      )
                     }
                   />
                 </Form.Item>
@@ -240,12 +251,14 @@ const ManagePasswordFormData: React.FC<{
                   <Input
                     id="password-history-limit-input"
                     prefix={
-                      <MdDriveFileRenameOutline className="site-form-item-icon" />
+                      <IoRecordingOutline className="site-form-item-icon" />
                     }
                     style={{ overflow: "hidden", textOverflow: "ellipsis" }}
                     value={passwordExpiryDaysFormData}
                     onChange={(e) =>
-                      setPasswordHistoryLimitLocalState(e.target.value)
+                      setPasswordHistoryLimitLocalState(
+                        Number(e.target.value.replace(/[^0-9]/g, ""))
+                      )
                     }
                   />
                 </Form.Item>
@@ -350,10 +363,19 @@ const ManagePasswordFormData: React.FC<{
                   titleCustomButton="Actualizar"
                   typeCustomButton="primary"
                   htmlTypeCustomButton="submit"
-                  iconCustomButton={<FaRegCircleCheck />}
+                  iconCustomButton={
+                    !updatePasswordPolicyLoading ? (
+                      <FaRegCircleCheck />
+                    ) : (
+                      <LoadingOutlined />
+                    )
+                  }
                   onClickCustomButton={() => ({})}
+                  disabledCustomButton={
+                    hasChanges() && !updatePasswordPolicyLoading ? false : true
+                  }
                   styleCustomButton={{
-                    background: "#015E90",
+                    background: hasChanges() ? "#015E90" : "#A7AFBA",
                     color: "#fff",
                     fontSize: "12px",
                     borderRadius: "16px",

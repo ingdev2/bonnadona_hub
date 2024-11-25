@@ -8,10 +8,10 @@ import {
   useUpdatePasswordPolicyMutation,
 } from "@/redux/apis/password_policy/passwordPolicyApi";
 import {
-  setInactivityDaysEmailPasswordPolicy,
-  setMinLengtPasswordPolicy,
+  setInactivityDaysPasswordPolicy,
+  setMinLenghtPasswordPolicy,
   setPasswordExpiryDaysPasswordPolicy,
-  setPasswordHistoryLimitEmailPasswordPolicy,
+  setPasswordHistoryLimitPasswordPolicy,
   setRequireLowerCasePasswordPolicy,
   setRequireNumbersPasswordPolicy,
   setRequireSpecialCharactersPasswordPolicy,
@@ -48,11 +48,11 @@ const ManagePasswordContent: React.FC = () => {
     (state) => state.passwordPolicy.password_expiry_days
   );
 
-  const inactivityDaysEmailPasswordPolicyState = useAppSelector(
+  const inactivityDaysPasswordPolicyState = useAppSelector(
     (state) => state.passwordPolicy.inactivity_days
   );
 
-  const passwordHistoryLimitEmailPasswordPolicyState = useAppSelector(
+  const passwordHistoryLimitPasswordPolicyState = useAppSelector(
     (state) => state.passwordPolicy.password_history_limit
   );
 
@@ -63,87 +63,68 @@ const ManagePasswordContent: React.FC = () => {
     isLoading: getPasswordPolicyLoading,
     isFetching: getPasswordPolicyFetching,
     error: getPasswordPolicyError,
+    refetch: getPasswordPolicyRefetch,
   } = useGetPasswordPolicyQuery(null);
 
-  const [
-    updatePasswordPolicy,
-    {
-      data: updatePasswordPolicyData,
-      isLoading: updatePasswordPolicyLoading,
-      isSuccess: updatePasswordPolicyFetching,
-      isError: updatePasswordPolicyError,
-    },
-  ] = useUpdatePasswordPolicyMutation({
-    fixedCacheKey: "updatePasswordPolicyData",
-  });
+  useEffect(
+    () => {
+      if (getPasswordPolicyData) {
+        dispatch(setMinLenghtPasswordPolicy(getPasswordPolicyData.min_length));
+        dispatch(
+          setRequireUpperCasePasswordPolicy(
+            getPasswordPolicyData.require_uppercase
+          )
+        );
+        dispatch(
+          setRequireLowerCasePasswordPolicy(
+            getPasswordPolicyData.require_lowercase
+          )
+        );
+        dispatch(
+          setRequireNumbersPasswordPolicy(getPasswordPolicyData.require_numbers)
+        );
+        dispatch(
+          setRequireSpecialCharactersPasswordPolicy(
+            getPasswordPolicyData.require_special_characters
+          )
+        );
+        dispatch(
+          setPasswordExpiryDaysPasswordPolicy(
+            getPasswordPolicyData.password_expiry_days
+          )
+        );
+        dispatch(
+          setInactivityDaysPasswordPolicy(getPasswordPolicyData.inactivity_days)
+        );
+        dispatch(
+          setPasswordHistoryLimitPasswordPolicy(
+            getPasswordPolicyData.password_history_limit
+          )
+        );
+      }
 
-  useEffect(() => {
-    if (
-      getPasswordPolicyData &&
-      (!minLenghtPasswordPolicyState ||
-        !requireUpperCasePasswordPolicyState ||
-        !requireLowerCasePasswordPolicyState ||
-        !requireNumbersPasswordPolicyState ||
-        !requireSpecialCharactersPasswordPolicyState ||
-        !passwordExpiryDaysPasswordPolicyState ||
-        !inactivityDaysEmailPasswordPolicyState ||
-        !passwordHistoryLimitEmailPasswordPolicyState)
-    ) {
-      dispatch(setMinLengtPasswordPolicy(getPasswordPolicyData.min_length));
-      dispatch(
-        setRequireUpperCasePasswordPolicy(
-          getPasswordPolicyData.require_uppercase
-        )
-      );
-      dispatch(
-        setRequireLowerCasePasswordPolicy(
-          getPasswordPolicyData.require_lowercase
-        )
-      );
-      dispatch(
-        setRequireNumbersPasswordPolicy(getPasswordPolicyData.require_numbers)
-      );
-      dispatch(
-        setRequireSpecialCharactersPasswordPolicy(
-          getPasswordPolicyData.require_special_characters
-        )
-      );
-      dispatch(
-        setPasswordExpiryDaysPasswordPolicy(
-          getPasswordPolicyData.password_expiry_days
-        )
-      );
-      dispatch(
-        setInactivityDaysEmailPasswordPolicy(
-          getPasswordPolicyData.inactivity_days
-        )
-      );
-      dispatch(
-        setPasswordHistoryLimitEmailPasswordPolicy(
-          getPasswordPolicyData.password_history_limit
-        )
-      );
-    }
-
-    if (selectedKeyState !== ItemKeys.SUB_MANAGE_PASSWORD_KEY) {
+      if (selectedKeyState !== ItemKeys.SUB_MANAGE_PASSWORD_KEY) {
         dispatch(setSelectedKey(ItemKeys.SUB_MANAGE_PASSWORD_KEY));
       }
-  }, [
-    getPasswordPolicyData,
-    minLenghtPasswordPolicyState,
-    requireUpperCasePasswordPolicyState,
-    requireLowerCasePasswordPolicyState,
-    requireNumbersPasswordPolicyState,
-    requireSpecialCharactersPasswordPolicyState,
-    passwordExpiryDaysPasswordPolicyState,
-    inactivityDaysEmailPasswordPolicyState,
-    passwordHistoryLimitEmailPasswordPolicyState,
-  ]);
+    },
+    [
+      getPasswordPolicyData,
+      minLenghtPasswordPolicyState,
+      requireUpperCasePasswordPolicyState,
+      requireLowerCasePasswordPolicyState,
+      requireNumbersPasswordPolicyState,
+      requireSpecialCharactersPasswordPolicyState,
+      passwordExpiryDaysPasswordPolicyState,
+      inactivityDaysPasswordPolicyState,
+      passwordHistoryLimitPasswordPolicyState,
+    ]
+  );
 
   return (
     <div>
       <CustomDashboardLayoutAdmins
-        customLayoutContent={<div
+        customLayoutContent={
+          <div
             style={{
               width: "80%",
               display: "flex",
@@ -151,7 +132,8 @@ const ManagePasswordContent: React.FC = () => {
             }}
           >
             <ManagePasswordForm />
-          </div>}
+          </div>
+        }
       />
     </div>
   );
