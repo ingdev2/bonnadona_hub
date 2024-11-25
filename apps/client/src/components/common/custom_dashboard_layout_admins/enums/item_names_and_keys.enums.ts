@@ -2,8 +2,8 @@ export enum ItemNames {
   ITEM_USERS = "Usuarios",
   SUB_USERS = "Todos los usuarios",
 
-  ITEM_PASSWORD_POLICY = "Politica de contraseña",
-  SUB_MANAGE_PASSWORD = "Gestionar politicas",
+  ITEM_PASSWORD_POLICY = "Política de contraseña",
+  SUB_MANAGE_PASSWORD = "Gestionar políticas",
 
   // ITEM_PARAMETRIZATION = "Parametrización",
   // SUB_EPS_COMPANIES_PARAMS = "Empresas EPS",

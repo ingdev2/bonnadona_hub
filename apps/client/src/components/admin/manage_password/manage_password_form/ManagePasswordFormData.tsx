@@ -72,7 +72,7 @@ const ManagePasswordFormData: React.FC<{
             textAlign: "center",
           }}
         >
-          Políticas de contraseña
+          Gestionar políticas
         </h2>
 
         <Form
@@ -90,7 +90,7 @@ const ManagePasswordFormData: React.FC<{
             "require-special-characters-checkbox":
               requireSpecialCharactersFormData,
           }}
-          autoComplete="off"
+          autoComplete="false"
           onFinish={handleClickSubmit}
         >
           <Row gutter={24}>
@@ -117,6 +117,11 @@ const ManagePasswordFormData: React.FC<{
                     {
                       pattern: /^[0-9]+$/,
                       message: "¡Ingresa número sin puntos, ni comas!",
+                    },
+                    {
+                      max: 2,
+                      message:
+                        "¡La longuitud debe tener máximo 2 caracteres!",
                     },
                   ]}
                 >
@@ -158,6 +163,11 @@ const ManagePasswordFormData: React.FC<{
                     {
                       pattern: /^[0-9]+$/,
                       message: "¡Ingresa número sin puntos, ni comas!",
+                    },
+                    {
+                      max: 2,
+                      message:
+                        "¡Los dias debe tener máximo 2 caracteres!",
                     },
                   ]}
                 >
@@ -204,6 +214,11 @@ const ManagePasswordFormData: React.FC<{
                       pattern: /^[0-9]+$/,
                       message: "¡Ingresa número sin puntos, ni comas!",
                     },
+                    {
+                      max: 2,
+                      message:
+                        "¡Los dias debe tener máximo 2 caracteres!",
+                    },
                   ]}
                 >
                   <Input
@@ -245,6 +260,11 @@ const ManagePasswordFormData: React.FC<{
                     {
                       pattern: /^[0-9]+$/,
                       message: "¡Ingresa número sin puntos, ni comas!",
+                    },
+                    {
+                      max: 2,
+                      message:
+                        "¡El limite debe tener máximo 2 caracteres!",
                     },
                   ]}
                 >

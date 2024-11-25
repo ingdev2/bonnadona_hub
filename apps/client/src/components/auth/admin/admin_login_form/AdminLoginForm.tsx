@@ -201,29 +201,14 @@ const AdminLoginForm: React.FC = () => {
           <Title
             className="title-login"
             style={{
-              marginTop: 0,
-              textAlign: "center",
-              fontWeight: 500,
-              lineHeight: 1.3,
-              marginBlock: "13px",
-              color: "#015E90",
-              fontSize: "25px",
-            }}
-            level={2}
-          >
-            Administradores
-          </Title>
-          <Title
-            className="title-login"
-            style={{
               textAlign: "center",
               fontWeight: "normal",
               lineHeight: 1.3,
               marginBlock: "13px",
             }}
-            level={2}
+            level={3}
           >
-            Iniciar sesión
+            Iniciar sesión administradores
           </Title>
 
           <Form

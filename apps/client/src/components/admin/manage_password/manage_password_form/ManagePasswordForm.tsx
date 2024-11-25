@@ -17,17 +17,6 @@ import {
   setErrorsPasswordPolicy,
 } from "@/redux/features/password_policy/passwordPolicySlice";
 
-import {
-  setInactivityDaysPasswordPolicy,
-  setMinLenghtPasswordPolicy,
-  setPasswordExpiryDaysPasswordPolicy,
-  setPasswordHistoryLimitPasswordPolicy,
-  setRequireLowerCasePasswordPolicy,
-  setRequireNumbersPasswordPolicy,
-  setRequireSpecialCharactersPasswordPolicy,
-  setRequireUpperCasePasswordPolicy,
-} from "@/redux/features/password_policy/passwordPolicySlice";
-
 const ManagePasswordForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
@@ -152,6 +141,8 @@ const ManagePasswordForm: React.FC = () => {
 
   const handleClickSubmit = async () => {
     try {
+      setShowSuccessMessage(false);
+
       const response: any = await updatePasswordPolicy({
         updatePasswordPolicy: {
           min_length: minLenghtPasswordLocalState,
@@ -164,7 +155,6 @@ const ManagePasswordForm: React.FC = () => {
           require_special_characters: requireSpecialCharactersLocalState,
         },
       });
-      console.log("response", response);
 
       let editPasswordPolicyDataError = response?.error;
       let editPasswordPolicyDataStatus = response?.data?.statusCode;
@@ -177,23 +167,6 @@ const ManagePasswordForm: React.FC = () => {
         setSuccessMessage(successMessage);
         setShowSuccessMessage(true);
         getPasswordPolicyRefetch();
-
-        // dispatch(setMinLenghtPasswordPolicy(minLenghtPasswordLocalState));
-        // dispatch(setRequireUpperCasePasswordPolicy(requireUpperCaseLocalState));
-        // dispatch(setRequireLowerCasePasswordPolicy(requireLowerCaseLocalState));
-        // dispatch(setRequireNumbersPasswordPolicy(requireNumbersLocalState));
-        // dispatch(
-        //   setRequireSpecialCharactersPasswordPolicy(
-        //     requireSpecialCharactersLocalState
-        //   )
-        // );
-        // dispatch(
-        //   setPasswordExpiryDaysPasswordPolicy(passwordExpiryDaysLocalState)
-        // );
-        // dispatch(setInactivityDaysPasswordPolicy(inactivityDaysLocalState));
-        // dispatch(
-        //   setPasswordHistoryLimitPasswordPolicy(passwordHistoryLimitLocalState)
-        // );
       }
 
       if (editPasswordPolicyDataError) {
@@ -208,12 +181,12 @@ const ManagePasswordForm: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
-    }
+    } 
   };
 
   return (
     <div>
-      {/* {!minLenghtPasswordPolicyState ||
+      {!minLenghtPasswordPolicyState ||
       !requireUpperCasePasswordPolicyState ||
       !requireLowerCasePasswordPolicyState ||
       !requireNumbersPasswordPolicyState ||
@@ -222,7 +195,7 @@ const ManagePasswordForm: React.FC = () => {
       !inactivityDaysPasswordPolicyState ||
       !passwordHistoryLimitPasswordPolicyState ? (
         <CustomSpin />
-      ) : ( */}
+      ) : (
       <>
         {showErrorMessage && (
           <CustomMessage
@@ -262,7 +235,7 @@ const ManagePasswordForm: React.FC = () => {
           handleClickSubmit={handleClickSubmit}
         />
       </>
-      {/* )} */}
+      )} 
     </div>
   );
 };
