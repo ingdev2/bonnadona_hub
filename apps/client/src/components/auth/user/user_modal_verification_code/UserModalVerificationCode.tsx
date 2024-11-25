@@ -297,7 +297,7 @@ const UserModalVerificationCode: React.FC = () => {
                   fontWeight: "bold",
                   borderWidth: 2,
                   marginTop: 10,
-                  marginBottom: 4,
+                  marginBottom: 1,
                   borderRadius: "30px",
                 }}
                 placeholder="Código"
@@ -311,7 +311,9 @@ const UserModalVerificationCode: React.FC = () => {
             </Form.Item>
 
             {isSubmittingConfirm ? (
-              <CustomSpin />
+              <div style={{ marginTop: "2px", marginBottom: "10px" }}>
+                <CustomSpin />
+              </div>
             ) : (
               <Button
                 key={"confirm-code-button"}
