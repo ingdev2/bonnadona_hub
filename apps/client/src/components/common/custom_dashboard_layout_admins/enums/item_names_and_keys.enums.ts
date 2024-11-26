@@ -20,7 +20,7 @@ export enum ItemKeys {
   SUB_MANAGE_PASSWORD_KEY = "manage_password",
 
   ITEM_USERS_KEY = "users",
-  SUB_USERS_KEY = "all_user",
+  SUB_USERS_KEY = "all_users",
 
   // ITEM_PARAMETRIZATION_KEY = "parametrization",
   // SUB_EPS_COMPANIES_PARAMS_KEY = "all_eps_companies",

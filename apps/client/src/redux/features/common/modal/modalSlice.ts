@@ -41,7 +41,7 @@ export const modalSlice = createSlice({
       state.changePasswordExpiryModalIsOpen = action.payload;
     },
     setResetModalAdmin: (state) => {
-      state.selectedKey = ItemKeys.SUB_MANAGE_PASSWORD_KEY;
+      state.selectedKey = ItemKeys.SUB_USERS_KEY;
       state.selectedOpenKeys = [""];
     },
   },
