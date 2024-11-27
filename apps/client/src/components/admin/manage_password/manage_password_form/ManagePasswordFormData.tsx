@@ -72,7 +72,7 @@ const ManagePasswordFormData: React.FC<{
             textAlign: "center",
           }}
         >
-          Políticas de contraseña
+          Gestionar políticas
         </h2>
 
         <Form
@@ -90,7 +90,7 @@ const ManagePasswordFormData: React.FC<{
             "require-special-characters-checkbox":
               requireSpecialCharactersFormData,
           }}
-          autoComplete="off"
+          autoComplete="false"
           onFinish={handleClickSubmit}
         >
           <Row gutter={24}>

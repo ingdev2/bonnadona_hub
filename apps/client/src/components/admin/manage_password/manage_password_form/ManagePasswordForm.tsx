@@ -17,17 +17,6 @@ import {
   setErrorsPasswordPolicy,
 } from "@/redux/features/password_policy/passwordPolicySlice";
 
-import {
-  setInactivityDaysPasswordPolicy,
-  setMinLenghtPasswordPolicy,
-  setPasswordExpiryDaysPasswordPolicy,
-  setPasswordHistoryLimitPasswordPolicy,
-  setRequireLowerCasePasswordPolicy,
-  setRequireNumbersPasswordPolicy,
-  setRequireSpecialCharactersPasswordPolicy,
-  setRequireUpperCasePasswordPolicy,
-} from "@/redux/features/password_policy/passwordPolicySlice";
-
 const ManagePasswordForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
@@ -152,6 +141,8 @@ const ManagePasswordForm: React.FC = () => {
 
   const handleClickSubmit = async () => {
     try {
+      setShowSuccessMessage(false);
+
       const response: any = await updatePasswordPolicy({
         updatePasswordPolicy: {
           min_length: minLenghtPasswordLocalState,
@@ -164,7 +155,6 @@ const ManagePasswordForm: React.FC = () => {
           require_special_characters: requireSpecialCharactersLocalState,
         },
       });
-      console.log("response", response);
 
       let editPasswordPolicyDataError = response?.error;
       let editPasswordPolicyDataStatus = response?.data?.statusCode;
@@ -177,23 +167,6 @@ const ManagePasswordForm: React.FC = () => {
         setSuccessMessage(successMessage);
         setShowSuccessMessage(true);
         getPasswordPolicyRefetch();
-
-        // dispatch(setMinLenghtPasswordPolicy(minLenghtPasswordLocalState));
-        // dispatch(setRequireUpperCasePasswordPolicy(requireUpperCaseLocalState));
-        // dispatch(setRequireLowerCasePasswordPolicy(requireLowerCaseLocalState));
-        // dispatch(setRequireNumbersPasswordPolicy(requireNumbersLocalState));
-        // dispatch(
-        //   setRequireSpecialCharactersPasswordPolicy(
-        //     requireSpecialCharactersLocalState
-        //   )
-        // );
-        // dispatch(
-        //   setPasswordExpiryDaysPasswordPolicy(passwordExpiryDaysLocalState)
-        // );
-        // dispatch(setInactivityDaysPasswordPolicy(inactivityDaysLocalState));
-        // dispatch(
-        //   setPasswordHistoryLimitPasswordPolicy(passwordHistoryLimitLocalState)
-        // );
       }
 
       if (editPasswordPolicyDataError) {
@@ -213,56 +186,43 @@ const ManagePasswordForm: React.FC = () => {
 
   return (
     <div>
-      {/* {!minLenghtPasswordPolicyState ||
-      !requireUpperCasePasswordPolicyState ||
-      !requireLowerCasePasswordPolicyState ||
-      !requireNumbersPasswordPolicyState ||
-      !requireSpecialCharactersPasswordPolicyState ||
-      !passwordExpiryDaysPasswordPolicyState ||
-      !inactivityDaysPasswordPolicyState ||
-      !passwordHistoryLimitPasswordPolicyState ? (
-        <CustomSpin />
-      ) : ( */}
-      <>
-        {showErrorMessage && (
-          <CustomMessage
-            typeMessage="error"
-            message={errorsState?.toString() || "¡Error en la petición!"}
-          />
-        )}
-
-        {showSuccessMessage && (
-          <CustomMessage
-            typeMessage="success"
-            message={successMessage || "¡Datos guardados correctamente!"}
-          />
-        )}
-
-        <ManagePasswordFormData
-          inactivityDaysFormData={inactivityDaysPasswordPolicyState}
-          minLenghtPasswordFormData={minLenghtPasswordPolicyState}
-          passwordExpiryDaysFormData={passwordExpiryDaysPasswordPolicyState}
-          passwordHistoryLimitFormData={passwordHistoryLimitPasswordPolicyState}
-          requireLowerCasePasswordFormData={requireLowerCaseLocalState}
-          requireNumbersPasswordFormData={requireNumbersLocalState}
-          requireSpecialCharactersFormData={requireSpecialCharactersLocalState}
-          requireUpperCasePasswordFormData={requireUpperCaseLocalState}
-          updatePasswordPolicyLoading={updatePasswordPolicyLoading}
-          setMinLenghtPasswordLocalState={setMinLenghtPasswordLocalState}
-          setPasswordExpiryDaysLocalState={setPasswordExpiryDaysLocalState}
-          setInactivityDaysLocalState={setInactivityDaysLocalState}
-          setPasswordHistoryLimitLocalState={setPasswordHistoryLimitLocalState}
-          setRequireUpperCaseLocalState={setRequireUpperCaseLocalState}
-          setRequireLowerCaseLocalState={setRequireLowerCaseLocalState}
-          setRequireNumbersLocalState={setRequireNumbersLocalState}
-          setRequireSpecialCharactersLocalState={
-            setRequireSpecialCharactersLocalState
-          }
-          hasChanges={hasChanges}
-          handleClickSubmit={handleClickSubmit}
+      {showErrorMessage && (
+        <CustomMessage
+          typeMessage="error"
+          message={errorsState?.toString() || "¡Error en la petición!"}
         />
-      </>
-      {/* )} */}
+      )}
+
+      {showSuccessMessage && (
+        <CustomMessage
+          typeMessage="success"
+          message={successMessage || "¡Datos guardados correctamente!"}
+        />
+      )}
+
+      <ManagePasswordFormData
+        inactivityDaysFormData={inactivityDaysPasswordPolicyState}
+        minLenghtPasswordFormData={minLenghtPasswordPolicyState}
+        passwordExpiryDaysFormData={passwordExpiryDaysPasswordPolicyState}
+        passwordHistoryLimitFormData={passwordHistoryLimitPasswordPolicyState}
+        requireLowerCasePasswordFormData={requireLowerCaseLocalState}
+        requireNumbersPasswordFormData={requireNumbersLocalState}
+        requireSpecialCharactersFormData={requireSpecialCharactersLocalState}
+        requireUpperCasePasswordFormData={requireUpperCaseLocalState}
+        updatePasswordPolicyLoading={updatePasswordPolicyLoading}
+        setMinLenghtPasswordLocalState={setMinLenghtPasswordLocalState}
+        setPasswordExpiryDaysLocalState={setPasswordExpiryDaysLocalState}
+        setInactivityDaysLocalState={setInactivityDaysLocalState}
+        setPasswordHistoryLimitLocalState={setPasswordHistoryLimitLocalState}
+        setRequireUpperCaseLocalState={setRequireUpperCaseLocalState}
+        setRequireLowerCaseLocalState={setRequireLowerCaseLocalState}
+        setRequireNumbersLocalState={setRequireNumbersLocalState}
+        setRequireSpecialCharactersLocalState={
+          setRequireSpecialCharactersLocalState
+        }
+        hasChanges={hasChanges}
+        handleClickSubmit={handleClickSubmit}
+      />
     </div>
   );
 };

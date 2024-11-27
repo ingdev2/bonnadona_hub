@@ -225,7 +225,6 @@ export const useMenuItems = () => {
           ItemNames.SUB_MANAGE_PASSWORD,
           ItemKeys.SUB_MANAGE_PASSWORD_KEY,
           <RiFileList3Line size={15} />,
-          undefined
         ),
       ].filter(Boolean)
     ),

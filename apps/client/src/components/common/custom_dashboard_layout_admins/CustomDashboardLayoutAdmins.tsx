@@ -108,7 +108,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
           mode="inline"
           items={items}
           selectedKeys={[selectedKeyState]}
-          defaultSelectedKeys={[ItemKeys.ITEM_PASSWORD_POLICY_KEY]}
+          // defaultSelectedKeys={[ItemKeys.ITEM_PASSWORD_POLICY_KEY]}
           openKeys={selectedOpenKeysState}
           onOpenChange={handleOpenChange}
           onClick={({ key }) => handleMenuClick(key)}
