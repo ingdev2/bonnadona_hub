@@ -5,7 +5,6 @@ import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_la
 
 import {
   useGetPasswordPolicyQuery,
-  useUpdatePasswordPolicyMutation,
 } from "@/redux/apis/password_policy/passwordPolicyApi";
 import {
   setInactivityDaysPasswordPolicy,
