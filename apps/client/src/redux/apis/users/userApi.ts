@@ -21,12 +21,20 @@ export const userApi = createApi({
   }),
 
   endpoints: (builder) => ({
+    getAllActiveUsers: builder.query<User[], null>({
+      query: () => "getAllActiveUsers",
+    }),
+
     getAllUsers: builder.query<User[], null>({
       query: () => "getAllUsers",
     }),
 
     getUser: builder.query<User, string>({
       query: (Id) => `getUser/${Id}`,
+    }),
+
+    getUserActiveProfileById: builder.query<User, string>({
+      query: (Id) => `getUserActiveProfileById/${Id}`,
     }),
 
     getUserProfileById: builder.query<User, string>({
@@ -128,8 +136,10 @@ export const userApi = createApi({
 
 export const {
   useGetAllUsersQuery,
+  useGetAllActiveUsersQuery,
   useGetUserQuery,
   useGetUserProfileByIdQuery,
+  useGetUserActiveProfileByIdQuery,
   useGetCollaboratorUserByIdNumberQuery,
   useGetSuperAdminUserByIdNumberQuery,
   useGetAdminUserByIdNumberQuery,

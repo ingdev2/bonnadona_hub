@@ -10,7 +10,7 @@ interface User {
   corporate_email: string;
   corporate_cellphone: string;
   personal_email: string;
-  personal_cellphone: string;
+  personal_cellphone: number;
   password: string;
   last_password_update: string
   residence_department: string;

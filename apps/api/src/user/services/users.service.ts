@@ -849,11 +849,30 @@ export class UsersService {
 
   // GET FUNTIONS //
 
-  async getAllUsers() {
+  async getAllActiveUsers() {
     const allUsers = await this.userRepository.find({
       where: {
         is_active: true,
       },
+      order: {
+        createdAt: 'ASC',
+      },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    if (!allUsers.length) {
+      throw new HttpException(
+        `No hay usuarios registrados en la base de datos`,
+        HttpStatus.NOT_FOUND,
+      );
+    } else {
+      return allUsers;
+    }
+  }
+
+  async getAllUsers() {
+    const allUsers = await this.userRepository.find({
       order: {
         createdAt: 'ASC',
       },
@@ -888,9 +907,21 @@ export class UsersService {
     }
   }
 
-  async getUserProfileById(userId: string) {
+  async getUserActiveProfileById(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId, is_active: true },
+    });
+
+    if (!user) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    return user.user_profile;
+  }
+
+  async getUserProfileById(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId},
     });
 
     if (!user) {

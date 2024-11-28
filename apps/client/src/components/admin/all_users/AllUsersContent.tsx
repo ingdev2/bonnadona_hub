@@ -5,6 +5,7 @@ import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_la
 import {
   useBanUserMutation,
   useGetAllUsersQuery,
+  useGetUserProfileByIdQuery,
 } from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
@@ -14,6 +15,7 @@ import {
   setBirthdateSelectedUser,
   setCorporateCellphoneSelectedUser,
   setCorporateEmailSelectedUser,
+  setDefaultValuesSelectedUser,
   setErrorsSelectedUser,
   setGenderSelectedUser,
   setIdNumberSelectedUser,
@@ -31,6 +33,11 @@ import {
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomTableFiltersAndSorting from "@/components/common/custom_table_filters_and_sorting/CustomTableFiltersAndSorting";
 import { tableColumnsAllUsers } from "./table_columns_all_users/TableColums_all_users";
+import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
+import ModalUserDetails from "./modal_user_details/ModalUserDetails";
+import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
+import { Button } from "antd";
+import { TbUserEdit } from "react-icons/tb";
 
 const AllUsersContent: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -87,6 +94,16 @@ const AllUsersContent: React.FC = () => {
     error: allGenderTypesError,
     refetch: refecthAllGenderTypes,
   } = useGetAllGenderTypesQuery(null);
+
+  const {
+    data: userProfileByIdData,
+    isLoading: userProfileByIdLoading,
+    isFetching: userProfileByIdFetching,
+    error: userProfileByIdError,
+    refetch: userProfileByIdRefetch,
+  } = useGetUserProfileByIdQuery(selectedRowDataLocalState?.id!, {
+    skip: !selectedRowDataLocalState?.id,
+  });
 
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
@@ -193,6 +210,98 @@ const AllUsersContent: React.FC = () => {
           typeMessage="success"
           message={
             successMessageUser?.toString() || `Acción realizada correctamente!`
+          }
+        />
+      )}
+
+      {isModalVisibleLocalState && (
+        <CustomModalNoContent
+          key={"custom-modal-request-details-user"}
+          widthCustomModalNoContent={"69%"}
+          minWidthCustomModalNoContent="321px"
+          openCustomModalState={isModalVisibleLocalState}
+          closableCustomModal={true}
+          maskClosableCustomModal={false}
+          handleCancelCustomModal={() => {
+            refecthAllUsers();
+
+            setIsModalVisibleLocalState(false);
+            setIsEditUserVisibleLocalState(false);
+
+            setSelectedRowDataLocalState(null);
+            dispatch(setDefaultValuesSelectedUser());
+          }}
+          contentCustomModal={
+            <>
+              {!isEditUserVisibleLocalState ? (
+                <>
+                  <ModalUserDetails
+                    titleDescription="Detalle del usuario"
+                    labelUserName="Nombre(s)"
+                    selectedUserName={selectedRowDataLocalState?.name}
+                    labelUserLastName="Apellido(s)"
+                    selectedUserLastName={selectedRowDataLocalState?.last_name}
+                    labelUserIdType="Tipo de identificación"
+                    selectedUserIdType={getTagComponentIdTypes(
+                      selectedRowDataLocalState?.user_id_type.toString()
+                    )}
+                    labelUserIdNumber="Número de identificación"
+                    selectedUserIdNumber={selectedRowDataLocalState?.id_number}
+                    labelUserGender="Género"
+                    selectedUserGender={selectedRowDataLocalState?.user_gender.toString()}
+                    labelUserBirthdate="birthdate"
+                    selectedUserBirthdate={selectedRowDataLocalState?.birthdate.toString()}
+                    labelUserAddressResidence="Dirección de residencia"
+                    selectedUserAddressResidence={
+                      selectedRowDataLocalState?.residence_address
+                    }
+                    labelUserMainEmail="Correo principal"
+                    selectedUserMainEmail={
+                      selectedRowDataLocalState?.principal_email
+                    }
+                    labelUserCorporateEmail="Correo corporativo"
+                    selectedUserCorporateEmail={
+                      selectedRowDataLocalState?.corporate_email
+                    }
+                    labelUserPersonalCellphone="Teléfono personal"
+                    selectedUserPersonalCellphone={
+                      selectedRowDataLocalState?.personal_cellphone
+                    }
+                  />
+
+                  <Button
+                    className="edit-user-button"
+                    size="middle"
+                    style={{
+                      backgroundColor: "#015E90",
+                      color: "#F7F7F7",
+                      borderRadius: "31px",
+                      paddingInline: "31px",
+                      marginBlock: "13px",
+                    }}
+                    onClick={() => {
+                      setIsEditUserVisibleLocalState(true);
+                    }}
+                  >
+                    <div
+                      style={{
+                        minWidth: "137px",
+                        display: "flex",
+                        flexFlow: "row wrap",
+                        alignItems: "center",
+                        alignContent: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <TbUserEdit size={17} />
+                      &nbsp; Editar usuario
+                    </div>
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )}
+            </>
           }
         />
       )}
