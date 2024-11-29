@@ -185,45 +185,60 @@ const ManagePasswordForm: React.FC = () => {
   };
 
   return (
-    <div>
-      {showErrorMessage && (
-        <CustomMessage
-          typeMessage="error"
-          message={errorsState?.toString() || "¡Error en la petición!"}
-        />
-      )}
+    <>
+      {!inactivityDaysPasswordPolicyState ||
+      !minLenghtPasswordPolicyState ||
+      !passwordExpiryDaysPasswordPolicyState ||
+      !passwordHistoryLimitPasswordPolicyState ? (
+        <CustomSpin />
+      ) : (
+        <div>
+          {showErrorMessage && (
+            <CustomMessage
+              typeMessage="error"
+              message={errorsState?.toString() || "¡Error en la petición!"}
+            />
+          )}
 
-      {showSuccessMessage && (
-        <CustomMessage
-          typeMessage="success"
-          message={successMessage || "¡Datos guardados correctamente!"}
-        />
-      )}
+          {showSuccessMessage && (
+            <CustomMessage
+              typeMessage="success"
+              message={successMessage || "¡Datos guardados correctamente!"}
+            />
+          )}
 
-      <ManagePasswordFormData
-        inactivityDaysFormData={inactivityDaysPasswordPolicyState}
-        minLenghtPasswordFormData={minLenghtPasswordPolicyState}
-        passwordExpiryDaysFormData={passwordExpiryDaysPasswordPolicyState}
-        passwordHistoryLimitFormData={passwordHistoryLimitPasswordPolicyState}
-        requireLowerCasePasswordFormData={requireLowerCaseLocalState}
-        requireNumbersPasswordFormData={requireNumbersLocalState}
-        requireSpecialCharactersFormData={requireSpecialCharactersLocalState}
-        requireUpperCasePasswordFormData={requireUpperCaseLocalState}
-        updatePasswordPolicyLoading={updatePasswordPolicyLoading}
-        setMinLenghtPasswordLocalState={setMinLenghtPasswordLocalState}
-        setPasswordExpiryDaysLocalState={setPasswordExpiryDaysLocalState}
-        setInactivityDaysLocalState={setInactivityDaysLocalState}
-        setPasswordHistoryLimitLocalState={setPasswordHistoryLimitLocalState}
-        setRequireUpperCaseLocalState={setRequireUpperCaseLocalState}
-        setRequireLowerCaseLocalState={setRequireLowerCaseLocalState}
-        setRequireNumbersLocalState={setRequireNumbersLocalState}
-        setRequireSpecialCharactersLocalState={
-          setRequireSpecialCharactersLocalState
-        }
-        hasChanges={hasChanges}
-        handleClickSubmit={handleClickSubmit}
-      />
-    </div>
+          <ManagePasswordFormData
+            inactivityDaysFormData={inactivityDaysPasswordPolicyState}
+            minLenghtPasswordFormData={minLenghtPasswordPolicyState}
+            passwordExpiryDaysFormData={passwordExpiryDaysPasswordPolicyState}
+            passwordHistoryLimitFormData={
+              passwordHistoryLimitPasswordPolicyState
+            }
+            requireLowerCasePasswordFormData={requireLowerCaseLocalState}
+            requireNumbersPasswordFormData={requireNumbersLocalState}
+            requireSpecialCharactersFormData={
+              requireSpecialCharactersLocalState
+            }
+            requireUpperCasePasswordFormData={requireUpperCaseLocalState}
+            updatePasswordPolicyLoading={updatePasswordPolicyLoading}
+            setMinLenghtPasswordLocalState={setMinLenghtPasswordLocalState}
+            setPasswordExpiryDaysLocalState={setPasswordExpiryDaysLocalState}
+            setInactivityDaysLocalState={setInactivityDaysLocalState}
+            setPasswordHistoryLimitLocalState={
+              setPasswordHistoryLimitLocalState
+            }
+            setRequireUpperCaseLocalState={setRequireUpperCaseLocalState}
+            setRequireLowerCaseLocalState={setRequireLowerCaseLocalState}
+            setRequireNumbersLocalState={setRequireNumbersLocalState}
+            setRequireSpecialCharactersLocalState={
+              setRequireSpecialCharactersLocalState
+            }
+            hasChanges={hasChanges}
+            handleClickSubmit={handleClickSubmit}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

@@ -92,7 +92,7 @@ export const tableColumnsAllUsers = ({
     dataIndex: userGenderKey,
     width: 155,
     filters:
-    genderTypesData?.map((type) => ({
+      genderTypesData?.map((type) => ({
         value: type.name,
         text: type.name,
       })) || [],

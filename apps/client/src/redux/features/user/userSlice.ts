@@ -10,15 +10,16 @@ const initialState: User = {
   birthdate: "",
   principal_email: "",
   corporate_email: "",
-  corporate_cellphone: "",
+  corporate_cellphone: 0,
   personal_email: "",
-  personal_cellphone: "",
+  personal_cellphone: 0,
   password: "",
   last_password_update: "",
-  residence_department: "",
-  residence_city: "",
-  residence_address: "",
-  residence_neighborhood: "",
+  collaborator_service_type: 0,
+  collaborator_immediate_boss: "",
+  collaborator_unit: "",
+  collaborator_service: "",
+  collaborator_position: "",
   is_active: true,
   createdAt: "",
   updateAt: "",
@@ -72,17 +73,20 @@ export const userSlice = createSlice({
     setLastPasswordUpdateUser: (state, action) => {
       state.last_password_update = action.payload;
     },
-    setResidenceDepartmentUser: (state, action) => {
-      state.residence_department = action.payload;
+    setCollaboratorServiceTypeUser: (state, action) => {
+      state.collaborator_service_type = action.payload;
     },
-    setResidenceCityUser: (state, action) => {
-      state.residence_city = action.payload;
+    setCollaboratorInmediateBossUser: (state, action) => {
+      state.collaborator_immediate_boss = action.payload;
     },
-    setResidenceAddressUser: (state, action) => {
-      state.residence_address = action.payload;
+    setCollaboratorUnitUser: (state, action) => {
+      state.collaborator_unit = action.payload;
     },
-    setResidenceNeighborhoodUser: (state, action) => {
-      state.residence_neighborhood = action.payload;
+    setCollaboratorServiceUser: (state, action) => {
+      state.collaborator_service = action.payload;
+    },
+    setCollaboratorPositionUser: (state, action) => {
+      state.collaborator_position = action.payload;
     },
     setIsActiveUser: (state, action) => {
       state.is_active = action.payload;
@@ -100,15 +104,16 @@ export const userSlice = createSlice({
       state.birthdate = "";
       state.principal_email = "";
       state.corporate_email = "";
-      state.corporate_cellphone = "";
+      state.corporate_cellphone = 0;
       state.personal_email = "";
-      state.personal_cellphone = "";
+      state.personal_cellphone = 0;
       state.password = "";
       state.last_password_update = "";
-      state.residence_department = "";
-      state.residence_city = "";
-      state.residence_address = "";
-      state.residence_neighborhood = "";
+      state.collaborator_service_type = 0;
+      state.collaborator_immediate_boss = "";
+      state.collaborator_unit = "";
+      state.collaborator_service = "";
+      state.collaborator_position = "";
       state.errors = [];
     },
   },
@@ -129,10 +134,11 @@ export const {
   setPersonalEmailUser,
   setPasswordUser,
   setLastPasswordUpdateUser,
-  setResidenceDepartmentUser,
-  setResidenceCityUser,
-  setResidenceAddressUser,
-  setResidenceNeighborhoodUser,
+  setCollaboratorServiceTypeUser,
+  setCollaboratorInmediateBossUser,
+  setCollaboratorPositionUser,
+  setCollaboratorServiceUser,
+  setCollaboratorUnitUser,
   setIsActiveUser,
   setErrorsUser,
   setDefaultValuesUser,

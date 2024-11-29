@@ -8,15 +8,16 @@ interface User {
   birthdate: string;
   principal_email: string;
   corporate_email: string;
-  corporate_cellphone: string;
+  corporate_cellphone: number;
+  personal_cellphone: number;
   personal_email: string;
-  personal_cellphone: string;
   password: string;
-  last_password_update: string
-  residence_department: string;
-  residence_city: string;
-  residence_address: string;
-  residence_neighborhood: string;
+  last_password_update: string;
+  collaborator_service_type: number;
+  collaborator_immediate_boss: string;
+  collaborator_unit: string;
+  collaborator_service: string;
+  collaborator_position: string;
   is_active: boolean;
   createdAt: string;
   updateAt: string;

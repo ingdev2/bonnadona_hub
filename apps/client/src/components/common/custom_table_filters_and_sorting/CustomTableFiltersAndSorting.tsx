@@ -15,7 +15,7 @@ import { LuListRestart } from "react-icons/lu";
 import { VscDebugRestart } from "react-icons/vsc";
 import { FaSearch } from "react-icons/fa";
 import { MdRefresh } from "react-icons/md";
-// import Highlighter from "react-highlight-words";
+import Highlighter from "react-highlight-words";
 
 type GetSingle<T> = T extends (infer U)[] ? U : never;
 

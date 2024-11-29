@@ -21,6 +21,10 @@ export const userApi = createApi({
   }),
 
   endpoints: (builder) => ({
+    getAllActiveUsers: builder.query<User[], null>({
+      query: () => "getAllActiveUsers",
+    }),
+
     getAllUsers: builder.query<User[], null>({
       query: () => "getAllUsers",
     }),
@@ -29,7 +33,11 @@ export const userApi = createApi({
       query: (Id) => `getUser/${Id}`,
     }),
 
-    getUserProfileById: builder.query<User, string>({
+    getUserActiveProfileById: builder.query<UserProfile, string>({
+      query: (Id) => `getUserActiveProfileById/${Id}`,
+    }),
+
+    getUserProfileById: builder.query<UserProfile, string>({
       query: (Id) => `getUserProfileById/${Id}`,
     }),
 
@@ -83,7 +91,7 @@ export const userApi = createApi({
 
     updateUserProfile: builder.mutation<
       any,
-      { id: number; updateUserProfile: Partial<User> }
+      { id: number; updateUserProfile: Partial<UserProfile> }
     >({
       query: ({ id, updateUserProfile }) => ({
         url: `updateUserProfile/${id}`,
@@ -128,8 +136,10 @@ export const userApi = createApi({
 
 export const {
   useGetAllUsersQuery,
+  useGetAllActiveUsersQuery,
   useGetUserQuery,
   useGetUserProfileByIdQuery,
+  useGetUserActiveProfileByIdQuery,
   useGetCollaboratorUserByIdNumberQuery,
   useGetSuperAdminUserByIdNumberQuery,
   useGetAdminUserByIdNumberQuery,
