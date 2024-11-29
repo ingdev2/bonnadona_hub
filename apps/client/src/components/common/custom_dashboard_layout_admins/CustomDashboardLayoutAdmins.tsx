@@ -39,7 +39,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
   const handleMenuClick = (key: string) => {
     dispatch(setSelectedKey(key));
 
-    router.push(`/admin/dashboard_admin/${key}`);
+    router.push(`/admin/dashboard/${key}`);
   };
 
   const handleOpenChange: any = (keys: string[]) => {
@@ -89,7 +89,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
             overflow: "hidden",
           }}
           onClick={() => {
-            router.replace("/admin/dashboard_admin", { scroll: true });
+            router.replace("/admin/dashboard", { scroll: true });
           }}
         >
           <img
@@ -108,7 +108,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
           mode="inline"
           items={items}
           selectedKeys={[selectedKeyState]}
-          // defaultSelectedKeys={[ItemKeys.ITEM_PASSWORD_POLICY_KEY]}
+          defaultSelectedKeys={[ItemKeys.ITEM_USERS_KEY]}
           openKeys={selectedOpenKeysState}
           onOpenChange={handleOpenChange}
           onClick={({ key }) => handleMenuClick(key)}

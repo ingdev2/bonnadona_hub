@@ -11,15 +11,17 @@ import {
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 
+import ManagePasswordContent from "@/components/admin/manage_password/ManagePasswordContent";
+
+import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
-import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import AllUsersContent from "@/components/admin/all_users/AllUsersContent";
 
-const page = () => {
+const ManagePassword = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -44,6 +46,12 @@ const page = () => {
   const isPageLoadingState = useAppSelector(
     (state) => state.modal.isPageLoading
   );
+
+  const idNumberAdminLoginState = useAppSelector(
+    (state) => state.adminLogin.id_number
+  );
+
+  const idNumberAdminState = useAppSelector((state) => state.user.id_number);
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -100,11 +108,11 @@ const page = () => {
         <CustomSpin />
       ) : (
         <div className="dashboard-admin-content">
-          <AllUsersContent />
+          <ManagePasswordContent />
         </div>
       )}
     </div>
   );
 };
 
-export default page;
+export default ManagePassword;

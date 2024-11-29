@@ -19,6 +19,7 @@ const themeConfig: ThemeConfig = {
       itemSelectedColor: "#00B5E8",
       itemSelectedBg: "#EFF7F8",
       colorBgElevated: "#013B5A",
+      dropdownWidth: 213,
     },
     Descriptions: {
       labelBg: "#015E9017",
@@ -40,17 +41,17 @@ const themeConfig: ThemeConfig = {
       colorPrimaryHover: "#3F97AF",
     },
     Select: {
-      borderRadius: 30
+      borderRadius: 30,
     },
     Input: {
-      borderRadius: 30
+      borderRadius: 30,
     },
     InputNumber: {
-      borderRadius: 30
+      borderRadius: 30,
     },
     DatePicker: {
-      borderRadius: 30
-    }
+      borderRadius: 30,
+    },
   },
 };
 

@@ -11,7 +11,7 @@ declare module "next-auth" {
       id_number?: number;
       principal_email?: string;
       role?: AllowedRoleType;
-      permissions?: any[];
+      permission?: any[];
     } & DefaultSession["user"];
   }
 }

@@ -5,23 +5,29 @@ import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
-import { setPrincipalEmailUser } from "@/redux/features/user/userSlice";
+import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
+import {
+  setIdUser,
+  setLastNameUser,
+  setNameUser,
+  setPrincipalEmailUser,
+} from "@/redux/features/user/userSlice";
 import {
   setAdminModalIsOpen,
   setIsPageLoading,
+  setSelectedKey,
 } from "@/redux/features/common/modal/modalSlice";
-
-import ManagePasswordContent from "@/components/admin/manage_password/ManagePasswordContent";
-
-import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
-import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
+import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enums/item_names_and_keys.enums";
+import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import MainViewContent from "@/components/admin/main_view/MainViewContent";
 
-const page: React.FC = () => {
+const HomePage: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -43,15 +49,12 @@ const page: React.FC = () => {
   const adminModalState = useAppSelector(
     (state) => state.modal.adminModalIsOpen
   );
+
   const isPageLoadingState = useAppSelector(
     (state) => state.modal.isPageLoading
   );
 
-  const idNumberAdminLoginState = useAppSelector(
-    (state) => state.adminLogin.id_number
-  );
-
-  const idNumberAdminState = useAppSelector((state) => state.user.id_number);
+  const selectedKeyState = useAppSelector((state) => state.modal.selectedKey);
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -66,10 +69,14 @@ const page: React.FC = () => {
   });
 
   useEffect(() => {
+    console.log("session:", session);
     if (!principalEmailAdminState && userActiveDatabyIdNumberData) {
       dispatch(
         setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
       );
+      dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
+      dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
+      dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
     }
     if (!principalEmailAdminLoginState) {
       setShowErrorMessage(true);
@@ -87,16 +94,23 @@ const page: React.FC = () => {
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
+    // if (
+    //   isPageLoadingState &&
+    //   selectedKeyState !== ItemKeys.SUB_MANAGE_PASSWORD_KEY
+    // ) {
+    //   dispatch(setIsPageLoading(false));
+    //   dispatch(setSelectedKey(ItemKeys.SUB_MANAGE_PASSWORD_KEY));
+    // }
   }, [
+    userActiveDatabyIdNumberData,
     principalEmailAdminState,
     principalEmailAdminLoginState,
-    status,
     adminModalState,
     isPageLoadingState,
   ]);
 
   return (
-    <div>
+    <div className="dashboard-admin">
       {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
@@ -108,11 +122,11 @@ const page: React.FC = () => {
         <CustomSpin />
       ) : (
         <div className="dashboard-admin-content">
-          <ManagePasswordContent />
+          <MainViewContent />
         </div>
       )}
     </div>
   );
 };
 
-export default page;
+export default HomePage;

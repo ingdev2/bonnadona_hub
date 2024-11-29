@@ -855,7 +855,7 @@ export class UsersService {
         is_active: true,
       },
       order: {
-        createdAt: 'ASC',
+        name: 'ASC',
       },
       loadEagerRelations: false,
       loadRelationIds: true,
@@ -874,7 +874,7 @@ export class UsersService {
   async getAllUsers() {
     const allUsers = await this.userRepository.find({
       order: {
-        createdAt: 'ASC',
+        name: 'ASC',
       },
       loadEagerRelations: false,
       loadRelationIds: true,
@@ -921,7 +921,7 @@ export class UsersService {
 
   async getUserProfileById(userId: string) {
     const user = await this.userRepository.findOne({
-      where: { id: userId},
+      where: { id: userId },
     });
 
     if (!user) {
