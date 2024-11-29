@@ -1,4 +1,5 @@
 export enum ApplicationsEnum {
+  BONNA_HUB = 'BONNADONA HUB',
   FÉNIX = 'FÉNIX',
   RETO_APP = 'RETO APP',
   HALCÓN = 'HALCÓN',

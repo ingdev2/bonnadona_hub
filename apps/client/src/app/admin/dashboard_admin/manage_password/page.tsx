@@ -21,7 +21,7 @@ import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 
-const page: React.FC = () => {
+const ManagePassword = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -115,4 +115,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default ManagePassword;

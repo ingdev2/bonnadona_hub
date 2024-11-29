@@ -19,7 +19,7 @@ import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import AllUsersContent from "@/components/admin/all_users/AllUsersContent";
 
-const page = () => {
+const AllUsersPage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -107,4 +107,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default AllUsersPage;

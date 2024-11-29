@@ -27,7 +27,7 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 import MainViewContent from "@/components/admin/main_view/MainViewContent";
 
-const page: React.FC = () => {
+const HomePage: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -117,7 +117,7 @@ const page: React.FC = () => {
           message={errorMessage || "¡Error en la petición!"}
         />
       )}
-      
+
       {!principalEmailAdminLoginState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
@@ -129,4 +129,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default HomePage;
