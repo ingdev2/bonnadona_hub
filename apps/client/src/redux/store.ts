@@ -4,6 +4,7 @@ import { persistReducer } from "redux-persist";
 import storage from "./storage/storage";
 
 import userReducer from "./features/user/userSlice";
+import userProfileReducer from "./features/user_profile/userProfileSlice";
 import modalReducer from "./features/common/modal/modalSlice";
 import userLoginReducer from "./features/login/userLoginSlice";
 import adminLoginReducer from "./features/login/adminLoginSlice";
@@ -16,6 +17,8 @@ import { idTypesApi } from "./apis/id_types/idTypesApi";
 import { loginAdminApi } from "./apis/auth/loginAdminApi";
 import { passwordPolicyApi } from "./apis/password_policy/passwordPolicyApi";
 import { genderTypesApi } from "./apis/gender_types/genderTypesApi";
+import { serviceTypesApi } from "./apis/service_types/serviceTypesApi";
+import { bloodGroupApi } from "./apis/blood_group/bloodGroupApi";
 
 const persistConfig = {
   key: "root",
@@ -23,6 +26,7 @@ const persistConfig = {
   storage,
   whitelist: [
     "user",
+    "userProfile",
     "modal",
     "userLogin",
     "adminLogin",
@@ -34,6 +38,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   user: userReducer,
+  userProfile: userProfileReducer,
   userLogin: userLoginReducer,
   adminLogin: adminLoginReducer,
   modal: modalReducer,
@@ -46,6 +51,8 @@ const rootReducer = combineReducers({
   [idTypesApi.reducerPath]: idTypesApi.reducer,
   [genderTypesApi.reducerPath]: genderTypesApi.reducer,
   [passwordPolicyApi.reducerPath]: passwordPolicyApi.reducer,
+  [serviceTypesApi.reducerPath]: serviceTypesApi.reducer,
+  [bloodGroupApi.reducerPath]: bloodGroupApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -63,6 +70,8 @@ export const store = configureStore({
       idTypesApi.middleware,
       genderTypesApi.middleware,
       passwordPolicyApi.middleware,
+      serviceTypesApi.middleware,
+      bloodGroupApi.middleware,
     ]),
 });
 

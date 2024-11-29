@@ -10,15 +10,16 @@ const initialState: User = {
   birthdate: "",
   principal_email: "",
   corporate_email: "",
-  corporate_cellphone: "",
+  corporate_cellphone: 0,
+  personal_cellphone: 0,
   personal_email: "",
-  personal_cellphone: "",
   password: "",
   last_password_update: "",
-  residence_department: "",
-  residence_city: "",
-  residence_address: "",
-  residence_neighborhood: "",
+  collaborator_service_type: 0,
+  collaborator_immediate_boss: "",
+  collaborator_unit: "",
+  collaborator_service: "",
+  collaborator_position: "",
   is_active: true,
   createdAt: "",
   updateAt: "",
@@ -72,17 +73,20 @@ export const selectedUserSlice = createSlice({
     setLastPasswordUpdateSelectedUser: (state, action) => {
       state.last_password_update = action.payload;
     },
-    setResidenceDepartmentSelectedUser: (state, action) => {
-      state.residence_department = action.payload;
+    setCollaboratorServiceTypeSelectedUser: (state, action) => {
+      state.collaborator_service_type = action.payload;
     },
-    setResidenceCitySelectedUser: (state, action) => {
-      state.residence_city = action.payload;
+    setCollaboratorInmediateBossSelectedUser: (state, action) => {
+      state.collaborator_immediate_boss = action.payload;
     },
-    setResidenceAddressSelectedUser: (state, action) => {
-      state.residence_address = action.payload;
+    setCollaboratorUnitSelectedUser: (state, action) => {
+      state.collaborator_unit = action.payload;
     },
-    setResidenceNeighborhoodSelectedUser: (state, action) => {
-      state.residence_neighborhood = action.payload;
+    setCollaboratorServiceSelectedUser: (state, action) => {
+      state.collaborator_service = action.payload;
+    },
+    setCollaboratorPositionSelectedUser: (state, action) => {
+      state.collaborator_position = action.payload;
     },
     setIsActiveSelectedUser: (state, action) => {
       state.is_active = action.payload;
@@ -100,15 +104,16 @@ export const selectedUserSlice = createSlice({
       state.birthdate = "";
       state.principal_email = "";
       state.corporate_email = "";
-      state.corporate_cellphone = "";
+      state.corporate_cellphone = 0;
+      state.personal_cellphone = 0;
       state.personal_email = "";
-      state.personal_cellphone = "";
       state.password = "";
       state.last_password_update = "";
-      state.residence_department = "";
-      state.residence_city = "";
-      state.residence_address = "";
-      state.residence_neighborhood = "";
+      state.collaborator_service_type = 0;
+      state.collaborator_immediate_boss = "";
+      state.collaborator_unit = "";
+      state.collaborator_service = "";
+      state.collaborator_position = "";
       state.errors = [];
     },
   },
@@ -129,10 +134,11 @@ export const {
   setPersonalEmailSelectedUser,
   setPasswordSelectedUser,
   setLastPasswordUpdateSelectedUser,
-  setResidenceDepartmentSelectedUser,
-  setResidenceCitySelectedUser,
-  setResidenceAddressSelectedUser,
-  setResidenceNeighborhoodSelectedUser,
+  setCollaboratorServiceTypeSelectedUser,
+  setCollaboratorInmediateBossSelectedUser,
+  setCollaboratorPositionSelectedUser,
+  setCollaboratorServiceSelectedUser,
+  setCollaboratorUnitSelectedUser,
   setIsActiveSelectedUser,
   setErrorsSelectedUser,
   setDefaultValuesSelectedUser,

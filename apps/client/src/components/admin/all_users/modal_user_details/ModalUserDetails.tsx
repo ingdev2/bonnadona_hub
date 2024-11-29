@@ -20,14 +20,26 @@ const ModalUserDetails: React.FC<{
   selectedUserGender: string | undefined;
   labelUserBirthdate: string;
   selectedUserBirthdate: string | undefined;
-  labelUserAddressResidence: string;
-  selectedUserAddressResidence: string | undefined;
   labelUserMainEmail: string;
   selectedUserMainEmail: string | undefined;
+  labelUserPersonalEmail: string;
+  selectedUserPersonalEmail: string | undefined;
   labelUserCorporateEmail: string;
   selectedUserCorporateEmail: string | undefined;
   labelUserPersonalCellphone: string;
   selectedUserPersonalCellphone: number | undefined;
+  labelUserCorporateCellphone: string;
+  selectedUserCorporateCellphone: number | undefined;
+  labelUserServiceType: string;
+  selectedUserServiceType: number | undefined;
+  labelUserInmediateBoss: string;
+  selectedUserInmediateBoss: string | undefined;
+  labelUserUnit: string;
+  selectedUserUnit: string | undefined;
+  labelUserService: string;
+  selectedUserService: string | undefined;
+  labelUserPosition: string;
+  selectedUserPosition: string | undefined;
 }> = ({
   titleDescription,
   labelUserName,
@@ -42,14 +54,26 @@ const ModalUserDetails: React.FC<{
   selectedUserGender,
   labelUserBirthdate,
   selectedUserBirthdate,
-  labelUserAddressResidence,
-  selectedUserAddressResidence,
   labelUserMainEmail,
   selectedUserMainEmail,
+  labelUserPersonalEmail,
+  selectedUserPersonalEmail,
   labelUserCorporateEmail,
   selectedUserCorporateEmail,
   labelUserPersonalCellphone,
   selectedUserPersonalCellphone,
+  labelUserCorporateCellphone,
+  selectedUserCorporateCellphone,
+  labelUserServiceType,
+  selectedUserServiceType,
+  labelUserInmediateBoss,
+  selectedUserInmediateBoss,
+  labelUserUnit,
+  selectedUserUnit,
+  labelUserService,
+  selectedUserService,
+  labelUserPosition,
+  selectedUserPosition,
 }) => {
   return (
     <Col
@@ -115,7 +139,7 @@ const ModalUserDetails: React.FC<{
         <Descriptions.Item
           label={labelUserIdType}
           style={{ textAlign: "center" }}
-          span={5}
+          span={4}
         >
           {selectedUserIdType}
         </Descriptions.Item>
@@ -123,7 +147,7 @@ const ModalUserDetails: React.FC<{
         <Descriptions.Item
           label={labelUserIdNumber}
           style={{ textAlign: "center" }}
-          span={5}
+          span={4}
         >
           {selectedUserIdNumber}
         </Descriptions.Item>
@@ -131,7 +155,7 @@ const ModalUserDetails: React.FC<{
         <Descriptions.Item
           label={labelUserGender}
           style={{ textAlign: "center" }}
-          span={2}
+          span={4}
         >
           {selectedUserGender}
         </Descriptions.Item>
@@ -141,33 +165,33 @@ const ModalUserDetails: React.FC<{
         <Descriptions.Item
           label={labelUserBirthdate}
           style={{ textAlign: "center" }}
-          span={6}
+          span={4}
         >
           {selectedUserBirthdate}
         </Descriptions.Item>
 
         <Descriptions.Item
-          label={labelUserAddressResidence}
+          label={labelUserPersonalEmail}
           style={{ textAlign: "center" }}
-          span={6}
+          span={4}
         >
-          {selectedUserAddressResidence}
+          {selectedUserPersonalEmail}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserMainEmail}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserMainEmail}
         </Descriptions.Item>
 
         {/* FILA 3 */}
 
         <Descriptions.Item
-          label={labelUserMainEmail}
-          style={{ textAlign: "center" }}
-          span={5}
-        >
-          {selectedUserMainEmail}
-        </Descriptions.Item>
-
-        <Descriptions.Item
           label={labelUserCorporateEmail}
           style={{ textAlign: "center" }}
-          span={5}
+          span={6}
         >
           {selectedUserCorporateEmail}
         </Descriptions.Item>
@@ -175,12 +199,64 @@ const ModalUserDetails: React.FC<{
         <Descriptions.Item
           label={labelUserPersonalCellphone}
           style={{ textAlign: "center" }}
-          span={2}
+          span={3}
         >
           {selectedUserPersonalCellphone}
         </Descriptions.Item>
 
+        <Descriptions.Item
+          label={labelUserCorporateCellphone}
+          style={{ textAlign: "center" }}
+          span={3}
+        >
+          {selectedUserCorporateCellphone}
+        </Descriptions.Item>
+
         {/* FILA 4 */}
+
+        <Descriptions.Item
+          label={labelUserServiceType}
+          style={{ textAlign: "center" }}
+          span={3}
+        >
+          {selectedUserServiceType}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserInmediateBoss}
+          style={{ textAlign: "center" }}
+          span={6}
+        >
+          {selectedUserInmediateBoss}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserUnit}
+          style={{ textAlign: "center" }}
+          span={3}
+        >
+          {selectedUserUnit}
+        </Descriptions.Item>
+
+        {/* FILA 5 */}
+
+        <Descriptions.Item
+          label={labelUserService}
+          style={{ textAlign: "center" }}
+          span={6}
+        >
+          {selectedUserService}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserPosition}
+          style={{ textAlign: "center" }}
+          span={6}
+        >
+          {selectedUserPosition}
+        </Descriptions.Item>
+
+           {/* FILA 6 */}
       </Descriptions>
     </Col>
   );
