@@ -7,7 +7,7 @@ import { setIsPageLoading } from "@/redux/features/common/modal/modalSlice";
 
 import UserLoginForm from "@/components/auth/user/user_login_form/UserLoginForm";
 
-const UsersLoginPage: React.FC = () => {
+const UsersLoginPage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 

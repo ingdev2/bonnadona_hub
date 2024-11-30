@@ -27,7 +27,7 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 import MainViewContent from "@/components/admin/main_view/MainViewContent";
 
-const HomePage: React.FC = () => {
+const HomePage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -94,13 +94,13 @@ const HomePage: React.FC = () => {
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
-    // if (
-    //   isPageLoadingState &&
-    //   selectedKeyState !== ItemKeys.SUB_MANAGE_PASSWORD_KEY
-    // ) {
-    //   dispatch(setIsPageLoading(false));
-    //   dispatch(setSelectedKey(ItemKeys.SUB_MANAGE_PASSWORD_KEY));
-    // }
+    if (
+      isPageLoadingState &&
+      selectedKeyState !== ItemKeys.SUB_USERS_KEY
+    ) {
+      dispatch(setIsPageLoading(false));
+      dispatch(setSelectedKey(ItemKeys.SUB_USERS_KEY));
+    }
   }, [
     userActiveDatabyIdNumberData,
     principalEmailAdminState,

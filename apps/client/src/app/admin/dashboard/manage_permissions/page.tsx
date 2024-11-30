@@ -17,7 +17,7 @@ import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { ApplicationsEnum } from "@/utils/enums/permissions/applications/applications.enum";
 import { ApplicationModulesEnum } from "@/utils/enums/permissions/application_modules/application_modules.enum";
 
-const ManagePermissionsPage: React.FC = () => {
+const ManagePermissionsPage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 

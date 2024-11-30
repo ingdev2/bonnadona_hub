@@ -21,7 +21,7 @@ import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 
-const ManagePasswordPolicyPage = () => {
+const ManagePasswordPolicy = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -115,4 +115,4 @@ const ManagePasswordPolicyPage = () => {
   );
 };
 
-export default ManagePasswordPolicyPage;
+export default ManagePasswordPolicy;

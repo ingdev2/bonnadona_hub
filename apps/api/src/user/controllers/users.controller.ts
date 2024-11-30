@@ -164,6 +164,17 @@ export class UsersController {
     RolesEnum.COLLABORATOR,
     RolesEnum.AUDITOR,
   )
+  @Get('/getUserByIdNumber/:id_number')
+  async getUserByIdNumber(@Param('id_number') id_number: number) {
+    return await this.usersService.getUserByIdNumber(id_number);
+  }
+
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Get('/getUserActiveByEmail/:principal_email')
   async getUserActiveByEmail(
     @Param('principal_email') principal_email: string,

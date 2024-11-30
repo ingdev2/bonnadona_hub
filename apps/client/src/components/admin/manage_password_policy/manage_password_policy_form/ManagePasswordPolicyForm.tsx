@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 
-import ManagePasswordPolicyFormData from "./ManagePasswordPolicyFormData";
+import ManagePasswordFormData from "./ManagePasswordPolicyFormData";
 import { areDataDifferent } from "../helpers/are_data_differents";
 
 import {
@@ -207,7 +207,7 @@ const ManagePasswordPolicyForm: React.FC = () => {
             />
           )}
 
-          <ManagePasswordPolicyFormData
+          <ManagePasswordFormData
             inactivityDaysFormData={inactivityDaysPasswordPolicyState}
             minLenghtPasswordFormData={minLenghtPasswordPolicyState}
             passwordExpiryDaysFormData={passwordExpiryDaysPasswordPolicyState}

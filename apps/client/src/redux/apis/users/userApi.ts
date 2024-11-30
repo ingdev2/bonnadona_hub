@@ -77,6 +77,10 @@ export const userApi = createApi({
       query: (id_number) => `getUserActiveByIdNumber/${id_number}`,
     }),
 
+    getUserByIdNumber: builder.query<User, number>({
+      query: (id_number) => `getUserByIdNumber/${id_number}`,
+    }),
+
     getUserRoles: builder.query<User, string>({
       query: (Id) => `getUserRoles/${Id}`,
     }),
@@ -153,6 +157,7 @@ export const {
   useGetUserActiveByEmailQuery,
   useGetUserSessionLogByEmailQuery,
   useGetUserActiveByIdNumberQuery,
+  useGetUserByIdNumberQuery,
   useGetUserRolesQuery,
   useUpdateUserMutation,
   useBanUserMutation,

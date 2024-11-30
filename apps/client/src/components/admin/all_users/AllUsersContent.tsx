@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import EditUserForm from "./edit_user/EditUserForm";
+
 import {
   useBanUserMutation,
-  useGetAllUsersQuery,
   useGetAllUsersWithProfileQuery,
-  useGetUserProfileByIdQuery,
 } from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
+
 import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
+
 import { setTableRowId } from "@/redux/features/common/modal/modalSlice";
 import {
   setBirthdateSelectedUser,
@@ -435,7 +437,7 @@ const AllUsersContent: React.FC = () => {
                   </Button>
                 </>
               ) : (
-                <></>
+                <EditUserForm />
               )}
             </>
           }

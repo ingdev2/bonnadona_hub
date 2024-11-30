@@ -1031,6 +1031,12 @@ export class UsersService {
     });
   }
 
+  async getUserByIdNumber(id_number: number) {
+    return await this.userRepository.findOneBy({
+      id_number: id_number,
+    });
+  }
+
   async getUserActiveByEmail(principal_email: string) {
     return await this.userRepository.findOneBy({
       principal_email: principal_email,

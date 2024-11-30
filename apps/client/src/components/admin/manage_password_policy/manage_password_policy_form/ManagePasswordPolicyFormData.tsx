@@ -13,7 +13,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 
 import CustomButton from "@/components/common/custom_button/CustomButton";
 
-const ManagePasswordPolicyFormData: React.FC<{
+const ManagePasswordFormData: React.FC<{
   minLenghtPasswordFormData: number;
   requireUpperCasePasswordFormData: boolean;
   requireLowerCasePasswordFormData: boolean;
@@ -392,4 +392,4 @@ const ManagePasswordPolicyFormData: React.FC<{
   );
 };
 
-export default ManagePasswordPolicyFormData;
+export default ManagePasswordFormData;
