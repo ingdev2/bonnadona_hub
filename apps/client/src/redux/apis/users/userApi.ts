@@ -29,6 +29,10 @@ export const userApi = createApi({
       query: () => "getAllUsers",
     }),
 
+    getAllUsersWithProfile: builder.query<User[], null>({
+      query: () => "getAllUsersWithProfile",
+    }),
+
     getUser: builder.query<User, string>({
       query: (Id) => `getUser/${Id}`,
     }),
@@ -136,6 +140,7 @@ export const userApi = createApi({
 
 export const {
   useGetAllUsersQuery,
+  useGetAllUsersWithProfileQuery,
   useGetAllActiveUsersQuery,
   useGetUserQuery,
   useGetUserProfileByIdQuery,
