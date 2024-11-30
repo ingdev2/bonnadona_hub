@@ -82,6 +82,12 @@ export class UsersController {
     return await this.usersService.getAllUsers();
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
+  @Get('/getAllUsersWithProfile')
+  async getAllUsersWithProfile() {
+    return await this.usersService.getAllUsersWithProfile();
+  }
+
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUser/:id')
   async getUserById(@Param('id') id: string) {
