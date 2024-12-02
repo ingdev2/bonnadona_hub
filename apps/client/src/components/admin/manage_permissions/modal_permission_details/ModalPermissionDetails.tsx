@@ -8,16 +8,12 @@ import { titleStyleCss, subtitleStyleCss } from "@/theme/text_styles";
 
 const ModalPermissionDetails: React.FC<{
   titleDescription: string;
-  labelPermissionId: string;
-  selectedPermissionId: number | undefined;
   labelPermissionTitle: string;
   selectedPermissionTitle: string | undefined;
   labelPermissionDescription: string;
   selectedPermissionDescription: string | undefined;
 }> = ({
   titleDescription,
-  labelPermissionId,
-  selectedPermissionId,
   labelPermissionTitle,
   selectedPermissionTitle,
   labelPermissionDescription,
@@ -67,17 +63,9 @@ const ModalPermissionDetails: React.FC<{
         column={12}
       >
         <Descriptions.Item
-          label={labelPermissionId}
-          style={{ textAlign: "center" }}
-          span={2}
-        >
-          {selectedPermissionId}
-        </Descriptions.Item>
-
-        <Descriptions.Item
           label={labelPermissionTitle}
           style={{ textAlign: "center" }}
-          span={10}
+          span={12}
         >
           {selectedPermissionTitle}
         </Descriptions.Item>

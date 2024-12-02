@@ -124,8 +124,6 @@ const ManagePermissionsContent: React.FC = () => {
                 <>
                   <ModalPermissionDetails
                     titleDescription="Detalle completo de permiso"
-                    labelPermissionId="Id"
-                    selectedPermissionId={selectedRowDataLocalState?.id}
                     labelPermissionTitle="Titulo de permiso"
                     selectedPermissionTitle={selectedRowDataLocalState?.name}
                     labelPermissionDescription="Descripción del permiso"

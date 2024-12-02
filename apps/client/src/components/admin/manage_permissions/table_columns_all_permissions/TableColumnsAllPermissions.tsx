@@ -13,16 +13,6 @@ export const tableColumnsAllPermissions = ({
   handleClickSeeMore,
 }: TableColumnProps) => [
   {
-    title: "ID",
-    key: permissionIdKey,
-    dataIndex: permissionIdKey,
-    width: 54,
-    sorter: (a: IPermission, b: IPermission) => {
-      return a[permissionIdKey] - b[permissionIdKey];
-    },
-    ellipsis: true,
-  },
-  {
     title: "NOMBRE DE PERMISO",
     key: permissionNameKey,
     dataIndex: permissionNameKey,
