@@ -104,6 +104,7 @@ const EditPermissionFormData: React.FC<{
               placeholder="Nombre de permiso"
               onChange={onChangeNamePermissionFormData}
               autoComplete="off"
+              disabled
             />
           </Form.Item>
         </Col>
@@ -138,6 +139,7 @@ const EditPermissionFormData: React.FC<{
               autoComplete="off"
               autoSize={{ minRows: 2, maxRows: 10 }}
               maxLength={200}
+              style={{ borderRadius: "8px" }}
             />
           </Form.Item>
         </Col>

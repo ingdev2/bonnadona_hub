@@ -137,7 +137,7 @@ export class PermissionsService {
   async getAllPermissions() {
     const allPermissions = await this.permissionRepo.find({
       order: {
-        createdAt: 'ASC',
+        name: 'ASC',
       },
       loadEagerRelations: false,
       loadRelationIds: true,

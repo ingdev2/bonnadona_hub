@@ -134,6 +134,7 @@ const PermissionRegistrationFormData: React.FC<{
               autoComplete="off"
               autoSize={{ minRows: 2, maxRows: 10 }}
               maxLength={200}
+              style={{ borderRadius: "8px" }}
             />
           </Form.Item>
         </Col>
