@@ -24,7 +24,7 @@ export enum ItemKeys {
   SUB_MANAGE_PERMISSIONS_KEY = "manage_permissions",
 
   ITEM_PASSWORD_POLICY_KEY = "password_policy",
-  SUB_MANAGE_PASSWORD_KEY = "manage_password",
+  SUB_MANAGE_PASSWORD_POLICY_KEY = "manage_password_policy",
 
   ITEM_APPLICATIONS_AND_MODULES_KEY = "applications_modules",
   SUB_APPLICATIONS_KEY = "applications",

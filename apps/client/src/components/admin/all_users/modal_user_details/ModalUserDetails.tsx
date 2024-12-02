@@ -5,6 +5,7 @@ import React, { ReactNode } from "react";
 import { Col, Descriptions } from "antd";
 
 import { titleStyleCss, subtitleStyleCss } from "@/theme/text_styles";
+import { useAppSelector } from "@/redux/hooks";
 
 const ModalUserDetails: React.FC<{
   titleDescription: string;
@@ -40,6 +41,28 @@ const ModalUserDetails: React.FC<{
   selectedUserService: string | undefined;
   labelUserPosition: string;
   selectedUserPosition: string | undefined;
+  labelUserProfileBloodGroup: string;
+  selectedUserProfileBloodGroup: ReactNode;
+  labelUserProfileAffiliationEps: string;
+  selectedUserProfileAffiliationEps: string | undefined;
+  labelUserProfileResidenceDepartment: string;
+  selectedUserProfileResidenceDepartment: string | undefined;
+  labelUserProfileResidenceCity: string;
+  selectedUserProfileResidenceCity: string | undefined;
+  labelUserProfileResidenceNeighborhood: string;
+  selectedUserProfileResidenceNeighborhood: string | undefined;
+  labelUserProfileResidenceAddress: string;
+  selectedUserProfileResidenceAddress: string | undefined;
+  labelUserProfileHeight: string;
+  selectedUserProfileHeight: string | undefined;
+  labelUserProfileWeight: string;
+  selectedUserProfileWeight: string | undefined;
+  labelUserProfileShirtSize: string;
+  selectedUserProfileShirtSize: string | undefined;
+  labelUserProfilePantsSize: string;
+  selectedUserProfilePantsSize: string | undefined;
+  labelUserProfileShoeSize: string;
+  selectedUserProfileShoeSize: string | undefined;
 }> = ({
   titleDescription,
   labelUserName,
@@ -74,6 +97,28 @@ const ModalUserDetails: React.FC<{
   selectedUserService,
   labelUserPosition,
   selectedUserPosition,
+  labelUserProfileBloodGroup,
+  selectedUserProfileBloodGroup,
+  labelUserProfileAffiliationEps,
+  selectedUserProfileAffiliationEps,
+  labelUserProfileResidenceDepartment,
+  selectedUserProfileResidenceDepartment,
+  labelUserProfileResidenceCity,
+  selectedUserProfileResidenceCity,
+  labelUserProfileResidenceNeighborhood,
+  selectedUserProfileResidenceNeighborhood,
+  labelUserProfileResidenceAddress,
+  selectedUserProfileResidenceAddress,
+  labelUserProfileHeight,
+  selectedUserProfileHeight,
+  labelUserProfileWeight,
+  selectedUserProfileWeight,
+  labelUserProfileShirtSize,
+  selectedUserProfileShirtSize,
+  labelUserProfilePantsSize,
+  selectedUserProfilePantsSize,
+  labelUserProfileShoeSize,
+  selectedUserProfileShoeSize,
 }) => {
   return (
     <Col
@@ -256,7 +301,101 @@ const ModalUserDetails: React.FC<{
           {selectedUserPosition}
         </Descriptions.Item>
 
-           {/* FILA 6 */}
+        {/* FILA 6 */}
+
+        <Descriptions.Item
+          label={labelUserProfileBloodGroup}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileBloodGroup}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserProfileAffiliationEps}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileAffiliationEps}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserProfileResidenceDepartment}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileResidenceDepartment}
+        </Descriptions.Item>
+
+        {/* FILA 7 */}
+
+        <Descriptions.Item
+          label={labelUserProfileResidenceCity}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileResidenceCity}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserProfileResidenceNeighborhood}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileResidenceNeighborhood}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserProfileResidenceAddress}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileResidenceAddress}
+        </Descriptions.Item>
+
+        {/* FILA 8 */}
+
+        <Descriptions.Item
+          label={labelUserProfileHeight}
+          style={{ textAlign: "center" }}
+          span={6}
+        >
+          {selectedUserProfileHeight}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserProfileWeight}
+          style={{ textAlign: "center" }}
+          span={6}
+        >
+          {selectedUserProfileWeight}
+        </Descriptions.Item>
+
+        {/* FILA 9 */}
+
+        <Descriptions.Item
+          label={labelUserProfileShirtSize}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileShirtSize}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserProfilePantsSize}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfilePantsSize}
+        </Descriptions.Item>
+
+        <Descriptions.Item
+          label={labelUserProfileShoeSize}
+          style={{ textAlign: "center" }}
+          span={4}
+        >
+          {selectedUserProfileShoeSize}
+        </Descriptions.Item>
       </Descriptions>
     </Col>
   );

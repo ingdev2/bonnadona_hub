@@ -118,7 +118,7 @@ export const useMenuItems = () => {
       [
         getItem(
           ItemNames.SUB_MANAGE_PASSWORD,
-          ItemKeys.SUB_MANAGE_PASSWORD_KEY,
+          ItemKeys.SUB_MANAGE_PASSWORD_POLICY_KEY,
           <MdPassword size={15} />
         ),
       ].filter(Boolean)

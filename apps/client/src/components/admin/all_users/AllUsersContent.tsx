@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import EditUserForm from "./edit_user/EditUserForm";
+
 import {
   useBanUserMutation,
-  useGetAllUsersQuery,
-  useGetUserProfileByIdQuery,
+  useGetAllUsersWithProfileQuery,
 } from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
+
 import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
+
 import { setTableRowId } from "@/redux/features/common/modal/modalSlice";
 import {
   setBirthdateSelectedUser,
@@ -41,10 +44,38 @@ import { Button } from "antd";
 import { TbUserEdit } from "react-icons/tb";
 import { useGetAllServiceTypesQuery } from "@/redux/apis/service_types/serviceTypesApi";
 import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
-import { setBloodGroupUserProfile, setIdUserProfile } from "@/redux/features/user_profile/userProfileSlice";
+import {
+  setAffiliationEpsUserProfile,
+  setBloodGroupUserProfile,
+  setIdUserProfile,
+  setResidenceAddressUserProfile,
+  setResidenceCityUserProfile,
+  setResidenceDepartmentUserProfile,
+  setResidenceNeighborhoodUserProfile,
+  setUserHeightUserProfile,
+  setUserPantsSizeUserProfile,
+  setUserShirtSizeUserProfile,
+  setUserShoeSizeUserProfile,
+  setUserWeightUserProfile,
+} from "@/redux/features/user_profile/userProfileSlice";
 
 const AllUsersContent: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const NOT_REGISTER: string = "NO REGISTRA";
+
+  const bloodGroupUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_blood_group
+  );
+  const affiliationEpsUserProfileState = useAppSelector(
+    (state) => state.userProfile.affiliation_eps
+  );
+  const residenceDepartmentUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_department
+  );
+  const residenceCityUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_city
+  );
 
   const [isEditUserVisibleLocalState, setIsEditUserVisibleLocalState] =
     useState(false);
@@ -76,12 +107,12 @@ const AllUsersContent: React.FC = () => {
   });
 
   const {
-    data: allUsersData,
-    isLoading: allUsersLoading,
-    isFetching: allUsersFetching,
-    error: allUsersError,
-    refetch: refecthAllUsers,
-  } = useGetAllUsersQuery(null);
+    data: allUsersWithProfileData,
+    isLoading: allUsersWithProfileLoading,
+    isFetching: allUsersWithProfileFetching,
+    error: allUsersWithProfileError,
+    refetch: refecthAllUsersWithProfile,
+  } = useGetAllUsersWithProfileQuery(null);
 
   const {
     data: allIdTypesData,
@@ -115,51 +146,33 @@ const AllUsersContent: React.FC = () => {
     refetch: refecthAllBloodGroup,
   } = useGetAllBloodGroupsQuery(null);
 
-  const {
-    data: userProfileByIdData,
-    isLoading: userProfileByIdLoading,
-    isFetching: userProfileByIdFetching,
-    error: userProfileByIdError,
-    refetch: userProfileByIdRefetch,
-  } = useGetUserProfileByIdQuery(selectedRowDataLocalState?.id!, {
-    skip: !selectedRowDataLocalState?.id,
-  });
-
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
   const serviceTypeGetName = transformIdToNameMap(allServiceTypesData);
+  const bloodGroupGetName = transformIdToNameMap(allBloodGroupData);
 
-  const transformedData = Array.isArray(allUsersData)
-    ? allUsersData.map((req: any) => ({
+  const transformedData = Array.isArray(allUsersWithProfileData)
+    ? allUsersWithProfileData.map((req: any) => ({
         ...req,
         user_id_type: idTypeGetName?.[req.user_id_type] || req.user_id_type,
         user_gender: genderTypeGetName?.[req.user_gender] || req.user_gender,
         collaborator_service_type:
           serviceTypeGetName?.[req.collaborator_service_type] ||
           req.collaborator_service_type,
+        user_blood_group:
+          bloodGroupGetName?.[req.user_blood_group] || req.user_blood_group,
       }))
     : [];
-
-  const bloodGroupGetName = transformIdToNameMap(allBloodGroupData);
-
-  const transformedDataUserProfile = userProfileByIdData
-    ? {
-        ...userProfileByIdData,
-        user_blood_group:
-          bloodGroupGetName?.[userProfileByIdData.user_blood_group] ||
-          userProfileByIdData.user_blood_group,
-      }
-    : null;
 
   const handleClickSeeMore = (record: User) => {
     dispatch(setTableRowId(""));
     setSelectedRowDataLocalState(record);
-    console.log("record?.user_id_type", record?.user_id_type);
+
     dispatch(setTableRowId(record.id));
 
     setIsModalVisibleLocalState(true);
 
-    refecthAllUsers();
+    refecthAllUsersWithProfile();
 
     // USER DATA
     dispatch(setIdSelectedUser(record?.id));
@@ -182,11 +195,19 @@ const AllUsersContent: React.FC = () => {
     dispatch(
       setCollaboratorPositionSelectedUser(record?.collaborator_position)
     );
-
-    //PROFILE USER DATA
-    dispatch(setIdUserProfile(transformedDataUserProfile?.id))
-    dispatch(setBloodGroupUserProfile(transformedDataUserProfile?.user_blood_group))
-
+    dispatch(setBloodGroupUserProfile(record?.user_blood_group));
+    dispatch(setAffiliationEpsUserProfile(record?.affiliation_eps));
+    dispatch(setResidenceDepartmentUserProfile(record?.residence_department));
+    dispatch(setResidenceCityUserProfile(record?.residence_city));
+    dispatch(setResidenceAddressUserProfile(record?.residence_address));
+    dispatch(
+      setResidenceNeighborhoodUserProfile(record?.residence_neighborhood)
+    );
+    dispatch(setUserHeightUserProfile(record?.user_height));
+    dispatch(setUserWeightUserProfile(record?.user_weight));
+    dispatch(setUserShirtSizeUserProfile(record?.user_shirt_size));
+    dispatch(setUserPantsSizeUserProfile(record?.user_pants_size));
+    dispatch(setUserShoeSizeUserProfile(record?.user_shoe_size));
   };
 
   const handleOnChangeSwitch = async (record: User) => {
@@ -222,14 +243,14 @@ const AllUsersContent: React.FC = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      refecthAllUsers();
+      refecthAllUsersWithProfile();
 
       setIsSubmittingBanUser(false);
     }
   };
 
   const handleButtonUpdate = () => {
-    refecthAllUsers();
+    refecthAllUsersWithProfile();
   };
 
   const handleButtonClick = () => {
@@ -267,7 +288,7 @@ const AllUsersContent: React.FC = () => {
           closableCustomModal={true}
           maskClosableCustomModal={false}
           handleCancelCustomModal={() => {
-            refecthAllUsers();
+            refecthAllUsersWithProfile();
 
             setIsModalVisibleLocalState(false);
             setIsEditUserVisibleLocalState(false);
@@ -297,15 +318,15 @@ const AllUsersContent: React.FC = () => {
                     selectedUserBirthdate={selectedRowDataLocalState?.birthdate.toString()}
                     labelUserPersonalEmail="Correo personal"
                     selectedUserPersonalEmail={
-                      selectedRowDataLocalState?.personal_email
+                      selectedRowDataLocalState?.personal_email || NOT_REGISTER
                     }
                     labelUserMainEmail="Correo principal"
                     selectedUserMainEmail={
-                      selectedRowDataLocalState?.principal_email
+                      selectedRowDataLocalState?.principal_email || NOT_REGISTER
                     }
                     labelUserCorporateEmail="Correo corporativo"
                     selectedUserCorporateEmail={
-                      selectedRowDataLocalState?.corporate_email
+                      selectedRowDataLocalState?.corporate_email || NOT_REGISTER
                     }
                     labelUserPersonalCellphone="Teléfono personal"
                     selectedUserPersonalCellphone={
@@ -325,7 +346,8 @@ const AllUsersContent: React.FC = () => {
                     }
                     labelUserUnit="Unidad"
                     selectedUserUnit={
-                      selectedRowDataLocalState?.collaborator_unit
+                      selectedRowDataLocalState?.collaborator_unit ||
+                      NOT_REGISTER
                     }
                     labelUserService="Servicio"
                     selectedUserService={
@@ -334,6 +356,54 @@ const AllUsersContent: React.FC = () => {
                     labelUserPosition="Cargo"
                     selectedUserPosition={
                       selectedRowDataLocalState?.collaborator_position
+                    }
+                    labelUserProfileBloodGroup="Tipo de sangre"
+                    selectedUserProfileBloodGroup={
+                      selectedRowDataLocalState?.user_blood_group?.toString() ||
+                      NOT_REGISTER
+                    }
+                    labelUserProfileAffiliationEps="Afiliación EPS"
+                    selectedUserProfileAffiliationEps={
+                      selectedRowDataLocalState?.affiliation_eps || NOT_REGISTER
+                    }
+                    labelUserProfileResidenceDepartment="Departamente"
+                    selectedUserProfileResidenceDepartment={
+                      selectedRowDataLocalState?.residence_department ||
+                      NOT_REGISTER
+                    }
+                    labelUserProfileResidenceCity="Ciudad"
+                    selectedUserProfileResidenceCity={
+                      selectedRowDataLocalState?.residence_city || NOT_REGISTER
+                    }
+                    labelUserProfileResidenceNeighborhood="Barrio"
+                    selectedUserProfileResidenceNeighborhood={
+                      selectedRowDataLocalState?.residence_neighborhood ||
+                      NOT_REGISTER
+                    }
+                    labelUserProfileResidenceAddress="Dirección"
+                    selectedUserProfileResidenceAddress={
+                      selectedRowDataLocalState?.residence_address ||
+                      NOT_REGISTER
+                    }
+                    labelUserProfileHeight="Estatura"
+                    selectedUserProfileHeight={
+                      selectedRowDataLocalState?.user_height || NOT_REGISTER
+                    }
+                    labelUserProfileWeight="Peso"
+                    selectedUserProfileWeight={
+                      selectedRowDataLocalState?.user_weight || NOT_REGISTER
+                    }
+                    labelUserProfileShirtSize="Talla camisa"
+                    selectedUserProfileShirtSize={
+                      selectedRowDataLocalState?.user_shirt_size || NOT_REGISTER
+                    }
+                    labelUserProfilePantsSize="Talla pantalón"
+                    selectedUserProfilePantsSize={
+                      selectedRowDataLocalState?.user_pants_size || NOT_REGISTER
+                    }
+                    labelUserProfileShoeSize="Talla zapatos"
+                    selectedUserProfileShoeSize={
+                      selectedRowDataLocalState?.user_shoe_size || NOT_REGISTER
                     }
                   />
 
@@ -367,7 +437,7 @@ const AllUsersContent: React.FC = () => {
                   </Button>
                 </>
               ) : (
-                <></>
+                <EditUserForm />
               )}
             </>
           }

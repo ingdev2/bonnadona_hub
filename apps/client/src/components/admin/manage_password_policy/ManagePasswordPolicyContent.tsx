@@ -3,9 +3,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 
-import {
-  useGetPasswordPolicyQuery,
-} from "@/redux/apis/password_policy/passwordPolicyApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 import {
   setInactivityDaysPasswordPolicy,
   setMinLenghtPasswordPolicy,
@@ -18,9 +16,9 @@ import {
 } from "@/redux/features/password_policy/passwordPolicySlice";
 import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enums/item_names_and_keys.enums";
 import { setSelectedKey } from "@/redux/features/common/modal/modalSlice";
-import ManagePasswordForm from "./manage_password_form/ManagePasswordForm";
+import ManagePasswordPolicyForm from "./manage_password_policy_form/ManagePasswordPolicyForm";
 
-const ManagePasswordContent: React.FC = () => {
+const ManagePasswordPolicyContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const selectedKeyState = useAppSelector((state) => state.modal.selectedKey);
@@ -85,7 +83,7 @@ const ManagePasswordContent: React.FC = () => {
               flexFlow: "column wrap",
             }}
           >
-            <ManagePasswordForm />
+            <ManagePasswordPolicyForm />
           </div>
         }
       />
@@ -93,4 +91,4 @@ const ManagePasswordContent: React.FC = () => {
   );
 };
 
-export default ManagePasswordContent;
+export default ManagePasswordPolicyContent;

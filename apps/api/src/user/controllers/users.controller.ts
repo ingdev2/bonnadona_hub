@@ -82,6 +82,12 @@ export class UsersController {
     return await this.usersService.getAllUsers();
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
+  @Get('/getAllUsersWithProfile')
+  async getAllUsersWithProfile() {
+    return await this.usersService.getAllUsersWithProfile();
+  }
+
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUser/:id')
   async getUserById(@Param('id') id: string) {
@@ -150,6 +156,17 @@ export class UsersController {
   @Get('/getUserActiveByIdNumber/:id_number')
   async getUserActiveByIdNumber(@Param('id_number') id_number: number) {
     return await this.usersService.getUserActiveByIdNumber(id_number);
+  }
+
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
+  @Get('/getUserByIdNumber/:id_number')
+  async getUserByIdNumber(@Param('id_number') id_number: number) {
+    return await this.usersService.getUserByIdNumber(id_number);
   }
 
   @Auth(

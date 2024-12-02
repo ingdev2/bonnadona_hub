@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 
-import ManagePasswordFormData from "./ManagePasswordFormData";
+import ManagePasswordFormData from "./ManagePasswordPolicyFormData";
 import { areDataDifferent } from "../helpers/are_data_differents";
 
 import {
@@ -17,7 +17,7 @@ import {
   setErrorsPasswordPolicy,
 } from "@/redux/features/password_policy/passwordPolicySlice";
 
-const ManagePasswordForm: React.FC = () => {
+const ManagePasswordPolicyForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const minLenghtPasswordPolicyState = useAppSelector(
@@ -242,4 +242,4 @@ const ManagePasswordForm: React.FC = () => {
   );
 };
 
-export default ManagePasswordForm;
+export default ManagePasswordPolicyForm;

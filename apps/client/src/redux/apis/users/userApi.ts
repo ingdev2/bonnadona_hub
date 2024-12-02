@@ -29,6 +29,10 @@ export const userApi = createApi({
       query: () => "getAllUsers",
     }),
 
+    getAllUsersWithProfile: builder.query<User[], null>({
+      query: () => "getAllUsersWithProfile",
+    }),
+
     getUser: builder.query<User, string>({
       query: (Id) => `getUser/${Id}`,
     }),
@@ -71,6 +75,10 @@ export const userApi = createApi({
 
     getUserActiveByIdNumber: builder.query<User, number>({
       query: (id_number) => `getUserActiveByIdNumber/${id_number}`,
+    }),
+
+    getUserByIdNumber: builder.query<User, number>({
+      query: (id_number) => `getUserByIdNumber/${id_number}`,
     }),
 
     getUserRoles: builder.query<User, string>({
@@ -136,6 +144,7 @@ export const userApi = createApi({
 
 export const {
   useGetAllUsersQuery,
+  useGetAllUsersWithProfileQuery,
   useGetAllActiveUsersQuery,
   useGetUserQuery,
   useGetUserProfileByIdQuery,
@@ -148,6 +157,7 @@ export const {
   useGetUserActiveByEmailQuery,
   useGetUserSessionLogByEmailQuery,
   useGetUserActiveByIdNumberQuery,
+  useGetUserByIdNumberQuery,
   useGetUserRolesQuery,
   useUpdateUserMutation,
   useBanUserMutation,

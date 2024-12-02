@@ -8,7 +8,7 @@ const initialState = {
   adminModalIsOpen: false,
   firstSuccessLoginModalIsOpen: false,
   changePasswordExpiryModalIsOpen: false,
-  selectedKey: ItemKeys.SUB_MANAGE_PASSWORD_KEY,
+  selectedKey: ItemKeys.SUB_USERS_KEY,
   tableRowId: "",
   selectedOpenKeys: [""],
 };

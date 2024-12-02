@@ -11,7 +11,7 @@ import {
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 
-import ManagePasswordContent from "@/components/admin/manage_password/ManagePasswordContent";
+import ManagePasswordPolicyContent from "@/components/admin/manage_password_policy/ManagePasswordPolicyContent";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
@@ -21,7 +21,7 @@ import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 
-const ManagePassword = () => {
+const ManagePasswordPolicy = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -108,11 +108,11 @@ const ManagePassword = () => {
         <CustomSpin />
       ) : (
         <div className="dashboard-admin-content">
-          <ManagePasswordContent />
+          <ManagePasswordPolicyContent />
         </div>
       )}
     </div>
   );
 };
 
-export default ManagePassword;
+export default ManagePasswordPolicy;

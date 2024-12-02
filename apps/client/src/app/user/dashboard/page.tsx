@@ -27,7 +27,7 @@ import {
 } from "@/redux/features/common/modal/modalSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 
-const AllAppsPage: React.FC = () => {
+const AllAppsPage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
