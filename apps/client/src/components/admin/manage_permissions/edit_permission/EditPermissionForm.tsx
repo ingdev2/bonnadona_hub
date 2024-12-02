@@ -94,11 +94,11 @@ const EditPermissionForm: React.FC = () => {
 
       let editDataError = response.error;
 
-      let editDataStatus = response.data?.status;
+      let editResponseData = response.data;
 
       let editDataValidationData = response.data?.message;
 
-      if (editDataError || editDataStatus !== 202) {
+      if (editDataError || !editResponseData) {
         setHasChanges(false);
 
         const errorMessage = editDataError?.data.message;
@@ -125,7 +125,7 @@ const EditPermissionForm: React.FC = () => {
         }
       }
 
-      if (editDataStatus === 202 && !editDataError) {
+      if (editResponseData && !editDataError) {
         setHasChanges(false);
 
         dispatch(
@@ -196,7 +196,8 @@ const EditPermissionForm: React.FC = () => {
         handleConfirmDataFormData={handleConfirmUpdateData}
         initialValuesEditFormData={{
           "edit-permission-name": titleNamePermissionState || NOT_REGISTER,
-          "edit-permission-message": descriptionPermissionState || NOT_REGISTER,
+          "edit-permission-description":
+            descriptionPermissionState || NOT_REGISTER,
         }}
         isSubmittingEditFormData={isSubmittingUpdateData}
         hasChangesFormData={hasChanges}
