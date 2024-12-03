@@ -36,10 +36,4 @@ interface User {
   user_shirt_size?: string;
   user_pants_size?: string;
   user_shoe_size?: string;
-
-
-
-
-
-
 }
