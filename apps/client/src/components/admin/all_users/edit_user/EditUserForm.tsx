@@ -8,12 +8,18 @@ import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupAp
 import {
   useGetUserByIdNumberQuery,
   useGetUserQuery,
+  useUpdateUserMutation,
 } from "@/redux/apis/users/userApi";
 import {
+  setCorporateEmailSelectedUser,
   setErrorsSelectedUser,
   setIdSelectedUser,
+  setPersonalCellphoneSelectedUser,
+  setPersonalEmailSelectedUser,
+  setPrincipalEmailSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
 import EditUserFormData from "./EditUserFormData";
+import { setErrorsUser } from "@/redux/features/user/userSlice";
 
 const EditUserForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -198,6 +204,18 @@ const EditUserForm: React.FC = () => {
     error: allBloodGroupsError,
   } = useGetAllBloodGroupsQuery(null);
 
+  const [
+    updateUserData,
+    {
+      data: updateUserPersonalData,
+      isLoading: updateUserLoading,
+      isSuccess: updateUserSuccess,
+      isError: updateUserError,
+    },
+  ] = useUpdateUserMutation({
+    fixedCacheKey: "updateUserData",
+  });
+
   useEffect(() => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
@@ -220,13 +238,100 @@ const EditUserForm: React.FC = () => {
 
   const handleConfirmUpdatePersonalData = async (
     e: React.FormEvent<HTMLFormElement>
-  ) => {};
+  ) => {
+    try {
+      setIsSubmittingUpdatePersonalData(true);
 
-  // const handleOnchageBloodGroups = (value: number) => {
-  //   setHasChanges(true);
+      const response: any = await updateUserData({
+        id: idUserState,
+        updateUser: {
+          principal_email:
+            principalEmailUserLocalState || principalEmailUserState,
+          corporate_email:
+            corporateEmailUserLocalState || corporateEmailUserState,
+          personal_email: personalEmailUserLocalState || personalEmailUserState,
+          personal_cellphone:
+            parseInt(fullPersonalCellphoneNumber, 10) ||
+            personalCellphoneUserState,
+          corporate_cellphone:
+            parseInt(fullCorporateCellphoneNumber, 10) ||
+            corporateCellphoneUserState,
+        },
+      });
+      console.log('response', response)
+      let editUserDataError = response.error;
 
-  //   setBloodGroupUserProfileLocalState(value);
-  // };
+      let editUserDataStatus = response.data?.status;
+
+      let editUserDataValidationData = response.data?.message;
+
+      if (editUserDataError || editUserDataStatus !== 202) {
+        setHasChanges(false);
+
+        const errorMessage = editUserDataError?.data.message;
+        const validationDataMessage = editUserDataValidationData;
+
+        if (Array.isArray(errorMessage)) {
+          dispatch(setErrorsSelectedUser(errorMessage[0]));
+
+          setShowErrorMessage(true);
+        } else if (typeof errorMessage === "string") {
+          dispatch(setErrorsSelectedUser(errorMessage));
+
+          setShowErrorMessage(true);
+        }
+
+        if (Array.isArray(validationDataMessage)) {
+          dispatch(setErrorsSelectedUser(validationDataMessage[0]));
+
+          setShowErrorMessage(true);
+        } else if (typeof validationDataMessage === "string") {
+          dispatch(setErrorsSelectedUser(validationDataMessage));
+
+          setShowErrorMessage(true);
+        }
+
+        if (editUserDataStatus === 202 && !editUserDataError) {
+          setHasChanges(false);
+
+          dispatch(
+            setPrincipalEmailSelectedUser(
+              principalEmailUserLocalState || principalEmailUserState
+            )
+          );
+          dispatch(
+            setCorporateEmailSelectedUser(
+              corporateEmailUserLocalState || corporateEmailUserState
+            )
+          );
+          dispatch(
+            setPersonalEmailSelectedUser(
+              personalEmailUserLocalState || personalEmailUserState
+            )
+          );
+          dispatch(
+            setPersonalCellphoneSelectedUser(
+              parseInt(fullPersonalCellphoneNumber, 10) ||
+                personalCellphoneUserState
+            )
+          );
+          dispatch(
+            setCorporateEmailSelectedUser(
+              parseInt(fullCorporateCellphoneNumber, 10) ||
+                corporateCellphoneUserState
+            )
+          );
+
+          setSuccessMessage("¡Datos del usuario actualizados correctamente!");
+          setShowSuccessMessage(true);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmittingUpdatePersonalData(false);
+    }
+  };
 
   const handlePersonalCellphoneInputChange = (value: any) => {
     setHasChanges(true);
@@ -296,6 +401,13 @@ const EditUserForm: React.FC = () => {
     return Promise.reject("Número de teléfono inválido");
   };
 
+  const handleButtonClick = () => {
+    setSuccessMessage("");
+    setShowSuccessMessage(false);
+
+    setShowErrorMessage(false);
+  };
+
   return (
     <>
       {showErrorMessage && (
@@ -356,7 +468,12 @@ const EditUserForm: React.FC = () => {
           "edit-user-personal-email": personalEmailUserState || NOT_REGISTER,
           "edit-user-personal-cellphone":
             personalCellphoneUserState || NOT_REGISTER,
+          "edit-user-corporate-cellphone":
+            corporateCellphoneUserState || NOT_REGISTER,
         }}
+        isSubmittingEditUserData={isSubmittingUpdatePersonalData}
+        hasChangesFormData={hasChanges}
+        handleButtonClickFormData={handleButtonClick}
       />
     </>
   );

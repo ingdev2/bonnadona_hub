@@ -918,6 +918,7 @@ export class UsersService {
           corporate_email: item.corporate_email,
           personal_email: item.personal_email,
           personal_cellphone: item.personal_cellphone,
+          corporate_cellphone: item.corporate_cellphone,
           collaborator_service_type: item.collaborator_service_type,
           collaborator_immediate_boss: item.collaborator_immediate_boss,
           collaborator_unit: item.collaborator_unit,

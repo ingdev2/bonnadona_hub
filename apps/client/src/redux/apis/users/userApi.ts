@@ -87,7 +87,7 @@ export const userApi = createApi({
 
     updateUser: builder.mutation<
       any,
-      { id: number; updateUser: Partial<User> }
+      { id: string; updateUser: Partial<User> }
     >({
       query: ({ id, updateUser }) => ({
         url: `updateUser/${id}`,
