@@ -200,7 +200,7 @@ const EditUserFormData: React.FC<{
       </Row>
 
       <Row gutter={24}>
-        <Col>
+        <Col span={12}>
           <Form.Item
             name="edit-user-corporate-cellphone"
             label="Celular corporativo:"

@@ -258,10 +258,9 @@ const EditUserForm: React.FC = () => {
             corporateCellphoneUserState,
         },
       });
-      console.log('response', response)
       let editUserDataError = response.error;
 
-      let editUserDataStatus = response.data?.status;
+      let editUserDataStatus = response.data?.statusCode;
 
       let editUserDataValidationData = response.data?.message;
 
@@ -290,44 +289,45 @@ const EditUserForm: React.FC = () => {
 
           setShowErrorMessage(true);
         }
+      }
 
-        if (editUserDataStatus === 202 && !editUserDataError) {
-          setHasChanges(false);
+      if (editUserDataStatus === 202 && !editUserDataError) {
+        setHasChanges(false);
 
-          dispatch(
-            setPrincipalEmailSelectedUser(
-              principalEmailUserLocalState || principalEmailUserState
-            )
-          );
-          dispatch(
-            setCorporateEmailSelectedUser(
-              corporateEmailUserLocalState || corporateEmailUserState
-            )
-          );
-          dispatch(
-            setPersonalEmailSelectedUser(
-              personalEmailUserLocalState || personalEmailUserState
-            )
-          );
-          dispatch(
-            setPersonalCellphoneSelectedUser(
-              parseInt(fullPersonalCellphoneNumber, 10) ||
-                personalCellphoneUserState
-            )
-          );
-          dispatch(
-            setCorporateEmailSelectedUser(
-              parseInt(fullCorporateCellphoneNumber, 10) ||
-                corporateCellphoneUserState
-            )
-          );
+        dispatch(
+          setPrincipalEmailSelectedUser(
+            principalEmailUserLocalState || principalEmailUserState
+          )
+        );
+        dispatch(
+          setCorporateEmailSelectedUser(
+            corporateEmailUserLocalState || corporateEmailUserState
+          )
+        );
+        dispatch(
+          setPersonalEmailSelectedUser(
+            personalEmailUserLocalState || personalEmailUserState
+          )
+        );
+        dispatch(
+          setPersonalCellphoneSelectedUser(
+            parseInt(fullPersonalCellphoneNumber, 10) ||
+              personalCellphoneUserState
+          )
+        );
+        dispatch(
+          setCorporateEmailSelectedUser(
+            parseInt(fullCorporateCellphoneNumber, 10) ||
+              corporateCellphoneUserState
+          )
+        );
 
-          setSuccessMessage("¡Datos del usuario actualizados correctamente!");
-          setShowSuccessMessage(true);
-        }
+        setSuccessMessage("¡Datos del usuario actualizados correctamente!");
+        setShowSuccessMessage(true);
       }
     } catch (error) {
       console.error(error);
+      dispatch(setErrorsSelectedUser("ERROR INTERNO"));
     } finally {
       setIsSubmittingUpdatePersonalData(false);
     }
