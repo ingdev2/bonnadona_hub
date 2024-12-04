@@ -69,7 +69,6 @@ const HomePage = () => {
   });
 
   useEffect(() => {
-    console.log("session:", session);
     if (!principalEmailAdminState && userActiveDatabyIdNumberData) {
       dispatch(
         setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)

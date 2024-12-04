@@ -3,8 +3,10 @@ interface User {
   name: string;
   last_name: string;
   user_id_type: number;
+  user_id_type_abbrev: string;
   id_number: number;
   user_gender: number;
+  user_gender_abbrev: string;
   birthdate: string;
   principal_email: string;
   corporate_email: string;
@@ -36,10 +38,4 @@ interface User {
   user_shirt_size?: string;
   user_pants_size?: string;
   user_shoe_size?: string;
-
-
-
-
-
-
 }

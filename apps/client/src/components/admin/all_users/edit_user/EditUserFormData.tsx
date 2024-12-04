@@ -1,9 +1,12 @@
 import React from "react";
 
-import { Col, Form, Input, Row } from "antd";
+import { Button, Col, Form, Input, Row } from "antd";
 import { Store } from "antd/es/form/interface";
 import { titleStyleCss } from "@/theme/text_styles";
 import { MdDriveFileRenameOutline } from "react-icons/md";
+import { FiPhone } from "react-icons/fi";
+import PhoneInput, { PhoneNumber } from "antd-phone-input";
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 
 const EditUserFormData: React.FC<{
   principalEmailUserFormData: string;
@@ -12,11 +15,25 @@ const EditUserFormData: React.FC<{
   onChangeCorporateEmailUserFormData: (e: any) => void;
   personalEmailUserFormData: string;
   onChangePersonalEmailUserFormData: (e: any) => void;
-
+  personalCellphoneFormData: string | PhoneNumber | undefined;
+  onChangePersonalCellphoneFormData: (e: any) => void;
+  validatorPersonalCellphoneInputFormData: (
+    _: any,
+    value: any
+  ) => Promise<void>;
+  corporateCellphoneFormData: string | PhoneNumber | undefined;
+  onChangeCorporateCellphoneFormData: (e: any) => void;
+  validatorCorporateCellphoneInputFormData: (
+    _: any,
+    value: any
+  ) => Promise<void>;
   handleConfirmEditAdminFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
   initialValuesEditAdminFormData: Store | undefined;
+  isSubmittingEditUserData: boolean;
+  hasChangesFormData: boolean;
+  handleButtonClickFormData: () => void;
 }> = ({
   principalEmailUserFormData,
   onChangePrincipalEmailUserFormData,
@@ -24,8 +41,17 @@ const EditUserFormData: React.FC<{
   onChangeCorporateEmailUserFormData,
   personalEmailUserFormData,
   onChangePersonalEmailUserFormData,
+  personalCellphoneFormData,
+  onChangePersonalCellphoneFormData,
+  validatorPersonalCellphoneInputFormData,
+  corporateCellphoneFormData,
+  onChangeCorporateCellphoneFormData,
+  validatorCorporateCellphoneInputFormData,
   handleConfirmEditAdminFormData,
   initialValuesEditAdminFormData,
+  isSubmittingEditUserData,
+  hasChangesFormData,
+  handleButtonClickFormData,
 }) => {
   return (
     <Form
@@ -139,8 +165,112 @@ const EditUserFormData: React.FC<{
         </Col>
 
         <Col span={12}>
+          <Form.Item
+            name="edit-user-personal-cellphone"
+            label="Celular personal:"
+            style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value || typeof value !== "string") return "";
+
+              return value.replace(/[^\d+]/g, "");
+            }}
+            rules={[
+              {
+                required: false,
+                message:
+                  "¡Por favor ingresa el número de celular personal del usuario!",
+              },
+              {
+                validator: validatorPersonalCellphoneInputFormData,
+              },
+            ]}
+          >
+            <PhoneInput
+              prefix={<FiPhone className="site-form-item-icon" />}
+              type="tel"
+              value={personalCellphoneFormData}
+              placeholder="Número de celular personal"
+              onChange={onChangePersonalCellphoneFormData}
+              autoComplete="off"
+              min={0}
+              enableSearch
+            />
+          </Form.Item>
         </Col>
       </Row>
+
+      <Row gutter={24}>
+        <Col span={12}>
+          <Form.Item
+            name="edit-user-corporate-cellphone"
+            label="Celular corporativo:"
+            style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value || typeof value !== "string") return "";
+
+              return value.replace(/[^\d+]/g, "");
+            }}
+            rules={[
+              {
+                required: false,
+                message:
+                  "¡Por favor ingresa el número de celular corporativo del usuario!",
+              },
+              {
+                validator: validatorCorporateCellphoneInputFormData,
+              },
+            ]}
+          >
+            <PhoneInput
+              prefix={<FiPhone className="site-form-item-icon" />}
+              type="tel"
+              value={corporateCellphoneFormData}
+              placeholder="Número de celular corporativo"
+              onChange={onChangeCorporateCellphoneFormData}
+              autoComplete="off"
+              min={0}
+              enableSearch
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Form.Item
+        style={{
+          textAlign: "center",
+          marginBlock: "0px",
+          paddingBlock: "13px",
+        }}
+      >
+        {isSubmittingEditUserData ? (
+          <CustomSpin />
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              flexFlow: "row",
+              justifyContent: "center",
+            }}
+          >
+            <Button
+              size="large"
+              style={{
+                backgroundColor: !hasChangesFormData ? "#D8D8D8" : "#015E90",
+                color: !hasChangesFormData ? "#A0A0A0" : "#f2f2f2",
+                fontWeight: "bold",
+                paddingInline: 54,
+                borderRadius: 31,
+              }}
+              htmlType="submit"
+              className="edit-patient-form-button"
+              onClick={handleButtonClickFormData}
+              disabled={!hasChangesFormData}
+            >
+              Actualizar datos
+            </Button>
+          </div>
+        )}
+      </Form.Item>
     </Form>
   );
 };

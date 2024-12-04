@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import CustomTableFiltersAndSorting from "@/components/common/custom_table_filters_and_sorting/CustomTableFiltersAndSorting";
+import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
+import ModalUserDetails from "./modal_user_details/ModalUserDetails";
 import EditUserForm from "./edit_user/EditUserForm";
+import { subtitleStyleCss } from "@/theme/text_styles";
 
 import {
   useBanUserMutation,
@@ -10,6 +15,8 @@ import {
 } from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
+import { useGetAllServiceTypesQuery } from "@/redux/apis/service_types/serviceTypesApi";
+import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
 
 import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
 
@@ -34,16 +41,13 @@ import {
   setPersonalEmailSelectedUser,
   setPrincipalEmailSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
-import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import CustomTableFiltersAndSorting from "@/components/common/custom_table_filters_and_sorting/CustomTableFiltersAndSorting";
+
 import { tableColumnsAllUsers } from "./table_columns_all_users/TableColums_all_users";
-import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
-import ModalUserDetails from "./modal_user_details/ModalUserDetails";
+
 import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
 import { Button } from "antd";
 import { TbUserEdit } from "react-icons/tb";
-import { useGetAllServiceTypesQuery } from "@/redux/apis/service_types/serviceTypesApi";
-import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
+
 import {
   setAffiliationEpsUserProfile,
   setBloodGroupUserProfile,
@@ -453,6 +457,21 @@ const AllUsersContent: React.FC = () => {
               flexFlow: "column wrap",
             }}
           >
+            <div>
+              <h2
+                style={{
+                  ...subtitleStyleCss,
+                  textAlign: "center",
+                  marginLeft: "45px",
+                }}
+              >
+                Total de&nbsp;
+                <b>
+                  {allUsersWithProfileData?.length || 0}
+                  &nbsp;usuario(s)
+                </b>
+              </h2>
+            </div>
             <CustomTableFiltersAndSorting
               dataCustomTable={transformedData || []}
               columnsCustomTable={tableColumnsAllUsers({

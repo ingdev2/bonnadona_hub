@@ -45,23 +45,23 @@ export const userApi = createApi({
       query: (Id) => `getUserProfileById/${Id}`,
     }),
 
-    getCollaboratorUserByIdNumber: builder.query<User, string>({
+    getCollaboratorUserByIdNumber: builder.query<User, number>({
       query: (IdNumber) => `getCollaboratorUserByIdNumber/${IdNumber}`,
     }),
 
-    getSuperAdminUserByIdNumber: builder.query<User, string>({
+    getSuperAdminUserByIdNumber: builder.query<User, number>({
       query: (IdNumber) => `getSuperAdminUserByIdNumber/${IdNumber}`,
     }),
 
-    getAdminUserByIdNumber: builder.query<User, string>({
+    getAdminUserByIdNumber: builder.query<User, number>({
       query: (IdNumber) => `getAdminUserByIdNumber/${IdNumber}`,
     }),
 
-    getAdminsUserByIdNumber: builder.query<User, string>({
+    getAdminsUserByIdNumber: builder.query<User, number>({
       query: (IdNumber) => `getAdminsUserByIdNumber/${IdNumber}`,
     }),
 
-    getAuditorUserByIdNumber: builder.query<User, string>({
+    getAuditorUserByIdNumber: builder.query<User, number>({
       query: (IdNumber) => `getAuditorUserByIdNumber/${IdNumber}`,
     }),
 
@@ -87,7 +87,7 @@ export const userApi = createApi({
 
     updateUser: builder.mutation<
       any,
-      { id: number; updateUser: Partial<User> }
+      { id: string; updateUser: Partial<User> }
     >({
       query: ({ id, updateUser }) => ({
         url: `updateUser/${id}`,

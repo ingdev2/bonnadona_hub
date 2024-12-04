@@ -8,12 +8,18 @@ import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupAp
 import {
   useGetUserByIdNumberQuery,
   useGetUserQuery,
+  useUpdateUserMutation,
 } from "@/redux/apis/users/userApi";
 import {
+  setCorporateEmailSelectedUser,
   setErrorsSelectedUser,
   setIdSelectedUser,
+  setPersonalCellphoneSelectedUser,
+  setPersonalEmailSelectedUser,
+  setPrincipalEmailSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
 import EditUserFormData from "./EditUserFormData";
+import { setErrorsUser } from "@/redux/features/user/userSlice";
 
 const EditUserForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -114,12 +120,32 @@ const EditUserForm: React.FC = () => {
     useState("");
   const [personalEmailUserLocalState, setPersonalEmailUserLocalState] =
     useState("");
+
   const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
     useState(0);
+
   const [
     corporateCellphoneUserLocalState,
     setCorporateCellphoneUserLocalState,
   ] = useState("");
+
+  const [countryCodePersonalCellphone, setCountryCodePersonalCellphone] =
+    useState(0);
+  const [areaCodePersonalCellphone, setAreaCodePersonalCellphone] =
+    useState("");
+  const [phoneNumberPersonalCellphone, setPhoneNumberPersonalCellphone] =
+    useState("");
+
+  var fullPersonalCellphoneNumber = `${countryCodePersonalCellphone}${areaCodePersonalCellphone}${phoneNumberPersonalCellphone}`;
+
+  const [countryCodeCorporateCellphone, setCountryCodeCorporateCellphone] =
+    useState(0);
+  const [areaCodeCorporateCellphone, setAreaCodeCorporateCellphone] =
+    useState("");
+  const [phoneNumberCorporateCellphone, setPhoneNumberCorporateCellphone] =
+    useState("");
+
+  var fullCorporateCellphoneNumber = `${countryCodeCorporateCellphone}${areaCodeCorporateCellphone}${phoneNumberCorporateCellphone}`;
 
   const [bloodGroupUserProfileLocalState, setBloodGroupUserProfileLocalState] =
     useState(0);
@@ -178,6 +204,18 @@ const EditUserForm: React.FC = () => {
     error: allBloodGroupsError,
   } = useGetAllBloodGroupsQuery(null);
 
+  const [
+    updateUserData,
+    {
+      data: updateUserPersonalData,
+      isLoading: updateUserLoading,
+      isSuccess: updateUserSuccess,
+      isError: updateUserError,
+    },
+  ] = useUpdateUserMutation({
+    fixedCacheKey: "updateUserData",
+  });
+
   useEffect(() => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
@@ -193,19 +231,181 @@ const EditUserForm: React.FC = () => {
       dispatch(
         setErrorsSelectedUser("¡No se pudo obtener los tipos de sangre!")
       );
+      setShowErrorMessage(true);
+      setBloodGroupListLocalState(allBloodGroupsData);
     }
-    setShowErrorMessage(true);
-    setBloodGroupListLocalState(allBloodGroupsData);
   }, [userData, idUserState, allBloodGroupsData, allBloodGroupsError]);
 
   const handleConfirmUpdatePersonalData = async (
     e: React.FormEvent<HTMLFormElement>
-  ) => {};
+  ) => {
+    try {
+      setIsSubmittingUpdatePersonalData(true);
 
-  const handleOnchageBloodGroups = (value: number) => {
+      const response: any = await updateUserData({
+        id: idUserState,
+        updateUser: {
+          principal_email:
+            principalEmailUserLocalState || principalEmailUserState,
+          corporate_email:
+            corporateEmailUserLocalState || corporateEmailUserState,
+          personal_email: personalEmailUserLocalState || personalEmailUserState,
+          personal_cellphone:
+            parseInt(fullPersonalCellphoneNumber, 10) ||
+            personalCellphoneUserState,
+          corporate_cellphone:
+            parseInt(fullCorporateCellphoneNumber, 10) ||
+            corporateCellphoneUserState,
+        },
+      });
+      let editUserDataError = response.error;
+
+      let editUserDataStatus = response.data?.statusCode;
+
+      let editUserDataValidationData = response.data?.message;
+
+      if (editUserDataError || editUserDataStatus !== 202) {
+        setHasChanges(false);
+
+        const errorMessage = editUserDataError?.data.message;
+        const validationDataMessage = editUserDataValidationData;
+
+        if (Array.isArray(errorMessage)) {
+          dispatch(setErrorsSelectedUser(errorMessage[0]));
+
+          setShowErrorMessage(true);
+        } else if (typeof errorMessage === "string") {
+          dispatch(setErrorsSelectedUser(errorMessage));
+
+          setShowErrorMessage(true);
+        }
+
+        if (Array.isArray(validationDataMessage)) {
+          dispatch(setErrorsSelectedUser(validationDataMessage[0]));
+
+          setShowErrorMessage(true);
+        } else if (typeof validationDataMessage === "string") {
+          dispatch(setErrorsSelectedUser(validationDataMessage));
+
+          setShowErrorMessage(true);
+        }
+      }
+
+      if (editUserDataStatus === 202 && !editUserDataError) {
+        setHasChanges(false);
+
+        dispatch(
+          setPrincipalEmailSelectedUser(
+            principalEmailUserLocalState || principalEmailUserState
+          )
+        );
+        dispatch(
+          setCorporateEmailSelectedUser(
+            corporateEmailUserLocalState || corporateEmailUserState
+          )
+        );
+        dispatch(
+          setPersonalEmailSelectedUser(
+            personalEmailUserLocalState || personalEmailUserState
+          )
+        );
+        dispatch(
+          setPersonalCellphoneSelectedUser(
+            parseInt(fullPersonalCellphoneNumber, 10) ||
+              personalCellphoneUserState
+          )
+        );
+        dispatch(
+          setCorporateEmailSelectedUser(
+            parseInt(fullCorporateCellphoneNumber, 10) ||
+              corporateCellphoneUserState
+          )
+        );
+
+        setSuccessMessage("¡Datos del usuario actualizados correctamente!");
+        setShowSuccessMessage(true);
+      }
+    } catch (error) {
+      console.error(error);
+      dispatch(setErrorsSelectedUser("ERROR INTERNO"));
+    } finally {
+      setIsSubmittingUpdatePersonalData(false);
+    }
+  };
+
+  const handlePersonalCellphoneInputChange = (value: any) => {
     setHasChanges(true);
 
-    setBloodGroupUserProfileLocalState(value);
+    if (value) {
+      setCountryCodePersonalCellphone(value.countryCode || 0);
+      setAreaCodePersonalCellphone(value.areaCode || "");
+      setPhoneNumberPersonalCellphone(value.phoneNumber || "");
+    }
+  };
+
+  const combinePersonalCellphoneDetails = () => {
+    return `${areaCodePersonalCellphone}${phoneNumberPersonalCellphone}`;
+  };
+
+  const validatorPersonalCellphoneInput = (_: any, value: any) => {
+    const combinedPersonalCellphone = combinePersonalCellphoneDetails();
+
+    if (!combinedPersonalCellphone) {
+      return Promise.resolve();
+    }
+
+    const personalCellphonePattern = /^[0-9]+$/;
+
+    if (
+      personalCellphonePattern.test(combinedPersonalCellphone) &&
+      combinedPersonalCellphone.length >= 7 &&
+      combinedPersonalCellphone.length <= 17
+    ) {
+      return Promise.resolve();
+    }
+
+    return Promise.reject("Número de teléfono inválido");
+  };
+
+  const handleCorporateCellphoneInputChange = (value: any) => {
+    setHasChanges(true);
+
+    if (value) {
+      setCountryCodeCorporateCellphone(value.countryCode || 0);
+      setAreaCodeCorporateCellphone(value.areaCode || "");
+      setPhoneNumberCorporateCellphone(value.phoneNumber || "");
+    }
+  };
+
+  const combineCorporateCellphoneDetails = () => {
+    return `${areaCodeCorporateCellphone}${phoneNumberCorporateCellphone}`;
+  };
+
+  const validatorCorporateCellphoneInput = (_: any, value: any) => {
+    const combinedCorporateCellphone = combineCorporateCellphoneDetails();
+
+    if (!combinedCorporateCellphone) {
+      return Promise.resolve();
+    }
+
+    const personalCellphonePattern = /^[0-9]+$/;
+
+    if (
+      personalCellphonePattern.test(combinedCorporateCellphone) &&
+      combinedCorporateCellphone.length >= 7 &&
+      combinedCorporateCellphone.length <= 17
+    ) {
+      return Promise.resolve();
+    }
+
+    return Promise.reject("Número de teléfono inválido");
+  };
+
+  const handleButtonClick = () => {
+    setSuccessMessage("");
+    setShowSuccessMessage(false);
+
+    setShowErrorMessage(false);
   };
 
   return (
@@ -243,12 +443,37 @@ const EditUserForm: React.FC = () => {
 
           setPersonalEmailUserLocalState(e.target.value);
         }}
+        personalCellphoneFormData={
+          (personalCellphoneUserState &&
+            personalCellphoneUserState.toString()) ||
+          undefined
+        }
+        onChangePersonalCellphoneFormData={handlePersonalCellphoneInputChange}
+        validatorPersonalCellphoneInputFormData={
+          validatorPersonalCellphoneInput
+        }
+        corporateCellphoneFormData={
+          (corporateCellphoneUserState &&
+            corporateCellphoneUserState.toString()) ||
+          undefined
+        }
+        onChangeCorporateCellphoneFormData={handleCorporateCellphoneInputChange}
+        validatorCorporateCellphoneInputFormData={
+          validatorCorporateCellphoneInput
+        }
         handleConfirmEditAdminFormData={handleConfirmUpdatePersonalData}
         initialValuesEditAdminFormData={{
           "edit-user-principal-email": principalEmailUserState || NOT_REGISTER,
           "edit-user-corporate-email": corporateEmailUserState || NOT_REGISTER,
           "edit-user-personal-email": personalEmailUserState || NOT_REGISTER,
+          "edit-user-personal-cellphone":
+            personalCellphoneUserState || NOT_REGISTER,
+          "edit-user-corporate-cellphone":
+            corporateCellphoneUserState || NOT_REGISTER,
         }}
+        isSubmittingEditUserData={isSubmittingUpdatePersonalData}
+        hasChangesFormData={hasChanges}
+        handleButtonClickFormData={handleButtonClick}
       />
     </>
   );
