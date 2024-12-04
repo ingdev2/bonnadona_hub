@@ -111,23 +111,12 @@ const EditUserForm: React.FC = () => {
 
   const [hasChanges, setHasChanges] = useState(false);
 
-  const [nameUserLocalState, setNameUserLocalState] = useState("");
-  const [lastNameUserLocalState, setLastNameUserLocalState] = useState("");
-  const [idNumberUserLocalState, setIdNumberUserLocalState] = useState(0);
   const [principalEmailUserLocalState, setPrincipalEmailUserLocalState] =
     useState("");
   const [corporateEmailUserLocalState, setCorporateEmailUserLocalState] =
     useState("");
   const [personalEmailUserLocalState, setPersonalEmailUserLocalState] =
     useState("");
-
-  const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
-    useState(0);
-
-  const [
-    corporateCellphoneUserLocalState,
-    setCorporateCellphoneUserLocalState,
-  ] = useState("");
 
   const [countryCodePersonalCellphone, setCountryCodePersonalCellphone] =
     useState(0);
@@ -183,7 +172,7 @@ const EditUserForm: React.FC = () => {
     []
   );
 
-  const [isSubmittingUpdatePersonalData, setIsSubmittingUpdatePersonalData] =
+  const [isSubmittingUpdatePersonal, setIsSubmittingUpdatePersonal] =
     useState(false);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -220,28 +209,14 @@ const EditUserForm: React.FC = () => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
-    if (
-      allBloodGroupsData &&
-      !allBloodGroupsLoading &&
-      !allBloodGroupsFetching
-    ) {
-      setBloodGroupListLocalState(allBloodGroupsData);
-    }
-    if (allBloodGroupsError) {
-      dispatch(
-        setErrorsSelectedUser("¡No se pudo obtener los tipos de sangre!")
-      );
-      setShowErrorMessage(true);
-      setBloodGroupListLocalState(allBloodGroupsData);
-    }
-  }, [userData, idUserState, allBloodGroupsData, allBloodGroupsError]);
+  }, [userData, idUserState]);
 
   const handleConfirmUpdatePersonalData = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     try {
-      setIsSubmittingUpdatePersonalData(true);
-
+      setIsSubmittingUpdatePersonal(true);
+      
       const response: any = await updateUserData({
         id: idUserState,
         updateUser: {
@@ -329,7 +304,7 @@ const EditUserForm: React.FC = () => {
       console.error(error);
       dispatch(setErrorsSelectedUser("ERROR INTERNO"));
     } finally {
-      setIsSubmittingUpdatePersonalData(false);
+      setIsSubmittingUpdatePersonal(false);
     }
   };
 
@@ -471,7 +446,7 @@ const EditUserForm: React.FC = () => {
           "edit-user-corporate-cellphone":
             corporateCellphoneUserState || NOT_REGISTER,
         }}
-        isSubmittingEditUserData={isSubmittingUpdatePersonalData}
+        isSubmittingEditUserData={isSubmittingUpdatePersonal}
         hasChangesFormData={hasChanges}
         handleButtonClickFormData={handleButtonClick}
       />

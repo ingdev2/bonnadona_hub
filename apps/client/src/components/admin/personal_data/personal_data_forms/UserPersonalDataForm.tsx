@@ -7,6 +7,8 @@ import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import UserPersonalDataFormData from "./UserPersonalDataFormData";
 import { TbPasswordUser } from "react-icons/tb";
 import { setAdminModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
+import UserPersonalEditDataForm from "../user_personal_edit_data_forms/UserPersonalEditDataForm";
 
 const UserPersonalDataForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -38,7 +40,7 @@ const UserPersonalDataForm: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.user.personal_cellphone
   );
-  const userErrorsState = useAppSelector((state) => state.user.errors);
+  const errorsUserState = useAppSelector((state) => state.user.errors);
 
   const isOpenModalChangeData = useAppSelector(
     (state) => state.modal.adminModalIsOpen
@@ -64,7 +66,7 @@ const UserPersonalDataForm: React.FC = () => {
           {showErrorMessageAdmin && (
             <CustomMessage
               typeMessage="error"
-              message={userErrorsState?.toString() || "¡Error en la petición!"}
+              message={errorsUserState?.toString() || "¡Error en la petición!"}
             />
           )}
 
@@ -72,6 +74,20 @@ const UserPersonalDataForm: React.FC = () => {
             <CustomMessage
               typeMessage="success"
               message={successMessage || "¡Proceso finalizado con éxito!"}
+            />
+          )}
+
+          {isOpenModalChangeData && (
+            <CustomModalNoContent
+              key={"custom-modal-edit-user-data"}
+              widthCustomModalNoContent={"31%"}
+              openCustomModalState={isOpenModalChangeData}
+              closableCustomModal={true}
+              maskClosableCustomModal={true}
+              handleCancelCustomModal={() => {
+                dispatch(setAdminModalIsOpen(false));
+              }}
+              contentCustomModal={<UserPersonalEditDataForm />}
             />
           )}
 
