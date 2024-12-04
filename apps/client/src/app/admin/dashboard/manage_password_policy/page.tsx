@@ -107,7 +107,7 @@ const ManagePasswordPolicy = () => {
       {!principalEmailAdminLoginState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
-        <div className="dashboard-admin-content">
+        <div className="dashboard-manage-password-policy-content">
           <ManagePasswordPolicyContent />
         </div>
       )}

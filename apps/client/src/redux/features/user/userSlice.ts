@@ -5,8 +5,10 @@ const initialState: User = {
   name: "",
   last_name: "",
   user_id_type: 0,
+  user_id_type_abbrev: "",
   id_number: 0,
   user_gender: 0,
+  user_gender_abbrev: "",
   birthdate: "",
   principal_email: "",
   corporate_email: "",
@@ -43,11 +45,17 @@ export const userSlice = createSlice({
     setIdTypeUser: (state, action) => {
       state.user_id_type = action.payload;
     },
+    setIdTypeAbbrevUser: (state, action) => {
+      state.user_id_type_abbrev = action.payload;
+    },
     setIdNumberUser: (state, action) => {
       state.id_number = action.payload;
     },
     setGenderUser: (state, action) => {
       state.user_gender = action.payload;
+    },
+    setGenderAbbrevUser: (state, action) => {
+      state.user_gender_abbrev = action.payload;
     },
     setBirthdateUser: (state, action) => {
       state.birthdate = action.payload;
@@ -99,8 +107,10 @@ export const userSlice = createSlice({
       state.name = "";
       state.last_name = "";
       state.user_id_type = 0;
+      state.user_id_type_abbrev = "";
       state.id_number = 0;
       state.user_gender = 0;
+      state.user_gender_abbrev = "";
       state.birthdate = "";
       state.principal_email = "";
       state.corporate_email = "";
@@ -129,7 +139,9 @@ export const {
   setCorporateCellphoneUser,
   setCorporateEmailUser,
   setGenderUser,
+  setGenderAbbrevUser,
   setIdTypeUser,
+  setIdTypeAbbrevUser,
   setPersonalCellphoneUser,
   setPersonalEmailUser,
   setPasswordUser,
