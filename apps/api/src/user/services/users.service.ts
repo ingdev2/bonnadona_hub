@@ -948,7 +948,7 @@ export class UsersService {
           user_shoe_size: item.user_profile?.user_shoe_size,
         });
       });
-      
+
       return result;
     }
   }
@@ -1174,15 +1174,17 @@ export class UsersService {
       );
     }
 
-    const isCorporateEmail = await validateCorporateEmail(
-      updateUser.corporate_email,
-    );
-
-    if (!isCorporateEmail) {
-      throw new HttpException(
-        `El email : ${updateUser.corporate_email} no es un correo corporativo válido.`,
-        HttpStatus.BAD_REQUEST,
+    if (updateUser.corporate_email) {
+      const isCorporateEmail = await validateCorporateEmail(
+        updateUser.corporate_email,
       );
+
+      if (!isCorporateEmail) {
+        throw new HttpException(
+          `El email : ${updateUser.corporate_email} no es un correo corporativo válido.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
 
     const personalCellphoneUserValidate = await this.userRepository.findOne({

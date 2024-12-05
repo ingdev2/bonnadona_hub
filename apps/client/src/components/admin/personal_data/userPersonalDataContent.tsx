@@ -50,10 +50,6 @@ const UserPersonalDataContent: React.FC = () => {
     (state) => state.user.collaborator_service
   );
 
-  //   const corporateEmailUserState = useAppSelector(
-  //     (state) => state.user.corporate_email
-  //   );
-
   const personalEmailUserState = useAppSelector(
     (state) => state.user.personal_email
   );
