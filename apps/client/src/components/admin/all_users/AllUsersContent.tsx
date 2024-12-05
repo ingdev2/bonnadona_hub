@@ -334,15 +334,16 @@ const AllUsersContent: React.FC = () => {
                     }
                     labelUserPersonalCellphone="Teléfono personal"
                     selectedUserPersonalCellphone={
-                      selectedRowDataLocalState?.personal_cellphone
+                      selectedRowDataLocalState?.personal_cellphone  || NOT_REGISTER
                     }
                     labelUserCorporateCellphone="Teléfono corporativo"
                     selectedUserCorporateCellphone={
-                      selectedRowDataLocalState?.corporate_cellphone
+                      selectedRowDataLocalState?.corporate_cellphone  || NOT_REGISTER
                     }
                     labelUserServiceType="Tipo de servicio"
                     selectedUserServiceType={
-                      selectedRowDataLocalState?.collaborator_service_type
+                      selectedRowDataLocalState?.collaborator_service_type ||
+                      NOT_REGISTER
                     }
                     labelUserInmediateBoss="Jefe inmediato"
                     selectedUserInmediateBoss={

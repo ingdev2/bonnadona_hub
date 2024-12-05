@@ -118,14 +118,11 @@ const EditUserForm: React.FC = () => {
   const [personalEmailUserLocalState, setPersonalEmailUserLocalState] =
     useState("");
 
-  const [countryCodePersonalCellphone, setCountryCodePersonalCellphone] =
-    useState(0);
-  const [areaCodePersonalCellphone, setAreaCodePersonalCellphone] =
-    useState("");
-  const [phoneNumberPersonalCellphone, setPhoneNumberPersonalCellphone] =
+  const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
     useState("");
 
-  var fullPersonalCellphoneNumber = `${countryCodePersonalCellphone}${areaCodePersonalCellphone}${phoneNumberPersonalCellphone}`;
+  const [corporateCellphoneUserLocalState, setCorporateCellphoneUserLocalState] =
+    useState("");
 
   const [countryCodeCorporateCellphone, setCountryCodeCorporateCellphone] =
     useState(0);
@@ -216,7 +213,7 @@ const EditUserForm: React.FC = () => {
   ) => {
     try {
       setIsSubmittingUpdatePersonal(true);
-      
+
       const response: any = await updateUserData({
         id: idUserState,
         updateUser: {
@@ -226,10 +223,10 @@ const EditUserForm: React.FC = () => {
             corporateEmailUserLocalState || corporateEmailUserState,
           personal_email: personalEmailUserLocalState || personalEmailUserState,
           personal_cellphone:
-            parseInt(fullPersonalCellphoneNumber, 10) ||
+            parseInt(personalCellphoneUserLocalState, 10) ||
             personalCellphoneUserState,
           corporate_cellphone:
-            parseInt(fullCorporateCellphoneNumber, 10) ||
+            parseInt(corporateCellphoneUserLocalState, 10) ||
             corporateCellphoneUserState,
         },
       });
@@ -286,13 +283,13 @@ const EditUserForm: React.FC = () => {
         );
         dispatch(
           setPersonalCellphoneSelectedUser(
-            parseInt(fullPersonalCellphoneNumber, 10) ||
+            parseInt(personalCellphoneUserLocalState, 10) ||
               personalCellphoneUserState
           )
         );
         dispatch(
           setCorporateEmailSelectedUser(
-            parseInt(fullCorporateCellphoneNumber, 10) ||
+            parseInt(corporateCellphoneUserLocalState, 10) ||
               corporateCellphoneUserState
           )
         );
@@ -306,40 +303,6 @@ const EditUserForm: React.FC = () => {
     } finally {
       setIsSubmittingUpdatePersonal(false);
     }
-  };
-
-  const handlePersonalCellphoneInputChange = (value: any) => {
-    setHasChanges(true);
-
-    if (value) {
-      setCountryCodePersonalCellphone(value.countryCode || 0);
-      setAreaCodePersonalCellphone(value.areaCode || "");
-      setPhoneNumberPersonalCellphone(value.phoneNumber || "");
-    }
-  };
-
-  const combinePersonalCellphoneDetails = () => {
-    return `${areaCodePersonalCellphone}${phoneNumberPersonalCellphone}`;
-  };
-
-  const validatorPersonalCellphoneInput = (_: any, value: any) => {
-    const combinedPersonalCellphone = combinePersonalCellphoneDetails();
-
-    if (!combinedPersonalCellphone) {
-      return Promise.resolve();
-    }
-
-    const personalCellphonePattern = /^[0-9]+$/;
-
-    if (
-      personalCellphonePattern.test(combinedPersonalCellphone) &&
-      combinedPersonalCellphone.length >= 7 &&
-      combinedPersonalCellphone.length <= 17
-    ) {
-      return Promise.resolve();
-    }
-
-    return Promise.reject("Número de teléfono inválido");
   };
 
   const handleCorporateCellphoneInputChange = (value: any) => {
@@ -423,19 +386,24 @@ const EditUserForm: React.FC = () => {
             personalCellphoneUserState.toString()) ||
           undefined
         }
-        onChangePersonalCellphoneFormData={handlePersonalCellphoneInputChange}
-        validatorPersonalCellphoneInputFormData={
-          validatorPersonalCellphoneInput
-        }
+        onChangePersonalCellphoneFormData={(e) => {
+          setHasChanges(true);
+
+          setPersonalCellphoneUserLocalState(e.target.value);
+        }}
         corporateCellphoneFormData={
           (corporateCellphoneUserState &&
             corporateCellphoneUserState.toString()) ||
           undefined
         }
-        onChangeCorporateCellphoneFormData={handleCorporateCellphoneInputChange}
-        validatorCorporateCellphoneInputFormData={
-          validatorCorporateCellphoneInput
-        }
+        onChangeCorporateCellphoneFormData={(e) => {
+          setHasChanges(true);
+
+          setCorporateCellphoneUserLocalState(e.target.value);
+        }}
+        // validatorCorporateCellphoneInputFormData={
+        //   validatorCorporateCellphoneInput
+        // }
         handleConfirmEditAdminFormData={handleConfirmUpdatePersonalData}
         initialValuesEditAdminFormData={{
           "edit-user-principal-email": principalEmailUserState || NOT_REGISTER,

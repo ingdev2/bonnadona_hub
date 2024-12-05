@@ -133,7 +133,17 @@ const UserPersonalEditDataFormData: React.FC<{
             message: "¡Por favor ingresa el número de celular personal!",
           },
           {
-            validator: validatorPersonalCellphoneInputFormData,
+            pattern: /^[0-9]+$/,
+            message:
+              "¡Por favor ingresa número de celular sin letras ni puntos!",
+          },
+          {
+            min: 7,
+            message: "¡Por favor ingresa mínimo 7 números!",
+          },
+          {
+            max: 11,
+            message: "¡Por favor ingresa máximo 11 números!",
           },
         ]}
       >
@@ -145,9 +155,7 @@ const UserPersonalEditDataFormData: React.FC<{
           onChange={onChangePersonalCellphoneFormData}
           autoComplete="off"
           min={0}
-          // enableSearch
         />
-        {/* <p>{personalCellphoneUserState}</p> */}
       </Form.Item>
 
       <Form.Item
