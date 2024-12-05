@@ -14,7 +14,7 @@ const UserPersonalEditDataFormData: React.FC<{
   onChangePrincipalEmailUserFormData: (e: any) => void;
   personalEmailUserFormData: string;
   onChangePersonalEmailUserFormData: (e: any) => void;
-  personalCellphoneFormData: string | PhoneNumber | undefined;
+  personalCellphoneFormData: string | undefined;
   onChangePersonalCellphoneFormData: (e: any) => void;
   validatorPersonalCellphoneInputFormData: (
     _: any,
@@ -137,7 +137,7 @@ const UserPersonalEditDataFormData: React.FC<{
           },
         ]}
       >
-        <PhoneInput
+        <Input
           prefix={<FiPhone className="site-form-item-icon" />}
           type="tel"
           value={personalCellphoneFormData}
@@ -145,7 +145,7 @@ const UserPersonalEditDataFormData: React.FC<{
           onChange={onChangePersonalCellphoneFormData}
           autoComplete="off"
           min={0}
-          enableSearch
+          // enableSearch
         />
         {/* <p>{personalCellphoneUserState}</p> */}
       </Form.Item>

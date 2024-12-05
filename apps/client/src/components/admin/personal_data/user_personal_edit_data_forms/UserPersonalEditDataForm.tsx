@@ -50,6 +50,9 @@ const UserPersonalEditDataForm: React.FC = () => {
   const [personalEmailUserLocalState, setPersonalEmailUserLocalState] =
     useState("");
 
+  const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
+    useState("");
+
   const [countryCodePersonalCellphone, setCountryCodePersonalCellphone] =
     useState(0);
   const [areaCodePersonalCellphone, setAreaCodePersonalCellphone] =
@@ -143,7 +146,7 @@ const UserPersonalEditDataForm: React.FC = () => {
             principalEmailUserLocalState || principalEmailUserState,
           personal_email: personalEmailUserLocalState || personalEmailUserState,
           personal_cellphone:
-            parseInt(fullPersonalCellphoneNumber, 10) ||
+            parseInt(personalCellphoneUserLocalState, 10) ||
             personalCellphoneUserState,
         },
       });
@@ -196,7 +199,7 @@ const UserPersonalEditDataForm: React.FC = () => {
         );
         dispatch(
           setPersonalCellphoneUser(
-            parseInt(fullPersonalCellphoneNumber, 10) ||
+            parseInt(personalCellphoneUserLocalState, 10) ||
               personalCellphoneUserState
           )
         );
@@ -260,7 +263,11 @@ const UserPersonalEditDataForm: React.FC = () => {
             personalCellphoneUserState.toString()) ||
           undefined
         }
-        onChangePersonalCellphoneFormData={handlePersonalCellphoneInputChange}
+        onChangePersonalCellphoneFormData={(e) => {
+          setHasChanges(true);
+
+          setPersonalCellphoneUserLocalState(e.target.value);
+        }}
         validatorPersonalCellphoneInputFormData={
           validatorPersonalCellphoneInput
         }
