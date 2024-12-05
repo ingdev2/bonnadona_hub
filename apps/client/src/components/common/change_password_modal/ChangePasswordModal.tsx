@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Modal, Input, Button, Form } from "antd";
@@ -9,10 +9,8 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/CustomLoadingOverlay";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import { setErrorsLoginUser } from "@/redux/features/login/userLoginSlice";
 import {
   setFirstLoginModalIsOpen,
-  setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { useUpdateUserPasswordMutation } from "@/redux/apis/users/userApi";
@@ -102,10 +100,6 @@ const ChangePasswordModal: React.FC<{
 
             setShowErrorMessage(true);
           }
-
-          // dispatch(setErrorsUser(errorMessage));
-          // setShowErrorMessage(true);
-          // setIsSubmittingConfirm(false);
         }
 
         if (editPasswordDataStatus === 202 && !editPasswordDataError) {
@@ -114,13 +108,6 @@ const ChangePasswordModal: React.FC<{
 
           dispatch(setFirstLoginModalIsOpen(false));
         }
-
-        // if (!editPasswordDataError && !editPasswordDataError) {
-        //   setShowSuccessMessage(true);
-        //   setSuccessMessage(response?.data.message);
-
-        //   dispatch(setFirstLoginModalIsOpen(false));
-        // }
       }
     } catch (error) {
       console.error(error);

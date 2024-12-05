@@ -2,28 +2,31 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
-import { setPrincipalEmailUser } from "@/redux/features/user/userSlice";
+import {
+  setIdNumberUser,
+} from "@/redux/features/user/userSlice";
 import {
   setAdminModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 
 import ManagePasswordPolicyContent from "@/components/admin/manage_password_policy/ManagePasswordPolicyContent";
-
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
-
-import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
+import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
 
 const ManagePasswordPolicy = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
+
+  const idNumberUserSession = session?.user?.id_number;
+
+  useAuthValidationAdmin();
 
   const allowedRoles = [
     RolesEnum.SUPER_ADMIN,
@@ -32,12 +35,13 @@ const ManagePasswordPolicy = () => {
   ];
   useRoleValidation(allowedRoles);
 
-  const principalEmailAdminLoginState = useAppSelector(
-    (state) => state.adminLogin.principal_email
-  );
+  // usePermissionsAppAndModuleValidationInPage({
+  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
+  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+  // });
 
-  const principalEmailAdminState = useAppSelector(
-    (state) => state.user.principal_email
+  const idNumberUserSessionState = useAppSelector(
+    (state) => state.user.id_number
   );
 
   const adminModalState = useAppSelector(
@@ -47,39 +51,12 @@ const ManagePasswordPolicy = () => {
     (state) => state.modal.isPageLoading
   );
 
-  const idNumberAdminLoginState = useAppSelector(
-    (state) => state.adminLogin.id_number
-  );
-
-  const idNumberAdminState = useAppSelector((state) => state.user.id_number);
-
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const {
-    data: userActiveDatabyIdNumberData,
-    isLoading: userActiveDatabyIdNumberLoading,
-    isFetching: userActiveDatabyIdNumberFetching,
-    isError: userActiveDatabyIdNumberError,
-  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
-    skip: !session?.user.id_number,
-  });
-
   useEffect(() => {
-    if (!principalEmailAdminState && userActiveDatabyIdNumberData) {
-      dispatch(
-        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
-      );
-    }
-    if (!principalEmailAdminLoginState) {
-      setShowErrorMessage(true);
-      setErrorMessage("¡Usuario no encontrado!");
-      redirect("/login_admin");
-    }
-    if (status === "unauthenticated") {
-      setShowErrorMessage(true);
-      setErrorMessage("¡No autenticado!");
-      redirect("/login_admin");
+    if (!idNumberUserSessionState && status === "authenticated") {
+      dispatch(setIdNumberUser(idNumberUserSession));
     }
     if (adminModalState) {
       dispatch(setAdminModalIsOpen(false));
@@ -87,13 +64,7 @@ const ManagePasswordPolicy = () => {
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
-  }, [
-    principalEmailAdminState,
-    principalEmailAdminLoginState,
-    status,
-    adminModalState,
-    isPageLoadingState,
-  ]);
+  }, [idNumberUserSessionState, status, adminModalState, isPageLoadingState]);
 
   return (
     <div>
@@ -104,7 +75,7 @@ const ManagePasswordPolicy = () => {
         />
       )}
 
-      {!principalEmailAdminLoginState || status === "unauthenticated" ? (
+      {!idNumberUserSessionState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
         <div className="dashboard-manage-password-policy-content">

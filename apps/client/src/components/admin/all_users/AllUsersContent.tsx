@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useSession } from "next-auth/react";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
@@ -8,6 +9,9 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import ModalUserDetails from "./modal_user_details/ModalUserDetails";
 import EditUserForm from "./edit_user/EditUserForm";
 import { subtitleStyleCss } from "@/theme/text_styles";
+import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
+import { Button } from "antd";
+import { TbUserEdit } from "react-icons/tb";
 
 import {
   useBanUserMutation,
@@ -19,8 +23,10 @@ import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { useGetAllServiceTypesQuery } from "@/redux/apis/service_types/serviceTypesApi";
 import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 
 import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 
 import {
   setChangePasswordExpiryModalIsOpen,
@@ -50,10 +56,6 @@ import {
 
 import { tableColumnsAllUsers } from "./table_columns_all_users/TableColums_all_users";
 
-import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
-import { Button } from "antd";
-import { TbUserEdit } from "react-icons/tb";
-
 import {
   setAffiliationEpsUserProfile,
   setBloodGroupUserProfile,
@@ -67,10 +69,7 @@ import {
   setUserShoeSizeUserProfile,
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
-import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
-import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
-import { useSession } from "next-auth/react";
 
 const AllUsersContent: React.FC = () => {
   const { data: session, status } = useSession();

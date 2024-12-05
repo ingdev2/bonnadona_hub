@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 import {
+  setIdNumberUser,
   setIdUser,
   setLastNameUser,
   setNameUser,
@@ -24,13 +24,16 @@ import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enums/item_names_and_keys.enums";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
-import MainViewContent from "@/components/admin/main_view/MainViewContent";
 import AllUsersContent from "@/components/admin/all_users/AllUsersContent";
+import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
 
 const HomePage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
+
+  const idNumberUserSession = session?.user?.id_number;
+
+  useAuthValidationAdmin();
 
   const allowedRoles = [
     RolesEnum.SUPER_ADMIN,
@@ -39,12 +42,13 @@ const HomePage = () => {
   ];
   useRoleValidation(allowedRoles);
 
-  const principalEmailAdminLoginState = useAppSelector(
-    (state) => state.adminLogin.principal_email
-  );
+  // usePermissionsAppAndModuleValidationInPage({
+  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
+  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+  // });
 
-  const principalEmailAdminState = useAppSelector(
-    (state) => state.user.principal_email
+  const idNumberUserSessionState = useAppSelector(
+    (state) => state.user.id_number
   );
 
   const adminModalState = useAppSelector(
@@ -70,7 +74,10 @@ const HomePage = () => {
   });
 
   useEffect(() => {
-    if (!principalEmailAdminState && userActiveDatabyIdNumberData) {
+    if (!idNumberUserSessionState && status === "authenticated") {
+      dispatch(setIdNumberUser(idNumberUserSession));
+    }
+    if (userActiveDatabyIdNumberData) {
       dispatch(
         setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
       );
@@ -78,33 +85,19 @@ const HomePage = () => {
       dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
       dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
     }
-    if (!principalEmailAdminLoginState) {
-      setShowErrorMessage(true);
-      setErrorMessage("¡Usuario no encontrado!");
-      redirect("/login_admin");
-    }
-    if (status === "unauthenticated") {
-      setShowErrorMessage(true);
-      setErrorMessage("¡No autenticado!");
-      redirect("/login_admin");
-    }
     if (adminModalState) {
       dispatch(setAdminModalIsOpen(false));
     }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
-    if (
-      isPageLoadingState &&
-      selectedKeyState !== ItemKeys.SUB_USERS_KEY
-    ) {
+    if (isPageLoadingState && selectedKeyState !== ItemKeys.SUB_USERS_KEY) {
       dispatch(setIsPageLoading(false));
       dispatch(setSelectedKey(ItemKeys.SUB_USERS_KEY));
     }
   }, [
+    idNumberUserSessionState,
     userActiveDatabyIdNumberData,
-    principalEmailAdminState,
-    principalEmailAdminLoginState,
     adminModalState,
     isPageLoadingState,
   ]);
@@ -118,12 +111,9 @@ const HomePage = () => {
         />
       )}
 
-      {!principalEmailAdminLoginState || status === "unauthenticated" ? (
+      {!idNumberUserSessionState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
-        // <div className="dashboard-admin-content">
-        //   <MainViewContent />
-        // </div>
         <div className="dashboard-admin-content">
           <AllUsersContent />
         </div>

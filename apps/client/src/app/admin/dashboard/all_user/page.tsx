@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
-import { setPrincipalEmailUser } from "@/redux/features/user/userSlice";
+import {
+  setIdNumberUser,
+} from "@/redux/features/user/userSlice";
 import {
   setAdminModalIsOpen,
   setIsPageLoading,
@@ -14,14 +15,18 @@ import {
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
-import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import AllUsersContent from "@/components/admin/all_users/AllUsersContent";
+import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
 
 const AllUsersPage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
+
+  const idNumberUserSession = session?.user?.id_number;
+
+  useAuthValidationAdmin();
 
   const allowedRoles = [
     RolesEnum.SUPER_ADMIN,
@@ -30,12 +35,13 @@ const AllUsersPage = () => {
   ];
   useRoleValidation(allowedRoles);
 
-  const principalEmailAdminLoginState = useAppSelector(
-    (state) => state.adminLogin.principal_email
-  );
+  // usePermissionsAppAndModuleValidationInPage({
+  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
+  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+  // });
 
-  const principalEmailAdminState = useAppSelector(
-    (state) => state.user.principal_email
+  const idNumberUserSessionState = useAppSelector(
+    (state) => state.user.id_number
   );
 
   const adminModalState = useAppSelector(
@@ -48,30 +54,9 @@ const AllUsersPage = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const {
-    data: userActiveDatabyIdNumberData,
-    isLoading: userActiveDatabyIdNumberLoading,
-    isFetching: userActiveDatabyIdNumberFetching,
-    isError: userActiveDatabyIdNumberError,
-  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
-    skip: !session?.user.id_number,
-  });
-
   useEffect(() => {
-    if (!principalEmailAdminState && userActiveDatabyIdNumberData) {
-      dispatch(
-        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
-      );
-    }
-    if (!principalEmailAdminLoginState) {
-      setShowErrorMessage(true);
-      setErrorMessage("¡Usuario no encontrado!");
-      redirect("/login_admin");
-    }
-    if (status === "unauthenticated") {
-      setShowErrorMessage(true);
-      setErrorMessage("¡No autenticado!");
-      redirect("/login_admin");
+    if (!idNumberUserSessionState && status === "authenticated") {
+      dispatch(setIdNumberUser(idNumberUserSession));
     }
     if (adminModalState) {
       dispatch(setAdminModalIsOpen(false));
@@ -79,13 +64,7 @@ const AllUsersPage = () => {
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
-  }, [
-    principalEmailAdminState,
-    principalEmailAdminLoginState,
-    status,
-    adminModalState,
-    isPageLoadingState,
-  ]);
+  }, [idNumberUserSessionState, status, adminModalState, isPageLoadingState]);
 
   return (
     <div>
@@ -96,7 +75,7 @@ const AllUsersPage = () => {
         />
       )}
 
-      {!principalEmailAdminLoginState || status === "unauthenticated" ? (
+      {!idNumberUserSessionState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
         <div className="dashboard-admin-content">
