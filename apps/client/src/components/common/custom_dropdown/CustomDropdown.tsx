@@ -40,18 +40,17 @@ const CustomDropdown: React.FC<{
       label: titleCustomItem1,
       icon: iconCustomItem1,
       onClick: handleClickCustomItem1,
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "2",
+      label: titleCustomItem2,
+      icon: iconCustomItem2,
+      onClick: handleClickCustomItem2,
       danger: true,
     },
-    // {
-    //   type: "divider",
-    // },
-    // {
-    //   key: "2",
-    //   label: titleCustomItem2,
-    //   icon: iconCustomItem2,
-    //   onClick: handleClickCustomItem2,
-    //   danger: true,
-    // },
   ];
 
   return (
