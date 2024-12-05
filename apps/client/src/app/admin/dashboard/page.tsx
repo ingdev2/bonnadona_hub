@@ -26,6 +26,7 @@ import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 import MainViewContent from "@/components/admin/main_view/MainViewContent";
+import AllUsersContent from "@/components/admin/all_users/AllUsersContent";
 
 const HomePage = () => {
   const { data: session, status } = useSession();
@@ -120,8 +121,11 @@ const HomePage = () => {
       {!principalEmailAdminLoginState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
+        // <div className="dashboard-admin-content">
+        //   <MainViewContent />
+        // </div>
         <div className="dashboard-admin-content">
-          <MainViewContent />
+          <AllUsersContent />
         </div>
       )}
     </div>
