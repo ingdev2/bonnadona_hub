@@ -12,6 +12,7 @@ import { subtitleStyleCss } from "@/theme/text_styles";
 import {
   useBanUserMutation,
   useGetAllUsersWithProfileQuery,
+  useGetUserActiveByIdNumberQuery,
   useGetUserSessionLogByEmailQuery,
 } from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
@@ -24,7 +25,6 @@ import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_i
 import {
   setChangePasswordExpiryModalIsOpen,
   setFirstLoginModalIsOpen,
-  setFirstLoginModalShow,
   setTableRowId,
 } from "@/redux/features/common/modal/modalSlice";
 import {
@@ -57,7 +57,6 @@ import { TbUserEdit } from "react-icons/tb";
 import {
   setAffiliationEpsUserProfile,
   setBloodGroupUserProfile,
-  setIdUserProfile,
   setResidenceAddressUserProfile,
   setResidenceCityUserProfile,
   setResidenceDepartmentUserProfile,
@@ -71,8 +70,10 @@ import {
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+import { useSession } from "next-auth/react";
 
 const AllUsersContent: React.FC = () => {
+  const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
   const NOT_REGISTER: string = "NO REGISTRA";
@@ -87,10 +88,6 @@ const AllUsersContent: React.FC = () => {
 
   const modalIsOpenFirstSuccessfullAdminLogin = useAppSelector(
     (state) => state.modal.firstSuccessLoginModalIsOpen
-  );
-
-  const modalIsOpenFirstSuccessChangePasswordShow = useAppSelector(
-    (state) => state.modal.firstSuccessLoginModalShow
   );
 
   const modalIsOpenChangePasswordExpiry = useAppSelector(
@@ -124,6 +121,15 @@ const AllUsersContent: React.FC = () => {
     },
   ] = useBanUserMutation({
     fixedCacheKey: "banUserData",
+  });
+
+  const {
+    data: userActiveDatabyIdNumberData,
+    isLoading: userActiveDatabyIdNumberLoading,
+    isFetching: userActiveDatabyIdNumberFetching,
+    isError: userActiveDatabyIdNumberError,
+  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
+    skip: !session?.user.id_number,
   });
 
   const {
@@ -185,10 +191,9 @@ const AllUsersContent: React.FC = () => {
   useEffect(() => {
     if (
       userSessionLogData?.successful_login_counter == 1 &&
-      !modalIsOpenFirstSuccessChangePasswordShow
+      userActiveDatabyIdNumberData?.last_password_update === null
     ) {
       dispatch(setFirstLoginModalIsOpen(true));
-      dispatch(setFirstLoginModalShow(true));
     } else {
       dispatch(setFirstLoginModalIsOpen(false));
     }

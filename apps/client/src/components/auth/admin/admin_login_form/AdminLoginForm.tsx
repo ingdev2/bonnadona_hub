@@ -118,6 +118,8 @@ const AdminLoginForm: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+      dispatch(setErrorsLoginAdmin("Internal server error"));
+      setShowErrorMessage(true);
     } finally {
       setIsSubmitting(false);
     }

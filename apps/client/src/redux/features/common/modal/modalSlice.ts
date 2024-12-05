@@ -7,7 +7,6 @@ const initialState = {
   userModalIsOpen: false,
   adminModalIsOpen: false,
   firstSuccessLoginModalIsOpen: false,
-  firstSuccessLoginModalShow: false,
   changePasswordExpiryModalIsOpen: false,
   selectedKey: ItemKeys.SUB_USERS_KEY,
   tableRowId: "",
@@ -39,9 +38,6 @@ export const modalSlice = createSlice({
     setFirstLoginModalIsOpen: (state, action) => {
       state.firstSuccessLoginModalIsOpen = action.payload;
     },
-    setFirstLoginModalShow: (state, action) => {
-      state.firstSuccessLoginModalShow = action.payload;
-    },
     setChangePasswordExpiryModalIsOpen: (state, action) => {
       state.changePasswordExpiryModalIsOpen = action.payload;
     },
@@ -51,7 +47,6 @@ export const modalSlice = createSlice({
     setResetModalAdmin: (state) => {
       state.selectedKey = ItemKeys.SUB_USERS_KEY;
       state.selectedOpenKeys = [""];
-      state.firstSuccessLoginModalShow = false;
       state.firstSuccessLoginModalIsOpen = false;
     },
   },
@@ -66,7 +61,6 @@ export const {
   setUserModalIsOpen,
   setAdminModalIsOpen,
   setFirstLoginModalIsOpen,
-  setFirstLoginModalShow,
   setTableRowId,
   setChangePasswordExpiryModalIsOpen,
 } = modalSlice.actions;

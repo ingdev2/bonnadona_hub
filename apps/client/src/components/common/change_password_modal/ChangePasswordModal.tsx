@@ -75,22 +75,52 @@ const ChangePasswordModal: React.FC<{
           },
         });
 
-        let isResponseError = response.error;
+        let editPasswordDataError = response.error;
+        let editPasswordDataStatus = response.data?.status;
+        let editPasswordDataValidationData = response.data?.message;
 
-        if (isResponseError) {
-          const errorMessage = isResponseError?.data?.message;
+        if (editPasswordDataError || editPasswordDataStatus != 202) {
+          const errorMessage = editPasswordDataError?.data?.message;
+          const validationDataMessage = editPasswordDataValidationData;
 
-          dispatch(setErrorsUser(errorMessage));
-          setShowErrorMessage(true);
-          setIsSubmittingConfirm(false);
+          if (Array.isArray(errorMessage)) {
+            dispatch(setErrorsUser(errorMessage[0]));
+
+            setShowErrorMessage(true);
+          } else if (typeof errorMessage === "string") {
+            dispatch(setErrorsUser(errorMessage));
+
+            setShowErrorMessage(true);
+          }
+
+          if (Array.isArray(validationDataMessage)) {
+            dispatch(setErrorsUser(validationDataMessage[0]));
+
+            setShowErrorMessage(true);
+          } else if (typeof validationDataMessage === "string") {
+            dispatch(setErrorsUser(validationDataMessage));
+
+            setShowErrorMessage(true);
+          }
+
+          // dispatch(setErrorsUser(errorMessage));
+          // setShowErrorMessage(true);
+          // setIsSubmittingConfirm(false);
         }
 
-        if (!isResponseError && !isResponseError) {
+        if (editPasswordDataStatus === 202 && !editPasswordDataError) {
           setShowSuccessMessage(true);
           setSuccessMessage(response?.data.message);
 
           dispatch(setFirstLoginModalIsOpen(false));
         }
+
+        // if (!editPasswordDataError && !editPasswordDataError) {
+        //   setShowSuccessMessage(true);
+        //   setSuccessMessage(response?.data.message);
+
+        //   dispatch(setFirstLoginModalIsOpen(false));
+        // }
       }
     } catch (error) {
       console.error(error);

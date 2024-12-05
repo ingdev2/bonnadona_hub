@@ -305,41 +305,7 @@ const EditUserForm: React.FC = () => {
     }
   };
 
-  const handleCorporateCellphoneInputChange = (value: any) => {
-    setHasChanges(true);
-
-    if (value) {
-      setCountryCodeCorporateCellphone(value.countryCode || 0);
-      setAreaCodeCorporateCellphone(value.areaCode || "");
-      setPhoneNumberCorporateCellphone(value.phoneNumber || "");
-    }
-  };
-
-  const combineCorporateCellphoneDetails = () => {
-    return `${areaCodeCorporateCellphone}${phoneNumberCorporateCellphone}`;
-  };
-
-  const validatorCorporateCellphoneInput = (_: any, value: any) => {
-    const combinedCorporateCellphone = combineCorporateCellphoneDetails();
-
-    if (!combinedCorporateCellphone) {
-      return Promise.resolve();
-    }
-
-    const personalCellphonePattern = /^[0-9]+$/;
-
-    if (
-      personalCellphonePattern.test(combinedCorporateCellphone) &&
-      combinedCorporateCellphone.length >= 7 &&
-      combinedCorporateCellphone.length <= 17
-    ) {
-      return Promise.resolve();
-    }
-
-    return Promise.reject("Número de teléfono inválido");
-  };
-
-  const handleButtonClick = () => {
+    const handleButtonClick = () => {
     setSuccessMessage("");
     setShowSuccessMessage(false);
 
