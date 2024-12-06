@@ -28,11 +28,11 @@ const ModalUserDetails: React.FC<{
   labelUserCorporateEmail: string;
   selectedUserCorporateEmail: string | undefined;
   labelUserPersonalCellphone: string;
-  selectedUserPersonalCellphone: number | undefined;
+  selectedUserPersonalCellphone: number | string | undefined;
   labelUserCorporateCellphone: string;
-  selectedUserCorporateCellphone: number | undefined;
+  selectedUserCorporateCellphone: number | string | undefined;
   labelUserServiceType: string;
-  selectedUserServiceType: number | undefined;
+  selectedUserServiceType: number | string | undefined;
   labelUserInmediateBoss: string;
   selectedUserInmediateBoss: string | undefined;
   labelUserUnit: string;

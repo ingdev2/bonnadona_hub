@@ -26,7 +26,7 @@ import {
   setIsPageLoading,
   setAdminModalIsOpen,
 } from "@/redux/features/common/modal/modalSlice";
-import { setVerificationCodeLoginAdmin } from "@/redux/features/login/adminLoginSlice";
+import { setErrorsLoginAdmin, setVerificationCodeLoginAdmin } from "@/redux/features/login/adminLoginSlice";
 
 const AdminModalVerificationCode: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -127,6 +127,9 @@ const AdminModalVerificationCode: React.FC = () => {
       const response: any = await resentUserVerificationCodeCollaborator({
         principal_email: principalEmailAdminLoginState,
       });
+      
+      console.log('principalEmailAdminLoginState', principalEmailAdminLoginState)
+      console.log('response', response)
 
       let isResponseError = response.error;
 
@@ -141,6 +144,8 @@ const AdminModalVerificationCode: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+      dispatch(setErrorsLoginAdmin("Internal server error"));
+      setShowErrorMessage(true);
     } finally {
       setIsSubmittingResendCode(false);
     }
@@ -164,7 +169,7 @@ const AdminModalVerificationCode: React.FC = () => {
       {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
-          message={errorMessage || "¡Código Incorrecto!"}
+          message={errorMessage || "¡Código incorrecto!"}
         />
       )}
       {showSuccessMessage && (

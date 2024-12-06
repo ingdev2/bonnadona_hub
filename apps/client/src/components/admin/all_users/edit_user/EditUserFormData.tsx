@@ -15,18 +15,10 @@ const EditUserFormData: React.FC<{
   onChangeCorporateEmailUserFormData: (e: any) => void;
   personalEmailUserFormData: string;
   onChangePersonalEmailUserFormData: (e: any) => void;
-  personalCellphoneFormData: string | PhoneNumber | undefined;
+  personalCellphoneFormData: string | undefined;
   onChangePersonalCellphoneFormData: (e: any) => void;
-  validatorPersonalCellphoneInputFormData: (
-    _: any,
-    value: any
-  ) => Promise<void>;
-  corporateCellphoneFormData: string | PhoneNumber | undefined;
+  corporateCellphoneFormData: string | undefined;
   onChangeCorporateCellphoneFormData: (e: any) => void;
-  validatorCorporateCellphoneInputFormData: (
-    _: any,
-    value: any
-  ) => Promise<void>;
   handleConfirmEditAdminFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -43,10 +35,8 @@ const EditUserFormData: React.FC<{
   onChangePersonalEmailUserFormData,
   personalCellphoneFormData,
   onChangePersonalCellphoneFormData,
-  validatorPersonalCellphoneInputFormData,
   corporateCellphoneFormData,
   onChangeCorporateCellphoneFormData,
-  validatorCorporateCellphoneInputFormData,
   handleConfirmEditAdminFormData,
   initialValuesEditAdminFormData,
   isSubmittingEditUserData,
@@ -181,11 +171,20 @@ const EditUserFormData: React.FC<{
                   "¡Por favor ingresa el número de celular personal del usuario!",
               },
               {
-                validator: validatorPersonalCellphoneInputFormData,
+                pattern: /^[0-9]+$/,
+                message: "¡Por favor ingresa número de celular sin puntos!",
+              },
+              {
+                min: 7,
+                message: "¡Por favor ingresa mínimo 7 números!",
+              },
+              {
+                max: 11,
+                message: "¡Por favor ingresa máximo 11 números!",
               },
             ]}
           >
-            <PhoneInput
+            <Input
               prefix={<FiPhone className="site-form-item-icon" />}
               type="tel"
               value={personalCellphoneFormData}
@@ -193,7 +192,6 @@ const EditUserFormData: React.FC<{
               onChange={onChangePersonalCellphoneFormData}
               autoComplete="off"
               min={0}
-              enableSearch
             />
           </Form.Item>
         </Col>
@@ -217,11 +215,20 @@ const EditUserFormData: React.FC<{
                   "¡Por favor ingresa el número de celular corporativo del usuario!",
               },
               {
-                validator: validatorCorporateCellphoneInputFormData,
+                pattern: /^[0-9]+$/,
+                message: "¡Por favor ingresa número de celular sin letras ni puntos!",
+              },
+              {
+                min: 7,
+                message: "¡Por favor ingresa mínimo 7 números!",
+              },
+              {
+                max: 11,
+                message: "¡Por favor ingresa máximo 11 números!",
               },
             ]}
           >
-            <PhoneInput
+            <Input
               prefix={<FiPhone className="site-form-item-icon" />}
               type="tel"
               value={corporateCellphoneFormData}
@@ -229,7 +236,6 @@ const EditUserFormData: React.FC<{
               onChange={onChangeCorporateCellphoneFormData}
               autoComplete="off"
               min={0}
-              enableSearch
             />
           </Form.Item>
         </Col>

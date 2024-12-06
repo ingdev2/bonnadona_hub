@@ -580,7 +580,7 @@ export class AuthService {
       );
     });
 
-    return userCollaboratorWithCode.principal_email;
+    return { email: userCollaboratorWithCode.principal_email };
   }
 
   private getExpirationInSeconds(expiresIn: string): number {

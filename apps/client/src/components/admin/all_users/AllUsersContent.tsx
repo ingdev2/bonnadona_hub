@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useSession } from "next-auth/react";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
@@ -8,19 +9,30 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import ModalUserDetails from "./modal_user_details/ModalUserDetails";
 import EditUserForm from "./edit_user/EditUserForm";
 import { subtitleStyleCss } from "@/theme/text_styles";
+import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
+import { Button } from "antd";
+import { TbUserEdit } from "react-icons/tb";
 
 import {
   useBanUserMutation,
   useGetAllUsersWithProfileQuery,
+  useGetUserActiveByIdNumberQuery,
+  useGetUserSessionLogByEmailQuery,
 } from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { useGetAllServiceTypesQuery } from "@/redux/apis/service_types/serviceTypesApi";
 import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 
 import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 
-import { setTableRowId } from "@/redux/features/common/modal/modalSlice";
+import {
+  setChangePasswordExpiryModalIsOpen,
+  setFirstLoginModalIsOpen,
+  setTableRowId,
+} from "@/redux/features/common/modal/modalSlice";
 import {
   setBirthdateSelectedUser,
   setCollaboratorPositionSelectedUser,
@@ -44,14 +56,9 @@ import {
 
 import { tableColumnsAllUsers } from "./table_columns_all_users/TableColums_all_users";
 
-import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
-import { Button } from "antd";
-import { TbUserEdit } from "react-icons/tb";
-
 import {
   setAffiliationEpsUserProfile,
   setBloodGroupUserProfile,
-  setIdUserProfile,
   setResidenceAddressUserProfile,
   setResidenceCityUserProfile,
   setResidenceDepartmentUserProfile,
@@ -62,23 +69,28 @@ import {
   setUserShoeSizeUserProfile,
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const AllUsersContent: React.FC = () => {
+  const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
   const NOT_REGISTER: string = "NO REGISTRA";
 
-  const bloodGroupUserProfileState = useAppSelector(
-    (state) => state.userProfile.user_blood_group
+  const principalEmailAdminState = useAppSelector(
+    (state) => state.user.principal_email
   );
-  const affiliationEpsUserProfileState = useAppSelector(
-    (state) => state.userProfile.affiliation_eps
+
+  const lastPasswordUpdateAdminState = useAppSelector(
+    (state) => state.user.last_password_update
   );
-  const residenceDepartmentUserProfileState = useAppSelector(
-    (state) => state.userProfile.residence_department
+
+  const modalIsOpenFirstSuccessfullAdminLogin = useAppSelector(
+    (state) => state.modal.firstSuccessLoginModalIsOpen
   );
-  const residenceCityUserProfileState = useAppSelector(
-    (state) => state.userProfile.residence_city
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
   );
 
   const [isEditUserVisibleLocalState, setIsEditUserVisibleLocalState] =
@@ -109,6 +121,31 @@ const AllUsersContent: React.FC = () => {
   ] = useBanUserMutation({
     fixedCacheKey: "banUserData",
   });
+
+  const {
+    data: userActiveDatabyIdNumberData,
+    isLoading: userActiveDatabyIdNumberLoading,
+    isFetching: userActiveDatabyIdNumberFetching,
+    isError: userActiveDatabyIdNumberError,
+  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
+    skip: !session?.user.id_number,
+  });
+
+  const {
+    data: userSessionLogData,
+    isLoading: userSessionLogLoading,
+    isFetching: userSessionLogFetching,
+    error: userSessionLogError,
+  } = useGetUserSessionLogByEmailQuery(principalEmailAdminState, {
+    skip: !principalEmailAdminState,
+  });
+
+  const {
+    data: passwordPolicyData,
+    isLoading: passwordPolicyLoading,
+    isFetching: passwordPolicyFetching,
+    error: passwordPolicyError,
+  } = useGetPasswordPolicyQuery(null);
 
   const {
     data: allUsersWithProfileData,
@@ -149,6 +186,31 @@ const AllUsersContent: React.FC = () => {
     error: allBloodGroupError,
     refetch: refecthAllBloodGroup,
   } = useGetAllBloodGroupsQuery(null);
+
+  useEffect(() => {
+    if (
+      userSessionLogData?.successful_login_counter == 1 &&
+      userActiveDatabyIdNumberData?.last_password_update === null
+    ) {
+      dispatch(setFirstLoginModalIsOpen(true));
+    } else {
+      dispatch(setFirstLoginModalIsOpen(false));
+    }
+
+    if (
+      passwordPolicyData &&
+      passwordPolicyData.password_expiry_days &&
+      lastPasswordUpdateAdminState &&
+      checkPasswordExpiry(
+        lastPasswordUpdateAdminState,
+        passwordPolicyData.password_expiry_days
+      )
+    ) {
+      dispatch(setChangePasswordExpiryModalIsOpen(true));
+    } else {
+      dispatch(setChangePasswordExpiryModalIsOpen(false));
+    }
+  }, [userSessionLogData, passwordPolicyData, lastPasswordUpdateAdminState]);
 
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
@@ -283,6 +345,26 @@ const AllUsersContent: React.FC = () => {
         />
       )}
 
+      <div className="admin-modal-firts-successfull-login">
+        {modalIsOpenFirstSuccessfullAdminLogin && (
+          <ChangePasswordModal
+            titleModal={"Bienvenidos a Bonnadona Hub"}
+            subtitleModal={
+              "Debes actualizar tu contraseña si entras por primera vez:"
+            }
+          />
+        )}
+      </div>
+
+      <div className="collaborator-modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
+
       {isModalVisibleLocalState && (
         <CustomModalNoContent
           key={"custom-modal-request-details-user"}
@@ -334,15 +416,18 @@ const AllUsersContent: React.FC = () => {
                     }
                     labelUserPersonalCellphone="Teléfono personal"
                     selectedUserPersonalCellphone={
-                      selectedRowDataLocalState?.personal_cellphone
+                      selectedRowDataLocalState?.personal_cellphone ||
+                      NOT_REGISTER
                     }
                     labelUserCorporateCellphone="Teléfono corporativo"
                     selectedUserCorporateCellphone={
-                      selectedRowDataLocalState?.corporate_cellphone
+                      selectedRowDataLocalState?.corporate_cellphone ||
+                      NOT_REGISTER
                     }
                     labelUserServiceType="Tipo de servicio"
                     selectedUserServiceType={
-                      selectedRowDataLocalState?.collaborator_service_type
+                      selectedRowDataLocalState?.collaborator_service_type ||
+                      NOT_REGISTER
                     }
                     labelUserInmediateBoss="Jefe inmediato"
                     selectedUserInmediateBoss={

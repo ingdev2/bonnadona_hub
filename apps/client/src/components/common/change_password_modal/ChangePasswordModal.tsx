@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Modal, Input, Button, Form } from "antd";
@@ -9,10 +9,8 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/CustomLoadingOverlay";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import { setErrorsLoginUser } from "@/redux/features/login/userLoginSlice";
 import {
   setFirstLoginModalIsOpen,
-  setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { useUpdateUserPasswordMutation } from "@/redux/apis/users/userApi";
@@ -75,17 +73,36 @@ const ChangePasswordModal: React.FC<{
           },
         });
 
-        let isResponseError = response.error;
+        let editPasswordDataError = response.error;
+        let editPasswordDataStatus = response.data?.status;
+        let editPasswordDataValidationData = response.data?.message;
 
-        if (isResponseError) {
-          const errorMessage = isResponseError?.data?.message;
+        if (editPasswordDataError || editPasswordDataStatus != 202) {
+          const errorMessage = editPasswordDataError?.data?.message;
+          const validationDataMessage = editPasswordDataValidationData;
 
-          dispatch(setErrorsUser(errorMessage));
-          setShowErrorMessage(true);
-          setIsSubmittingConfirm(false);
+          if (Array.isArray(errorMessage)) {
+            dispatch(setErrorsUser(errorMessage[0]));
+
+            setShowErrorMessage(true);
+          } else if (typeof errorMessage === "string") {
+            dispatch(setErrorsUser(errorMessage));
+
+            setShowErrorMessage(true);
+          }
+
+          if (Array.isArray(validationDataMessage)) {
+            dispatch(setErrorsUser(validationDataMessage[0]));
+
+            setShowErrorMessage(true);
+          } else if (typeof validationDataMessage === "string") {
+            dispatch(setErrorsUser(validationDataMessage));
+
+            setShowErrorMessage(true);
+          }
         }
 
-        if (!isResponseError && !isResponseError) {
+        if (editPasswordDataStatus === 202 && !editPasswordDataError) {
           setShowSuccessMessage(true);
           setSuccessMessage(response?.data.message);
 

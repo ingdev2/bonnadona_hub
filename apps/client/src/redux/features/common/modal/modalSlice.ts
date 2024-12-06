@@ -47,6 +47,7 @@ export const modalSlice = createSlice({
     setResetModalAdmin: (state) => {
       state.selectedKey = ItemKeys.SUB_USERS_KEY;
       state.selectedOpenKeys = [""];
+      state.firstSuccessLoginModalIsOpen = false;
     },
   },
 });

@@ -31,9 +31,9 @@ const AdminHeaderLayout: React.FC = () => {
 
   const handleClickUpdatePersonalData = async () => {
     try {
-      // await router.push("/admin/dashboard/personal_data", {
-      //   scroll: true,
-      // });
+      await router.push("/admin/dashboard/personal_data", {
+        scroll: true,
+      });
     } catch (error) {
       console.error(error);
     } finally {
@@ -45,10 +45,6 @@ const AdminHeaderLayout: React.FC = () => {
       dispatch(resetLoginStateAdmin());
       dispatch(setDefaultValuesUser());
       dispatch(setResetModalAdmin());
-      // dispatch(setDefaultValuesUserPatient());
-      // dispatch(setDefaultValuesUserEps());
-      // dispatch(setDefaultValuesUserFamiliar());
-      // dispatch(setDefaultValuesMedicalReq());
       signOut({
         redirect: true,
         callbackUrl: "/login_admin",
@@ -68,12 +64,12 @@ const AdminHeaderLayout: React.FC = () => {
           titleCustomDropdown={`HOLA, ${getFirstName(nameAdminState)} ${getFirstName(
             lastNameAdminState
           )}`}
-          // iconCustomItem1={<PiUserListBold />}
-          // titleCustomItem1="Mis Datos"
-          iconCustomItem1={<FaSignOutAlt />}
-          titleCustomItem1="Cerrar Sesión"
-          // handleClickCustomItem1={handleClickUpdatePersonalData}
-          handleClickCustomItem1={handleClickSignOut}
+          iconCustomItem1={<PiUserListBold />}
+          titleCustomItem1="Mis Datos"
+          iconCustomItem2={<FaSignOutAlt />}
+          titleCustomItem2="Cerrar Sesión"
+          handleClickCustomItem1={handleClickUpdatePersonalData}
+          handleClickCustomItem2={handleClickSignOut}
           iconCustomDropdown={<UserOutlined />}
         />
       )}

@@ -50,6 +50,9 @@ const UserPersonalEditDataForm: React.FC = () => {
   const [personalEmailUserLocalState, setPersonalEmailUserLocalState] =
     useState("");
 
+  const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
+    useState("");
+
   const [countryCodePersonalCellphone, setCountryCodePersonalCellphone] =
     useState(0);
   const [areaCodePersonalCellphone, setAreaCodePersonalCellphone] =
@@ -143,7 +146,7 @@ const UserPersonalEditDataForm: React.FC = () => {
             principalEmailUserLocalState || principalEmailUserState,
           personal_email: personalEmailUserLocalState || personalEmailUserState,
           personal_cellphone:
-            parseInt(fullPersonalCellphoneNumber, 10) ||
+            parseInt(personalCellphoneUserLocalState, 10) ||
             personalCellphoneUserState,
         },
       });
@@ -196,7 +199,7 @@ const UserPersonalEditDataForm: React.FC = () => {
         );
         dispatch(
           setPersonalCellphoneUser(
-            parseInt(fullPersonalCellphoneNumber, 10) ||
+            parseInt(personalCellphoneUserLocalState, 10) ||
               personalCellphoneUserState
           )
         );
@@ -260,7 +263,11 @@ const UserPersonalEditDataForm: React.FC = () => {
             personalCellphoneUserState.toString()) ||
           undefined
         }
-        onChangePersonalCellphoneFormData={handlePersonalCellphoneInputChange}
+        onChangePersonalCellphoneFormData={(e) => {
+          setHasChanges(true);
+
+          setPersonalCellphoneUserLocalState(e.target.value);
+        }}
         validatorPersonalCellphoneInputFormData={
           validatorPersonalCellphoneInput
         }
@@ -277,158 +284,6 @@ const UserPersonalEditDataForm: React.FC = () => {
         hasChangesFormData={hasChanges}
         handleButtonClickFormData={handleButtonClick}
       />
-
-      {/* <Form
-        id="edit-data-form-user"
-        name="edit-data-form-user"
-        className="edit-data-form-user"
-        onFinish={handleChangeEditUser}
-        initialValues={{
-          "current-edit-user-principal-email":
-            principalEmailUserState || NOT_REGISTER,
-          "current-edit-user-personal-email":
-            personalEmailUserState || NOT_REGISTER,
-          "current-edit-user-personal-cellphone":
-            personalCellphoneUserState || NOT_REGISTER,
-        }}
-        autoComplete="false"
-        layout="vertical"
-      >
-        <h2
-          className="title-change-password-admin"
-          style={{
-            ...titleStyleCss,
-            marginBlock: 22,
-            textAlign: "center",
-          }}
-        >
-          Actualizar datos de usuario
-        </h2>
-
-        <Form.Item
-          id="current-edit-user-principal-email"
-          name="current-edit-user-principal-email"
-          className="current-edit-user-principal-email"
-          label="Correo principal:"
-          style={{ marginBottom: "13px" }}
-          rules={[
-            {
-              required: true,
-              message: "¡Por favor ingrese el correo principal!",
-            },
-            {
-              pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-              message: "¡Por favor ingrese un correo válido!",
-            },
-          ]}
-        >
-          <Input
-            prefix={
-              <MdDriveFileRenameOutline className="site-form-item-icon" />
-            }
-            type="text"
-            value={principalEmailUserState || NOT_REGISTER}
-            placeholder="Correo principal"
-            onChange={(e) => {
-              setHasChanges(true);
-              setPrincipalEmailUserLocalState(e.target.value);
-            }}
-            autoComplete="off"
-          />
-        </Form.Item>
-
-        <Form.Item
-          id="current-edit-user-personal-email"
-          name="current-edit-user-personal-email"
-          className="current-edit-user-personal-email"
-          label="Correo personal:"
-          style={{ marginBottom: "13px" }}
-          rules={[
-            {
-              required: true,
-              message: "¡Por favor ingrese el correo personal!",
-            },
-            {
-              pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-              message: "¡Por favor ingrese un correo válido!",
-            },
-          ]}
-        >
-          <Input
-            prefix={
-              <MdDriveFileRenameOutline className="site-form-item-icon" />
-            }
-            type="text"
-            value={personalEmailUserState || NOT_REGISTER}
-            placeholder="Correo personal"
-            onChange={(e) => {
-              setHasChanges(true);
-              setPersonalEmailUserLocalState(e.target.value);
-            }}
-            autoComplete="off"
-          />
-        </Form.Item>
-
-        <Form.Item
-          id="current-edit-user-personal-cellphone"
-          name="current-edit-user-personal-cellphone"
-          className="current-edit-user-personal-cellphone"
-          label="Celular personal:"
-          style={{ marginBottom: "13px" }}
-          normalize={(value) => {
-            if (!value || typeof value !== "string") return "";
-
-            return value.replace(/[^\d+]/g, "");
-          }}
-          rules={[
-            {
-              required: false,
-              message: "¡Por favor ingresa el número de celular personal!",
-            },
-            {
-              validator: validatorPersonalCellphoneInput,
-            },
-          ]}
-        >
-          <PhoneInput
-            prefix={<FiPhone className="site-form-item-icon" />}
-            type="tel"
-            value={personalCellphoneUserState.toString()}
-            placeholder="Número de celular personal"
-            onChange={handlePersonalCellphoneInputChange}
-            autoComplete="off"
-            min={0}
-            enableSearch
-          />
-        </Form.Item>
-
-        <Form.Item
-          style={{
-            textAlign: "center",
-          }}
-        >
-          {isSubmittingEditUser ? (
-            <CustomSpin />
-          ) : (
-            <Button
-              size="large"
-              style={{
-                paddingInline: 45,
-                borderRadius: 31,
-                backgroundColor: !hasChanges ? "#D8D8D8" : "#015E90",
-                color: !hasChanges ? "#A0A0A0" : "#f2f2f2",
-                marginBlock: 7,
-              }}
-              htmlType="submit"
-              className="edit-data-form-button-user"
-              onClick={handleButtonClick}
-              disabled={!hasChanges}
-            >
-              Actualizar datos
-            </Button>
-          )}
-        </Form.Item>
-      </Form> */}
     </Col>
   );
 };
