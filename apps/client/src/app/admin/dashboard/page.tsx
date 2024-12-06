@@ -9,6 +9,7 @@ import {
   setIdNumberUser,
   setIdUser,
   setLastNameUser,
+  setLastPasswordUpdateUser,
   setNameUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
@@ -84,6 +85,11 @@ const HomePage = () => {
       dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
       dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
       dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
+      dispatch(
+        setLastPasswordUpdateUser(
+          userActiveDatabyIdNumberData?.last_password_update
+        )
+      );
     }
     if (adminModalState) {
       dispatch(setAdminModalIsOpen(false));

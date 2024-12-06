@@ -127,9 +127,6 @@ const AdminModalVerificationCode: React.FC = () => {
       const response: any = await resentUserVerificationCodeCollaborator({
         principal_email: principalEmailAdminLoginState,
       });
-      
-      console.log('principalEmailAdminLoginState', principalEmailAdminLoginState)
-      console.log('response', response)
 
       let isResponseError = response.error;
 
