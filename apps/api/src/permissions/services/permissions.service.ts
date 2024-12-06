@@ -65,14 +65,14 @@ export class PermissionsService {
       );
     }
 
-    const positions = await this.usersService.getAllColaboratorPositions();
+    // const positions = await this.usersService.getAllColaboratorPositions();
 
-    if (!positions.includes(permissionDto.name)) {
-      throw new HttpException(
-        `El nombre del permiso debe coincidir con uno de los cargos registrados.`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // if (!positions.includes(permissionDto.name)) {
+    //   throw new HttpException(
+    //     `El nombre del permiso debe coincidir con uno de los cargos registrados.`,
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
 
     const apps = await this.applicationRepo.findBy({ id: In(app_ids) });
 

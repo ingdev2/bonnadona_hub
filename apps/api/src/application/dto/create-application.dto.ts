@@ -1,8 +1,15 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
-import { ApplicationsEnum } from 'src/utils/enums/applications/applications.enum';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateApplicationDto {
   @IsNotEmpty()
-  @IsEnum(ApplicationsEnum)
-  name: ApplicationsEnum;
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  image_path: string;
+
+  @IsNotEmpty()
+  @IsString()
+  entry_link: string;
 }
