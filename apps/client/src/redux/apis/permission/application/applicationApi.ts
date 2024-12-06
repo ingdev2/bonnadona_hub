@@ -34,6 +34,10 @@ export const applicationApi = createApi({
       query: () => "getAll",
     }),
 
+    getAllActiveApplications: builder.query<IApplication[], null>({
+      query: () => "getAllActive",
+    }),
+
     getApplicationById: builder.query<IApplication, number>({
       query: (id) => `getApplication/${id}`,
     }),
@@ -52,12 +56,22 @@ export const applicationApi = createApi({
         body: updateApplication,
       }),
     }),
+
+    banApplication: builder.mutation<any, { id: number }>({
+      query: ({ id }) => ({
+        url: `ban/${id}`,
+        method: "PATCH",
+        params: { id },
+      }),
+    }),
   }),
 });
 
 export const {
   useCreateApplicationMutation,
   useGetAllApplicationsQuery,
+  useGetAllActiveApplicationsQuery,
   useGetApplicationByIdQuery,
   useUpdateApplicationByIdMutation,
+  useBanApplicationMutation,
 } = applicationApi;

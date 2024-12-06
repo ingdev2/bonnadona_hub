@@ -11,4 +11,6 @@ export enum ApplicationsEnum {
   EXITUS = "EXITUS",
   CALADRIUS = "CALADRIUS",
   CIRUGÍA = "CIRUGÍA",
+  GOODMED = "GOODMED",
+  AUX_CLINICO = "AUXILIAR CLINICO",
 }

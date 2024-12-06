@@ -20,7 +20,7 @@ import {
   useGetPermissionByIdQuery,
   useUpdatePermissionByIdMutation,
 } from "@/redux/apis/permission/permissionApi";
-import { useGetAllApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
+import { useGetAllActiveApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
 import { useGetAllAppModulesQuery } from "@/redux/apis/permission/application_module/applicationModuleApi";
 import { useGetAllModuleActionsQuery } from "@/redux/apis/permission/module_action/moduleActionApi";
 
@@ -79,12 +79,12 @@ const EditPermissionForm: React.FC = () => {
   } = useGetPermissionByIdQuery(idPermissionState);
 
   const {
-    data: allApplicationsData,
-    isLoading: allApplicationsLoading,
-    isFetching: allAapplicationsFetching,
-    error: allApplicationsError,
-    refetch: refetchAllApplications,
-  } = useGetAllApplicationsQuery(null);
+    data: allActiveApplicationsData,
+    isLoading: allActiveApplicationsLoading,
+    isFetching: allActiveApplicationsFetching,
+    error: allActiveApplicationsError,
+    refetch: refetchAllActiveApplications,
+  } = useGetAllActiveApplicationsQuery(null);
 
   const {
     data: allAppModulesData,
@@ -256,7 +256,7 @@ const EditPermissionForm: React.FC = () => {
 
           setDescriptionPermissionLocalState(e.target.value);
         }}
-        allAppsFormData={allApplicationsData}
+        allAppsFormData={allActiveApplicationsData}
         selectedAppsFormData={selectedAppsLocalState}
         onChangeAppsFormData={(checkedValues) => {
           setHasChanges(true);

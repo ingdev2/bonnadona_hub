@@ -210,7 +210,9 @@ const EditPermissionFormData: React.FC<{
               borderRadius: "8px",
             }}
           >
-            <h3 style={{ paddingBlock: "7px" }}>Aplicaciones</h3>
+            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>
+              Aplicaciones
+            </h3>
 
             <Checkbox.Group
               value={selectedAppsFormData}
@@ -263,7 +265,7 @@ const EditPermissionFormData: React.FC<{
               borderRadius: "8px",
             }}
           >
-            <h3 style={{ paddingBlock: "7px" }}>Módulos</h3>
+            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Módulos</h3>
 
             <Checkbox.Group
               value={selectedAppModulesFormData}
@@ -319,7 +321,7 @@ const EditPermissionFormData: React.FC<{
               borderRadius: "8px",
             }}
           >
-            <h3 style={{ paddingBlock: "7px" }}>Acciones</h3>
+            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Acciones</h3>
 
             {expandedApp && selectedModulesCount.length ? (
               <p

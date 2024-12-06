@@ -23,6 +23,15 @@ export class Application {
   )
   application_module: ApplicationModule[];
 
+  @Column({ type: 'text' })
+  image_path: string;
+
+  @Column({ type: 'text' })
+  entry_link: string;
+
+  @Column({ type: 'boolean', default: true })
+  is_active: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
