@@ -9,6 +9,9 @@ import userProfileReducer from "./features/user_profile/userProfileSlice";
 import userLoginReducer from "./features/login/userLoginSlice";
 import adminLoginReducer from "./features/login/adminLoginSlice";
 import permissionReducer from "./features/permission/permissionSlice";
+import applicationReducer from "./features/permission/application/applicationSlice";
+import applicationModuleReducer from "./features/permission/application_module/applicationModuleSlice";
+import moduleActionReducer from "./features/permission/module_action/moduleActionSlice";
 import passwordPolicyReducer from "./features/password_policy/passwordPolicySlice";
 import modalReducer from "./features/common/modal/modalSlice";
 
@@ -19,6 +22,9 @@ import { idTypesApi } from "./apis/id_types/idTypesApi";
 import { genderTypesApi } from "./apis/gender_types/genderTypesApi";
 import { bloodGroupApi } from "./apis/blood_group/bloodGroupApi";
 import { permissionApi } from "./apis/permission/permissionApi";
+import { applicationApi } from "./apis/permission/application/applicationApi";
+import { appModuleApi } from "./apis/permission/application_module/applicationModuleApi";
+import { moduleActionApi } from "./apis/permission/module_action/moduleActionApi";
 import { passwordPolicyApi } from "./apis/password_policy/passwordPolicyApi";
 import { serviceTypesApi } from "./apis/service_types/serviceTypesApi";
 
@@ -33,6 +39,9 @@ const persistConfig = {
     "userLogin",
     "adminLogin",
     "permission",
+    "application",
+    "applicationModule",
+    "moduleAction",
     "passwordPolicy",
     "modal",
   ],
@@ -46,6 +55,9 @@ const rootReducer = combineReducers({
   userLogin: userLoginReducer,
   adminLogin: adminLoginReducer,
   permission: permissionReducer,
+  application: applicationReducer,
+  applicationModule: applicationModuleReducer,
+  moduleAction: moduleActionReducer,
   passwordPolicy: passwordPolicyReducer,
   modal: modalReducer,
 
@@ -56,6 +68,9 @@ const rootReducer = combineReducers({
   [genderTypesApi.reducerPath]: genderTypesApi.reducer,
   [bloodGroupApi.reducerPath]: bloodGroupApi.reducer,
   [permissionApi.reducerPath]: permissionApi.reducer,
+  [applicationApi.reducerPath]: applicationApi.reducer,
+  [appModuleApi.reducerPath]: appModuleApi.reducer,
+  [moduleActionApi.reducerPath]: moduleActionApi.reducer,
   [passwordPolicyApi.reducerPath]: passwordPolicyApi.reducer,
   [serviceTypesApi.reducerPath]: serviceTypesApi.reducer,
 });
@@ -76,6 +91,9 @@ export const store = configureStore({
       genderTypesApi.middleware,
       bloodGroupApi.middleware,
       permissionApi.middleware,
+      applicationApi.middleware,
+      appModuleApi.middleware,
+      moduleActionApi.middleware,
       passwordPolicyApi.middleware,
       serviceTypesApi.middleware,
     ]),
