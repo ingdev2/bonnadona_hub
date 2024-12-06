@@ -1,19 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
-import { Button, Col, Form, Input, Row } from "antd";
+import { Button, Checkbox, Col, Form, Input, Row, Tooltip } from "antd";
 import { Store } from "antd/es/form/interface";
-import { titleStyleCss } from "@/theme/text_styles";
+import { subtitleStyleCss, titleStyleCss } from "@/theme/text_styles";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import TextArea from "antd/es/input/TextArea";
+import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import { useAppSelector } from "@/redux/hooks";
 
 const EditPermissionFormData: React.FC<{
   namePermissionFormData: string;
   onChangeNamePermissionFormData: (e: any) => void;
   descriptionPermissionFormData: string;
   onChangeDescriptionPermissionFormData: (e: any) => void;
+  allAppsFormData: IApplication[] | undefined;
+  selectedAppsFormData: number[];
+  onChangeAppsFormData: (e: any) => void;
+  allAppModulesFormData: IApplicationModule[] | undefined;
+  selectedAppModulesFormData: number[];
+  onChangeAppModulesFormData: (e: any) => void;
+  allModuleActionsFormData: IModuleAction[] | undefined;
+  selectedModuleActionsFormData: number[];
+  onChangeModuleActionsFormData: (e: any) => void;
   handleConfirmDataFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -26,12 +37,36 @@ const EditPermissionFormData: React.FC<{
   onChangeNamePermissionFormData,
   descriptionPermissionFormData,
   onChangeDescriptionPermissionFormData,
+  allAppsFormData,
+  selectedAppsFormData,
+  onChangeAppsFormData,
+  allAppModulesFormData,
+  selectedAppModulesFormData,
+  onChangeAppModulesFormData,
+  allModuleActionsFormData,
+  selectedModuleActionsFormData,
+  onChangeModuleActionsFormData,
   handleConfirmDataFormData,
   initialValuesEditFormData,
   isSubmittingEditFormData,
   handleButtonClickFormData,
   hasChangesFormData,
 }) => {
+  const [expandedApp, setExpandedApp] = useState<number | null>(null);
+  const [expandedModule, setExpandedModule] = useState<number | null>(null);
+
+  const filteredModules = (appId: number) =>
+    allAppModulesFormData?.filter((module) => module.app_id === appId) ?? [];
+
+  const filteredActions = (moduleId: number) =>
+    allModuleActionsFormData?.filter(
+      (action) => action.app_module_id === moduleId
+    ) ?? [];
+
+  let selectedModulesCount: number[] = expandedApp
+    ? filteredModules(expandedApp).map((module) => module.id)
+    : [];
+
   return (
     <Form
       id="edit-permission-form"
@@ -142,6 +177,186 @@ const EditPermissionFormData: React.FC<{
               style={{ borderRadius: "8px" }}
             />
           </Form.Item>
+        </Col>
+      </Row>
+
+      <Row
+        gutter={24}
+        justify={"center"}
+        align={"top"}
+        style={{ paddingBottom: "13px" }}
+      >
+        <h2 style={{ ...titleStyleCss, paddingBlock: "7px" }}>
+          Modificar acceso
+        </h2>
+
+        <Col
+          span={24}
+          style={{
+            display: "flex",
+            flexFlow: "row",
+            gap: "13px",
+            justifyContent: "center",
+            alignContent: "center",
+          }}
+        >
+          <Col
+            span={8}
+            style={{
+              overflowY: "auto",
+              maxHeight: "720px",
+              padding: "7px",
+              border: "1px solid #013B5A",
+              borderRadius: "8px",
+            }}
+          >
+            <h3 style={{ paddingBlock: "7px" }}>Aplicaciones</h3>
+
+            <Checkbox.Group
+              value={selectedAppsFormData}
+              onChange={onChangeAppsFormData}
+              style={{
+                display: "flex",
+                flexFlow: "column wrap",
+                gap: "13px",
+              }}
+            >
+              {allAppsFormData?.map((app) => (
+                <div
+                  key={app.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Checkbox value={app.id}>
+                    <Tooltip title={app.name}>{app.name}</Tooltip>
+                  </Checkbox>
+
+                  <Button
+                    size="small"
+                    type="dashed"
+                    onClick={() => {
+                      setExpandedApp(expandedApp === app.id ? null : app.id);
+                    }}
+                    icon={
+                      expandedApp === app.id ? (
+                        <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+                      ) : (
+                        <EyeOutlined style={{ color: "#8C1111" }} />
+                      )
+                    }
+                  />
+                </div>
+              ))}
+            </Checkbox.Group>
+          </Col>
+
+          <Col
+            span={8}
+            style={{
+              overflowY: "auto",
+              maxHeight: "720px",
+              padding: "7px",
+              border: "1px solid #013B5A",
+              borderRadius: "8px",
+            }}
+          >
+            <h3 style={{ paddingBlock: "7px" }}>Módulos</h3>
+
+            <Checkbox.Group
+              value={selectedAppModulesFormData}
+              onChange={onChangeAppModulesFormData}
+              style={{
+                display: "flex",
+                flexFlow: "column wrap",
+                gap: "13px",
+              }}
+            >
+              {expandedApp &&
+                filteredModules(expandedApp).map((module) => (
+                  <div
+                    key={module.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Checkbox value={module.id}>
+                      <Tooltip title={module.name}>{module.name}</Tooltip>
+                    </Checkbox>
+
+                    <Button
+                      size="small"
+                      type="dashed"
+                      onClick={() =>
+                        setExpandedModule(
+                          expandedModule === module.id ? null : module.id
+                        )
+                      }
+                      icon={
+                        expandedModule === module.id ? (
+                          <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+                        ) : (
+                          <EyeOutlined style={{ color: "#8C1111" }} />
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+            </Checkbox.Group>
+          </Col>
+
+          <Col
+            span={8}
+            style={{
+              overflowY: "auto",
+              maxHeight: "720px",
+              padding: "7px",
+              border: "1px solid #013B5A",
+              borderRadius: "8px",
+            }}
+          >
+            <h3 style={{ paddingBlock: "7px" }}>Acciones</h3>
+
+            {expandedApp && selectedModulesCount.length ? (
+              <p
+                style={{
+                  ...subtitleStyleCss,
+                  fontStyle: "italic",
+                  color: "#A7AFBA",
+                  marginTop: "2px",
+                  marginBottom: "13px",
+                }}
+              >
+                Acciones de:&nbsp;
+                <b>
+                  {allAppsFormData?.find((app) => app.id === expandedApp)
+                    ?.name || null}
+                </b>
+              </p>
+            ) : null}
+
+            <Checkbox.Group
+              value={selectedModuleActionsFormData}
+              onChange={onChangeModuleActionsFormData}
+              style={{
+                display: "flex",
+                flexFlow: "column wrap",
+                gap: "13px",
+              }}
+            >
+              {expandedModule && selectedModulesCount.includes(expandedModule)
+                ? filteredActions(expandedModule).map((action) => (
+                    <Checkbox key={action.id} value={action.id}>
+                      <Tooltip title={action.name}>{action.name}</Tooltip>
+                    </Checkbox>
+                  ))
+                : null}
+            </Checkbox.Group>
+          </Col>
         </Col>
       </Row>
 

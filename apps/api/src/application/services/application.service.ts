@@ -38,7 +38,7 @@ export class ApplicationService {
   async getAllApplications() {
     const allApplications = await this.applicationRepository.find({
       order: {
-        id: 'ASC',
+        name: 'ASC',
       },
     });
 
