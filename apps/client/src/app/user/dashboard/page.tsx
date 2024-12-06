@@ -10,11 +10,9 @@ import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 
 import AllAppsContent from "@/components/user/all_apps/AllAppsContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 import {
-  useGetUserActiveByEmailQuery,
-  useGetUserActiveByIdNumberQuery,
-} from "@/redux/apis/users/userApi";
-import {
+  setIdNumberUser,
   setIdUser,
   setLastNameUser,
   setLastPasswordUpdateUser,
@@ -26,17 +24,26 @@ import {
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import useAuthValidation from "@/utils/hooks/use_auth_validation";
 
 const AllAppsPage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
-  const principalEmailUserLoginState = useAppSelector(
-    (state) => state.userLogin.principal_email
-  );
+  const idNumberUserSession = session?.user?.id_number;
 
-  const principalEmailUserState = useAppSelector(
-    (state) => state.user.principal_email
+  useAuthValidation();
+
+  const allowedRoles = [RolesEnum.COLLABORATOR];
+  useRoleValidation(allowedRoles);
+
+  // usePermissionsAppAndModuleValidationInPage({
+  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
+  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+  // });
+
+  const idNumberUserSessionState = useAppSelector(
+    (state) => state.user.id_number
   );
 
   const collaboratorModalState = useAppSelector(
@@ -46,9 +53,6 @@ const AllAppsPage = () => {
   const isPageLoadingState = useAppSelector(
     (state) => state.modal.isPageLoading
   );
-
-  const allowedRoles = [RolesEnum.COLLABORATOR];
-  useRoleValidation(allowedRoles);
 
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -63,8 +67,10 @@ const AllAppsPage = () => {
   });
 
   useEffect(() => {
-    console.log("session:", session);
-    if (!principalEmailUserState && userActiveDatabyIdNumberData) {
+    if (!idNumberUserSessionState && status === "authenticated") {
+      dispatch(setIdNumberUser(idNumberUserSession));
+    }
+    if (userActiveDatabyIdNumberData) {
       dispatch(
         setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
       );
@@ -77,16 +83,6 @@ const AllAppsPage = () => {
         )
       );
     }
-    if (!principalEmailUserLoginState) {
-      setShowErrorMessage(true);
-      setErrorMessage("¡Usuario no encontrado!");
-      redirect("/login");
-    }
-    if (status === "unauthenticated") {
-      setShowErrorMessage(true);
-      setErrorMessage("¡No autenticado!");
-      redirect("/login");
-    }
     if (collaboratorModalState) {
       dispatch(setUserModalIsOpen(false));
     }
@@ -94,9 +90,8 @@ const AllAppsPage = () => {
       dispatch(setIsPageLoading(false));
     }
   }, [
+    idNumberUserSessionState,
     userActiveDatabyIdNumberData,
-    principalEmailUserState,
-    principalEmailUserLoginState,
     collaboratorModalState,
     isPageLoadingState,
   ]);
@@ -110,7 +105,7 @@ const AllAppsPage = () => {
         />
       )}
 
-      {!principalEmailUserLoginState || status === "unauthenticated" ? (
+      {!idNumberUserSessionState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
         <div className="dashboard-all-apps-content">

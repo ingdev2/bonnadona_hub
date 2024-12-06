@@ -1,4 +1,7 @@
+"use client";
+
 import React, { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 import { Card, Col, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
@@ -6,14 +9,20 @@ import styles from "./AllAppsContent.module.css";
 import CustomDashboardLayoutUsers from "@/components/common/custom_dashboard_layout_users/CustomDashboardLayoutUsers";
 import ChangePasswordModal from "../../common/change_password_modal/ChangePasswordModal";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useGetUserSessionLogByEmailQuery } from "@/redux/apis/users/userApi";
+import {
+  useGetUserActiveByIdNumberQuery,
+  useGetUserSessionLogByEmailQuery,
+} from "@/redux/apis/users/userApi";
 import {
   setChangePasswordExpiryModalIsOpen,
   setFirstLoginModalIsOpen,
 } from "@/redux/features/common/modal/modalSlice";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+import CustomOptionWithImageCard from "@/components/common/custom_option_with_image_card/CustomOptionWithImageCard";
 
 const AllAppsContent: React.FC = () => {
+  const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
   const principalEmailCollaboratorState = useAppSelector(
@@ -33,6 +42,15 @@ const AllAppsContent: React.FC = () => {
   );
 
   const {
+    data: userActiveDatabyIdNumberData,
+    isLoading: userActiveDatabyIdNumberLoading,
+    isFetching: userActiveDatabyIdNumberFetching,
+    isError: userActiveDatabyIdNumberError,
+  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
+    skip: !session?.user.id_number,
+  });
+
+  const {
     data: userSessionLogData,
     isLoading: userSessionLogLoading,
     isFetching: userSessionLogFetching,
@@ -48,25 +66,11 @@ const AllAppsContent: React.FC = () => {
     error: passwordPolicyError,
   } = useGetPasswordPolicyQuery(null);
 
-  const checkPasswordExpiry = (
-    lastPasswordUpdate: string,
-    expiryDays: number
-  ): boolean => {
-    const lastUpdateDate = new Date(lastPasswordUpdate);
-    const today = new Date();
-
-    // Calcular la diferencia en milisegundos
-    const differenceInMs = today.getTime() - lastUpdateDate.getTime();
-
-    // Convertir la diferencia a días
-    const differenceInDays = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
-
-    // Verificar si la diferencia en días es mayor o igual a los días de expiración
-    return differenceInDays >= expiryDays;
-  };
-
   useEffect(() => {
-    if (userSessionLogData?.successful_login_counter == 1) {
+    if (
+      userSessionLogData?.successful_login_counter == 1 &&
+      userActiveDatabyIdNumberData?.last_password_update === null
+    ) {
       dispatch(setFirstLoginModalIsOpen(true));
     } else {
       dispatch(setFirstLoginModalIsOpen(false));
@@ -81,10 +85,8 @@ const AllAppsContent: React.FC = () => {
         passwordPolicyData.password_expiry_days
       )
     ) {
-      console.log("estoy aqui en true");
       dispatch(setChangePasswordExpiryModalIsOpen(true));
     } else {
-      console.log("estoy aqui en false");
       dispatch(setChangePasswordExpiryModalIsOpen(false));
     }
   }, [
@@ -127,18 +129,33 @@ const AllAppsContent: React.FC = () => {
                   lg={6}
                   style={{ display: "flex", justifyContent: "center" }}
                 >
+                  <CustomOptionWithImageCard
+                    altCustomOptionWithImageCard="alicanto"
+                    srcCustomOptionWithImageCard="https://bonnadona-public.s3.amazonaws.com/assets/alicanto_logo.svg"
+                    classNameCardCustomOptionWithImageCard={styles.card}
+                    styleImgCustomOptionWithImageCard={{ width: "100%" }}
+                  />
+                </Col>
+
+                {/* <Col
+                  xs={24}
+                  sm={12}
+                  md={8}
+                  lg={6}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
                   <Card id="all-app-options-card" className={styles.card}>
                     <img
                       src="https://bonnadona-public.s3.amazonaws.com/assets/alicanto_logo.svg"
                       alt="Logo de Bonnadona HUB"
                       style={{
-                        height: 90,
                         width: "100%",
                       }}
                     />
                   </Card>
-                </Col>
-                <Col
+                </Col> */}
+
+                {/* <Col
                   xs={24}
                   sm={12}
                   md={8}
@@ -384,7 +401,7 @@ const AllAppsContent: React.FC = () => {
                       }}
                     />
                   </Card>
-                </Col>
+                </Col> */}
               </Row>
             </div>
           }

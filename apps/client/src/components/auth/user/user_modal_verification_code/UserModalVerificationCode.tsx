@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 
-import { Modal, Input, Button, Typography, Space, Form, Divider } from "antd";
+import { Modal, Input, Button, Form, Divider } from "antd";
 import Link from "next/link";
 
 import { TbPasswordUser } from "react-icons/tb";
@@ -138,6 +138,7 @@ const UserModalVerificationCode: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+      dispatch(setErrorsLoginUser("Internal server error"));
     } finally {
       setIsSubmittingResendCode(false);
     }
