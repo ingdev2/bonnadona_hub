@@ -1,7 +1,3 @@
-import { IApplication } from './application.interface';
-import { IApplicationModule } from './application_module.interface';
-import { IModuleAction } from './module_action.interface';
-
 export interface IPermissions {
   id: string;
   name: string;

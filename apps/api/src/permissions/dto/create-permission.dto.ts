@@ -12,11 +12,11 @@ export class CreatePermissionDto {
   description: string;
 
   @IsNotEmpty()
-  app_ids: number[];
+  applications: number[];
 
   @IsNotEmpty()
-  app_module_ids: number[];
+  application_modules: number[];
 
   @IsNotEmpty()
-  module_action_ids: number[];
+  module_actions: number[];
 }

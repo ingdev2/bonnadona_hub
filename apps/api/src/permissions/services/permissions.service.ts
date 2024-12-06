@@ -48,7 +48,11 @@ export class PermissionsService {
   // CREATE FUNTIONS //
 
   async createPermission(permissionDto: CreatePermissionDto) {
-    const { app_ids, app_module_ids, module_action_ids } = permissionDto;
+    const {
+      applications: app_ids,
+      application_modules: app_module_ids,
+      module_actions: module_action_ids,
+    } = permissionDto;
 
     const permissionFound = await this.permissionRepo.findOne({
       where: { name: permissionDto.name },
@@ -137,7 +141,7 @@ export class PermissionsService {
   async getAllPermissions() {
     const allPermissions = await this.permissionRepo.find({
       order: {
-        createdAt: 'ASC',
+        name: 'ASC',
       },
       loadEagerRelations: false,
       loadRelationIds: true,
@@ -186,12 +190,12 @@ export class PermissionsService {
       permission.description = updatePermission.description;
     }
 
-    if (updatePermission.app_ids) {
+    if (updatePermission.applications) {
       const apps = await this.applicationRepo.findBy({
-        id: In(updatePermission.app_ids),
+        id: In(updatePermission.applications),
       });
 
-      if (apps.length !== updatePermission.app_ids.length) {
+      if (apps.length !== updatePermission.applications.length) {
         throw new HttpException(
           `Una o más aplicaciones no existen`,
           HttpStatus.NOT_FOUND,
@@ -201,12 +205,12 @@ export class PermissionsService {
       permission.applications = apps;
     }
 
-    if (updatePermission.app_module_ids) {
+    if (updatePermission.application_modules) {
       const modules = await this.moduleRepo.findBy({
-        id: In(updatePermission.app_module_ids),
+        id: In(updatePermission.application_modules),
       });
 
-      if (modules.length !== updatePermission.app_module_ids.length) {
+      if (modules.length !== updatePermission.application_modules.length) {
         throw new HttpException(
           `Uno o más módulos no existen`,
           HttpStatus.NOT_FOUND,
@@ -216,12 +220,12 @@ export class PermissionsService {
       permission.application_modules = modules;
     }
 
-    if (updatePermission.module_action_ids) {
+    if (updatePermission.module_actions) {
       const actions = await this.actionRepo.findBy({
-        id: In(updatePermission.module_action_ids),
+        id: In(updatePermission.module_actions),
       });
 
-      if (actions.length !== updatePermission.module_action_ids.length) {
+      if (actions.length !== updatePermission.module_actions.length) {
         throw new HttpException(
           `Una o más acciones no existen`,
           HttpStatus.NOT_FOUND,

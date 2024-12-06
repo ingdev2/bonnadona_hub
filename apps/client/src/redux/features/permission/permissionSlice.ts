@@ -4,6 +4,9 @@ const initialState: IPermission = {
   id: 0,
   name: "",
   description: "",
+  applications: [],
+  application_modules: [],
+  module_actions: [],
   errors: [],
 };
 
@@ -20,6 +23,15 @@ export const permissionSlice = createSlice({
     setDescriptionPermission: (state, action) => {
       state.description = action.payload;
     },
+    setApplicationsPermission: (state, action) => {
+      state.applications = action.payload;
+    },
+    setApplicationModulesPermission: (state, action) => {
+      state.application_modules = action.payload;
+    },
+    setModuleActionsPermission: (state, action) => {
+      state.module_actions = action.payload;
+    },
     setErrorsPermission: (state, action) => {
       state.errors = action.payload;
     },
@@ -27,6 +39,9 @@ export const permissionSlice = createSlice({
       state.id = 0;
       state.name = "";
       state.description = "";
+      state.applications = [];
+      state.application_modules = [];
+      state.module_actions = [];
       state.errors = [];
     },
   },
@@ -36,6 +51,9 @@ export const {
   setIdPermission,
   setNamePermission,
   setDescriptionPermission,
+  setApplicationsPermission,
+  setApplicationModulesPermission,
+  setModuleActionsPermission,
   setErrorsPermission,
   setResetPermission,
 } = permissionSlice.actions;

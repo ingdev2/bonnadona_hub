@@ -11,12 +11,18 @@ import {
   setNamePermission,
   setDescriptionPermission,
   setErrorsPermission,
+  setApplicationsPermission,
+  setApplicationModulesPermission,
+  setModuleActionsPermission,
 } from "@/redux/features/permission/permissionSlice";
 
 import {
   useGetPermissionByIdQuery,
   useUpdatePermissionByIdMutation,
 } from "@/redux/apis/permission/permissionApi";
+import { useGetAllApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
+import { useGetAllAppModulesQuery } from "@/redux/apis/permission/application_module/applicationModuleApi";
+import { useGetAllModuleActionsQuery } from "@/redux/apis/permission/module_action/moduleActionApi";
 
 const EditPermissionForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -30,6 +36,15 @@ const EditPermissionForm: React.FC = () => {
   const descriptionPermissionState = useAppSelector(
     (state) => state.permission.description
   );
+  const appsPermissionState = useAppSelector(
+    (state) => state.permission.applications
+  );
+  const modulesPermissionState = useAppSelector(
+    (state) => state.permission.application_modules
+  );
+  const actionsPermissionState = useAppSelector(
+    (state) => state.permission.module_actions
+  );
 
   const permissionErrorsState = useAppSelector(
     (state) => state.permission.errors
@@ -41,6 +56,15 @@ const EditPermissionForm: React.FC = () => {
     useState("");
   const [descriptionPermissionLocalState, setDescriptionPermissionLocalState] =
     useState("");
+  const [selectedAppsLocalState, setSelectedAppsLocalState] = useState<
+    number[]
+  >([]);
+  const [selectedModulesLocalState, setSelectedModulesLocalState] = useState<
+    number[]
+  >([]);
+  const [selectedActionsLocalState, setSelectedActionsLocalState] = useState<
+    number[]
+  >([]);
 
   const [isSubmittingUpdateData, setIsSubmittingUpdateData] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -53,6 +77,30 @@ const EditPermissionForm: React.FC = () => {
     isFetching: permissionFetching,
     error: permissionError,
   } = useGetPermissionByIdQuery(idPermissionState);
+
+  const {
+    data: allApplicationsData,
+    isLoading: allApplicationsLoading,
+    isFetching: allAapplicationsFetching,
+    error: allApplicationsError,
+    refetch: refetchAllApplications,
+  } = useGetAllApplicationsQuery(null);
+
+  const {
+    data: allAppModulesData,
+    isLoading: allAppModulesLoading,
+    isFetching: allAppModulesFetching,
+    error: allAppModulesError,
+    refetch: refetchAllAppModules,
+  } = useGetAllAppModulesQuery(null);
+
+  const {
+    data: allModuleActionsData,
+    isLoading: allModuleActionsLoading,
+    isFetching: allModuleActionsFetching,
+    error: allModuleActionsError,
+    refetch: refetchAllModuleActions,
+  } = useGetAllModuleActionsQuery(null);
 
   const [
     updatePermissionData,
@@ -67,6 +115,10 @@ const EditPermissionForm: React.FC = () => {
   });
 
   useEffect(() => {
+    console.log("APPS", appsPermissionState);
+    console.log("MODULES", modulesPermissionState);
+    console.log("ACTIONS", actionsPermissionState);
+
     if (
       permissionData &&
       !idPermissionState &&
@@ -75,7 +127,26 @@ const EditPermissionForm: React.FC = () => {
     ) {
       dispatch(setIdPermission(permissionData.id));
     }
-  }, [permissionData, idPermissionState]);
+    if (
+      descriptionPermissionState ||
+      appsPermissionState ||
+      modulesPermissionState ||
+      actionsPermissionState
+    ) {
+      setDescriptionPermissionLocalState(descriptionPermissionState);
+
+      setSelectedAppsLocalState(appsPermissionState);
+      setSelectedModulesLocalState(modulesPermissionState);
+      setSelectedActionsLocalState(actionsPermissionState);
+    }
+  }, [
+    permissionData,
+    idPermissionState,
+    descriptionPermissionState,
+    appsPermissionState,
+    modulesPermissionState,
+    actionsPermissionState,
+  ]);
 
   const handleConfirmUpdateData = async (
     e: React.FormEvent<HTMLFormElement>
@@ -86,19 +157,21 @@ const EditPermissionForm: React.FC = () => {
       const response: any = await updatePermissionData({
         id: idPermissionState,
         updatePermission: {
-          name: titleNamePermissionLocalState || titleNamePermissionState,
           description:
             descriptionPermissionLocalState || descriptionPermissionState,
+          applications: selectedAppsLocalState,
+          application_modules: selectedModulesLocalState,
+          module_actions: selectedActionsLocalState,
         },
       });
 
       let editDataError = response.error;
 
-      let editDataStatus = response.data?.status;
+      let editResponseData = response.data;
 
       let editDataValidationData = response.data?.message;
 
-      if (editDataError || editDataStatus !== 202) {
+      if (editDataError || !editResponseData) {
         setHasChanges(false);
 
         const errorMessage = editDataError?.data.message;
@@ -125,20 +198,13 @@ const EditPermissionForm: React.FC = () => {
         }
       }
 
-      if (editDataStatus === 202 && !editDataError) {
+      if (editResponseData && !editDataError) {
         setHasChanges(false);
 
-        dispatch(
-          setNamePermission(
-            titleNamePermissionLocalState || titleNamePermissionState
-          )
-        );
-
-        dispatch(
-          setDescriptionPermission(
-            descriptionPermissionLocalState || descriptionPermissionState
-          )
-        );
+        dispatch(setDescriptionPermission(descriptionPermissionState));
+        dispatch(setApplicationsPermission(selectedAppsLocalState));
+        dispatch(setApplicationModulesPermission(selectedModulesLocalState));
+        dispatch(setModuleActionsPermission(selectedActionsLocalState));
 
         setSuccessMessage("¡Permisos actualizados correctamente!");
         setShowSuccessMessage(true);
@@ -147,9 +213,6 @@ const EditPermissionForm: React.FC = () => {
       console.error(error);
     } finally {
       setIsSubmittingUpdateData(false);
-
-      setTitleNamePermissionLocalState("");
-      setDescriptionPermissionLocalState("");
     }
   };
 
@@ -193,10 +256,32 @@ const EditPermissionForm: React.FC = () => {
 
           setDescriptionPermissionLocalState(e.target.value);
         }}
+        allAppsFormData={allApplicationsData}
+        selectedAppsFormData={selectedAppsLocalState}
+        onChangeAppsFormData={(checkedValues) => {
+          setHasChanges(true);
+
+          setSelectedAppsLocalState(checkedValues);
+        }}
+        allAppModulesFormData={allAppModulesData}
+        selectedAppModulesFormData={selectedModulesLocalState}
+        onChangeAppModulesFormData={(checkedValues) => {
+          setHasChanges(true);
+
+          setSelectedModulesLocalState(checkedValues);
+        }}
+        allModuleActionsFormData={allModuleActionsData}
+        selectedModuleActionsFormData={selectedActionsLocalState}
+        onChangeModuleActionsFormData={(checkedValues) => {
+          setHasChanges(true);
+
+          setSelectedActionsLocalState(checkedValues);
+        }}
         handleConfirmDataFormData={handleConfirmUpdateData}
         initialValuesEditFormData={{
           "edit-permission-name": titleNamePermissionState || NOT_REGISTER,
-          "edit-permission-message": descriptionPermissionState || NOT_REGISTER,
+          "edit-permission-description":
+            descriptionPermissionState || NOT_REGISTER,
         }}
         isSubmittingEditFormData={isSubmittingUpdateData}
         hasChangesFormData={hasChanges}

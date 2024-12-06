@@ -20,8 +20,11 @@ import {
   setIdPermission,
   setNamePermission,
   setDescriptionPermission,
-  setErrorsPermission,
+  setApplicationsPermission,
+  setApplicationModulesPermission,
+  setModuleActionsPermission,
   setResetPermission,
+  setErrorsPermission,
 } from "@/redux/features/permission/permissionSlice";
 
 import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
@@ -75,6 +78,9 @@ const ManagePermissionsContent: React.FC = () => {
     dispatch(setIdPermission(record?.id));
     dispatch(setNamePermission(record?.name));
     dispatch(setDescriptionPermission(record?.description));
+    dispatch(setApplicationsPermission(record?.applications));
+    dispatch(setApplicationModulesPermission(record?.application_modules));
+    dispatch(setModuleActionsPermission(record?.module_actions));
   };
 
   const handleButtonUpdate = () => {
@@ -104,8 +110,8 @@ const ManagePermissionsContent: React.FC = () => {
       {isModalVisibleLocalState && (
         <CustomModalNoContent
           key={"custom-modal-permission-details"}
-          widthCustomModalNoContent={"69%"}
-          minWidthCustomModalNoContent="321px"
+          widthCustomModalNoContent={"88%"}
+          minWidthCustomModalNoContent="720px"
           openCustomModalState={isModalVisibleLocalState}
           closableCustomModal={true}
           maskClosableCustomModal={false}
@@ -124,8 +130,6 @@ const ManagePermissionsContent: React.FC = () => {
                 <>
                   <ModalPermissionDetails
                     titleDescription="Detalle completo de permiso"
-                    labelPermissionId="Id"
-                    selectedPermissionId={selectedRowDataLocalState?.id}
                     labelPermissionTitle="Titulo de permiso"
                     selectedPermissionTitle={selectedRowDataLocalState?.name}
                     labelPermissionDescription="Descripción del permiso"
