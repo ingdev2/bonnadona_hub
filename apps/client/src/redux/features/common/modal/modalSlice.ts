@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   isPageLoading: false,
   passwordResetToken: "",
-  userModalIsOpen: false,
+  collaboratorModalIsOpen: false,
   adminModalIsOpen: false,
   firstSuccessLoginModalIsOpen: false,
   changePasswordExpiryModalIsOpen: false,
@@ -29,8 +29,8 @@ export const modalSlice = createSlice({
     setSelectedOpenKeys: (state, action) => {
       state.selectedOpenKeys = action.payload;
     },
-    setUserModalIsOpen: (state, action) => {
-      state.userModalIsOpen = action.payload;
+    setCollaboratorModalIsOpen: (state, action) => {
+      state.collaboratorModalIsOpen = action.payload;
     },
     setAdminModalIsOpen: (state, action) => {
       state.adminModalIsOpen = action.payload;
@@ -48,6 +48,8 @@ export const modalSlice = createSlice({
       state.selectedKey = ItemKeys.SUB_USERS_KEY;
       state.selectedOpenKeys = [""];
       state.firstSuccessLoginModalIsOpen = false;
+      state.collaboratorModalIsOpen = false;
+      state.adminModalIsOpen = false;
     },
   },
 });
@@ -58,7 +60,7 @@ export const {
   setSelectedKey,
   setSelectedOpenKeys,
   setResetModalAdmin,
-  setUserModalIsOpen,
+  setCollaboratorModalIsOpen,
   setAdminModalIsOpen,
   setFirstLoginModalIsOpen,
   setTableRowId,

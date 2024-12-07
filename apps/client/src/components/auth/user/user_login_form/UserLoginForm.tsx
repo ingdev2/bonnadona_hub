@@ -36,7 +36,7 @@ import {
 } from "@/redux/features/login/userLoginSlice";
 import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import { setUserModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+import { setCollaboratorModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 
 const { Title } = Typography;
 
@@ -50,7 +50,7 @@ const UserLoginForm: React.FC = () => {
   );
 
   const modalIsOpenUser = useAppSelector(
-    (state) => state.modal.userModalIsOpen
+    (state) => state.modal.collaboratorModalIsOpen
   );
 
   const [
@@ -123,7 +123,7 @@ const UserLoginForm: React.FC = () => {
         );
         dispatch(setPasswordLoginUser(passwordCollaboratorLocalState));
         dispatch(setErrorsLoginUser([]));
-        dispatch(setUserModalIsOpen(true));
+        dispatch(setCollaboratorModalIsOpen(true));
         setShowErrorMessage(false);
       }
     } catch (error) {

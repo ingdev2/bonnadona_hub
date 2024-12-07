@@ -1,21 +1,22 @@
-"use client";
-
 import React, { useState } from "react";
+
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import UserPersonalDataFormData from "./UserPersonalDataFormData";
-import { TbPasswordUser } from "react-icons/tb";
-import { setAdminModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
-import UserPersonalEditDataForm from "../user_personal_edit_data_forms/UserPersonalEditDataForm";
 
-const UserPersonalDataForm: React.FC = () => {
+import CollaboratorPersonalDataFormData from "./CollaboratorPersonalDataFormData";
+import CollaboratorPersonalEditDataForm from "../collaborator_personal_edit_data_forms/CollaboratorPersonalEditDataForm";
+
+import { setCollaboratorModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+import { TbPasswordUser } from "react-icons/tb";
+
+const CollaboratorPersonalDataForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const NOT_REGISTER: string = "NO REGISTRA";
 
-  const idUserState = useAppSelector((state) => state.user.id);
   const nameUserState = useAppSelector((state) => state.user.name);
   const lastNameUserState = useAppSelector((state) => state.user.last_name);
   const idTypeNameUserState = useAppSelector(
@@ -43,12 +44,12 @@ const UserPersonalDataForm: React.FC = () => {
   const errorsUserState = useAppSelector((state) => state.user.errors);
 
   const isOpenModalChangeData = useAppSelector(
-    (state) => state.modal.adminModalIsOpen
+    (state) => state.modal.collaboratorModalIsOpen
   );
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  const [showErrorMessageAdmin, setShowErrorMessageAdmin] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   return (
     <>
@@ -63,7 +64,7 @@ const UserPersonalDataForm: React.FC = () => {
         <CustomSpin />
       ) : (
         <>
-          {showErrorMessageAdmin && (
+          {showErrorMessage && (
             <CustomMessage
               typeMessage="error"
               message={errorsUserState?.toString() || "¡Error en la petición!"}
@@ -85,13 +86,13 @@ const UserPersonalDataForm: React.FC = () => {
               closableCustomModal={true}
               maskClosableCustomModal={true}
               handleCancelCustomModal={() => {
-                dispatch(setAdminModalIsOpen(false));
+                dispatch(setCollaboratorModalIsOpen(false));
               }}
-              contentCustomModal={<UserPersonalEditDataForm />}
+              contentCustomModal={<CollaboratorPersonalEditDataForm />}
             />
           )}
 
-          <UserPersonalDataFormData
+          <CollaboratorPersonalDataFormData
             nameUserFormData={nameUserState || NOT_REGISTER}
             lastNameUserFormData={lastNameUserState || NOT_REGISTER}
             idTypeNameUserFormData={idTypeNameUserState || NOT_REGISTER}
@@ -109,9 +110,9 @@ const UserPersonalDataForm: React.FC = () => {
               principalEmailUserState || NOT_REGISTER
             }
             iconChangeEditUserDataForm={<TbPasswordUser size={17} />}
-            onClickChangeEditUserDataForm={() =>
-              dispatch(setAdminModalIsOpen(true))
-            }
+            onClickChangeEditUserDataForm={() => {
+              dispatch(setCollaboratorModalIsOpen(true));
+            }}
           />
         </>
       )}
@@ -119,4 +120,4 @@ const UserPersonalDataForm: React.FC = () => {
   );
 };
 
-export default UserPersonalDataForm;
+export default CollaboratorPersonalDataForm;

@@ -5,9 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import { Button, Col, Form, Input } from "antd";
-import { titleStyleCss } from "@/theme/text_styles";
-import PhoneInput, { PhoneNumber } from "antd-phone-input";
+import { Col } from "antd";
 
 import {
   useGetUserActiveByIdNumberQuery,
@@ -21,13 +19,9 @@ import {
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
-import { MdDriveFileRenameOutline } from "react-icons/md";
-import { FiPhone } from "react-icons/fi";
-import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import { setAdminModalIsOpen } from "@/redux/features/common/modal/modalSlice";
-import UserPersonalEditDataFormData from "./UserPersonalEditDataFormData";
+import AdminPersonalEditDataFormData from "./AdminPersonalEditDataFormData";
 
-const UserPersonalEditDataForm: React.FC = () => {
+const AdminPersonalEditDataForm: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const NOT_REGISTER: string = "NO REGISTRA";
@@ -52,15 +46,6 @@ const UserPersonalEditDataForm: React.FC = () => {
 
   const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
     useState("");
-
-  const [countryCodePersonalCellphone, setCountryCodePersonalCellphone] =
-    useState(0);
-  const [areaCodePersonalCellphone, setAreaCodePersonalCellphone] =
-    useState("");
-  const [phoneNumberPersonalCellphone, setPhoneNumberPersonalCellphone] =
-    useState("");
-
-  var fullPersonalCellphoneNumber = `${countryCodePersonalCellphone}${areaCodePersonalCellphone}${phoneNumberPersonalCellphone}`;
 
   const [isSubmittingEditUser, setIsSubmittingEditUser] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -100,40 +85,6 @@ const UserPersonalEditDataForm: React.FC = () => {
       );
     }
   }, [idUserState, idNumberUserState, userActiveByIdNumberData]);
-
-  const handlePersonalCellphoneInputChange = (value: any) => {
-    setHasChanges(true);
-
-    if (value) {
-      setCountryCodePersonalCellphone(value.countryCode || 0);
-      setAreaCodePersonalCellphone(value.areaCode || "");
-      setPhoneNumberPersonalCellphone(value.phoneNumber || "");
-    }
-  };
-
-  const combinePersonalCellphoneDetails = () => {
-    return `${areaCodePersonalCellphone}${phoneNumberPersonalCellphone}`;
-  };
-
-  const validatorPersonalCellphoneInput = (_: any, value: any) => {
-    const combinedPersonalCellphone = combinePersonalCellphoneDetails();
-
-    if (!combinedPersonalCellphone) {
-      return Promise.resolve();
-    }
-
-    const personalCellphonePattern = /^[0-9]+$/;
-
-    if (
-      personalCellphonePattern.test(combinedPersonalCellphone) &&
-      combinedPersonalCellphone.length >= 7 &&
-      combinedPersonalCellphone.length <= 17
-    ) {
-      return Promise.resolve();
-    }
-
-    return Promise.reject("Número de teléfono inválido");
-  };
 
   const handleChangeEditUser = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -245,7 +196,7 @@ const UserPersonalEditDataForm: React.FC = () => {
         />
       )}
 
-      <UserPersonalEditDataFormData
+      <AdminPersonalEditDataFormData
         principalEmailUserFormData={principalEmailUserState || NOT_REGISTER}
         onChangePrincipalEmailUserFormData={(e) => {
           setHasChanges(true);
@@ -268,9 +219,6 @@ const UserPersonalEditDataForm: React.FC = () => {
 
           setPersonalCellphoneUserLocalState(e.target.value);
         }}
-        validatorPersonalCellphoneInputFormData={
-          validatorPersonalCellphoneInput
-        }
         initialValuesEditAdminFormData={{
           "current-edit-user-principal-email":
             principalEmailUserState || NOT_REGISTER,
@@ -288,4 +236,4 @@ const UserPersonalEditDataForm: React.FC = () => {
   );
 };
 
-export default UserPersonalEditDataForm;
+export default AdminPersonalEditDataForm;

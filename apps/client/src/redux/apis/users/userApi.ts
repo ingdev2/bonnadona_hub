@@ -20,6 +20,12 @@ export const userApi = createApi({
     },
   }),
 
+  refetchOnMountOrArgChange: true,
+
+  refetchOnFocus: true,
+
+  refetchOnReconnect: true,
+
   endpoints: (builder) => ({
     getAllActiveUsers: builder.query<User[], null>({
       query: () => "getAllActiveUsers",
@@ -156,6 +162,7 @@ export const {
   useGetAuditorUserByIdNumberQuery,
   useGetUserActiveByEmailQuery,
   useGetUserSessionLogByEmailQuery,
+  useLazyGetUserSessionLogByEmailQuery,
   useGetUserActiveByIdNumberQuery,
   useGetUserByIdNumberQuery,
   useGetUserRolesQuery,

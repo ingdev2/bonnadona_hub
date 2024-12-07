@@ -10,7 +10,9 @@ import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_i
 
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
-import { useGetAdminsUserByIdNumberQuery, useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
+import {
+  useGetUserActiveByIdNumberQuery,
+} from "@/redux/apis/users/userApi";
 
 import { setSelectedKey } from "@/redux/features/common/modal/modalSlice";
 import {
@@ -18,7 +20,6 @@ import {
   setCollaboratorServiceUser,
   setGenderAbbrevUser,
   setGenderUser,
-  setIdNumberUser,
   setIdTypeAbbrevUser,
   setIdTypeUser,
   setLastNameUser,
@@ -27,9 +28,9 @@ import {
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
-import UserPersonalDataForm from "./personal_data_forms/UserPersonalDataForm";
+import AdminPersonalDataForm from "./admin_personal_data_forms/AdminPersonalDataForm";
 
-const UserPersonalDataContent: React.FC = () => {
+const AdminPersonalDataContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const idNumberUserState = useAppSelector((state) => state.user.id_number);
@@ -110,14 +111,22 @@ const UserPersonalDataContent: React.FC = () => {
       dispatch(setIdTypeUser(userActiveByIdNumberData?.user_id_type));
       dispatch(setGenderUser(userActiveByIdNumberData?.user_gender));
       dispatch(
-        setCollaboratorPositionUser(userActiveByIdNumberData?.collaborator_position)
+        setCollaboratorPositionUser(
+          userActiveByIdNumberData?.collaborator_position
+        )
       );
       dispatch(
-        setCollaboratorServiceUser(userActiveByIdNumberData?.collaborator_service)
+        setCollaboratorServiceUser(
+          userActiveByIdNumberData?.collaborator_service
+        )
       );
-      dispatch(setPrincipalEmailUser(userActiveByIdNumberData?.principal_email));
+      dispatch(
+        setPrincipalEmailUser(userActiveByIdNumberData?.principal_email)
+      );
       dispatch(setPersonalEmailUser(userActiveByIdNumberData?.personal_email));
-      dispatch(setPersonalCellphoneUser(userActiveByIdNumberData?.personal_cellphone));
+      dispatch(
+        setPersonalCellphoneUser(userActiveByIdNumberData?.personal_cellphone)
+      );
     }
 
     if (idTypeNumberUserState && allIdTypesData) {
@@ -160,11 +169,11 @@ const UserPersonalDataContent: React.FC = () => {
             flexFlow: "column wrap",
           }}
         >
-          <UserPersonalDataForm />
+          <AdminPersonalDataForm />
         </div>
       }
     />
   );
 };
 
-export default UserPersonalDataContent;
+export default AdminPersonalDataContent;

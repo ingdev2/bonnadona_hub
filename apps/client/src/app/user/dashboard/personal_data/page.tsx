@@ -1,23 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useSession } from "next-auth/react";
-
-import { RolesEnum } from "@/utils/enums/roles/roles.enum";
-import { useRoleValidation } from "@/utils/hooks/use_role_validation";
-
-import { setIdNumberUser } from "@/redux/features/user/userSlice";
-import {
-  setAdminModalIsOpen,
-  setIsPageLoading,
-} from "@/redux/features/common/modal/modalSlice";
-
-import AdminPersonalDataContent from "@/components/admin/personal_data/AdminPersonalDataContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import CollaboratorPersonalDataContent from "@/components/user/personal_data/CollaboratorPersonalDataContent";
+import {
+  setIsPageLoading,
+  setCollaboratorModalIsOpen,
+} from "@/redux/features/common/modal/modalSlice";
+import { setIdNumberUser } from "@/redux/features/user/userSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { RolesEnum } from "@/utils/enums/roles/roles.enum";
+import { useRoleValidation } from "@/utils/hooks/use_role_validation";
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 
-const AdminPersonalDataPage = () => {
+const CollaboratorPersonalDataPage = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
@@ -39,8 +36,8 @@ const AdminPersonalDataPage = () => {
     (state) => state.user.id_number
   );
 
-  const adminModalState = useAppSelector(
-    (state) => state.modal.adminModalIsOpen
+  const userModalState = useAppSelector(
+    (state) => state.modal.collaboratorModalIsOpen
   );
   const isPageLoadingState = useAppSelector(
     (state) => state.modal.isPageLoading
@@ -53,16 +50,16 @@ const AdminPersonalDataPage = () => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
     }
-    if (adminModalState) {
-      dispatch(setAdminModalIsOpen(false));
-    }
+    // if (userModalState) {
+    //   dispatch(setCollaboratorModalIsOpen(false));
+    // }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
-  }, [status, idNumberUserSessionState, adminModalState, isPageLoadingState]);
+  }, [status, idNumberUserSessionState, userModalState, isPageLoadingState]);
 
   return (
-    <div className="admin-personal-data-page">
+    <div className="collaborator-personal-data-page">
       {showErrorMessage && (
         <CustomMessage
           typeMessage="error"
@@ -73,12 +70,12 @@ const AdminPersonalDataPage = () => {
       {!idNumberUserSessionState || status === "unauthenticated" ? (
         <CustomSpin />
       ) : (
-        <div className="dashboard-admin-personal-data-content">
-          <AdminPersonalDataContent />
+        <div className="dashboard-collaborator-personal-data-content">
+          <CollaboratorPersonalDataContent />
         </div>
       )}
     </div>
   );
 };
 
-export default AdminPersonalDataPage;
+export default CollaboratorPersonalDataPage;
