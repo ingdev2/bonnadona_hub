@@ -21,6 +21,12 @@ export const permissionApi = createApi({
     },
   }),
 
+  refetchOnMountOrArgChange: true,
+
+  refetchOnFocus: true,
+
+  refetchOnReconnect: true,
+
   endpoints: (builder) => ({
     createPermission: builder.mutation<IPermission, Partial<IPermission>>({
       query: (newPermission) => ({

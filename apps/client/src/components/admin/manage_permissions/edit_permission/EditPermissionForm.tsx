@@ -115,10 +115,6 @@ const EditPermissionForm: React.FC = () => {
   });
 
   useEffect(() => {
-    console.log("APPS", appsPermissionState);
-    console.log("MODULES", modulesPermissionState);
-    console.log("ACTIONS", actionsPermissionState);
-
     if (
       permissionData &&
       !idPermissionState &&
