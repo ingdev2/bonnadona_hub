@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -77,6 +77,8 @@ const AllUsersContent: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
+  const userIdNumber = session?.user.id_number;
+
   const NOT_REGISTER: string = "NO REGISTRA";
 
   const principalEmailAdminState = useAppSelector(
@@ -129,8 +131,8 @@ const AllUsersContent: React.FC = () => {
     isLoading: userActiveDatabyIdNumberLoading,
     isFetching: userActiveDatabyIdNumberFetching,
     isError: userActiveDatabyIdNumberError,
-  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
-    skip: !session?.user.id_number,
+  } = useGetUserActiveByIdNumberQuery(userIdNumber ?? 0, {
+    skip: !userIdNumber,
   });
 
   const {
@@ -138,6 +140,7 @@ const AllUsersContent: React.FC = () => {
     isLoading: userSessionLogLoading,
     isFetching: userSessionLogFetching,
     error: userSessionLogError,
+    refetch: refetchUserSessionLog,
   } = useGetUserSessionLogByEmailQuery(principalEmailAdminState, {
     skip: !principalEmailAdminState,
   });
@@ -191,8 +194,10 @@ const AllUsersContent: React.FC = () => {
 
   useEffect(() => {
     if (
-      userSessionLogData?.successful_login_counter == 1 &&
-      userActiveDatabyIdNumberData?.last_password_update === null
+      userSessionLogData &&
+      userActiveDatabyIdNumberData &&
+      Number(userSessionLogData.successful_login_counter) === 1 &&
+      userActiveDatabyIdNumberData.last_password_update === null
     ) {
       dispatch(setFirstLoginModalIsOpen(true));
     } else {
@@ -212,7 +217,13 @@ const AllUsersContent: React.FC = () => {
     } else {
       dispatch(setChangePasswordExpiryModalIsOpen(false));
     }
-  }, [userSessionLogData, passwordPolicyData, lastPasswordUpdateAdminState]);
+  }, [
+    userSessionLogData,
+    userActiveDatabyIdNumberData,
+    passwordPolicyData,
+    lastPasswordUpdateAdminState,
+    principalEmailAdminState,
+  ]);
 
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
@@ -351,9 +362,7 @@ const AllUsersContent: React.FC = () => {
         {modalIsOpenFirstSuccessfullAdminLogin && (
           <ChangePasswordModal
             titleModal={"Bienvenidos a Bonnadona Hub"}
-            subtitleModal={
-              "Debes actualizar tu contraseña si entras por primera vez:"
-            }
+            subtitleModal={"Por favor te invitamos a actualizar tu contraseña"}
           />
         )}
       </div>

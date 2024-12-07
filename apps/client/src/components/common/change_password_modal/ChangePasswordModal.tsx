@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useSession } from "next-auth/react";
 
 import { Modal, Input, Button, Form } from "antd";
 
@@ -9,18 +10,19 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/CustomLoadingOverlay";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
-import {
-  setFirstLoginModalIsOpen,
-} from "@/redux/features/common/modal/modalSlice";
+import { setFirstLoginModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { useUpdateUserPasswordMutation } from "@/redux/apis/users/userApi";
-import { setErrorsUser } from "@/redux/features/user/userSlice";
+import { useGetUserActiveByIdNumberQuery, useUpdateUserPasswordMutation } from "@/redux/apis/users/userApi";
+import { setErrorsUser, setLastPasswordUpdateUser } from "@/redux/features/user/userSlice";
 
 const ChangePasswordModal: React.FC<{
   titleModal: string;
   subtitleModal: string;
 }> = ({ titleModal, subtitleModal }) => {
+  const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
+
+  const userIdNumber = session?.user.id_number;
 
   const modalIsOpenFirstSuccessfullCollaboratorLogin = useAppSelector(
     (state) => state.modal.firstSuccessLoginModalIsOpen
@@ -54,6 +56,16 @@ const ChangePasswordModal: React.FC<{
     },
   ] = useUpdateUserPasswordMutation({
     fixedCacheKey: "updateUserPasswordData",
+  });
+
+  const {
+    data: userActiveDatabyIdNumberData,
+    isLoading: userActiveDatabyIdNumberLoading,
+    isFetching: userActiveDatabyIdNumberFetching,
+    isError: userActiveDatabyIdNumberError,
+    refetch: userActiveDatabyIdNumberRefetch,
+  } = useGetUserActiveByIdNumberQuery(userIdNumber ?? 0, {
+    skip: !userIdNumber,
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -103,10 +115,16 @@ const ChangePasswordModal: React.FC<{
         }
 
         if (editPasswordDataStatus === 202 && !editPasswordDataError) {
+          // userActiveDatabyIdNumberRefetch()
           setShowSuccessMessage(true);
           setSuccessMessage(response?.data.message);
 
           dispatch(setFirstLoginModalIsOpen(false));
+          // dispatch(
+          //   setLastPasswordUpdateUser(
+          //     userActiveDatabyIdNumberData?.last_password_update
+          //   )
+          // );
         }
       }
     } catch (error) {

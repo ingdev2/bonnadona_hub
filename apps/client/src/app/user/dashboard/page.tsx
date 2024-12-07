@@ -20,7 +20,7 @@ import {
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
 import {
-  setUserModalIsOpen,
+  setCollaboratorModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
@@ -47,7 +47,7 @@ const AllAppsPage = () => {
   );
 
   const collaboratorModalState = useAppSelector(
-    (state) => state.modal.userModalIsOpen
+    (state) => state.modal.collaboratorModalIsOpen
   );
 
   const isPageLoadingState = useAppSelector(
@@ -84,7 +84,7 @@ const AllAppsPage = () => {
       );
     }
     if (collaboratorModalState) {
-      dispatch(setUserModalIsOpen(false));
+      dispatch(setCollaboratorModalIsOpen(false));
     }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
