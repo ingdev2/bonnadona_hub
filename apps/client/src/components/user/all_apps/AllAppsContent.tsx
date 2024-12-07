@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { Card, Col, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
 
-import CustomDashboardLayoutUsers from "@/components/common/custom_dashboard_layout_users/CustomDashboardLayoutUsers";
+import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
 import ChangePasswordModal from "../../common/change_password_modal/ChangePasswordModal";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -68,11 +68,31 @@ const AllAppsContent: React.FC = () => {
 
   useEffect(() => {
     if (
-      userSessionLogData?.successful_login_counter == 1 &&
-      userActiveDatabyIdNumberData?.last_password_update === null
+      userSessionLogData &&
+      userActiveDatabyIdNumberData &&
+      Number(userSessionLogData.successful_login_counter) === 1 &&
+      userActiveDatabyIdNumberData.last_password_update === null
     ) {
+      console.log(
+        "successful_login_counter",
+        typeof userSessionLogData.successful_login_counter
+      );
+      console.log(
+        "last_password_update",
+        userActiveDatabyIdNumberData.last_password_update
+      );
+      console.log("abierto");
       dispatch(setFirstLoginModalIsOpen(true));
     } else {
+      console.log(
+        "successful_login_counter",
+        userSessionLogData?.successful_login_counter
+      );
+      console.log(
+        "last_password_update",
+        userActiveDatabyIdNumberData?.last_password_update
+      );
+      console.log("cerrado");
       dispatch(setFirstLoginModalIsOpen(false));
     }
 
@@ -118,7 +138,7 @@ const AllAppsContent: React.FC = () => {
       </div>
 
       <div className="custom-dashboard-layout-users">
-        <CustomDashboardLayoutUsers
+        <CustomDashboardLayoutCollaborators
           customLayoutContent={
             <div style={{ width: "100%" }}>
               <Row gutter={[24, 24]} justify="center">

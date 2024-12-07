@@ -13,7 +13,7 @@ import {
 import { IdcardOutlined } from "@ant-design/icons";
 import { TbGenderBigender } from "react-icons/tb";
 
-const UserPersonalDataFormData: React.FC<{
+const AdminPersonalDataFormData: React.FC<{
   nameUserFormData: string;
   lastNameUserFormData: string;
   idTypeNameUserFormData: string;
@@ -269,4 +269,4 @@ const UserPersonalDataFormData: React.FC<{
   );
 };
 
-export default UserPersonalDataFormData;
+export default AdminPersonalDataFormData;

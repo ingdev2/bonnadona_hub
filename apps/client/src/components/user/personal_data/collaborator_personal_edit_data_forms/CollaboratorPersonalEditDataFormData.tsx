@@ -3,23 +3,18 @@ import React from "react";
 import { Store } from "antd/es/form/interface";
 
 import { titleStyleCss } from "@/theme/text_styles";
-import PhoneInput, { PhoneNumber } from "antd-phone-input";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { Button, Form, Input } from "antd";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
 
-const UserPersonalEditDataFormData: React.FC<{
+const CollaboratorPersonalEditDataFormData: React.FC<{
   principalEmailUserFormData: string;
   onChangePrincipalEmailUserFormData: (e: any) => void;
   personalEmailUserFormData: string;
   onChangePersonalEmailUserFormData: (e: any) => void;
   personalCellphoneFormData: string | undefined;
   onChangePersonalCellphoneFormData: (e: any) => void;
-  validatorPersonalCellphoneInputFormData: (
-    _: any,
-    value: any
-  ) => Promise<void>;
   handleChangeEditUserFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -34,7 +29,6 @@ const UserPersonalEditDataFormData: React.FC<{
   onChangePersonalEmailUserFormData,
   personalCellphoneFormData,
   onChangePersonalCellphoneFormData,
-  validatorPersonalCellphoneInputFormData,
   handleChangeEditUserFormData,
   initialValuesEditAdminFormData,
   isSubmittingEditUserData,
@@ -188,4 +182,4 @@ const UserPersonalEditDataFormData: React.FC<{
   );
 };
 
-export default UserPersonalEditDataFormData;
+export default CollaboratorPersonalEditDataFormData;
