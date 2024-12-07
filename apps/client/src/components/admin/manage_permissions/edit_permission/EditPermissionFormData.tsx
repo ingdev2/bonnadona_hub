@@ -9,7 +9,6 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import TextArea from "antd/es/input/TextArea";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import { useAppSelector } from "@/redux/hooks";
 
 const EditPermissionFormData: React.FC<{
   namePermissionFormData: string;
@@ -221,6 +220,7 @@ const EditPermissionFormData: React.FC<{
                 display: "flex",
                 flexFlow: "column wrap",
                 gap: "13px",
+                paddingBottom: "13px",
               }}
             >
               {allAppsFormData?.map((app) => (
@@ -232,7 +232,7 @@ const EditPermissionFormData: React.FC<{
                     justifyContent: "space-between",
                   }}
                 >
-                  <Checkbox value={app.id}>
+                  <Checkbox value={app.id} style={{ width: "96%" }}>
                     <Tooltip title={app.name}>{app.name}</Tooltip>
                   </Checkbox>
 
@@ -274,6 +274,7 @@ const EditPermissionFormData: React.FC<{
                 display: "flex",
                 flexFlow: "column wrap",
                 gap: "13px",
+                paddingBottom: "13px",
               }}
             >
               {expandedApp &&
@@ -286,7 +287,7 @@ const EditPermissionFormData: React.FC<{
                       justifyContent: "space-between",
                     }}
                   >
-                    <Checkbox value={module.id}>
+                    <Checkbox value={module.id} style={{ width: "96%" }}>
                       <Tooltip title={module.name}>{module.name}</Tooltip>
                     </Checkbox>
 
@@ -348,11 +349,16 @@ const EditPermissionFormData: React.FC<{
                 display: "flex",
                 flexFlow: "column wrap",
                 gap: "13px",
+                paddingBottom: "13px",
               }}
             >
               {expandedModule && selectedModulesCount.includes(expandedModule)
                 ? filteredActions(expandedModule).map((action) => (
-                    <Checkbox key={action.id} value={action.id}>
+                    <Checkbox
+                      key={action.id}
+                      value={action.id}
+                      style={{ width: "96%" }}
+                    >
                       <Tooltip title={action.name}>{action.name}</Tooltip>
                     </Checkbox>
                   ))

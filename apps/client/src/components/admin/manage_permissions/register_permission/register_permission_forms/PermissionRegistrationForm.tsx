@@ -18,16 +18,30 @@ import {
   useCreatePermissionMutation,
   useGetAllPermissionsQuery,
 } from "@/redux/apis/permission/permissionApi";
+import { useGetAllActiveApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
+import { useGetAllAppModulesQuery } from "@/redux/apis/permission/application_module/applicationModuleApi";
+import { useGetAllModuleActionsQuery } from "@/redux/apis/permission/module_action/moduleActionApi";
 
 const PermissionRegistrationForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const [permissionNameLocalState, setPermissionNameLocalState] = useState("");
   const [options, setOptions] = useState<any[]>([]);
+  const [hasChanges, setHasChanges] = useState(false);
 
+  const [permissionNameLocalState, setPermissionNameLocalState] = useState("");
   const [permissionDescriptionLocalState, setPermissionDescriptionLocalState] =
     useState("");
+
+  const [selectedAppsLocalState, setSelectedAppsLocalState] = useState<
+    number[]
+  >([]);
+  const [selectedModulesLocalState, setSelectedModulesLocalState] = useState<
+    number[]
+  >([]);
+  const [selectedActionsLocalState, setSelectedActionsLocalState] = useState<
+    number[]
+  >([]);
 
   const [modalIsOpenConfirm, setModalIsOpenConfirm] = useState(false);
   const [modalIsOpenSuccess, setModalIsOpenSuccess] = useState(false);
@@ -61,6 +75,30 @@ const PermissionRegistrationForm: React.FC = () => {
     error: allPermissionsError,
   } = useGetAllPermissionsQuery(null);
 
+  const {
+    data: allActiveApplicationsData,
+    isLoading: allActiveApplicationsLoading,
+    isFetching: allActiveApplicationsFetching,
+    error: allActiveApplicationsError,
+    refetch: refetchAllActiveApplications,
+  } = useGetAllActiveApplicationsQuery(null);
+
+  const {
+    data: allAppModulesData,
+    isLoading: allAppModulesLoading,
+    isFetching: allAppModulesFetching,
+    error: allAppModulesError,
+    refetch: refetchAllAppModules,
+  } = useGetAllAppModulesQuery(null);
+
+  const {
+    data: allModuleActionsData,
+    isLoading: allModuleActionsLoading,
+    isFetching: allModuleActionsFetching,
+    error: allModuleActionsError,
+    refetch: refetchAllModuleActions,
+  } = useGetAllModuleActionsQuery(null);
+
   const handleCreatePermission = () => {
     try {
       setModalIsOpenConfirm(true);
@@ -80,6 +118,9 @@ const PermissionRegistrationForm: React.FC = () => {
       const response: any = await createPermission({
         name: permissionNameLocalState,
         description: permissionDescriptionLocalState,
+        applications: selectedAppsLocalState,
+        application_modules: selectedModulesLocalState,
+        module_actions: selectedActionsLocalState,
       });
 
       let createDataError = response.error;
@@ -234,7 +275,28 @@ const PermissionRegistrationForm: React.FC = () => {
         optionsPermissionNameDataForm={options}
         permissionDescriptionDataForm={permissionDescriptionLocalState}
         handleOnChangePermissionDescriptionDataForm={(e) => {
-          setPermissionDescriptionLocalState(e.target.value);
+          setPermissionDescriptionLocalState(e.target.value.toUpperCase());
+        }}
+        allAppsFormData={allActiveApplicationsData}
+        selectedAppsFormData={selectedAppsLocalState}
+        onChangeAppsFormData={(checkedValues) => {
+          setHasChanges(true);
+
+          setSelectedAppsLocalState(checkedValues);
+        }}
+        allAppModulesFormData={allAppModulesData}
+        selectedAppModulesFormData={selectedModulesLocalState}
+        onChangeAppModulesFormData={(checkedValues) => {
+          setHasChanges(true);
+
+          setSelectedModulesLocalState(checkedValues);
+        }}
+        allModuleActionsFormData={allModuleActionsData}
+        selectedModuleActionsFormData={selectedActionsLocalState}
+        onChangeModuleActionsFormData={(checkedValues) => {
+          setHasChanges(true);
+
+          setSelectedActionsLocalState(checkedValues);
         }}
         buttonSubmitFormLoadingDataForm={
           isSubmittingConfirmModal && !modalIsOpenConfirm
