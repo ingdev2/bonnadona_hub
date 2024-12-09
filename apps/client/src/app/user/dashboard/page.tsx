@@ -36,11 +36,6 @@ const AllAppsPage = () => {
   const allowedRoles = [RolesEnum.COLLABORATOR];
   useRoleValidation(allowedRoles);
 
-  // usePermissionsAppAndModuleValidationInPage({
-  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
-  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
-  // });
-
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number
   );

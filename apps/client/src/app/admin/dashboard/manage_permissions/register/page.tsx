@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
+
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
+import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
 import { usePermissionsAppAndModuleValidationInPage } from "@/utils/hooks/use_permissions_app_and_module_validation_in_page";
 
 import RegisterPermissionContent from "@/components/admin/manage_permissions/register_permission/RegisterPermissionContent";
@@ -32,10 +33,10 @@ const RegisterPermissionPage = () => {
   ];
   useRoleValidation(allowedRoles);
 
-  // usePermissionsAppAndModuleValidationInPage({
-  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
-  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
-  // });
+  usePermissionsAppAndModuleValidationInPage({
+    allowedApplications: [ApplicationsEnum.BONNA_HUB],
+    allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+  });
 
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number
