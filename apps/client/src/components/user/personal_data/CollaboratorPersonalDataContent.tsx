@@ -10,6 +10,8 @@ import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_i
 import {
   setCollaboratorPositionUser,
   setCollaboratorServiceUser,
+  setCorporateCellphoneUser,
+  setCorporateEmailUser,
   setGenderAbbrevUser,
   setGenderUser,
   setIdTypeAbbrevUser,
@@ -52,8 +54,16 @@ const CollaboratorPersonalDataContent = () => {
     (state) => state.user.principal_email
   );
 
+  const corporateEmailUserState = useAppSelector(
+    (state) => state.user.corporate_email
+  );
+
   const personalCellphoneUserState = useAppSelector(
     (state) => state.user.personal_cellphone
+  );
+
+  const corporateCellphoneUserState = useAppSelector(
+    (state) => state.user.corporate_cellphone
   );
 
   const {
@@ -92,6 +102,8 @@ const CollaboratorPersonalDataContent = () => {
       !collaboratorServiceUserState ||
       !personalEmailUserState ||
       !principalEmailUserState ||
+      !corporateCellphoneUserState ||
+      !corporateEmailUserState ||
       (!personalCellphoneUserState &&
         userActiveByIdNumberData &&
         !userActiveByIdNumberLoading &&
@@ -118,6 +130,12 @@ const CollaboratorPersonalDataContent = () => {
       dispatch(
         setPersonalCellphoneUser(userActiveByIdNumberData?.personal_cellphone)
       );
+      dispatch(
+        setCorporateEmailUser(userActiveByIdNumberData?.corporate_email)
+      );
+      dispatch(
+        setCorporateCellphoneUser(userActiveByIdNumberData?.corporate_cellphone)
+      );
     }
 
     if (idTypeNumberUserState && allIdTypesData) {
@@ -140,6 +158,8 @@ const CollaboratorPersonalDataContent = () => {
     collaboratorServiceUserState,
     personalEmailUserState,
     principalEmailUserState,
+    corporateCellphoneUserState,
+    corporateEmailUserState,
     userActiveByIdNumberData,
     userActiveByIdNumberLoading,
     userActiveByIdNumberFetching,

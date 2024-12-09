@@ -41,6 +41,13 @@ const CollaboratorPersonalDataForm: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.user.personal_cellphone
   );
+  const corporateEmailUserState = useAppSelector(
+    (state) => state.user.corporate_email
+  );
+  const corporateCellphoneUserState = useAppSelector(
+    (state) => state.user.corporate_cellphone
+  );
+
   const errorsUserState = useAppSelector((state) => state.user.errors);
 
   const isOpenModalChangeData = useAppSelector(
@@ -108,6 +115,12 @@ const CollaboratorPersonalDataForm: React.FC = () => {
             }
             principalEmailUserUserFormData={
               principalEmailUserState || NOT_REGISTER
+            }
+            corporateCellphoneUserUserFormData={
+              corporateCellphoneUserState || NOT_REGISTER
+            }
+            corporateEmailUserUserFormData={
+              corporateEmailUserState || NOT_REGISTER
             }
             iconChangeEditUserDataForm={<TbPasswordUser size={17} />}
             onClickChangeEditUserDataForm={() => {
