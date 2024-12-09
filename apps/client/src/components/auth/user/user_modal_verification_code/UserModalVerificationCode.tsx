@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 
-import { Modal, Input, Button, Typography, Space, Form, Divider } from "antd";
+import { Modal, Input, Button, Form, Divider } from "antd";
 import Link from "next/link";
 
 import { TbPasswordUser } from "react-icons/tb";
@@ -23,7 +23,7 @@ import {
 } from "@/redux/features/login/userLoginSlice";
 import { signIn } from "next-auth/react";
 import {
-  setUserModalIsOpen,
+  setCollaboratorModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 
@@ -32,7 +32,7 @@ const UserModalVerificationCode: React.FC = () => {
   const router = useRouter();
 
   const collaboratorModalState = useAppSelector(
-    (state) => state.modal.userModalIsOpen
+    (state) => state.modal.collaboratorModalIsOpen
   );
 
   const isPageLoadingState = useAppSelector(
@@ -138,13 +138,14 @@ const UserModalVerificationCode: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+      dispatch(setErrorsLoginUser("Internal server error"));
     } finally {
       setIsSubmittingResendCode(false);
     }
   };
 
   const handleCancel = () => {
-    dispatch(setUserModalIsOpen(false));
+    dispatch(setCollaboratorModalIsOpen(false));
 
     <Link href="/login" scroll={false} />;
     window.location.reload();
