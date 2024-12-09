@@ -19,14 +19,18 @@ import {
   setSelectedKey,
 } from "@/redux/features/common/modal/modalSlice";
 
-import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
+import { usePermissionsAppAndModuleValidationInPage } from "@/utils/hooks/use_permissions_app_and_module_validation_in_page";
 
 import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enums/item_names_and_keys.enums";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import AllUsersContent from "@/components/admin/all_users/AllUsersContent";
 import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
+
+import { RolesEnum } from "@/utils/enums/roles/roles.enum";
+import { ApplicationsEnum } from "@/utils/enums/permissions/applications/applications.enum";
+import { ApplicationModulesEnum } from "@/utils/enums/permissions/application_modules/application_modules.enum";
 
 const HomePage = () => {
   const { data: session, status } = useSession();
@@ -45,7 +49,7 @@ const HomePage = () => {
 
   // usePermissionsAppAndModuleValidationInPage({
   //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
-  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_ALL_USERS],
   // });
 
   const idNumberUserSessionState = useAppSelector(

@@ -17,6 +17,7 @@ import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { Permissions } from 'src/permissions/entities/permissions.entity';
 import { PermissionsService } from 'src/permissions/services/permissions.service';
 import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
 import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
@@ -85,6 +86,9 @@ export class UsersService {
     private bloodGroupRepository: Repository<BloodGroup>,
 
     @InjectRepository(Role) private roleRepository: Repository<Role>,
+
+    @InjectRepository(Permissions)
+    private permissionRepository: Repository<Permissions>,
 
     @InjectRepository(ServiceType)
     private serviceTypeRepository: Repository<ServiceType>,
@@ -1235,17 +1239,16 @@ export class UsersService {
       );
     }
 
-    const { roleIdsToAdd, roleIdsToRemove, ...userUpdates } = updateUser;
+    const { roleIdsToAdd, permissionIdsToAdd, ...userUpdates } = updateUser;
 
     const userUpdate = await this.userRepository.update(id, userUpdates);
 
-    if (roleIdsToAdd || roleIdsToRemove) {
-      await this.updateUserRoles(
-        id,
-        roleIdsToAdd,
-        roleIdsToRemove,
-        requestAuditLog,
-      );
+    if (roleIdsToAdd) {
+      await this.updateUserRoles(id, roleIdsToAdd, requestAuditLog);
+    }
+
+    if (permissionIdsToAdd) {
+      await this.updateUserPermissions(id, permissionIdsToAdd, requestAuditLog);
     }
 
     if (userUpdate.affected === 0) {
@@ -1343,7 +1346,6 @@ export class UsersService {
   async updateUserRoles(
     id: string,
     roleIdsToAdd: number[],
-    roleIdsToRemove: number[],
     @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
@@ -1359,31 +1361,60 @@ export class UsersService {
         id: In(roleIdsToAdd),
       });
 
-      userFound.role = [
-        ...userFound.role,
-        ...rolesToAdd.filter(
-          (role) =>
-            !userFound.role.some((existingRole) => existingRole.id === role.id),
-        ),
-      ];
-    }
-
-    if (roleIdsToRemove && roleIdsToRemove.length > 0) {
-      userFound.role = userFound.role.filter(
-        (role) => !roleIdsToRemove.includes(role.id),
-      );
-
-      if (userFound.role.length === 0) {
+      if (rolesToAdd.length !== roleIdsToAdd.length) {
         throw new HttpException(
-          `El usuario debe tener al menos un rol asignado.`,
-          HttpStatus.BAD_REQUEST,
+          `Uno o más roles no existen`,
+          HttpStatus.NOT_FOUND,
         );
       }
+
+      userFound.role = rolesToAdd;
     }
 
     const auditLogData = {
       ...requestAuditLog.auditLogData,
-      action_type: ActionTypesEnum.UPDATE_DATA_USER,
+      action_type: ActionTypesEnum.UPDATE_USER_ROLES,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
+    await this.userRepository.save(userFound);
+  }
+
+  async updateUserPermissions(
+    id: string,
+    permissionIdsToAdd: string[],
+    @Req() requestAuditLog: any,
+  ) {
+    const userFound = await this.userRepository.findOne({
+      where: { id, is_active: true },
+    });
+
+    if (!userFound) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    if (permissionIdsToAdd && permissionIdsToAdd.length > 0) {
+      const rolesToAdd = await this.permissionRepository.findBy({
+        id: In(permissionIdsToAdd),
+      });
+
+      if (rolesToAdd.length !== permissionIdsToAdd.length) {
+        throw new HttpException(
+          `Uno o más roles no existen`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      userFound.permission = rolesToAdd;
+    }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_USER_PERMISSIONS,
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,

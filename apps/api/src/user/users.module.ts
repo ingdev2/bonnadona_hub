@@ -17,6 +17,7 @@ import { PasswordPolicyModule } from 'src/password_policy/password_policy.module
 import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
 import { PasswordHistoryModule } from 'src/password_history/password_history.module';
 import { PermissionsModule } from 'src/permissions/permissions.module';
+import { Permissions } from 'src/permissions/entities/permissions.entity';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PermissionsModule } from 'src/permissions/permissions.module';
       UserProfile,
       UserSessionLog,
       Role,
+      Permissions,
       IdType,
       GenderType,
       BloodGroup,

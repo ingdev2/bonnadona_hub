@@ -24,7 +24,7 @@ export class PermissionsController {
 
   // POST METHODS //
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
   createPermission(@Body() createPermission: CreatePermissionDto) {
     return this.permissionsService.createPermission(createPermission);
@@ -32,13 +32,13 @@ export class PermissionsController {
 
   // GET METHODS //
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAll')
   getAllPermissions() {
     return this.permissionsService.getAllPermissions();
   }
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getPermission/:id')
   getPermission(@Param('id') id: string) {
     return this.permissionsService.getPermission(id);
@@ -47,7 +47,7 @@ export class PermissionsController {
   // PATCH METHODS //
 
   @EnableAuditLog()
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   modifyPermission(
     @Param('id') id: string,
