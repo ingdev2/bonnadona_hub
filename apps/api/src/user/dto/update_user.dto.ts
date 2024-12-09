@@ -47,5 +47,5 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsArray()
-  roleIdsToRemove: number[];
+  permissionIdsToAdd: string[];
 }

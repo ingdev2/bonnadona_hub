@@ -5,9 +5,6 @@ import { notFound } from "next/navigation";
 import { ApplicationsEnum } from "../enums/permissions/applications/applications.enum";
 import { ApplicationModulesEnum } from "../enums/permissions/application_modules/application_modules.enum";
 
-import { IApplication } from "../interfaces/auth/application.interface";
-import { IApplicationModule } from "../interfaces/auth/application_module.interface";
-
 interface PermissionValidationParams {
   allowedApplications?: ApplicationsEnum[];
   allowedModules?: ApplicationModulesEnum[];

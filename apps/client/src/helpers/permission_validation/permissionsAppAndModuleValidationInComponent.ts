@@ -4,9 +4,6 @@ import { useSession } from "next-auth/react";
 import { ApplicationsEnum } from "../../utils/enums/permissions/applications/applications.enum";
 import { ApplicationModulesEnum } from "../../utils/enums/permissions/application_modules/application_modules.enum";
 
-import { IApplication } from "../../utils/interfaces/auth/application.interface";
-import { IApplicationModule } from "../../utils/interfaces/auth/application_module.interface";
-
 interface PermissionValidationParams {
   allowedApplications?: ApplicationsEnum[];
   allowedModules?: ApplicationModulesEnum[];

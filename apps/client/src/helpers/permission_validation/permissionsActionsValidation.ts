@@ -3,8 +3,6 @@ import { useSession } from "next-auth/react";
 
 import { ModuleActionsEnum } from "../../utils/enums/permissions/module_actions/module_actions.enum";
 
-import { IModuleAction } from "../../utils/interfaces/auth/module_action.interface";
-
 interface PermissionValidationParams {
   allowedActions?: ModuleActionsEnum[];
 }
