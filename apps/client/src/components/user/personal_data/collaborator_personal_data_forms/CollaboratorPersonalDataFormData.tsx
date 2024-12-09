@@ -24,6 +24,8 @@ const CollaboratorPersonalDataFormData: React.FC<{
   principalEmailUserUserFormData: string;
   personalEmailUserUserFormData: string;
   personalCellphoneUserUserFormData: number | string;
+  corporateCellphoneUserUserFormData: number | string;
+  corporateEmailUserUserFormData: string;
   iconChangeEditUserDataForm: ReactNode;
   onClickChangeEditUserDataForm: () => void;
 }> = ({
@@ -37,6 +39,8 @@ const CollaboratorPersonalDataFormData: React.FC<{
   principalEmailUserUserFormData,
   personalEmailUserUserFormData,
   personalCellphoneUserUserFormData,
+  corporateCellphoneUserUserFormData,
+  corporateEmailUserUserFormData,
   iconChangeEditUserDataForm,
   onClickChangeEditUserDataForm,
 }) => {
@@ -226,6 +230,40 @@ const CollaboratorPersonalDataFormData: React.FC<{
               prefix={<MdOutlinePhone className="site-form-item-icon" />}
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
               value={personalCellphoneUserUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+      </Row>
+
+      <Row gutter={24}>
+        <Col span={12} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Correo corporativo:
+            </Typography.Title>
+
+            <Input
+              id="corporate-email-user-auto-input"
+              prefix={<MdOutlineEmail className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={corporateEmailUserUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={12} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Celular corporativo:
+            </Typography.Title>
+
+            <Input
+              id="corporate-cellphone-user-auto-input"
+              prefix={<MdOutlinePhone className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={corporateCellphoneUserUserFormData}
               disabled
             />
           </div>
