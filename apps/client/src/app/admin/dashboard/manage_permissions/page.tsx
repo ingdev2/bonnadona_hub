@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+
+import { setIdNumberUser } from "@/redux/features/user/userSlice";
+
 import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 import { usePermissionsAppAndModuleValidationInPage } from "@/utils/hooks/use_permissions_app_and_module_validation_in_page";
@@ -10,8 +13,6 @@ import { usePermissionsAppAndModuleValidationInPage } from "@/utils/hooks/use_pe
 import ManagePermissionsContent from "@/components/admin/manage_permissions/ManagePermissionsContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-
-import { setIdNumberUser } from "@/redux/features/user/userSlice";
 
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 import { ApplicationsEnum } from "@/utils/enums/permissions/applications/applications.enum";
@@ -32,10 +33,10 @@ const ManagePermissionsPage = () => {
   ];
   useRoleValidation(allowedRoles);
 
-  // usePermissionsAppAndModuleValidationInPage({
-  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
-  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
-  // });
+  usePermissionsAppAndModuleValidationInPage({
+    allowedApplications: [ApplicationsEnum.BONNA_HUB],
+    allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+  });
 
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number

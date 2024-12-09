@@ -20,17 +20,8 @@ const CollaboratorPersonalDataPage = () => {
 
   const idNumberUserSession = session?.user?.id_number;
 
-  const allowedRoles = [
-    RolesEnum.SUPER_ADMIN,
-    RolesEnum.ADMIN,
-    RolesEnum.AUDITOR,
-  ];
+  const allowedRoles = [RolesEnum.COLLABORATOR];
   useRoleValidation(allowedRoles);
-
-  // usePermissionsAppAndModuleValidationInPage({
-  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
-  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
-  // });
 
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number

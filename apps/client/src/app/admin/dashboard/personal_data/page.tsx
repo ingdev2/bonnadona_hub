@@ -4,18 +4,20 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
 
-import { RolesEnum } from "@/utils/enums/roles/roles.enum";
-import { useRoleValidation } from "@/utils/hooks/use_role_validation";
-
 import { setIdNumberUser } from "@/redux/features/user/userSlice";
 import {
   setAdminModalIsOpen,
   setIsPageLoading,
 } from "@/redux/features/common/modal/modalSlice";
 
+import { useRoleValidation } from "@/utils/hooks/use_role_validation";
+import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
+
 import AdminPersonalDataContent from "@/components/admin/personal_data/AdminPersonalDataContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+
+import { RolesEnum } from "@/utils/enums/roles/roles.enum";
 
 const AdminPersonalDataPage = () => {
   const { data: session, status } = useSession();
@@ -23,17 +25,14 @@ const AdminPersonalDataPage = () => {
 
   const idNumberUserSession = session?.user?.id_number;
 
+  useAuthValidationAdmin();
+
   const allowedRoles = [
     RolesEnum.SUPER_ADMIN,
     RolesEnum.ADMIN,
     RolesEnum.AUDITOR,
   ];
   useRoleValidation(allowedRoles);
-
-  // usePermissionsAppAndModuleValidationInPage({
-  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
-  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
-  // });
 
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number
