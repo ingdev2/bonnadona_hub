@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Checkbox, Col, Form, Input, Row } from "antd";
+import { Button, Checkbox, Col, Form, Input, List, Row, Select } from "antd";
 import { Store } from "antd/es/form/interface";
 import { titleStyleCss } from "@/theme/text_styles";
 import { MdDriveFileRenameOutline } from "react-icons/md";
@@ -8,6 +8,8 @@ import { FiPhone } from "react-icons/fi";
 import PhoneInput, { PhoneNumber } from "antd-phone-input";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { IRole } from "@/utils/interfaces/auth/role.interface";
+import CustomButton from "@/components/common/custom_button/CustomButton";
+import { FaDeleteLeft } from "react-icons/fa6";
 
 const EditUserFormData: React.FC<{
   principalEmailUserFormData: string;
@@ -20,9 +22,18 @@ const EditUserFormData: React.FC<{
   onChangePersonalCellphoneFormData: (e: any) => void;
   corporateCellphoneFormData: string | undefined;
   onChangeCorporateCellphoneFormData: (e: any) => void;
+  positionFormData: string;
   roleUserFormData: Role[] | undefined;
   onChangeRoleUserFormData: (e: any) => void;
+  permissionUserFormData: IPermission[] | undefined;
+  onChangePermissionUserFormData: (e: any) => void;
   allRolesFormData: IRole[] | undefined;
+  loadingAllRolesFormData: boolean;
+  fetchingAllRolesFormData: boolean;
+  allPermissionsFormData: IPermission[] | undefined;
+  loadingAllPermissionFormData: boolean;
+  fetchingAllPermissionFormData: boolean;
+
   handleConfirmEditAdminFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -41,9 +52,17 @@ const EditUserFormData: React.FC<{
   onChangePersonalCellphoneFormData,
   corporateCellphoneFormData,
   onChangeCorporateCellphoneFormData,
+  positionFormData,
   roleUserFormData,
   onChangeRoleUserFormData,
+  permissionUserFormData,
+  onChangePermissionUserFormData,
   allRolesFormData,
+  loadingAllRolesFormData,
+  fetchingAllRolesFormData,
+  allPermissionsFormData,
+  loadingAllPermissionFormData,
+  fetchingAllPermissionFormData,
   handleConfirmEditAdminFormData,
   initialValuesEditAdminFormData,
   isSubmittingEditUserData,
@@ -111,7 +130,6 @@ const EditUserFormData: React.FC<{
             label="Correo corporativo:"
             style={{ marginBottom: "13px" }}
             rules={[
-              { required: true, message: "¡Por favor ingrese el correo!" },
               {
                 pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                 message: "¡Por favor ingrese un correo válido!",
@@ -205,7 +223,7 @@ const EditUserFormData: React.FC<{
       </Row>
 
       <Row gutter={24}>
-        <Col span={24}>
+        <Col span={12}>
           <Form.Item
             name="edit-user-corporate-cellphone"
             label="Celular corporativo:"
@@ -247,6 +265,23 @@ const EditUserFormData: React.FC<{
             />
           </Form.Item>
         </Col>
+
+        <Col span={12}>
+          <Form.Item
+            name="edit-user-position"
+            label="Cargo:"
+            style={{ marginBottom: "13px" }}
+          >
+            <Input
+              id="position-user"
+              type="text"
+              value={positionFormData}
+              placeholder="Cargo"
+              autoComplete="off"
+              disabled={true}
+            />
+          </Form.Item>
+        </Col>
       </Row>
 
       <Row
@@ -266,7 +301,7 @@ const EditUserFormData: React.FC<{
           }}
         >
           <Col
-            span={8}
+            span={5}
             style={{
               overflowY: "auto",
               maxHeight: "720px",
@@ -276,34 +311,87 @@ const EditUserFormData: React.FC<{
             }}
           >
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Roles</h3>
-            <Form.Item name="edit-user-role" style={{ marginBottom: "13px" }}>
-              <Checkbox.Group
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                {allRolesFormData?.map((role: IRole) => (
-                  <Checkbox
-                    value={roleUserFormData}
-                    onChange={onChangeRoleUserFormData}
-                    style={{ marginBottom: "8px" }}
-                  >
-                    {role.name}
-                  </Checkbox>
-                ))}
-              </Checkbox.Group>
-            </Form.Item>
+            {loadingAllRolesFormData || fetchingAllRolesFormData ? (
+              <CustomSpin />
+            ) : (
+              <Form.Item name="edit-user-role" style={{ marginBottom: "13px" }}>
+                <Checkbox.Group
+                  value={roleUserFormData}
+                  onChange={(selectedRoles) => {
+                    onChangeRoleUserFormData(selectedRoles);
+                  }}
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
+                  {allRolesFormData?.map((role: IRole) => (
+                    <Checkbox
+                      key={role.id}
+                      value={role.id}
+                      style={{ marginBottom: "8px" }}
+                    >
+                      {role.name}
+                    </Checkbox>
+                  ))}
+                </Checkbox.Group>
+              </Form.Item>
+            )}
           </Col>
 
           <Col
-            span={8}
+            span={19}
             style={{
               overflowY: "auto",
-              maxHeight: "720px",
+              maxHeight: "450px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
             }}
           >
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Permisos</h3>
+            {loadingAllPermissionFormData || fetchingAllPermissionFormData ? (
+              <CustomSpin />
+            ) : (
+              <>
+                <Form.Item
+                  name="edit-user-permission"
+                  style={{ marginBottom: "13px" }}
+                >
+                  <Checkbox.Group
+                    value={permissionUserFormData}
+                    onChange={(selectedPermission) => {
+                      onChangePermissionUserFormData(selectedPermission);
+                    }}
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <Row gutter={16}>
+                      {allPermissionsFormData?.map(
+                        (permission: IPermission) => (
+                          <Col
+                            key={permission.id}
+                            span={12}
+                            style={{ marginBottom: "8px" }}
+                          >
+                            <Checkbox
+                              key={permission.id}
+                              value={permission.id}
+                              style={{
+                                display: "flex",
+                                alignItems: "flex-start",
+                              }}
+                            >
+                              <span
+                                style={{ textAlign: "left", width: "100%" }}
+                              >
+                                {permission.name}
+                              </span>
+                            </Checkbox>
+                          </Col>
+                        )
+                      )}
+                    </Row>
+                  </Checkbox.Group>
+                </Form.Item>
+              </>
+            )}
           </Col>
         </Col>
       </Row>

@@ -23,6 +23,8 @@ interface User {
   is_active: boolean;
   role?: Role[];
   permission?: IPermission[];
+  roleIdsToAdd: number[];
+  permissionIdsToAdd: IPermission[];
   createdAt: string;
   updateAt: string;
   deletedAt: string;
