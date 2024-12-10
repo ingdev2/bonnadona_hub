@@ -20,6 +20,7 @@ import {
 } from "@/redux/features/user/selectedUserSlice";
 import EditUserFormData from "./EditUserFormData";
 import { setErrorsUser } from "@/redux/features/user/userSlice";
+import { useGetAllRolesQuery } from "@/redux/apis/role/roleApi";
 
 const EditUserForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -58,6 +59,11 @@ const EditUserForm: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.selectedUser.personal_cellphone
   );
+  const roleUserState = useAppSelector((state) => state.selectedUser.role);
+  const permissionUserState = useAppSelector(
+    (state) => state.selectedUser.permission
+  );
+
   const serviceTypeNameUserState = useAppSelector(
     (state) => state.selectedUser.collaborator_service_type
   );
@@ -117,21 +123,14 @@ const EditUserForm: React.FC = () => {
     useState("");
   const [personalEmailUserLocalState, setPersonalEmailUserLocalState] =
     useState("");
-
   const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
     useState("");
-
-  const [corporateCellphoneUserLocalState, setCorporateCellphoneUserLocalState] =
-    useState("");
-
-  const [countryCodeCorporateCellphone, setCountryCodeCorporateCellphone] =
-    useState(0);
-  const [areaCodeCorporateCellphone, setAreaCodeCorporateCellphone] =
-    useState("");
-  const [phoneNumberCorporateCellphone, setPhoneNumberCorporateCellphone] =
-    useState("");
-
-  var fullCorporateCellphoneNumber = `${countryCodeCorporateCellphone}${areaCodeCorporateCellphone}${phoneNumberCorporateCellphone}`;
+  const [
+    corporateCellphoneUserLocalState,
+    setCorporateCellphoneUserLocalState,
+  ] = useState("");
+  const [roleUserLocalState, setRoleUserLocalState] = useState([]);
+  const [permissionUserLocalState, setPermissionUserLocalState] = useState([]);
 
   const [bloodGroupUserProfileLocalState, setBloodGroupUserProfileLocalState] =
     useState(0);
@@ -184,11 +183,11 @@ const EditUserForm: React.FC = () => {
   } = useGetUserByIdNumberQuery(idNumberUserState);
 
   const {
-    data: allBloodGroupsData,
-    isLoading: allBloodGroupsLoading,
-    isFetching: allBloodGroupsFetching,
-    error: allBloodGroupsError,
-  } = useGetAllBloodGroupsQuery(null);
+    data: allRolesData,
+    isLoading: allRolesLoading,
+    isFetching: allRolessFetching,
+    error: allRolesError,
+  } = useGetAllRolesQuery(null);
 
   const [
     updateUserData,
@@ -203,6 +202,7 @@ const EditUserForm: React.FC = () => {
   });
 
   useEffect(() => {
+    // console.log("userData", userData);
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
@@ -305,7 +305,7 @@ const EditUserForm: React.FC = () => {
     }
   };
 
-    const handleButtonClick = () => {
+  const handleButtonClick = () => {
     setSuccessMessage("");
     setShowSuccessMessage(false);
 
@@ -367,9 +367,13 @@ const EditUserForm: React.FC = () => {
 
           setCorporateCellphoneUserLocalState(e.target.value);
         }}
-        // validatorCorporateCellphoneInputFormData={
-        //   validatorCorporateCellphoneInput
-        // }
+        roleUserFormData={roleUserState}
+        onChangeRoleUserFormData={(e) => {
+          setHasChanges(true);
+
+          setRoleUserLocalState(e.target.checked);
+        }}
+        allRolesFormData={allRolesData}
         handleConfirmEditAdminFormData={handleConfirmUpdatePersonalData}
         initialValuesEditAdminFormData={{
           "edit-user-principal-email": principalEmailUserState || NOT_REGISTER,

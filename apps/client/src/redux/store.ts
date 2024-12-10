@@ -27,6 +27,7 @@ import { appModuleApi } from "./apis/permission/application_module/applicationMo
 import { moduleActionApi } from "./apis/permission/module_action/moduleActionApi";
 import { passwordPolicyApi } from "./apis/password_policy/passwordPolicyApi";
 import { serviceTypesApi } from "./apis/service_types/serviceTypesApi";
+import { roleApi } from "./apis/role/roleApi";
 
 const persistConfig = {
   key: "root",
@@ -73,6 +74,7 @@ const rootReducer = combineReducers({
   [moduleActionApi.reducerPath]: moduleActionApi.reducer,
   [passwordPolicyApi.reducerPath]: passwordPolicyApi.reducer,
   [serviceTypesApi.reducerPath]: serviceTypesApi.reducer,
+  [roleApi.reducerPath]: roleApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -96,6 +98,7 @@ export const store = configureStore({
       moduleActionApi.middleware,
       passwordPolicyApi.middleware,
       serviceTypesApi.middleware,
+      roleApi.middleware,
     ]),
 });
 
