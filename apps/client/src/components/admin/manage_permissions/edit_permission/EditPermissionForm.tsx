@@ -128,11 +128,13 @@ const EditPermissionForm: React.FC = () => {
       dispatch(setIdPermission(permissionData.id));
     }
     if (
+      titleNamePermissionState ||
       descriptionPermissionState ||
       appsPermissionState ||
       modulesPermissionState ||
       actionsPermissionState
     ) {
+      setTitleNamePermissionLocalState(titleNamePermissionState);
       setDescriptionPermissionLocalState(descriptionPermissionState);
 
       dispatch(setSelectedApplicationsPermission(appsPermissionState));
@@ -142,6 +144,7 @@ const EditPermissionForm: React.FC = () => {
   }, [
     permissionData,
     idPermissionState,
+    titleNamePermissionState,
     descriptionPermissionState,
     appsPermissionState,
     modulesPermissionState,
@@ -157,6 +160,7 @@ const EditPermissionForm: React.FC = () => {
       const response: any = await updatePermissionData({
         id: idPermissionState,
         updatePermission: {
+          name: titleNamePermissionLocalState || titleNamePermissionState,
           description:
             descriptionPermissionLocalState || descriptionPermissionState,
           applications: selectedAppsPermissionState,
@@ -201,6 +205,7 @@ const EditPermissionForm: React.FC = () => {
       if (editResponseData && !editDataError) {
         setHasChanges(false);
 
+        dispatch(setNamePermission(titleNamePermissionState));
         dispatch(setDescriptionPermission(descriptionPermissionState));
         dispatch(setApplicationsPermission(selectedAppsPermissionState));
         dispatch(
@@ -266,22 +271,8 @@ const EditPermissionForm: React.FC = () => {
           dispatch(setSelectedApplicationsPermission(checkedValues));
         }}
         allAppModulesFormData={allAppModulesData}
-        selectedAppModulesFormData={selectedModulesPermissionState || []}
-        onChangeAppModulesFormData={(checkedValues) => {
-          setHasChanges(true);
-
-          console.log("sele modu", selectedModulesPermissionState);
-          console.log("sele acti", selectedActionsPermissionState);
-
-          dispatch(setSelectedModulesPermission(checkedValues));
-        }}
         allModuleActionsFormData={allModuleActionsData}
-        selectedModuleActionsFormData={selectedActionsPermissionState || []}
-        onChangeModuleActionsFormData={(checkedValues) => {
-          setHasChanges(true);
-
-          dispatch(setSelectedActionsPermission(checkedValues));
-        }}
+        setHasChangesFormData={setHasChanges}
         handleConfirmDataFormData={handleConfirmUpdateData}
         initialValuesEditFormData={{
           "edit-permission-name": titleNamePermissionState || NOT_REGISTER,

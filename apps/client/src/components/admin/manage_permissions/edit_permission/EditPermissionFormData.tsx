@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Button, Checkbox, Col, Form, Input, Row, Tooltip } from "antd";
 import { Store } from "antd/es/form/interface";
@@ -9,6 +10,11 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import TextArea from "antd/es/input/TextArea";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+
+import {
+  setSelectedActionsPermission,
+  setSelectedModulesPermission,
+} from "@/redux/features/permission/permissionSlice";
 
 const EditPermissionFormData: React.FC<{
   namePermissionFormData: string;
@@ -19,11 +25,8 @@ const EditPermissionFormData: React.FC<{
   selectedAppsFormData: number[];
   onChangeAppsFormData: (e: any) => void;
   allAppModulesFormData: IApplicationModule[] | undefined;
-  selectedAppModulesFormData: number[];
-  onChangeAppModulesFormData: (e: any) => void;
   allModuleActionsFormData: IModuleAction[] | undefined;
-  selectedModuleActionsFormData: number[];
-  onChangeModuleActionsFormData: (e: any) => void;
+  setHasChangesFormData: React.Dispatch<React.SetStateAction<boolean>>;
   handleConfirmDataFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -40,17 +43,138 @@ const EditPermissionFormData: React.FC<{
   selectedAppsFormData,
   onChangeAppsFormData,
   allAppModulesFormData,
-  selectedAppModulesFormData,
-  onChangeAppModulesFormData,
   allModuleActionsFormData,
-  selectedModuleActionsFormData,
-  onChangeModuleActionsFormData,
+  setHasChangesFormData,
   handleConfirmDataFormData,
   initialValuesEditFormData,
   isSubmittingEditFormData,
   handleButtonClickFormData,
   hasChangesFormData,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const selectedModulesPermissionState = useAppSelector(
+    (state) => state.permission.selected_modules
+  );
+  const selectedActionsPermissionState = useAppSelector(
+    (state) => state.permission.selected_actions
+  );
+
+  const [expandedApp, setExpandedApp] = useState<number | null>(null);
+  const [expandedModule, setExpandedModule] = useState<number | null>(null);
+
+  const [selectedModulesByApp, setSelectedModulesByApp] = useState<{
+    [appId: number]: number[];
+  }>({});
+  const [selectedActionsByModule, setSelectedActionsByModule] = useState<{
+    [moduleId: number]: number[];
+  }>({});
+
+  useEffect(() => {
+    if (
+      selectedModulesPermissionState &&
+      selectedModulesPermissionState.length > 0 &&
+      !expandedApp
+    ) {
+      const modulesByApp: { [appId: number]: number[] } = {};
+
+      selectedModulesPermissionState.forEach((moduleId) => {
+        const module = allAppModulesFormData?.find(
+          (mod) => mod.id === moduleId
+        );
+        if (module) {
+          const appId = module.app_id;
+          if (!modulesByApp[appId]) {
+            modulesByApp[appId] = [];
+          }
+          modulesByApp[appId].push(moduleId);
+        }
+      });
+
+      setSelectedModulesByApp(modulesByApp);
+    }
+
+    if (
+      selectedActionsPermissionState &&
+      selectedActionsPermissionState.length > 0 &&
+      !expandedApp
+    ) {
+      const actionsByModule: { [moduleId: number]: number[] } = {};
+
+      selectedActionsPermissionState.forEach((actionId) => {
+        const action = allModuleActionsFormData?.find(
+          (act) => act.id === actionId
+        );
+        if (action) {
+          const moduleId = action.app_module_id;
+          if (!actionsByModule[moduleId]) {
+            actionsByModule[moduleId] = [];
+          }
+          actionsByModule[moduleId].push(actionId);
+        }
+      });
+
+      setSelectedActionsByModule(actionsByModule);
+    }
+  }, [
+    selectedModulesPermissionState,
+    selectedActionsPermissionState,
+    allAppModulesFormData,
+    allModuleActionsFormData,
+  ]);
+
+  const selectedModules = selectedModulesByApp[expandedApp as number] || [];
+
+  const selectedActions =
+    selectedActionsByModule[expandedModule as number] || [];
+
+  const toggleExpandedApp = (appId: number) => {
+    setExpandedApp((prev) => (prev === appId ? null : appId));
+
+    setExpandedModule(null);
+  };
+
+  const toggleExpandedModule = (moduleId: number) => {
+    setExpandedModule((prev) => (prev === moduleId ? null : moduleId));
+  };
+
+  const handleModuleSelectionChange = (moduleIds: number[]) => {
+    setHasChangesFormData(true);
+
+    setSelectedModulesByApp((prev) => ({
+      ...prev,
+      [expandedApp as number]: moduleIds,
+    }));
+  };
+
+  const handleActionSelectionChange = (actionIds: number[]) => {
+    setHasChangesFormData(true);
+
+    setSelectedActionsByModule((prev) => ({
+      ...prev,
+      [expandedModule as number]: actionIds,
+    }));
+  };
+
+  const handleUpdateData = () => {
+    const flatModules = Object.values(selectedModulesByApp).flat();
+
+    const flatActions = Object.values(selectedActionsByModule).flat();
+
+    dispatch(setSelectedModulesPermission(flatModules));
+    dispatch(setSelectedActionsPermission(flatActions));
+
+    handleButtonClickFormData();
+  };
+
+  const filteredModules = allAppModulesFormData?.filter(
+    (module) => module.app_id === expandedApp
+  );
+
+  const filteredActions = allModuleActionsFormData?.filter(
+    (action) => action.app_module_id === expandedModule
+  );
+
   return (
     <Form
       id="edit-permission-form"
@@ -227,14 +351,13 @@ const EditPermissionFormData: React.FC<{
                   <Button
                     size="small"
                     type="dashed"
-                    onClick={() => {
-                      console.log("sele modu", selectedAppModulesFormData);
-                      console.log("sele acti", selectedModuleActionsFormData);
-                    }}
+                    onClick={() => toggleExpandedApp(app.id)}
                     icon={
-                      <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
-
-                      // <EyeOutlined style={{ color: "#8C1111" }} />
+                      expandedApp === app.id ? (
+                        <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+                      ) : (
+                        <EyeOutlined style={{ color: "#8C1111" }} />
+                      )
                     }
                   />
                 </div>
@@ -255,8 +378,8 @@ const EditPermissionFormData: React.FC<{
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Módulos</h3>
 
             <Checkbox.Group
-              value={selectedAppModulesFormData}
-              onChange={onChangeAppModulesFormData}
+              value={selectedModules}
+              onChange={handleModuleSelectionChange}
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
@@ -264,7 +387,7 @@ const EditPermissionFormData: React.FC<{
                 paddingBottom: "13px",
               }}
             >
-              {allAppModulesFormData?.map((module) => (
+              {filteredModules?.map((module) => (
                 <div
                   key={module.id}
                   style={{
@@ -280,14 +403,13 @@ const EditPermissionFormData: React.FC<{
                   <Button
                     size="small"
                     type="dashed"
-                    onClick={() => {
-                      console.log("sele modu", selectedAppModulesFormData);
-                      console.log("sele acti", selectedModuleActionsFormData);
-                    }}
+                    onClick={() => toggleExpandedModule(module.id)}
                     icon={
-                      // <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
-
-                      <EyeOutlined style={{ color: "#8C1111" }} />
+                      expandedModule === module.id ? (
+                        <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+                      ) : (
+                        <EyeOutlined style={{ color: "#8C1111" }} />
+                      )
                     }
                   />
                 </div>
@@ -306,24 +428,28 @@ const EditPermissionFormData: React.FC<{
             }}
           >
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Acciones</h3>
-            <p
-              style={{
-                ...subtitleStyleCss,
-                fontStyle: "italic",
-                color: "#A7AFBA",
-                marginTop: "2px",
-                marginBottom: "13px",
-              }}
-            >
-              Acciones de:&nbsp;
-              <b>
-                {/* Mostrar aqui el nombre del módulo al que pertenecen las acciones */}
-              </b>
-            </p>
+
+            {expandedApp && expandedModule ? (
+              <p
+                style={{
+                  ...subtitleStyleCss,
+                  fontStyle: "italic",
+                  color: "#A7AFBA",
+                  marginTop: "2px",
+                  marginBottom: "13px",
+                }}
+              >
+                Acciones de:&nbsp;
+                <b>
+                  {allAppsFormData?.find((app) => app.id === expandedApp)
+                    ?.name || null}
+                </b>
+              </p>
+            ) : null}
 
             <Checkbox.Group
-              value={selectedModuleActionsFormData}
-              onChange={onChangeModuleActionsFormData}
+              value={selectedActions}
+              onChange={handleActionSelectionChange}
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
@@ -331,7 +457,7 @@ const EditPermissionFormData: React.FC<{
                 paddingBottom: "13px",
               }}
             >
-              {allModuleActionsFormData?.map((action) => (
+              {filteredActions?.map((action) => (
                 <Checkbox
                   key={action.id}
                   value={action.id}
@@ -373,7 +499,7 @@ const EditPermissionFormData: React.FC<{
               }}
               htmlType="submit"
               className="edit-permission-form-button"
-              onClick={handleButtonClickFormData}
+              onClick={handleUpdateData}
               disabled={!hasChangesFormData}
             >
               Actualizar datos
