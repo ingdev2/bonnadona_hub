@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+
+import {
+  setSelectedActionsPermission,
+  setSelectedModulesPermission,
+} from "@/redux/features/permission/permissionSlice";
 
 import {
   AutoComplete,
@@ -29,11 +35,8 @@ const PermissionRegistrationFormData: React.FC<{
   selectedAppsFormData: number[];
   onChangeAppsFormData: (e: any) => void;
   allAppModulesFormData: IApplicationModule[] | undefined;
-  selectedAppModulesFormData: number[];
-  onChangeAppModulesFormData: (e: any) => void;
   allModuleActionsFormData: IModuleAction[] | undefined;
-  selectedModuleActionsFormData: number[];
-  onChangeModuleActionsFormData: (e: any) => void;
+  setHasChangesFormData: React.Dispatch<React.SetStateAction<boolean>>;
   buttonSubmitFormLoadingDataForm: boolean;
   handleButtonSubmitFormDataForm: () => void;
 }> = ({
@@ -48,28 +51,134 @@ const PermissionRegistrationFormData: React.FC<{
   selectedAppsFormData,
   onChangeAppsFormData,
   allAppModulesFormData,
-  selectedAppModulesFormData,
-  onChangeAppModulesFormData,
   allModuleActionsFormData,
-  selectedModuleActionsFormData,
-  onChangeModuleActionsFormData,
+  setHasChangesFormData,
   buttonSubmitFormLoadingDataForm,
   handleButtonSubmitFormDataForm,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const selectedModulesPermissionState = useAppSelector(
+    (state) => state.permission.selected_modules
+  );
+  const selectedActionsPermissionState = useAppSelector(
+    (state) => state.permission.selected_actions
+  );
+
   const [expandedApp, setExpandedApp] = useState<number | null>(null);
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
 
-  const filteredModules = (appId: number) =>
-    allAppModulesFormData?.filter((module) => module.app_id === appId) ?? [];
+  const [selectedModulesByApp, setSelectedModulesByApp] = useState<{
+    [appId: number]: number[];
+  }>({});
+  const [selectedActionsByModule, setSelectedActionsByModule] = useState<{
+    [moduleId: number]: number[];
+  }>({});
 
-  const filteredActions = (moduleId: number) =>
-    allModuleActionsFormData?.filter(
-      (action) => action.app_module_id === moduleId
-    ) ?? [];
+  useEffect(() => {
+    if (
+      selectedModulesPermissionState &&
+      selectedModulesPermissionState.length > 0 &&
+      !expandedApp
+    ) {
+      const modulesByApp: { [appId: number]: number[] } = {};
 
-  let selectedModulesCount: number[] = expandedApp
-    ? filteredModules(expandedApp).map((module) => module.id)
-    : [];
+      selectedModulesPermissionState.forEach((moduleId) => {
+        const module = allAppModulesFormData?.find(
+          (mod) => mod.id === moduleId
+        );
+        if (module) {
+          const appId = module.app_id;
+          if (!modulesByApp[appId]) {
+            modulesByApp[appId] = [];
+          }
+          modulesByApp[appId].push(moduleId);
+        }
+      });
+
+      setSelectedModulesByApp(modulesByApp);
+    }
+
+    if (
+      selectedActionsPermissionState &&
+      selectedActionsPermissionState.length > 0 &&
+      !expandedApp
+    ) {
+      const actionsByModule: { [moduleId: number]: number[] } = {};
+
+      selectedActionsPermissionState.forEach((actionId) => {
+        const action = allModuleActionsFormData?.find(
+          (act) => act.id === actionId
+        );
+        if (action) {
+          const moduleId = action.app_module_id;
+          if (!actionsByModule[moduleId]) {
+            actionsByModule[moduleId] = [];
+          }
+          actionsByModule[moduleId].push(actionId);
+        }
+      });
+
+      setSelectedActionsByModule(actionsByModule);
+    }
+  }, [
+    selectedModulesPermissionState,
+    selectedActionsPermissionState,
+    allAppModulesFormData,
+    allModuleActionsFormData,
+  ]);
+
+  const selectedModules = selectedModulesByApp[expandedApp as number] || [];
+
+  const selectedActions =
+    selectedActionsByModule[expandedModule as number] || [];
+
+  const toggleExpandedApp = (appId: number) => {
+    setExpandedApp((prev) => (prev === appId ? null : appId));
+
+    setExpandedModule(null);
+  };
+
+  const toggleExpandedModule = (moduleId: number) => {
+    setExpandedModule((prev) => (prev === moduleId ? null : moduleId));
+  };
+
+  const handleModuleSelectionChange = (moduleIds: number[]) => {
+    setHasChangesFormData(true);
+
+    setSelectedModulesByApp((prev) => ({
+      ...prev,
+      [expandedApp as number]: moduleIds,
+    }));
+  };
+
+  const handleActionSelectionChange = (actionIds: number[]) => {
+    setHasChangesFormData(true);
+
+    setSelectedActionsByModule((prev) => ({
+      ...prev,
+      [expandedModule as number]: actionIds,
+    }));
+  };
+
+  const handleUpdateData = () => {
+    const flatModules = Object.values(selectedModulesByApp).flat();
+
+    const flatActions = Object.values(selectedActionsByModule).flat();
+
+    dispatch(setSelectedModulesPermission(flatModules));
+    dispatch(setSelectedActionsPermission(flatActions));
+
+    handleButtonSubmitFormDataForm();
+  };
+
+  const filteredModules = allAppModulesFormData?.filter(
+    (module) => module.app_id === expandedApp
+  );
+
+  const filteredActions = allModuleActionsFormData?.filter(
+    (action) => action.app_module_id === expandedModule
+  );
 
   return (
     <Form
@@ -247,9 +356,7 @@ const PermissionRegistrationFormData: React.FC<{
                   <Button
                     size="small"
                     type="dashed"
-                    onClick={() => {
-                      setExpandedApp(expandedApp === app.id ? null : app.id);
-                    }}
+                    onClick={() => toggleExpandedApp(app.id)}
                     icon={
                       expandedApp === app.id ? (
                         <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
@@ -276,8 +383,8 @@ const PermissionRegistrationFormData: React.FC<{
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Módulos</h3>
 
             <Checkbox.Group
-              value={selectedAppModulesFormData}
-              onChange={onChangeAppModulesFormData}
+              value={selectedModules}
+              onChange={handleModuleSelectionChange}
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
@@ -285,38 +392,33 @@ const PermissionRegistrationFormData: React.FC<{
                 paddingBottom: "13px",
               }}
             >
-              {expandedApp &&
-                filteredModules(expandedApp).map((module) => (
-                  <div
-                    key={module.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Checkbox value={module.id} style={{ width: "96%" }}>
-                      <Tooltip title={module.name}>{module.name}</Tooltip>
-                    </Checkbox>
+              {filteredModules?.map((module) => (
+                <div
+                  key={module.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Checkbox value={module.id} style={{ width: "96%" }}>
+                    <Tooltip title={module.name}>{module.name}</Tooltip>
+                  </Checkbox>
 
-                    <Button
-                      size="small"
-                      type="dashed"
-                      onClick={() =>
-                        setExpandedModule(
-                          expandedModule === module.id ? null : module.id
-                        )
-                      }
-                      icon={
-                        expandedModule === module.id ? (
-                          <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
-                        ) : (
-                          <EyeOutlined style={{ color: "#8C1111" }} />
-                        )
-                      }
-                    />
-                  </div>
-                ))}
+                  <Button
+                    size="small"
+                    type="dashed"
+                    onClick={() => toggleExpandedModule(module.id)}
+                    icon={
+                      expandedModule === module.id ? (
+                        <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+                      ) : (
+                        <EyeOutlined style={{ color: "#8C1111" }} />
+                      )
+                    }
+                  />
+                </div>
+              ))}
             </Checkbox.Group>
           </Col>
 
@@ -332,7 +434,7 @@ const PermissionRegistrationFormData: React.FC<{
           >
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Acciones</h3>
 
-            {expandedApp && selectedModulesCount.length ? (
+            {expandedApp && expandedModule ? (
               <p
                 style={{
                   ...subtitleStyleCss,
@@ -351,8 +453,8 @@ const PermissionRegistrationFormData: React.FC<{
             ) : null}
 
             <Checkbox.Group
-              value={selectedModuleActionsFormData}
-              onChange={onChangeModuleActionsFormData}
+              value={selectedActions}
+              onChange={handleActionSelectionChange}
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
@@ -360,17 +462,15 @@ const PermissionRegistrationFormData: React.FC<{
                 paddingBottom: "13px",
               }}
             >
-              {expandedModule && selectedModulesCount.includes(expandedModule)
-                ? filteredActions(expandedModule).map((action) => (
-                    <Checkbox
-                      key={action.id}
-                      value={action.id}
-                      style={{ width: "96%" }}
-                    >
-                      <Tooltip title={action.name}>{action.name}</Tooltip>
-                    </Checkbox>
-                  ))
-                : null}
+              {filteredActions?.map((action) => (
+                <Checkbox
+                  key={action.id}
+                  value={action.id}
+                  style={{ width: "96%" }}
+                >
+                  <Tooltip title={action.name}>{action.name}</Tooltip>
+                </Checkbox>
+              ))}
             </Checkbox.Group>
           </Col>
         </Col>
@@ -390,7 +490,7 @@ const PermissionRegistrationFormData: React.FC<{
             }}
             htmlType="submit"
             className="create-permission-form-button"
-            onClick={handleButtonSubmitFormDataForm}
+            onClick={handleUpdateData}
           >
             Crear permiso
           </Button>
