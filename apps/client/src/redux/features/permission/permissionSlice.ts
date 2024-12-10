@@ -7,6 +7,9 @@ const initialState: IPermission = {
   applications: [],
   application_modules: [],
   module_actions: [],
+  selected_applications: [],
+  selected_modules: [],
+  selected_actions: [],
   errors: [],
 };
 
@@ -32,6 +35,15 @@ export const permissionSlice = createSlice({
     setModuleActionsPermission: (state, action) => {
       state.module_actions = action.payload;
     },
+    setSelectedApplicationsPermission: (state, action) => {
+      state.selected_applications = action.payload;
+    },
+    setSelectedModulesPermission: (state, action) => {
+      state.selected_modules = action.payload;
+    },
+    setSelectedActionsPermission: (state, action) => {
+      state.selected_actions = action.payload;
+    },
     setErrorsPermission: (state, action) => {
       state.errors = action.payload;
     },
@@ -42,6 +54,9 @@ export const permissionSlice = createSlice({
       state.applications = [];
       state.application_modules = [];
       state.module_actions = [];
+      state.selected_applications = [];
+      state.selected_modules = [];
+      state.selected_actions = [];
       state.errors = [];
     },
   },
@@ -55,6 +70,9 @@ export const {
   setApplicationModulesPermission,
   setModuleActionsPermission,
   setErrorsPermission,
+  setSelectedApplicationsPermission,
+  setSelectedModulesPermission,
+  setSelectedActionsPermission,
   setResetPermission,
 } = permissionSlice.actions;
 

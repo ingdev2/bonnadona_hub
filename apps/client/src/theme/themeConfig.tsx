@@ -5,6 +5,7 @@ const themeConfig: ThemeConfig = {
     fontSize: 14,
     colorPrimary: "#015E90",
     colorText: "#070707",
+    colorSplit: "#A7AFBAB2",
   },
   components: {
     Layout: {
@@ -23,7 +24,7 @@ const themeConfig: ThemeConfig = {
     },
     Descriptions: {
       labelBg: "#015E9017",
-      lineWidth: 2,
+      lineWidth: 1.3,
     },
     Table: {
       rowHoverBg: "#DFEBF2",

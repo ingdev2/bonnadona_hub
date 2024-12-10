@@ -108,7 +108,7 @@ const PermissionRegistrationFormData: React.FC<{
 
               const filteredValue = value
                 .toUpperCase()
-                .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, "");
+                .replace(/[^A-ZÁÉÍÓÚÑ0-9\s]/g, "");
 
               return filteredValue;
             }}
@@ -124,11 +124,6 @@ const PermissionRegistrationFormData: React.FC<{
               {
                 max: 50,
                 message: "El nombre no puede tener más de 50 caracteres",
-              },
-              {
-                pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
-                message:
-                  "El nombre solo puede contener letras mayúsculas con tildes y espacios",
               },
             ]}
           >

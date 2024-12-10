@@ -2,7 +2,7 @@
 
 import React, { ReactNode } from "react";
 
-import { Col, Descriptions } from "antd";
+import { Card, Row, Col, Descriptions } from "antd";
 
 import { titleStyleCss, subtitleStyleCss } from "@/theme/text_styles";
 import { useAppSelector } from "@/redux/hooks";
@@ -11,7 +11,6 @@ const ModalUserDetails: React.FC<{
   titleDescription: string;
   labelUserName: string;
   selectedUserName: string | undefined;
-  labelUserLastName: string;
   selectedUserLastName: string | undefined;
   labelUserIdType: string;
   selectedUserIdType: ReactNode;
@@ -67,7 +66,6 @@ const ModalUserDetails: React.FC<{
   titleDescription,
   labelUserName,
   selectedUserName,
-  labelUserLastName,
   selectedUserLastName,
   labelUserIdType,
   selectedUserIdType,
@@ -126,277 +124,184 @@ const ModalUserDetails: React.FC<{
       sm={24}
       md={24}
       lg={24}
-      style={{
-        width: "100%",
-        display: "flex",
-        flexFlow: "row wrap",
-        justifyContent: "center",
-        alignContent: "center",
-        alignItems: "center",
-        padding: "2px",
-        margin: "0px",
-      }}
+      style={{ padding: "0px", margin: "0px" }}
     >
-      <h2
-        style={{
-          width: "100%",
-          ...titleStyleCss,
-          margin: "0px",
-          paddingBottom: "13px",
-          fontSize: "22px",
-        }}
+      <Card
+        title="Detalles de usuario"
+        style={{ marginBlock: "22px", padding: "0px" }}
       >
-        {titleDescription}
-      </h2>
-
-      <Descriptions
-        className="description-user-details-user"
-        layout="vertical"
-        size="middle"
-        style={{ width: "100%", paddingBlock: "7px" }}
-        labelStyle={{
-          ...titleStyleCss,
-        }}
-        contentStyle={{
-          ...subtitleStyleCss,
-        }}
-        bordered
-        column={12}
-      >
-        <Descriptions.Item
-          label={labelUserName}
-          style={{ textAlign: "center" }}
-          span={6}
+        <Row
+          gutter={24}
+          justify={"center"}
+          align={"middle"}
+          style={{ padding: "0px", margin: "0px" }}
         >
-          {selectedUserName}
-        </Descriptions.Item>
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={12}
+            style={{ margin: "0px", paddingInline: "7px", paddingBlock: "7px" }}
+          >
+            <Descriptions
+              size="small"
+              column={1}
+              labelStyle={{
+                ...titleStyleCss,
+                width: "222px",
+                paddingInlineEnd: "0px",
+                margin: "0px",
+              }}
+              contentStyle={subtitleStyleCss}
+              layout="horizontal"
+              bordered
+            >
+              <Descriptions.Item label={labelUserName}>
+                {selectedUserName} {selectedUserLastName}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserLastName}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserLastName}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserIdType}>
+                {selectedUserIdType}
+              </Descriptions.Item>
 
-        {/* FILA 1 */}
+              <Descriptions.Item label={labelUserIdNumber}>
+                {selectedUserIdNumber}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserIdType}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserIdType}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserGender}>
+                {selectedUserGender}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserIdNumber}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserIdNumber}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserBirthdate}>
+                {selectedUserBirthdate}
+              </Descriptions.Item>
+            </Descriptions>
+          </Col>
 
-        <Descriptions.Item
-          label={labelUserGender}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserGender}
-        </Descriptions.Item>
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={12}
+            style={{ margin: "0px", paddingInline: "7px", paddingBlock: "7px" }}
+          >
+            <Descriptions
+              size="small"
+              column={1}
+              labelStyle={{
+                ...titleStyleCss,
+                width: "222px",
+                paddingInlineEnd: "0px",
+                margin: "0px",
+              }}
+              layout="horizontal"
+              bordered
+            >
+              <Descriptions.Item label={labelUserMainEmail}>
+                {selectedUserMainEmail}
+              </Descriptions.Item>
 
-        {/* FILA 2 */}
+              <Descriptions.Item label={labelUserPersonalEmail}>
+                {selectedUserPersonalEmail}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserBirthdate}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserBirthdate}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserPersonalCellphone}>
+                {selectedUserPersonalCellphone}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserPersonalEmail}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserPersonalEmail}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserCorporateEmail}>
+                {selectedUserCorporateEmail}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserMainEmail}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserMainEmail}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserCorporateCellphone}>
+                {selectedUserCorporateCellphone}
+              </Descriptions.Item>
+            </Descriptions>
+          </Col>
 
-        {/* FILA 3 */}
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={14}
+            style={{ margin: "0px", paddingInline: "7px", paddingBlock: "7px" }}
+          >
+            <Descriptions
+              size="small"
+              column={1}
+              labelStyle={{
+                ...titleStyleCss,
+                width: "222px",
+                paddingInlineEnd: "0px",
+                margin: "0px",
+              }}
+              layout="horizontal"
+              bordered
+            >
+              <Descriptions.Item label={labelUserPosition}>
+                {selectedUserPosition}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserCorporateEmail}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserCorporateEmail}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserService}>
+                {selectedUserService}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserPersonalCellphone}
-          style={{ textAlign: "center" }}
-          span={3}
-        >
-          {selectedUserPersonalCellphone}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserInmediateBoss}>
+                {selectedUserInmediateBoss}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserCorporateCellphone}
-          style={{ textAlign: "center" }}
-          span={3}
-        >
-          {selectedUserCorporateCellphone}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserUnit}>
+                {selectedUserUnit}
+              </Descriptions.Item>
 
-        {/* FILA 4 */}
+              <Descriptions.Item label={labelUserServiceType}>
+                {selectedUserServiceType}
+              </Descriptions.Item>
+            </Descriptions>
+          </Col>
 
-        <Descriptions.Item
-          label={labelUserServiceType}
-          style={{ textAlign: "center" }}
-          span={3}
-        >
-          {selectedUserServiceType}
-        </Descriptions.Item>
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={10}
+            style={{ margin: "0px", paddingInline: "7px", paddingBlock: "7px" }}
+          >
+            <Descriptions
+              size="small"
+              column={1}
+              labelStyle={{
+                ...titleStyleCss,
+                width: "222px",
+                paddingInlineEnd: "0px",
+                margin: "0px",
+              }}
+              layout="horizontal"
+              bordered
+            >
+              <Descriptions.Item label={labelUserProfileBloodGroup}>
+                {selectedUserProfileBloodGroup}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserInmediateBoss}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserInmediateBoss}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserProfileAffiliationEps}>
+                {selectedUserProfileAffiliationEps}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserUnit}
-          style={{ textAlign: "center" }}
-          span={3}
-        >
-          {selectedUserUnit}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserProfileResidenceAddress}>
+                {selectedUserProfileResidenceAddress}
+              </Descriptions.Item>
 
-        {/* FILA 5 */}
+              <Descriptions.Item label={labelUserProfileHeight}>
+                {selectedUserProfileHeight}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserService}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserService}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserPosition}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserPosition}
-        </Descriptions.Item>
-
-        {/* FILA 6 */}
-
-        <Descriptions.Item
-          label={labelUserProfileBloodGroup}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileBloodGroup}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserProfileAffiliationEps}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileAffiliationEps}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserProfileResidenceDepartment}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileResidenceDepartment}
-        </Descriptions.Item>
-
-        {/* FILA 7 */}
-
-        <Descriptions.Item
-          label={labelUserProfileResidenceCity}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileResidenceCity}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserProfileResidenceNeighborhood}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileResidenceNeighborhood}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserProfileResidenceAddress}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileResidenceAddress}
-        </Descriptions.Item>
-
-        {/* FILA 8 */}
-
-        <Descriptions.Item
-          label={labelUserProfileHeight}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserProfileHeight}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserProfileWeight}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserProfileWeight}
-        </Descriptions.Item>
-
-        {/* FILA 9 */}
-
-        <Descriptions.Item
-          label={labelUserProfileShirtSize}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileShirtSize}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserProfilePantsSize}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfilePantsSize}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelUserProfileShoeSize}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedUserProfileShoeSize}
-        </Descriptions.Item>
-      </Descriptions>
+              <Descriptions.Item label={labelUserProfileWeight}>
+                {selectedUserProfileWeight}
+              </Descriptions.Item>
+            </Descriptions>
+          </Col>
+        </Row>
+      </Card>
     </Col>
   );
 };

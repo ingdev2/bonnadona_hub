@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 
 import { Button, Checkbox, Col, Form, Input, Row, Tooltip } from "antd";
 import { Store } from "antd/es/form/interface";
@@ -51,21 +51,6 @@ const EditPermissionFormData: React.FC<{
   handleButtonClickFormData,
   hasChangesFormData,
 }) => {
-  const [expandedApp, setExpandedApp] = useState<number | null>(null);
-  const [expandedModule, setExpandedModule] = useState<number | null>(null);
-
-  const filteredModules = (appId: number) =>
-    allAppModulesFormData?.filter((module) => module.app_id === appId) ?? [];
-
-  const filteredActions = (moduleId: number) =>
-    allModuleActionsFormData?.filter(
-      (action) => action.app_module_id === moduleId
-    ) ?? [];
-
-  let selectedModulesCount: number[] = expandedApp
-    ? filteredModules(expandedApp).map((module) => module.id)
-    : [];
-
   return (
     <Form
       id="edit-permission-form"
@@ -104,7 +89,7 @@ const EditPermissionFormData: React.FC<{
 
               const filteredValue = value
                 .toUpperCase()
-                .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, "");
+                .replace(/[^A-ZÁÉÍÓÚÑ0-9\s]/g, "");
 
               return filteredValue;
             }}
@@ -121,11 +106,6 @@ const EditPermissionFormData: React.FC<{
                 max: 40,
                 message: "El nombre no puede tener más de 40 caracteres",
               },
-              {
-                pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
-                message:
-                  "El nombre solo puede contener letras mayúsculas con tildes y espacios",
-              },
             ]}
           >
             <Input
@@ -138,7 +118,6 @@ const EditPermissionFormData: React.FC<{
               placeholder="Nombre de permiso"
               onChange={onChangeNamePermissionFormData}
               autoComplete="off"
-              disabled
             />
           </Form.Item>
         </Col>
@@ -150,6 +129,15 @@ const EditPermissionFormData: React.FC<{
             name="edit-permission-description"
             label="Descripción de permiso:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toUpperCase()
+                .replace(/[^A-ZÁÉÍÓÚÑ0-9\s]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               {
                 required: false,
@@ -240,14 +228,13 @@ const EditPermissionFormData: React.FC<{
                     size="small"
                     type="dashed"
                     onClick={() => {
-                      setExpandedApp(expandedApp === app.id ? null : app.id);
+                      console.log("sele modu", selectedAppModulesFormData);
+                      console.log("sele acti", selectedModuleActionsFormData);
                     }}
                     icon={
-                      expandedApp === app.id ? (
-                        <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
-                      ) : (
-                        <EyeOutlined style={{ color: "#8C1111" }} />
-                      )
+                      <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+
+                      // <EyeOutlined style={{ color: "#8C1111" }} />
                     }
                   />
                 </div>
@@ -277,38 +264,34 @@ const EditPermissionFormData: React.FC<{
                 paddingBottom: "13px",
               }}
             >
-              {expandedApp &&
-                filteredModules(expandedApp).map((module) => (
-                  <div
-                    key={module.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Checkbox value={module.id} style={{ width: "96%" }}>
-                      <Tooltip title={module.name}>{module.name}</Tooltip>
-                    </Checkbox>
+              {allAppModulesFormData?.map((module) => (
+                <div
+                  key={module.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Checkbox value={module.id} style={{ width: "96%" }}>
+                    <Tooltip title={module.name}>{module.name}</Tooltip>
+                  </Checkbox>
 
-                    <Button
-                      size="small"
-                      type="dashed"
-                      onClick={() =>
-                        setExpandedModule(
-                          expandedModule === module.id ? null : module.id
-                        )
-                      }
-                      icon={
-                        expandedModule === module.id ? (
-                          <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
-                        ) : (
-                          <EyeOutlined style={{ color: "#8C1111" }} />
-                        )
-                      }
-                    />
-                  </div>
-                ))}
+                  <Button
+                    size="small"
+                    type="dashed"
+                    onClick={() => {
+                      console.log("sele modu", selectedAppModulesFormData);
+                      console.log("sele acti", selectedModuleActionsFormData);
+                    }}
+                    icon={
+                      // <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+
+                      <EyeOutlined style={{ color: "#8C1111" }} />
+                    }
+                  />
+                </div>
+              ))}
             </Checkbox.Group>
           </Col>
 
@@ -323,24 +306,20 @@ const EditPermissionFormData: React.FC<{
             }}
           >
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Acciones</h3>
-
-            {expandedApp && selectedModulesCount.length ? (
-              <p
-                style={{
-                  ...subtitleStyleCss,
-                  fontStyle: "italic",
-                  color: "#A7AFBA",
-                  marginTop: "2px",
-                  marginBottom: "13px",
-                }}
-              >
-                Acciones de:&nbsp;
-                <b>
-                  {allAppsFormData?.find((app) => app.id === expandedApp)
-                    ?.name || null}
-                </b>
-              </p>
-            ) : null}
+            <p
+              style={{
+                ...subtitleStyleCss,
+                fontStyle: "italic",
+                color: "#A7AFBA",
+                marginTop: "2px",
+                marginBottom: "13px",
+              }}
+            >
+              Acciones de:&nbsp;
+              <b>
+                {/* Mostrar aqui el nombre del módulo al que pertenecen las acciones */}
+              </b>
+            </p>
 
             <Checkbox.Group
               value={selectedModuleActionsFormData}
@@ -352,17 +331,15 @@ const EditPermissionFormData: React.FC<{
                 paddingBottom: "13px",
               }}
             >
-              {expandedModule && selectedModulesCount.includes(expandedModule)
-                ? filteredActions(expandedModule).map((action) => (
-                    <Checkbox
-                      key={action.id}
-                      value={action.id}
-                      style={{ width: "96%" }}
-                    >
-                      <Tooltip title={action.name}>{action.name}</Tooltip>
-                    </Checkbox>
-                  ))
-                : null}
+              {allModuleActionsFormData?.map((action) => (
+                <Checkbox
+                  key={action.id}
+                  value={action.id}
+                  style={{ width: "96%" }}
+                >
+                  <Tooltip title={action.name}>{action.name}</Tooltip>
+                </Checkbox>
+              ))}
             </Checkbox.Group>
           </Col>
         </Col>
