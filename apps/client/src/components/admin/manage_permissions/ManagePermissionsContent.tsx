@@ -28,11 +28,17 @@ import {
 } from "@/redux/features/permission/permissionSlice";
 
 import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
+import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
 
 const ManagePermissionsContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const NOT_REGISTER: string = "NO REGISTRA";
+
+  const editPermissionAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.UPDATE_PERMISSIONS],
+  });
 
   const [isEditVisibleLocalState, setIsEditVisibleLocalState] = useState(false);
   const [isModalVisibleLocalState, setIsModalVisibleLocalState] =
@@ -110,7 +116,7 @@ const ManagePermissionsContent: React.FC = () => {
       {isModalVisibleLocalState && (
         <CustomModalNoContent
           key={"custom-modal-permission-details"}
-          widthCustomModalNoContent={"88%"}
+          widthCustomModalNoContent={"77%"}
           minWidthCustomModalNoContent="720px"
           openCustomModalState={isModalVisibleLocalState}
           closableCustomModal={true}
@@ -137,35 +143,36 @@ const ManagePermissionsContent: React.FC = () => {
                       selectedRowDataLocalState?.description
                     }
                   />
-
-                  <Button
-                    className="edit-permission-button"
-                    size="large"
-                    style={{
-                      backgroundColor: "#015E90",
-                      color: "#F7F7F7",
-                      borderRadius: "31px",
-                      paddingInline: "31px",
-                      marginBlock: "13px",
-                    }}
-                    onClick={() => {
-                      setIsEditVisibleLocalState(true);
-                    }}
-                  >
-                    <div
+                  {editPermissionAction ? (
+                    <Button
+                      className="edit-permission-button"
+                      size="large"
                       style={{
-                        minWidth: "137px",
-                        display: "flex",
-                        flexFlow: "row wrap",
-                        alignItems: "center",
-                        alignContent: "center",
-                        justifyContent: "center",
+                        backgroundColor: "#015E90",
+                        color: "#F7F7F7",
+                        borderRadius: "31px",
+                        paddingInline: "31px",
+                        marginBlock: "13px",
+                      }}
+                      onClick={() => {
+                        setIsEditVisibleLocalState(true);
                       }}
                     >
-                      <FaEdit size={17} />
-                      &nbsp; Editar permiso
-                    </div>
-                  </Button>
+                      <div
+                        style={{
+                          minWidth: "137px",
+                          display: "flex",
+                          flexFlow: "row wrap",
+                          alignItems: "center",
+                          alignContent: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <FaEdit size={17} />
+                        &nbsp; Editar permiso
+                      </div>
+                    </Button>
+                  ) : null}
                 </>
               ) : (
                 <EditPermissionForm />

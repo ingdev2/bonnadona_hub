@@ -47,7 +47,7 @@ export class PermissionsController {
   // PATCH METHODS //
 
   @EnableAuditLog()
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   modifyPermission(
     @Param('id') id: string,
