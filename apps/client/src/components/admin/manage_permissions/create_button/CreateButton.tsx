@@ -7,14 +7,21 @@ import { Button, Col, Row } from "antd";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { subtitleStyleCss } from "@/theme/text_styles";
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 
 import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
+
+import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
 
 const CreateButton: React.FC<{
   isSubmittingCreateButton: boolean;
   setIsSubmittingCreateButton: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ isSubmittingCreateButton, setIsSubmittingCreateButton }) => {
   const router = useRouter();
+
+  const createPermissionAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.CREATE_PERMISSIONS],
+  });
 
   const {
     data: allPermissionsData,
@@ -78,7 +85,7 @@ const CreateButton: React.FC<{
       >
         {isSubmittingCreateButton ? (
           <CustomSpin />
-        ) : (
+        ) : createPermissionAction ? (
           <Button
             type="primary"
             size="middle"
@@ -112,7 +119,7 @@ const CreateButton: React.FC<{
           >
             Crear nuevo
           </Button>
-        )}
+        ) : null}
       </Col>
     </Row>
   );

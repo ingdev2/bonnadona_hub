@@ -320,7 +320,7 @@ const PermissionRegistrationFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "720px",
+              maxHeight: "321px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -374,7 +374,7 @@ const PermissionRegistrationFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "720px",
+              maxHeight: "321px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -388,7 +388,7 @@ const PermissionRegistrationFormData: React.FC<{
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
-                gap: "13px",
+                gap: "22px",
                 paddingBottom: "13px",
               }}
             >
@@ -426,7 +426,7 @@ const PermissionRegistrationFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "720px",
+              maxHeight: "321px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -441,7 +441,7 @@ const PermissionRegistrationFormData: React.FC<{
                   fontStyle: "italic",
                   color: "#A7AFBA",
                   marginTop: "2px",
-                  marginBottom: "13px",
+                  marginBottom: "22px",
                 }}
               >
                 Acciones de:&nbsp;
@@ -458,7 +458,7 @@ const PermissionRegistrationFormData: React.FC<{
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
-                gap: "13px",
+                gap: "22px",
                 paddingBottom: "13px",
               }}
             >
