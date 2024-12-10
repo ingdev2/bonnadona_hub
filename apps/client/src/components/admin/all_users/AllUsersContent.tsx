@@ -195,7 +195,6 @@ const AllUsersContent: React.FC = () => {
   } = useGetAllBloodGroupsQuery(null);
 
   useEffect(() => {
-    console.log("allUsersWithProfileData", allUsersWithProfileData);
     if (
       userSessionLogData &&
       userActiveDatabyIdNumberData &&

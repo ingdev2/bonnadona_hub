@@ -78,7 +78,6 @@ const AllAppsContent: React.FC = () => {
   } = useGetAllActiveApplicationsQuery(null);
 
   useEffect(() => {
-    console.log("permission", session);
     if (
       userSessionLogData &&
       userActiveDatabyIdNumberData &&
