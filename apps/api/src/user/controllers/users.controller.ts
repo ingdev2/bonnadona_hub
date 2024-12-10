@@ -158,12 +158,12 @@ export class UsersController {
     return await this.usersService.getUserActiveByIdNumber(id_number);
   }
 
-  @Auth(
-    RolesEnum.SUPER_ADMIN,
-    RolesEnum.ADMIN,
-    RolesEnum.COLLABORATOR,
-    RolesEnum.AUDITOR,
-  )
+  // @Auth(
+  //   RolesEnum.SUPER_ADMIN,
+  //   RolesEnum.ADMIN,
+  //   RolesEnum.COLLABORATOR,
+  //   RolesEnum.AUDITOR,
+  // )
   @Get('/getUserByIdNumber/:id_number')
   async getUserByIdNumber(@Param('id_number') id_number: number) {
     return await this.usersService.getUserByIdNumber(id_number);
@@ -201,12 +201,12 @@ export class UsersController {
   // PATCH METHODS //
 
   @EnableAuditLog()
-  @Auth(
-    RolesEnum.SUPER_ADMIN,
-    RolesEnum.ADMIN,
-    RolesEnum.COLLABORATOR,
-    RolesEnum.AUDITOR,
-  )
+  // @Auth(
+  //   RolesEnum.SUPER_ADMIN,
+  //   RolesEnum.ADMIN,
+  //   RolesEnum.COLLABORATOR,
+  //   RolesEnum.AUDITOR,
+  // )
   @Patch('/updateUser/:id')
   async updateUser(
     @Param('id') id: string,
@@ -217,12 +217,12 @@ export class UsersController {
   }
 
   @EnableAuditLog()
-  @Auth(
-    RolesEnum.SUPER_ADMIN,
-    RolesEnum.ADMIN,
-    RolesEnum.COLLABORATOR,
-    RolesEnum.AUDITOR,
-  )
+  // @Auth(
+  //   RolesEnum.SUPER_ADMIN,
+  //   RolesEnum.ADMIN,
+  //   RolesEnum.COLLABORATOR,
+  //   RolesEnum.AUDITOR,
+  // )
   @Patch('/updateUserProfile/:id')
   async updateUserProfile(
     @Param('id') id: string,

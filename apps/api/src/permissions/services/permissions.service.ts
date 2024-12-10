@@ -186,6 +186,10 @@ export class PermissionsService {
       throw new HttpException(`Permiso no encontrado`, HttpStatus.NOT_FOUND);
     }
 
+    if (updatePermission.name) {
+      permission.name = updatePermission.name;
+    }
+
     if (updatePermission.description) {
       permission.description = updatePermission.description;
     }

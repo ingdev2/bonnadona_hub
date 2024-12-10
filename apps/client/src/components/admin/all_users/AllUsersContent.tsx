@@ -379,8 +379,8 @@ const AllUsersContent: React.FC = () => {
       {isModalVisibleLocalState && (
         <CustomModalNoContent
           key={"custom-modal-request-details-user"}
-          widthCustomModalNoContent={"69%"}
-          minWidthCustomModalNoContent="321px"
+          widthCustomModalNoContent={"88%"}
+          minWidthCustomModalNoContent="690px"
           openCustomModalState={isModalVisibleLocalState}
           closableCustomModal={true}
           maskClosableCustomModal={false}
@@ -399,9 +399,8 @@ const AllUsersContent: React.FC = () => {
                 <>
                   <ModalUserDetails
                     titleDescription="Detalle del usuario"
-                    labelUserName="Nombre(s)"
+                    labelUserName="Nombre completo"
                     selectedUserName={selectedRowDataLocalState?.name}
-                    labelUserLastName="Apellido(s)"
                     selectedUserLastName={selectedRowDataLocalState?.last_name}
                     labelUserIdType="Tipo de identificación"
                     selectedUserIdType={getTagComponentIdTypes(
@@ -411,7 +410,7 @@ const AllUsersContent: React.FC = () => {
                     selectedUserIdNumber={selectedRowDataLocalState?.id_number}
                     labelUserGender="Género"
                     selectedUserGender={selectedRowDataLocalState?.user_gender.toString()}
-                    labelUserBirthdate="birthdate"
+                    labelUserBirthdate="Fecha de nacimiento"
                     selectedUserBirthdate={selectedRowDataLocalState?.birthdate.toString()}
                     labelUserPersonalEmail="Correo personal"
                     selectedUserPersonalEmail={
@@ -466,7 +465,7 @@ const AllUsersContent: React.FC = () => {
                     selectedUserProfileAffiliationEps={
                       selectedRowDataLocalState?.affiliation_eps || NOT_REGISTER
                     }
-                    labelUserProfileResidenceDepartment="Departamente"
+                    labelUserProfileResidenceDepartment="Departamento"
                     selectedUserProfileResidenceDepartment={
                       selectedRowDataLocalState?.residence_department ||
                       NOT_REGISTER
