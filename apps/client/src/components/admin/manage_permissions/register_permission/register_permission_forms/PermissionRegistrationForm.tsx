@@ -12,7 +12,10 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import CustomResultOneButton from "@/components/common/custom_result_one_button/CustomResultOneButton";
 import { FcInfo } from "react-icons/fc";
 
-import { setErrorsPermission } from "@/redux/features/permission/permissionSlice";
+import {
+  setErrorsPermission,
+  setSelectedApplicationsPermission,
+} from "@/redux/features/permission/permissionSlice";
 
 import {
   useCreatePermissionMutation,
@@ -33,15 +36,15 @@ const PermissionRegistrationForm: React.FC = () => {
   const [permissionDescriptionLocalState, setPermissionDescriptionLocalState] =
     useState("");
 
-  const [selectedAppsLocalState, setSelectedAppsLocalState] = useState<
-    number[]
-  >([]);
-  const [selectedModulesLocalState, setSelectedModulesLocalState] = useState<
-    number[]
-  >([]);
-  const [selectedActionsLocalState, setSelectedActionsLocalState] = useState<
-    number[]
-  >([]);
+  const selectedAppsPermissionState = useAppSelector(
+    (state) => state.permission.selected_applications
+  );
+  const selectedModulesPermissionState = useAppSelector(
+    (state) => state.permission.selected_modules
+  );
+  const selectedActionsPermissionState = useAppSelector(
+    (state) => state.permission.selected_actions
+  );
 
   const [modalIsOpenConfirm, setModalIsOpenConfirm] = useState(false);
   const [modalIsOpenSuccess, setModalIsOpenSuccess] = useState(false);
@@ -118,9 +121,9 @@ const PermissionRegistrationForm: React.FC = () => {
       const response: any = await createPermission({
         name: permissionNameLocalState,
         description: permissionDescriptionLocalState,
-        applications: selectedAppsLocalState,
-        application_modules: selectedModulesLocalState,
-        module_actions: selectedActionsLocalState,
+        applications: selectedAppsPermissionState,
+        application_modules: selectedModulesPermissionState,
+        module_actions: selectedActionsPermissionState,
       });
 
       let createDataError = response.error;
@@ -278,26 +281,15 @@ const PermissionRegistrationForm: React.FC = () => {
           setPermissionDescriptionLocalState(e.target.value.toUpperCase());
         }}
         allAppsFormData={allActiveApplicationsData}
-        selectedAppsFormData={selectedAppsLocalState}
+        selectedAppsFormData={selectedAppsPermissionState || []}
         onChangeAppsFormData={(checkedValues) => {
           setHasChanges(true);
 
-          setSelectedAppsLocalState(checkedValues);
+          dispatch(setSelectedApplicationsPermission(checkedValues));
         }}
         allAppModulesFormData={allAppModulesData}
-        selectedAppModulesFormData={selectedModulesLocalState}
-        onChangeAppModulesFormData={(checkedValues) => {
-          setHasChanges(true);
-
-          setSelectedModulesLocalState(checkedValues);
-        }}
         allModuleActionsFormData={allModuleActionsData}
-        selectedModuleActionsFormData={selectedActionsLocalState}
-        onChangeModuleActionsFormData={(checkedValues) => {
-          setHasChanges(true);
-
-          setSelectedActionsLocalState(checkedValues);
-        }}
+        setHasChangesFormData={setHasChanges}
         buttonSubmitFormLoadingDataForm={
           isSubmittingConfirmModal && !modalIsOpenConfirm
         }
