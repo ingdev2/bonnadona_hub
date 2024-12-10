@@ -51,9 +51,11 @@ import {
   setIdTypeSelectedUser,
   setLastNameSelectedUser,
   setNameSelectedUser,
+  setPermissionSelectedUser,
   setPersonalCellphoneSelectedUser,
   setPersonalEmailSelectedUser,
   setPrincipalEmailSelectedUser,
+  setRoleSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
 
 import { tableColumnsAllUsers } from "./table_columns_all_users/TableColums_all_users";
@@ -193,6 +195,7 @@ const AllUsersContent: React.FC = () => {
   } = useGetAllBloodGroupsQuery(null);
 
   useEffect(() => {
+    console.log("allUsersWithProfileData", allUsersWithProfileData);
     if (
       userSessionLogData &&
       userActiveDatabyIdNumberData &&
@@ -223,6 +226,7 @@ const AllUsersContent: React.FC = () => {
     passwordPolicyData,
     lastPasswordUpdateAdminState,
     principalEmailAdminState,
+    allUsersWithProfileData,
   ]);
 
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
@@ -274,6 +278,8 @@ const AllUsersContent: React.FC = () => {
     dispatch(
       setCollaboratorPositionSelectedUser(record?.collaborator_position)
     );
+    dispatch(setRoleSelectedUser(record?.role));
+    dispatch(setPermissionSelectedUser(record?.permission));
     dispatch(setBloodGroupUserProfile(record?.user_blood_group));
     dispatch(setAffiliationEpsUserProfile(record?.affiliation_eps));
     dispatch(setResidenceDepartmentUserProfile(record?.residence_department));

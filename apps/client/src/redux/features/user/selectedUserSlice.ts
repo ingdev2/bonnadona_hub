@@ -24,6 +24,8 @@ const initialState: User = {
   createdAt: "",
   updateAt: "",
   deletedAt: "",
+  role: [],
+  permission: [],
   errors: [],
 };
 
@@ -91,6 +93,12 @@ export const selectedUserSlice = createSlice({
     setIsActiveSelectedUser: (state, action) => {
       state.is_active = action.payload;
     },
+    setRoleSelectedUser: (state, action) => {
+      state.role = action.payload;
+    },
+    setPermissionSelectedUser: (state, action) => {
+      state.permission = action.payload;
+    },
     setErrorsSelectedUser: (state, action) => {
       state.errors = action.payload;
     },
@@ -114,6 +122,8 @@ export const selectedUserSlice = createSlice({
       state.collaborator_unit = "";
       state.collaborator_service = "";
       state.collaborator_position = "";
+      state.role = [];
+      state.permission = [];
       state.errors = [];
     },
   },
@@ -140,6 +150,8 @@ export const {
   setCollaboratorServiceSelectedUser,
   setCollaboratorUnitSelectedUser,
   setIsActiveSelectedUser,
+  setRoleSelectedUser,
+  setPermissionSelectedUser,
   setErrorsSelectedUser,
   setDefaultValuesSelectedUser,
 } = selectedUserSlice.actions;

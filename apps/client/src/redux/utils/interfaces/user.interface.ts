@@ -3,10 +3,10 @@ interface User {
   name: string;
   last_name: string;
   user_id_type: number;
-  user_id_type_abbrev: string;
+  user_id_type_abbrev?: string;
   id_number: number;
   user_gender: number;
-  user_gender_abbrev: string;
+  user_gender_abbrev?: string;
   birthdate: string;
   principal_email: string;
   corporate_email: string;
@@ -21,6 +21,8 @@ interface User {
   collaborator_service: string;
   collaborator_position: string;
   is_active: boolean;
+  role?: Role[];
+  permission?: IPermission[];
   createdAt: string;
   updateAt: string;
   deletedAt: string;

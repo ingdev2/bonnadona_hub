@@ -1,12 +1,13 @@
 import React from "react";
 
-import { Button, Col, Form, Input, Row } from "antd";
+import { Button, Checkbox, Col, Form, Input, Row } from "antd";
 import { Store } from "antd/es/form/interface";
 import { titleStyleCss } from "@/theme/text_styles";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
 import PhoneInput, { PhoneNumber } from "antd-phone-input";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import { IRole } from "@/utils/interfaces/auth/role.interface";
 
 const EditUserFormData: React.FC<{
   principalEmailUserFormData: string;
@@ -19,6 +20,9 @@ const EditUserFormData: React.FC<{
   onChangePersonalCellphoneFormData: (e: any) => void;
   corporateCellphoneFormData: string | undefined;
   onChangeCorporateCellphoneFormData: (e: any) => void;
+  roleUserFormData: Role[] | undefined;
+  onChangeRoleUserFormData: (e: any) => void;
+  allRolesFormData: IRole[] | undefined;
   handleConfirmEditAdminFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -37,6 +41,9 @@ const EditUserFormData: React.FC<{
   onChangePersonalCellphoneFormData,
   corporateCellphoneFormData,
   onChangeCorporateCellphoneFormData,
+  roleUserFormData,
+  onChangeRoleUserFormData,
+  allRolesFormData,
   handleConfirmEditAdminFormData,
   initialValuesEditAdminFormData,
   isSubmittingEditUserData,
@@ -198,7 +205,7 @@ const EditUserFormData: React.FC<{
       </Row>
 
       <Row gutter={24}>
-        <Col span={12}>
+        <Col span={24}>
           <Form.Item
             name="edit-user-corporate-cellphone"
             label="Celular corporativo:"
@@ -216,7 +223,8 @@ const EditUserFormData: React.FC<{
               },
               {
                 pattern: /^[0-9]+$/,
-                message: "¡Por favor ingresa número de celular sin letras ni puntos!",
+                message:
+                  "¡Por favor ingresa número de celular sin letras ni puntos!",
               },
               {
                 min: 7,
@@ -238,6 +246,65 @@ const EditUserFormData: React.FC<{
               min={0}
             />
           </Form.Item>
+        </Col>
+      </Row>
+
+      <Row
+        gutter={24}
+        justify={"center"}
+        align={"top"}
+        style={{ paddingBottom: "13px" }}
+      >
+        <Col
+          span={24}
+          style={{
+            display: "flex",
+            flexFlow: "row",
+            gap: "13px",
+            justifyContent: "center",
+            alignContent: "center",
+          }}
+        >
+          <Col
+            span={8}
+            style={{
+              overflowY: "auto",
+              maxHeight: "720px",
+              padding: "7px",
+              border: "1px solid #013B5A",
+              borderRadius: "8px",
+            }}
+          >
+            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Roles</h3>
+            <Form.Item name="edit-user-role" style={{ marginBottom: "13px" }}>
+              <Checkbox.Group
+                style={{ display: "flex", flexDirection: "column" }}
+              >
+                {allRolesFormData?.map((role: IRole) => (
+                  <Checkbox
+                    value={roleUserFormData}
+                    onChange={onChangeRoleUserFormData}
+                    style={{ marginBottom: "8px" }}
+                  >
+                    {role.name}
+                  </Checkbox>
+                ))}
+              </Checkbox.Group>
+            </Form.Item>
+          </Col>
+
+          <Col
+            span={8}
+            style={{
+              overflowY: "auto",
+              maxHeight: "720px",
+              padding: "7px",
+              border: "1px solid #013B5A",
+              borderRadius: "8px",
+            }}
+          >
+            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Permisos</h3>
+          </Col>
         </Col>
       </Row>
 
