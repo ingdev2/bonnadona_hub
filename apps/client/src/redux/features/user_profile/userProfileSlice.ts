@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState: UserProfile = {
   id: "",
   user_blood_group: 0,
+  user_blood_group_abbrev: "",
   profile_photo: [],
   affiliation_eps: "",
   residence_department: "",
@@ -30,6 +31,9 @@ export const userProfileSlice = createSlice({
     },
     setBloodGroupUserProfile: (state, action) => {
       state.user_blood_group = action.payload;
+    },
+    setBloodGroupAbbrevUserProfile: (state, action) => {
+      state.user_blood_group_abbrev = action.payload;
     },
     setProfilePhotoUserProfile: (state, action) => {
       state.profile_photo = action.payload;
@@ -73,6 +77,7 @@ export const userProfileSlice = createSlice({
     setDefaultValuesUserProfile: (state) => {
       state.id = "";
       state.user_blood_group = 0;
+      state.user_blood_group_abbrev = "";
       state.profile_photo = [];
       state.affiliation_eps = "";
       state.digital_signature = [];
@@ -93,6 +98,7 @@ export const userProfileSlice = createSlice({
 export const {
   setIdUserProfile,
   setBloodGroupUserProfile,
+  setBloodGroupAbbrevUserProfile,
   setProfilePhotoUserProfile,
   setResidenceDepartmentUserProfile,
   setResidenceAddressUserProfile,

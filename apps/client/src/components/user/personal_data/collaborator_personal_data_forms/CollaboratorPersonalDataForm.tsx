@@ -55,8 +55,11 @@ const CollaboratorPersonalDataForm: React.FC = () => {
   const errorsUserState = useAppSelector((state) => state.user.errors);
 
   //GLOBAL STATE PROFILE USER
-  const bloodGroupNameUserProfileState = useAppSelector(
+  const bloodGroupUserProfileState = useAppSelector(
     (state) => state.userProfile.user_blood_group
+  );
+  const bloodGroupAbbrevUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_blood_group_abbrev
   );
   const affiliationEpsUserProfileState = useAppSelector(
     (state) => state.userProfile.affiliation_eps
@@ -157,6 +160,9 @@ const CollaboratorPersonalDataForm: React.FC = () => {
               corporateCellphoneUserState || NOT_REGISTER
             }
             corporateEmailUserFormData={corporateEmailUserState || NOT_REGISTER}
+            bloodGroupAbbrevUserProfileFormData={
+              bloodGroupAbbrevUserProfileState || NOT_REGISTER
+            }
             affiliationEpsUserProfileFormData={
               affiliationEpsUserProfileState || NOT_REGISTER
             }

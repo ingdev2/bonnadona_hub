@@ -30,6 +30,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
   personalCellphoneUserFormData: number | string;
   corporateCellphoneUserFormData: number | string;
   corporateEmailUserFormData: string;
+  bloodGroupAbbrevUserProfileFormData: string;
   affiliationEpsUserProfileFormData: string;
   residenceDepartmentUserProfileFormData: string;
   residenceCityUserProfileFormData: string;
@@ -56,6 +57,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
   personalCellphoneUserFormData,
   corporateCellphoneUserFormData,
   corporateEmailUserFormData,
+  bloodGroupAbbrevUserProfileFormData,
   affiliationEpsUserProfileFormData,
   residenceDepartmentUserProfileFormData,
   residenceCityUserProfileFormData,
@@ -330,12 +332,12 @@ const CollaboratorPersonalDataFormData: React.FC<{
             </Typography.Title>
 
             <Input
-              id="name-user-auto-input"
+              id="blood-group-abbrev-user-auto-input"
               prefix={
                 <MdDriveFileRenameOutline className="site-form-item-icon" />
               }
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              value={nameUserFormData}
+              value={bloodGroupAbbrevUserProfileFormData}
               disabled
             />
           </div>

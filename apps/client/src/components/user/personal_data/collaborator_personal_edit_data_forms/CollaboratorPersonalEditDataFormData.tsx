@@ -4,9 +4,16 @@ import { Store } from "antd/es/form/interface";
 
 import { titleStyleCss } from "@/theme/text_styles";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import { Button, Col, Divider, Form, Input, Row } from "antd";
+import { Button, Col, Divider, Form, Input, Row, Select } from "antd";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
+import { UserWeightEnum } from "@/utils/enums/user_profile/user_weight.enum";
+import { UserHeightEnum } from "@/utils/enums/user_profile/user_height.enum";
+import { UserShirtSizeEnum } from "@/utils/enums/user_profile/user_shirt_size.enum";
+import { UserPantsSizeEnum } from "@/utils/enums/user_profile/user_pants_size.enum";
+import { UserShoeSizeEnum } from "@/utils/enums/user_profile/user_shoe_size.enum";
+
+const { Option } = Select;
 
 const CollaboratorPersonalEditDataFormData: React.FC<{
   principalEmailUserFormData: string;
@@ -15,6 +22,10 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
   onChangePersonalEmailUserFormData: (e: any) => void;
   personalCellphoneFormData: string | undefined;
   onChangePersonalCellphoneFormData: (e: any) => void;
+  bloodGroupUserProfileFormData: number | undefined;
+  onChangebloodGroupUserProfileFormData: (e: any) => void;
+  bloodGroupListFormData: any[] | undefined;
+  bloodGroupLoadingFormData: boolean;
   affiliationEpsUserProfileFormData: string | undefined;
   onChangeAffiliationEpsUserProfileFormData: (e: any) => void;
   residenceDepartmentUserProfileFormData: string | undefined;
@@ -35,7 +46,6 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
   onChangePantsSizeUserProfileFormData: (e: any) => void;
   shoeSizeUserProfileFormData: string | undefined;
   onChangeShoeSizeUserProfileFormData: (e: any) => void;
-
   handleChangeEditUserFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -50,6 +60,10 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
   onChangePersonalEmailUserFormData,
   personalCellphoneFormData,
   onChangePersonalCellphoneFormData,
+  bloodGroupUserProfileFormData,
+  onChangebloodGroupUserProfileFormData,
+  bloodGroupListFormData,
+  bloodGroupLoadingFormData,
   affiliationEpsUserProfileFormData,
   onChangeAffiliationEpsUserProfileFormData,
   residenceDepartmentUserProfileFormData,
@@ -217,28 +231,33 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
           textAlign: "center",
         }}
       >
-        Actualizar mi perfil
+        Actualizar perfil
       </h2>
 
       <Row gutter={24}>
         <Col span={6}>
           <Form.Item
-            id="current-edit-user-principal-email"
-            name="current-edit-user-principal-email"
-            className="current-edit-user-principal-email"
+            name="current-edit-user-blood-group"
             label="Tipo de sangre:"
+            tooltip="Aquí debes seleccionar tu tipo de sangre."
             style={{ marginBottom: "13px" }}
           >
-            <Input
-              prefix={
-                <MdDriveFileRenameOutline className="site-form-item-icon" />
-              }
-              type="text"
-              value={principalEmailUserFormData}
-              placeholder="Correo principal"
-              onChange={onChangePrincipalEmailUserFormData}
-              autoComplete="off"
-            />
+            {bloodGroupLoadingFormData ? (
+              <CustomSpin />
+            ) : (
+              <Select
+                id="blood-group-user"
+                value={bloodGroupUserProfileFormData}
+                placeholder="Seleccionar tipo de sangre"
+                onChange={onChangebloodGroupUserProfileFormData}
+              >
+                {bloodGroupListFormData?.map((option: any) => (
+                  <Option key={option.id} value={option.id}>
+                    {option.name}
+                  </Option>
+                ))}
+              </Select>
+            )}
           </Form.Item>
         </Col>
 
@@ -249,6 +268,13 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-affiliation-eps"
             label="Afiliación eps:"
             style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                message:
+                  "En este campo no puede tener numeros ni caracteres especiales.",
+              },
+            ]}
           >
             <Input
               prefix={
@@ -270,6 +296,13 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-residence-department"
             label="Departamento:"
             style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                message:
+                  "En este campo no puede tener numeros ni caracteres especiales.",
+              },
+            ]}
           >
             <Input
               prefix={
@@ -291,6 +324,13 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-residence-city"
             label="Ciudad:"
             style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                message:
+                  "En este campo no puede tener numeros ni caracteres especiales.",
+              },
+            ]}
           >
             <Input
               prefix={
@@ -314,6 +354,13 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-residence-neighborhood"
             label="Barrio:"
             style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                message:
+                  "En este campo no puede tener numeros ni caracteres especiales.",
+              },
+            ]}
           >
             <Input
               prefix={
@@ -324,6 +371,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               placeholder="Barrio"
               onChange={onChangeResidenceNeighborhoodUserProfileFormData}
               autoComplete="off"
+              style={{ textTransform: "uppercase" }}
             />
           </Form.Item>
         </Col>
@@ -351,31 +399,51 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
 
         <Col span={6}>
           <Form.Item
-            id="current-edit-user-weight"
             name="current-edit-user-weight"
-            className="current-edit-user-weight"
-            label="Peso (Kg):"
+            label="Peso:"
+            tooltip="Aquí debes seleccionar tu peso."
             style={{ marginBottom: "13px" }}
           >
-            <Input
-              prefix={
-                <MdDriveFileRenameOutline className="site-form-item-icon" />
-              }
-              type="text"
+            <Select
+              id="weight-user"
               value={weightUserProfileFormData}
-              placeholder="Peso"
+              placeholder="Seleccionar peso"
               onChange={onChangeWeightUserProfileFormData}
-              autoComplete="off"
-            />
+            >
+              {Object.values(UserWeightEnum).map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
 
         <Col span={6}>
           <Form.Item
+            name="current-edit-user-height"
+            label="Estatura:"
+            tooltip="Aquí debes seleccionar tu estatura."
+            style={{ marginBottom: "13px" }}
+          >
+            <Select
+              id="height-user"
+              value={heightUserProfileFormData}
+              placeholder="Seleccionar estatura"
+              onChange={onChangeHeightUserProfileFormData}
+            >
+              {Object.values(UserHeightEnum).map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          {/* <Form.Item
             id="current-edit-user-height"
             name="current-edit-user-height"
             className="current-edit-user-height"
-            label="Estatura (m):"
+            label="Estatura:"
             style={{ marginBottom: "13px" }}
           >
             <Input
@@ -388,18 +456,45 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               onChange={onChangeHeightUserProfileFormData}
               autoComplete="off"
             />
-          </Form.Item>
+          </Form.Item> */}
         </Col>
       </Row>
 
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item
+            name="current-edit-user-shirt-size"
+            label="Talla camisa:"
+            tooltip="Aquí debes seleccionar tu talla de camisa."
+            style={{ marginBottom: "13px" }}
+          >
+            <Select
+              id="shirt-size-user"
+              value={shirtSizeUserProfileFormData}
+              placeholder="Seleccionar talla de camisa"
+              onChange={onChangeShirtSizeUserProfileFormData}
+            >
+              {Object.values(UserShirtSizeEnum).map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          {/* <Form.Item
             id="current-edit-user-shirt-size"
             name="current-edit-user-shirt-size"
             className="current-edit-user-shirt-size"
             label="Talla camisa:"
             style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                pattern:
+                  /^(XS|S|M|L|XL|XXL|XXXL|xs|s|m|l|xl|xxl|xxxl[0-9]{2,3})$/,
+                message:
+                  "Ingresa una talla válida: XS, S, M, L, XL, XXL, XXXL, o un número (38, 40, etc.).",
+              },
+            ]}
           >
             <Input
               prefix={
@@ -411,16 +506,41 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               onChange={onChangeShirtSizeUserProfileFormData}
               autoComplete="off"
             />
-          </Form.Item>
+          </Form.Item> */}
         </Col>
 
         <Col span={8}>
           <Form.Item
+            name="current-edit-user-pants-size"
+            label="Talla pantalón:"
+            tooltip="Aquí debes seleccionar tu talla de pantalón."
+            style={{ marginBottom: "13px" }}
+          >
+            <Select
+              id="pants-size-user"
+              value={pantsSizeUserProfileFormData}
+              placeholder="Seleccionar talla de pantalón"
+              onChange={onChangePantsSizeUserProfileFormData}
+            >
+              {Object.values(UserPantsSizeEnum).map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          {/* <Form.Item
             id="current-edit-user-pants-size"
             name="current-edit-user-pants-size"
             className="current-edit-user-pants-size"
             label="Talla pantalón:"
             style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                pattern: /^(2[5-9]|[3-5][0-9]|60)$/,
+                message: "¡Ingresa una talla válida entre 25 y 60!",
+              },
+            ]}
           >
             <Input
               prefix={
@@ -432,16 +552,41 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               onChange={onChangePantsSizeUserProfileFormData}
               autoComplete="off"
             />
-          </Form.Item>
+          </Form.Item> */}
         </Col>
 
         <Col span={8}>
           <Form.Item
+            name="current-edit-user-shoe-size"
+            label="Talla zapatos:"
+            tooltip="Aquí debes seleccionar tu talla de zapatos."
+            style={{ marginBottom: "13px" }}
+          >
+            <Select
+              id="pants-size-user"
+              value={shoeSizeUserProfileFormData}
+              placeholder="Seleccionar talla de zapatos"
+              onChange={onChangeShoeSizeUserProfileFormData}
+            >
+              {Object.values(UserShoeSizeEnum).map((option) => (
+                <Select.Option key={option} value={option}>
+                  {option}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          {/* <Form.Item
             id="current-edit-user-shoe-size"
             name="current-edit-user-shoe-size"
             className="current-edit-user-shoe-size"
             label="Talla zapatos:"
             style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                pattern: /^[0-9]+$/,
+                message: "¡Ingresa la talla en números sin puntos, ni comas!",
+              },
+            ]}
           >
             <Input
               prefix={
@@ -453,7 +598,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               onChange={onChangeShoeSizeUserProfileFormData}
               autoComplete="off"
             />
-          </Form.Item>
+          </Form.Item> */}
         </Col>
       </Row>
 

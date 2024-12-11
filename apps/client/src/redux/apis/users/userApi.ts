@@ -105,7 +105,7 @@ export const userApi = createApi({
 
     updateUserProfile: builder.mutation<
       any,
-      { id: number; updateUserProfile: Partial<UserProfile> }
+      { id: string; updateUserProfile: Partial<UserProfile> }
     >({
       query: ({ id, updateUserProfile }) => ({
         url: `updateUserProfile/${id}`,

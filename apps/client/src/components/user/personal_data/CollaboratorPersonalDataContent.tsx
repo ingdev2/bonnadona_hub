@@ -30,7 +30,9 @@ import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashb
 import CollaboratorPersonalDataForm from "./collaborator_personal_data_forms/CollaboratorPersonalDataForm";
 import {
   setAffiliationEpsUserProfile,
+  setBloodGroupAbbrevUserProfile,
   setBloodGroupUserProfile,
+  setIdUserProfile,
   setResidenceAddressUserProfile,
   setResidenceCityUserProfile,
   setResidenceDepartmentUserProfile,
@@ -41,6 +43,7 @@ import {
   setUserShoeSizeUserProfile,
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
+import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
 
 const CollaboratorPersonalDataContent = () => {
   const dispatch = useAppDispatch();
@@ -83,6 +86,10 @@ const CollaboratorPersonalDataContent = () => {
     (state) => state.user.corporate_cellphone
   );
 
+  const bloodGroupNameUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_blood_group
+  );
+
   const {
     data: userActiveByIdNumberData,
     isLoading: userActiveByIdNumberLoading,
@@ -115,8 +122,17 @@ const CollaboratorPersonalDataContent = () => {
     refetch: refecthAllGenderTypes,
   } = useGetAllGenderTypesQuery(null);
 
+  const {
+    data: allBloodGroupsData,
+    isLoading: allBloodGroupsLoading,
+    isFetching: allBloodGroupsFetching,
+    error: allBloodGroupsError,
+    refetch: allBloodGroupsTypes,
+  } = useGetAllBloodGroupsQuery(null);
+
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
+  const bloodGroupGetName = transformIdToNameMap(allBloodGroupsData);
 
   useEffect(() => {
     if (
@@ -170,44 +186,41 @@ const CollaboratorPersonalDataContent = () => {
     }
 
     if (userActiveProfileByIdData) {
+      dispatch(setIdUserProfile(userActiveProfileByIdData.id));
       dispatch(
-        setBloodGroupUserProfile(userActiveProfileByIdData?.user_blood_group)
+        setBloodGroupUserProfile(userActiveProfileByIdData.user_blood_group)
       );
       dispatch(
-        setAffiliationEpsUserProfile(userActiveProfileByIdData?.affiliation_eps)
+        setAffiliationEpsUserProfile(userActiveProfileByIdData.affiliation_eps)
       );
       dispatch(
         setResidenceDepartmentUserProfile(
-          userActiveProfileByIdData?.residence_department
+          userActiveProfileByIdData.residence_department
         )
       );
       dispatch(
-        setResidenceCityUserProfile(userActiveProfileByIdData?.residence_city)
+        setResidenceCityUserProfile(userActiveProfileByIdData.residence_city)
       );
       dispatch(
         setResidenceAddressUserProfile(
-          userActiveProfileByIdData?.residence_address
+          userActiveProfileByIdData.residence_address
         )
       );
       dispatch(
         setResidenceNeighborhoodUserProfile(
-          userActiveProfileByIdData?.residence_neighborhood
+          userActiveProfileByIdData.residence_neighborhood
         )
       );
+      dispatch(setUserHeightUserProfile(userActiveProfileByIdData.user_height));
+      dispatch(setUserWeightUserProfile(userActiveProfileByIdData.user_weight));
       dispatch(
-        setUserHeightUserProfile(userActiveProfileByIdData?.user_height)
+        setUserShirtSizeUserProfile(userActiveProfileByIdData.user_shirt_size)
       );
       dispatch(
-        setUserWeightUserProfile(userActiveProfileByIdData?.user_weight)
+        setUserPantsSizeUserProfile(userActiveProfileByIdData.user_pants_size)
       );
       dispatch(
-        setUserShirtSizeUserProfile(userActiveProfileByIdData?.user_shirt_size)
-      );
-      dispatch(
-        setUserPantsSizeUserProfile(userActiveProfileByIdData?.user_pants_size)
-      );
-      dispatch(
-        setUserShoeSizeUserProfile(userActiveProfileByIdData?.user_shoe_size)
+        setUserShoeSizeUserProfile(userActiveProfileByIdData.user_shoe_size)
       );
     }
 
@@ -221,6 +234,12 @@ const CollaboratorPersonalDataContent = () => {
       const genderName = genderTypeGetName[genderNumberUserState];
 
       dispatch(setGenderAbbrevUser(genderName));
+    }
+
+    if (bloodGroupNameUserProfileState && allBloodGroupsData) {
+      const bloodGroupName = bloodGroupGetName[bloodGroupNameUserProfileState];
+
+      dispatch(setBloodGroupAbbrevUserProfile(bloodGroupName));
     }
   }, [
     nameUserState,
@@ -236,8 +255,10 @@ const CollaboratorPersonalDataContent = () => {
     userActiveByIdNumberData,
     userActiveByIdNumberLoading,
     userActiveByIdNumberFetching,
+    bloodGroupNameUserProfileState,
     allIdTypesData,
     allGenderTypesData,
+    allBloodGroupsData,
     userActiveProfileByIdData,
   ]);
 
