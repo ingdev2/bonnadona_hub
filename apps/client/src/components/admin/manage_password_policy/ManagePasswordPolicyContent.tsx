@@ -14,63 +14,71 @@ import {
   setRequireSpecialCharactersPasswordPolicy,
   setRequireUpperCasePasswordPolicy,
 } from "@/redux/features/password_policy/passwordPolicySlice";
-import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enums/item_names_and_keys.enums";
-import { setSelectedKey } from "@/redux/features/common/modal/modalSlice";
 import ManagePasswordPolicyForm from "./manage_password_policy_form/ManagePasswordPolicyForm";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 
 const ManagePasswordPolicyContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const selectedKeyState = useAppSelector((state) => state.modal.selectedKey);
+  const lastPasswordUpdateCollaboratorState = useAppSelector(
+    (state) => state.user.last_password_update
+  );
 
   const {
-    data: getPasswordPolicyData,
-    isLoading: getPasswordPolicyLoading,
-    isFetching: getPasswordPolicyFetching,
-    error: getPasswordPolicyError,
-    refetch: getPasswordPolicyRefetch,
+    data: passwordPolicyData,
+    isLoading: passwordPolicyLoading,
+    isFetching: passwordPolicyFetching,
+    error: passwordPolicyError,
+    refetch: passwordPolicyRefetch,
   } = useGetPasswordPolicyQuery(null);
 
   useEffect(() => {
-    if (getPasswordPolicyData) {
-      dispatch(setMinLenghtPasswordPolicy(getPasswordPolicyData.min_length));
+    if (
+      passwordPolicyData &&
+      passwordPolicyData.password_expiry_days &&
+      lastPasswordUpdateCollaboratorState &&
+      checkPasswordExpiry(
+        lastPasswordUpdateCollaboratorState,
+        passwordPolicyData.password_expiry_days
+      )
+    ) {
+      dispatch(setChangePasswordExpiryModalIsOpen(true));
+    } else {
+      dispatch(setChangePasswordExpiryModalIsOpen(false));
+    }
+
+    if (passwordPolicyData) {
+      dispatch(setMinLenghtPasswordPolicy(passwordPolicyData.min_length));
       dispatch(
-        setRequireUpperCasePasswordPolicy(
-          getPasswordPolicyData.require_uppercase
-        )
+        setRequireUpperCasePasswordPolicy(passwordPolicyData.require_uppercase)
       );
       dispatch(
-        setRequireLowerCasePasswordPolicy(
-          getPasswordPolicyData.require_lowercase
-        )
+        setRequireLowerCasePasswordPolicy(passwordPolicyData.require_lowercase)
       );
       dispatch(
-        setRequireNumbersPasswordPolicy(getPasswordPolicyData.require_numbers)
+        setRequireNumbersPasswordPolicy(passwordPolicyData.require_numbers)
       );
       dispatch(
         setRequireSpecialCharactersPasswordPolicy(
-          getPasswordPolicyData.require_special_characters
+          passwordPolicyData.require_special_characters
         )
       );
       dispatch(
         setPasswordExpiryDaysPasswordPolicy(
-          getPasswordPolicyData.password_expiry_days
+          passwordPolicyData.password_expiry_days
         )
       );
       dispatch(
-        setInactivityDaysPasswordPolicy(getPasswordPolicyData.inactivity_days)
+        setInactivityDaysPasswordPolicy(passwordPolicyData.inactivity_days)
       );
       dispatch(
         setPasswordHistoryLimitPasswordPolicy(
-          getPasswordPolicyData.password_history_limit
+          passwordPolicyData.password_history_limit
         )
       );
     }
-
-    // if (selectedKeyState !== ItemKeys.SUB_MANAGE_PASSWORD_KEY) {
-    //   dispatch(setSelectedKey(ItemKeys.SUB_MANAGE_PASSWORD_KEY));
-    // }
-  }, [getPasswordPolicyData]);
+  }, [passwordPolicyData, lastPasswordUpdateCollaboratorState]);
 
   return (
     <div>

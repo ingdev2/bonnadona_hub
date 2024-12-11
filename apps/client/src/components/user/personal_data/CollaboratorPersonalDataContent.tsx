@@ -26,6 +26,8 @@ import {
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
+import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+
 import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
 import CollaboratorPersonalDataForm from "./collaborator_personal_data_forms/CollaboratorPersonalDataForm";
 import {
@@ -43,10 +45,18 @@ import {
   setUserShoeSizeUserProfile,
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
+
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+
 import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 
 const CollaboratorPersonalDataContent = () => {
   const dispatch = useAppDispatch();
+
+  const lastPasswordUpdateCollaboratorState = useAppSelector(
+    (state) => state.user.last_password_update
+  );
 
   const idNumberUserState = useAppSelector((state) => state.user.id_number);
 
@@ -130,11 +140,32 @@ const CollaboratorPersonalDataContent = () => {
     refetch: allBloodGroupsTypes,
   } = useGetAllBloodGroupsQuery(null);
 
+  const {
+    data: passwordPolicyData,
+    isLoading: passwordPolicyLoading,
+    isFetching: passwordPolicyFetching,
+    error: passwordPolicyError,
+  } = useGetPasswordPolicyQuery(null);
+
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
   const bloodGroupGetName = transformIdToNameMap(allBloodGroupsData);
 
   useEffect(() => {
+    if (
+      passwordPolicyData &&
+      passwordPolicyData.password_expiry_days &&
+      lastPasswordUpdateCollaboratorState &&
+      checkPasswordExpiry(
+        lastPasswordUpdateCollaboratorState,
+        passwordPolicyData.password_expiry_days
+      )
+    ) {
+      dispatch(setChangePasswordExpiryModalIsOpen(true));
+    } else {
+      dispatch(setChangePasswordExpiryModalIsOpen(false));
+    }
+
     if (
       !nameUserState ||
       !lastNameUserState ||
@@ -242,6 +273,8 @@ const CollaboratorPersonalDataContent = () => {
       dispatch(setBloodGroupAbbrevUserProfile(bloodGroupName));
     }
   }, [
+    passwordPolicyData,
+    lastPasswordUpdateCollaboratorState,
     nameUserState,
     lastNameUserState,
     idTypeNumberUserState,
