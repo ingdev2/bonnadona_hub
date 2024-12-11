@@ -17,12 +17,17 @@ import {
 import ManagePasswordPolicyForm from "./manage_password_policy_form/ManagePasswordPolicyForm";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const ManagePasswordPolicyContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const lastPasswordUpdateCollaboratorState = useAppSelector(
     (state) => state.user.last_password_update
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
   );
 
   const {
@@ -82,6 +87,15 @@ const ManagePasswordPolicyContent: React.FC = () => {
 
   return (
     <div>
+      <div className="modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
+
       <CustomDashboardLayoutAdmins
         customLayoutContent={
           <div

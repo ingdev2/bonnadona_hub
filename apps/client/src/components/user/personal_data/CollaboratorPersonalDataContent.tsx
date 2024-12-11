@@ -50,12 +50,17 @@ import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswo
 
 import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const CollaboratorPersonalDataContent = () => {
   const dispatch = useAppDispatch();
 
   const lastPasswordUpdateCollaboratorState = useAppSelector(
     (state) => state.user.last_password_update
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
   );
 
   const idNumberUserState = useAppSelector((state) => state.user.id_number);
@@ -296,23 +301,34 @@ const CollaboratorPersonalDataContent = () => {
   ]);
 
   return (
-    <div className="custom-dashboard-layout-users">
-      <CustomDashboardLayoutCollaborators
-        customLayoutContent={
-          <>
-            <div
-              style={{
-                width: "90%",
-                display: "flex",
-                flexFlow: "column wrap",
-              }}
-            >
-              <CollaboratorPersonalDataForm />
-            </div>
-          </>
-        }
-      />
-    </div>
+    <>
+      <div className="modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
+
+      <div className="custom-dashboard-layout-users">
+        <CustomDashboardLayoutCollaborators
+          customLayoutContent={
+            <>
+              <div
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexFlow: "column wrap",
+                }}
+              >
+                <CollaboratorPersonalDataForm />
+              </div>
+            </>
+          }
+        />
+      </div>
+    </>
   );
 };
 

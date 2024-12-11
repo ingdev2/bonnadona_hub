@@ -35,6 +35,7 @@ import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/password
 import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const ManagePermissionsContent: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -49,6 +50,10 @@ const ManagePermissionsContent: React.FC = () => {
 
   const lastPasswordUpdateCollaboratorState = useAppSelector(
     (state) => state.user.last_password_update
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
   );
 
   const [isEditVisibleLocalState, setIsEditVisibleLocalState] = useState(false);
@@ -142,6 +147,15 @@ const ManagePermissionsContent: React.FC = () => {
           }
         />
       )}
+
+      <div className="modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
 
       {isModalVisibleLocalState && (
         <CustomModalNoContent

@@ -32,12 +32,17 @@ import {
 import AdminPersonalDataForm from "./admin_personal_data_forms/AdminPersonalDataForm";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const AdminPersonalDataContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const lastPasswordUpdateCollaboratorState = useAppSelector(
     (state) => state.user.last_password_update
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
   );
 
   const idNumberUserState = useAppSelector((state) => state.user.id_number);
@@ -190,19 +195,30 @@ const AdminPersonalDataContent: React.FC = () => {
     allGenderTypesData,
   ]);
   return (
-    <CustomDashboardLayoutAdmins
-      customLayoutContent={
-        <div
-          style={{
-            width: "80%",
-            display: "flex",
-            flexFlow: "column wrap",
-          }}
-        >
-          <AdminPersonalDataForm />
-        </div>
-      }
-    />
+    <>
+      <div className="modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
+
+      <CustomDashboardLayoutAdmins
+        customLayoutContent={
+          <div
+            style={{
+              width: "80%",
+              display: "flex",
+              flexFlow: "column wrap",
+            }}
+          >
+            <AdminPersonalDataForm />
+          </div>
+        }
+      />
+    </>
   );
 };
 
