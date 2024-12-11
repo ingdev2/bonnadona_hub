@@ -84,11 +84,11 @@ const PermissionRegistrationFormData: React.FC<{
       const modulesByApp: { [appId: number]: number[] } = {};
 
       selectedModulesPermissionState.forEach((moduleId) => {
-        const module = allAppModulesFormData?.find(
+        const appModule = allAppModulesFormData?.find(
           (mod) => mod.id === moduleId
         );
-        if (module) {
-          const appId = module.app_id;
+        if (appModule) {
+          const appId = appModule.app_id;
           if (!modulesByApp[appId]) {
             modulesByApp[appId] = [];
           }

@@ -9,7 +9,7 @@ import {
 import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { UpdatePermissionDto } from '../dto/update-permission.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Permissions } from '../entities/permissions.entity';
 import { Application } from 'src/application/entities/application.entity';
 import { ApplicationModule } from 'src/application_module/entities/application_module.entity';
@@ -187,7 +187,16 @@ export class PermissionsService {
     }
 
     if (updatePermission.name) {
-      permission.name = updatePermission.name;
+      const duplicatePermission = await this.permissionRepo.findOne({
+        where: {
+          id: Not(permissionId),
+          name: permission.name,
+        },
+      });
+
+      if (duplicatePermission) {
+        throw new HttpException(`Permiso duplicado.`, HttpStatus.CONFLICT);
+      }
     }
 
     if (updatePermission.description) {

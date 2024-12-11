@@ -3,6 +3,7 @@ interface IApplication {
   name: string;
   image_path: string;
   entry_link: string;
-  is_active: boolean;
   application_module: IApplicationModule[];
+  is_active: boolean;
+  errors: string[];
 }
