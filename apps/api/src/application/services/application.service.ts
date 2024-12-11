@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Req } from '@nestjs/common';
 import { CreateApplicationDto } from '../dto/create-application.dto';
 import { UpdateApplicationDto } from '../dto/update-application.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Application } from '../entities/application.entity';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
@@ -111,6 +111,7 @@ export class ApplicationService {
     if (application.name) {
       const duplicateApplication = await this.applicationRepository.findOne({
         where: {
+          id: Not(id),
           name: application.name,
         },
       });
