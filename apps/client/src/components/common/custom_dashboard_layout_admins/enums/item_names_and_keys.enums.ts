@@ -8,7 +8,7 @@ export enum ItemNames {
   ITEM_PASSWORD_POLICY = "Política de contraseña",
   SUB_MANAGE_PASSWORD = "Gestionar política",
 
-  ITEM_APPLICATIONS_AND_MODULES = "Apps y módulos",
+  ITEM_APPLICATIONS_AND_MODULES = "Aplicaciones",
   SUB_APPLICATIONS = "Aplicaciones",
   SUB_MODULES_AND_ACTIONS = "Módulos y acciones",
 

@@ -7,11 +7,8 @@ import { Button, Col, Row } from "antd";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { subtitleStyleCss } from "@/theme/text_styles";
-import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 
-import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
-
-import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
+import { useGetAllApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
 
 const CreateButton: React.FC<{
   isSubmittingCreateButton: boolean;
@@ -19,17 +16,13 @@ const CreateButton: React.FC<{
 }> = ({ isSubmittingCreateButton, setIsSubmittingCreateButton }) => {
   const router = useRouter();
 
-  const createPermissionAction = PermissionsActionsValidation({
-    allowedActions: [ModuleActionsEnum.CREATE_PERMISSIONS],
-  });
-
   const {
-    data: allPermissionsData,
-    isLoading: allPermissionsLoading,
-    isFetching: allPermissionsFetching,
-    error: allPermissionsError,
-    refetch: refecthAllPermissions,
-  } = useGetAllPermissionsQuery(null);
+    data: allApplicationsData,
+    isLoading: allApplicationsLoading,
+    isFetching: allApplicationsFetching,
+    error: allApplicationsError,
+    refetch: refecthApplications,
+  } = useGetAllApplicationsQuery(null);
 
   return (
     <Row
@@ -64,8 +57,8 @@ const CreateButton: React.FC<{
         >
           Total de&nbsp;
           <b>
-            {allPermissionsData?.length || 0}
-            &nbsp;permiso(s) de usuarios
+            {allApplicationsData?.length || 0}
+            &nbsp;aplicaciones
           </b>
         </h2>
       </Col>
@@ -85,7 +78,7 @@ const CreateButton: React.FC<{
       >
         {isSubmittingCreateButton ? (
           <CustomSpin />
-        ) : createPermissionAction ? (
+        ) : (
           <Button
             type="primary"
             size="middle"
@@ -102,12 +95,12 @@ const CreateButton: React.FC<{
               margin: "0px",
             }}
             htmlType="button"
-            className="permission-register-button"
+            className="application-register-button"
             onClick={async () => {
               try {
                 setIsSubmittingCreateButton(true);
 
-                await router.push("manage_permissions/register", {
+                await router.push("applications/register", {
                   scroll: true,
                 });
               } catch (error) {
@@ -119,7 +112,7 @@ const CreateButton: React.FC<{
           >
             Crear nuevo
           </Button>
-        ) : null}
+        )}
       </Col>
     </Row>
   );

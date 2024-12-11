@@ -79,14 +79,17 @@ const EditPermissionFormData: React.FC<{
       const modulesByApp: { [appId: number]: number[] } = {};
 
       selectedModulesPermissionState.forEach((moduleId) => {
-        const module = allAppModulesFormData?.find(
+        const appModule = allAppModulesFormData?.find(
           (mod) => mod.id === moduleId
         );
-        if (module) {
-          const appId = module.app_id;
+
+        if (appModule) {
+          const appId = appModule.app_id;
+
           if (!modulesByApp[appId]) {
             modulesByApp[appId] = [];
           }
+
           modulesByApp[appId].push(moduleId);
         }
       });
@@ -105,11 +108,14 @@ const EditPermissionFormData: React.FC<{
         const action = allModuleActionsFormData?.find(
           (act) => act.id === actionId
         );
+
         if (action) {
           const moduleId = action.app_module_id;
+
           if (!actionsByModule[moduleId]) {
             actionsByModule[moduleId] = [];
           }
+
           actionsByModule[moduleId].push(actionId);
         }
       });
@@ -315,7 +321,7 @@ const EditPermissionFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "720px",
+              maxHeight: "321px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -369,7 +375,7 @@ const EditPermissionFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "720px",
+              maxHeight: "321px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -383,7 +389,7 @@ const EditPermissionFormData: React.FC<{
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
-                gap: "13px",
+                gap: "22px",
                 paddingBottom: "13px",
               }}
             >
@@ -421,7 +427,7 @@ const EditPermissionFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "720px",
+              maxHeight: "321px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -436,7 +442,7 @@ const EditPermissionFormData: React.FC<{
                   fontStyle: "italic",
                   color: "#A7AFBA",
                   marginTop: "2px",
-                  marginBottom: "13px",
+                  marginBottom: "22px",
                 }}
               >
                 Acciones de:&nbsp;
@@ -453,7 +459,7 @@ const EditPermissionFormData: React.FC<{
               style={{
                 display: "flex",
                 flexFlow: "column wrap",
-                gap: "13px",
+                gap: "22px",
                 paddingBottom: "13px",
               }}
             >

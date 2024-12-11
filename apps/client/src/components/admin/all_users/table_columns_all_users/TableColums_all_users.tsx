@@ -7,6 +7,7 @@ import { FaBan } from "react-icons/fa";
 const userIdKey: keyof User = "id";
 const userNameKey: keyof User = "name";
 const userLastNameKey: keyof User = "last_name";
+const userPositionKey: keyof User = "collaborator_position";
 const userIdTypeKey: keyof User = "user_id_type";
 const userIdNumberKey: keyof User = "id_number";
 const userGenderKey: keyof User = "user_gender";
@@ -26,6 +27,7 @@ interface TableColumnProps {
   handleOnChangeSwitch: (record: User) => void;
   onClickSwitch: () => void;
   isLoadingSwitch: boolean;
+  collaboratorPositionsData: string[] | undefined;
   idTypesData: IdType[] | undefined;
   genderTypesData: GenderType[] | undefined;
 }
@@ -35,6 +37,7 @@ export const tableColumnsAllUsers = ({
   handleOnChangeSwitch,
   onClickSwitch,
   isLoadingSwitch,
+  collaboratorPositionsData,
   idTypesData,
   genderTypesData,
 }: TableColumnProps) => [
@@ -63,6 +66,23 @@ export const tableColumnsAllUsers = ({
     fixed: "left" as "left",
   },
   {
+    title: "CARGO",
+    key: userPositionKey,
+    dataIndex: userPositionKey,
+    width: 321,
+    filters:
+      collaboratorPositionsData?.map((position) => ({
+        value: position,
+        text: position,
+      })) || [],
+    onFilter: (value: any, record: any) => {
+      return String(record.collaborator_position) === String(value);
+    },
+    filterSearch: true,
+    ellipsis: true,
+    render: (position: string) => position,
+  },
+  {
     title: "TIPO DE ID",
     key: userIdTypeKey,
     dataIndex: userIdTypeKey,
@@ -75,6 +95,7 @@ export const tableColumnsAllUsers = ({
     onFilter: (value: any, record: any) => {
       return String(record.user_id_type) === String(value);
     },
+    filterSearch: true,
     ellipsis: true,
     render: (type: string) => type,
   },
@@ -82,7 +103,7 @@ export const tableColumnsAllUsers = ({
     title: "NÚMERO DE ID",
     key: userIdNumberKey,
     dataIndex: userIdNumberKey,
-    width: 150,
+    width: 123,
     ellipsis: true,
     searchable: true,
   },
@@ -90,7 +111,7 @@ export const tableColumnsAllUsers = ({
     title: "GÉNERO",
     key: userGenderKey,
     dataIndex: userGenderKey,
-    width: 155,
+    width: 103,
     filters:
       genderTypesData?.map((type) => ({
         value: type.name,
@@ -106,7 +127,7 @@ export const tableColumnsAllUsers = ({
     title: "EMAIL PRINCIPAL",
     key: userPrincipalEmailKey,
     dataIndex: userPrincipalEmailKey,
-    width: 205,
+    width: 270,
     ellipsis: true,
     searchable: true,
   },
