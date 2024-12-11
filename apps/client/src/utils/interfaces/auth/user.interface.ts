@@ -1,5 +1,4 @@
 import { IRole } from "./role.interface";
-import { IPermissions } from "./permissions.interface";
 
 export interface IUserSession {
   id: string;

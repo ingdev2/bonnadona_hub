@@ -37,10 +37,10 @@ const AllUsersPage = () => {
   ];
   useRoleValidation(allowedRoles);
 
-  usePermissionsAppAndModuleValidationInPage({
-    allowedApplications: [ApplicationsEnum.BONNA_HUB],
-    allowedModules: [ApplicationModulesEnum.BONNA_HUB_ALL_USERS],
-  });
+  // usePermissionsAppAndModuleValidationInPage({
+  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
+  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_ALL_USERS],
+  // });
 
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number

@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-import { Card, Col, Row } from "antd";
+import { Card, Col, Empty, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
 
 import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
@@ -20,10 +20,14 @@ import {
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import CustomOptionWithImageCard from "@/components/common/custom_option_with_image_card/CustomOptionWithImageCard";
+import { useGetAllActiveApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
+import { permission } from "process";
 
 const AllAppsContent: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
+
+  const permissionUser = session?.user.permission;
 
   const principalEmailCollaboratorState = useAppSelector(
     (state) => state.user.principal_email
@@ -66,6 +70,13 @@ const AllAppsContent: React.FC = () => {
     error: passwordPolicyError,
   } = useGetPasswordPolicyQuery(null);
 
+  const {
+    data: allActiveApplicationData,
+    isLoading: allActiveApplicationLoading,
+    isFetching: allActiveApplicationFetching,
+    error: allActiveApplicationError,
+  } = useGetAllActiveApplicationsQuery(null);
+
   useEffect(() => {
     if (
       userSessionLogData &&
@@ -73,26 +84,8 @@ const AllAppsContent: React.FC = () => {
       Number(userSessionLogData.successful_login_counter) === 1 &&
       userActiveDatabyIdNumberData.last_password_update === null
     ) {
-      console.log(
-        "successful_login_counter",
-        typeof userSessionLogData.successful_login_counter
-      );
-      console.log(
-        "last_password_update",
-        userActiveDatabyIdNumberData.last_password_update
-      );
-      console.log("abierto");
       dispatch(setFirstLoginModalIsOpen(true));
     } else {
-      console.log(
-        "successful_login_counter",
-        userSessionLogData?.successful_login_counter
-      );
-      console.log(
-        "last_password_update",
-        userActiveDatabyIdNumberData?.last_password_update
-      );
-      console.log("cerrado");
       dispatch(setFirstLoginModalIsOpen(false));
     }
 
@@ -141,287 +134,50 @@ const AllAppsContent: React.FC = () => {
         <CustomDashboardLayoutCollaborators
           customLayoutContent={
             <div style={{ width: "100%" }}>
-              <Row gutter={[24, 24]} justify="center">
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <CustomOptionWithImageCard
-                    altCustomOptionWithImageCard="alicanto"
-                    srcCustomOptionWithImageCard="https://bonnadona-public.s3.amazonaws.com/assets/alicanto_logo.svg"
-                    classNameCardCustomOptionWithImageCard={styles.card}
-                    styleImgCustomOptionWithImageCard={{ width: "100%" }}
-                  />
-                </Col>
-
-                {/* <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-public.s3.amazonaws.com/assets/alicanto_logo.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col> */}
-
-                {/* <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-public.s3.amazonaws.com/assets/halcon.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-public.s3.amazonaws.com/assets/esparta.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-storage.s3.amazonaws.com/projects/caladrius/Logo+caladrius.png"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-storage.s3.amazonaws.com/projects/exitus/EX1.png"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-storage.s3.amazonaws.com/projects/hito/HITO-02.png"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-public.s3.amazonaws.com/assets/magna_logo.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://hygea.s3.amazonaws.com/images/HYGEA.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-ethereum.s3.amazonaws.com/Images_project_templates/images_frontend/format_svg/Logo_Ethereum_Bonnadona_Hub.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-public.s3.amazonaws.com/assets/goodmed.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-storage.s3.amazonaws.com/projects/evaluacion-desempeno/profiles/Grupo+626.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-storage.s3.amazonaws.com/projects/aux_clinicos/Grupo+3525.png"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-public.s3.amazonaws.com/assets/Cirugi%CC%81as1.png"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col>
-                <Col
-                  xs={24}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <Card id="all-app-options-card" className={styles.card}>
-                    <img
-                      src="https://bonnadona-public.s3.amazonaws.com/assets/goodmed.svg"
-                      alt="Logo de Bonnadona HUB"
-                      style={{
-                        height: 90,
-                        filter: "drop-shadow(0px 3px 3px white)",
-                        width: "100%",
-                      }}
-                    />
-                  </Card>
-                </Col> */}
+              <Row gutter={[0, 48]} justify="center">
+                {allActiveApplicationData?.length! > 0 && permissionUser ? (
+                  <>
+                    {permissionUser[0].applications?.map(
+                      (application: IApplication, index: number) => (
+                        <Col
+                          key={index}
+                          xs={24}
+                          sm={12}
+                          md={8}
+                          lg={6}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            padding: "0px",
+                            margin: "0px",
+                          }}
+                        >
+                          <CustomOptionWithImageCard
+                            altCustomOptionWithImageCard={application.name}
+                            srcCustomOptionWithImageCard={
+                              application.image_path
+                            }
+                            classNameCardCustomOptionWithImageCard={styles.card}
+                            styleImgCustomOptionWithImageCard={{
+                              width: "88px",
+                              objectFit: "contain",
+                            }}
+                            entryLinkUrlCustomOptionWithImageCard={
+                              application.entry_link
+                            }
+                          />
+                        </Col>
+                      )
+                    )}
+                  </>
+                ) : (
+                  <Col
+                    span={24}
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <Empty description={"No hay applicaciones para mostrar"} />
+                  </Col>
+                )}
               </Row>
             </div>
           }

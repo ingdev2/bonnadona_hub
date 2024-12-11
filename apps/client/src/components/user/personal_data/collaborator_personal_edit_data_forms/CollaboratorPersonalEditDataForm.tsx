@@ -51,14 +51,84 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.user.personal_cellphone
   );
+
+  // GLOBAL STATUS PROFILE
+  const bloodGroupNameUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_blood_group
+  );
+  const affiliationEpsUserProfileState = useAppSelector(
+    (state) => state.userProfile.affiliation_eps
+  );
+  const residenceDepartmentUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_department
+  );
+  const residenceCityUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_city
+  );
+  const residenceNeighborhoodUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_neighborhood
+  );
+  const residenceAddressUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_address
+  );
+  const heightUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_height
+  );
+  const weightUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_weight
+  );
+  const shirtSizeUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_shirt_size
+  );
+  const pantsSizeUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_pants_size
+  );
+  const shoeSizeUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_shoe_size
+  );
+
   const errorsUserState = useAppSelector((state) => state.user.errors);
 
   const [principalEmailUserLocalState, setPrincipalEmailUserLocalState] =
     useState("");
   const [personalEmailUserLocalState, setPersonalEmailUserLocalState] =
     useState("");
-
   const [personalCellphoneUserLocalState, setPersonalCellphoneUserLocalState] =
+    useState("");
+
+  const [
+    bloodGroupNameUserProfileLocalState,
+    setBloodGroupNameUserProfileLocalState,
+  ] = useState(0);
+  const [
+    affiliationEpsUserProfileLocalState,
+    setAffiliationEpsUserProfileLocalState,
+  ] = useState("");
+  const [
+    residenceDepartmentUserProfileLocalState,
+    setResidenceDepartmentUserProfileLocalState,
+  ] = useState("");
+  const [
+    residenceCityUserProfileLocalState,
+    setResidenceCityUserProfileLocalState,
+  ] = useState("");
+  const [
+    residenceAddressUserProfileLocalState,
+    setResidenceAddressUserProfileLocalState,
+  ] = useState("");
+  const [
+    residenceNeighborhoodUserProfileLocalState,
+    setResidenceNeighborhoodUserProfileLocalState,
+  ] = useState("");
+  const [heightUserProfileLocalState, setHeightUserProfileLocalState] =
+    useState("");
+  const [weightUserProfileLocalState, setWeightUserProfileLocalState] =
+    useState("");
+  const [shirtSizeUserProfileLocalState, setShirtSizeUserProfileLocalState] =
+    useState("");
+  const [pantsSizeUserProfileLocalState, setPantsSizeUserProfileLocalState] =
+    useState("");
+  const [shoeSizeUserProfileLocalState, setShoeSizeUserProfileLocalState] =
     useState("");
 
   const [isSubmittingEditUser, setIsSubmittingEditUser] = useState(false);
@@ -98,41 +168,41 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
         setPersonalCellphoneUser(userActiveByIdNumberData?.personal_cellphone)
       );
 
-      dispatch(
-        setBloodGroupUserProfile(userActiveByIdNumberData?.user_blood_group)
-      );
-      dispatch(
-        setAffiliationEpsUserProfile(userActiveByIdNumberData?.affiliation_eps)
-      );
-      dispatch(
-        setResidenceDepartmentUserProfile(
-          userActiveByIdNumberData?.residence_department
-        )
-      );
-      dispatch(
-        setResidenceCityUserProfile(userActiveByIdNumberData?.residence_city)
-      );
-      dispatch(
-        setResidenceAddressUserProfile(
-          userActiveByIdNumberData?.residence_address
-        )
-      );
-      dispatch(
-        setResidenceNeighborhoodUserProfile(
-          userActiveByIdNumberData?.residence_neighborhood
-        )
-      );
-      dispatch(setUserHeightUserProfile(userActiveByIdNumberData?.user_height));
-      dispatch(setUserWeightUserProfile(userActiveByIdNumberData?.user_weight));
-      dispatch(
-        setUserShirtSizeUserProfile(userActiveByIdNumberData?.user_shirt_size)
-      );
-      dispatch(
-        setUserPantsSizeUserProfile(userActiveByIdNumberData?.user_pants_size)
-      );
-      dispatch(
-        setUserShoeSizeUserProfile(userActiveByIdNumberData?.user_shoe_size)
-      );
+      // dispatch(
+      //   setBloodGroupUserProfile(userActiveByIdNumberData?.user_blood_group)
+      // );
+      // dispatch(
+      //   setAffiliationEpsUserProfile(userActiveByIdNumberData?.affiliation_eps)
+      // );
+      // dispatch(
+      //   setResidenceDepartmentUserProfile(
+      //     userActiveByIdNumberData?.residence_department
+      //   )
+      // );
+      // dispatch(
+      //   setResidenceCityUserProfile(userActiveByIdNumberData?.residence_city)
+      // );
+      // dispatch(
+      //   setResidenceAddressUserProfile(
+      //     userActiveByIdNumberData?.residence_address
+      //   )
+      // );
+      // dispatch(
+      //   setResidenceNeighborhoodUserProfile(
+      //     userActiveByIdNumberData?.residence_neighborhood
+      //   )
+      // );
+      // dispatch(setUserHeightUserProfile(userActiveByIdNumberData?.user_height));
+      // dispatch(setUserWeightUserProfile(userActiveByIdNumberData?.user_weight));
+      // dispatch(
+      //   setUserShirtSizeUserProfile(userActiveByIdNumberData?.user_shirt_size)
+      // );
+      // dispatch(
+      //   setUserPantsSizeUserProfile(userActiveByIdNumberData?.user_pants_size)
+      // );
+      // dispatch(
+      //   setUserShoeSizeUserProfile(userActiveByIdNumberData?.user_shoe_size)
+      // );
     }
   }, [idUserState, idNumberUserState, userActiveByIdNumberData]);
 
@@ -269,6 +339,72 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
 
           setPersonalCellphoneUserLocalState(e.target.value);
         }}
+        affiliationEpsUserProfileFormData={affiliationEpsUserProfileState}
+        onChangeAffiliationEpsUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setAffiliationEpsUserProfileLocalState(e.target.value);
+        }}
+        residenceDepartmentUserProfileFormData={
+          residenceDepartmentUserProfileState
+        }
+        onChangeResidenceDepartmentUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setResidenceDepartmentUserProfileLocalState(e.target.value);
+        }}
+        residenceCityUserProfileFormData={residenceCityUserProfileState}
+        onChangeResidenceCityUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setResidenceCityUserProfileLocalState(e.target.value);
+        }}
+        residenceNeighborhoodUserProfileFormData={
+          residenceNeighborhoodUserProfileState
+        }
+        onChangeResidenceNeighborhoodUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setResidenceNeighborhoodUserProfileLocalState(e.target.value);
+        }}
+        residenceAddressUserProfileUserProfileFormData={
+          residenceAddressUserProfileState
+        }
+        onChangeResidenceAddressUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setResidenceAddressUserProfileLocalState(e.target.value);
+        }}
+        heightUserProfileFormData={heightUserProfileState}
+        onChangeHeightUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setHeightUserProfileLocalState(e.target.value);
+        }}
+        weightUserProfileFormData={weightUserProfileState}
+        onChangeWeightUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setWeightUserProfileLocalState(e.target.value);
+        }}
+        shirtSizeUserProfileFormData={shirtSizeUserProfileState}
+        onChangeShirtSizeUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setShirtSizeUserProfileLocalState(e.target.value);
+        }}
+        pantsSizeUserProfileFormData={pantsSizeUserProfileState}
+        onChangePantsSizeUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setPantsSizeUserProfileLocalState(e.target.value);
+        }}
+        shoeSizeUserProfileFormData={shoeSizeUserProfileState}
+        onChangeShoeSizeUserProfileFormData={(e) => {
+          setHasChanges(true);
+
+          setShoeSizeUserProfileLocalState(e.target.value);
+        }}
         initialValuesEditAdminFormData={{
           "current-edit-user-principal-email":
             principalEmailUserState || NOT_REGISTER,
@@ -276,6 +412,24 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
             personalEmailUserState || NOT_REGISTER,
           "current-edit-user-personal-cellphone":
             personalCellphoneUserState || NOT_REGISTER,
+          "current-edit-user-affiliation-eps":
+            affiliationEpsUserProfileState || NOT_REGISTER,
+          "current-edit-user-residence-department":
+            residenceDepartmentUserProfileState || NOT_REGISTER,
+          "current-edit-user-residence-city":
+            residenceCityUserProfileState || NOT_REGISTER,
+          "current-edit-user-residence-neighborhood":
+            residenceNeighborhoodUserProfileState || NOT_REGISTER,
+          "current-edit-user-residence-address":
+            residenceAddressUserProfileState || NOT_REGISTER,
+          "current-edit-user-height": heightUserProfileState || NOT_REGISTER,
+          "current-edit-user-weight": weightUserProfileState || NOT_REGISTER,
+          "current-edit-user-shirt-size":
+            shirtSizeUserProfileState || NOT_REGISTER,
+          "current-edit-user-pants-size":
+            pantsSizeUserProfileState || NOT_REGISTER,
+          "current-edit-user-shoe-size":
+            shoeSizeUserProfileState || NOT_REGISTER,
         }}
         handleChangeEditUserFormData={handleChangeEditUser}
         isSubmittingEditUserData={isSubmittingEditUser}

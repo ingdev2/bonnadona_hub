@@ -1,4 +1,4 @@
-export interface IPermissions {
+interface IPermissions {
   id: string;
   name: string;
   description?: string;

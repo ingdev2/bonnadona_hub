@@ -1,5 +1,5 @@
 interface IPermission {
-  id: number;
+  id: string;
   name: string;
   description: string;
   applications: number[];
