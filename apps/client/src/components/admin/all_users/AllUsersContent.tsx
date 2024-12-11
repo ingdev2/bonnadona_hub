@@ -17,6 +17,7 @@ import { TbUserEdit } from "react-icons/tb";
 
 import {
   useBanUserMutation,
+  useGetAllCollaboratorPositionsQuery,
   useGetAllUsersWithProfileQuery,
   useGetUserActiveByIdNumberQuery,
   useGetUserSessionLogByEmailQuery,
@@ -175,6 +176,14 @@ const AllUsersContent: React.FC = () => {
     error: allGenderTypesError,
     refetch: refecthAllGenderTypes,
   } = useGetAllGenderTypesQuery(null);
+
+  const {
+    data: allCollaboratorPositionsData,
+    isLoading: allCollaboratorPositionsLoading,
+    isFetching: allCollaboratorPositionsFetching,
+    error: allCollaboratorPositionsError,
+    refetch: refecthAllCollaboratorPositions,
+  } = useGetAllCollaboratorPositionsQuery(null);
 
   const {
     data: allServiceTypesData,
@@ -574,6 +583,7 @@ const AllUsersContent: React.FC = () => {
                 handleOnChangeSwitch: handleOnChangeSwitch,
                 onClickSwitch: handleButtonClick,
                 isLoadingSwitch: isSubmittingBanUser,
+                collaboratorPositionsData: allCollaboratorPositionsData,
                 idTypesData: allIdTypesData,
                 genderTypesData: allGenderTypesData,
               })}
