@@ -6,20 +6,31 @@ const CustomOptionWithImageCard: React.FC<{
   altCustomOptionWithImageCard: string | undefined;
   classNameCardCustomOptionWithImageCard: string | undefined;
   styleImgCustomOptionWithImageCard: React.CSSProperties | undefined;
+  entryLinkUrlCustomOptionWithImageCard: string;
 }> = ({
   srcCustomOptionWithImageCard,
   altCustomOptionWithImageCard,
   classNameCardCustomOptionWithImageCard,
   styleImgCustomOptionWithImageCard,
+  entryLinkUrlCustomOptionWithImageCard,
 }) => {
   return (
-    <Card className={classNameCardCustomOptionWithImageCard}>
-      <img
-        src={srcCustomOptionWithImageCard}
-        alt={altCustomOptionWithImageCard}
-        style={styleImgCustomOptionWithImageCard}
-      />
-    </Card>
+    <a
+      href={entryLinkUrlCustomOptionWithImageCard}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <Card
+        className={classNameCardCustomOptionWithImageCard}
+        style={{ display: "flex" }}
+      >
+        <img
+          src={srcCustomOptionWithImageCard}
+          alt={altCustomOptionWithImageCard}
+          style={styleImgCustomOptionWithImageCard}
+        />
+      </Card>
+    </a>
   );
 };
 

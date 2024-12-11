@@ -2,7 +2,7 @@
 
 import React, { ReactNode } from "react";
 
-import { Button, Col, Input, Row, Typography } from "antd";
+import { Button, Col, Divider, Input, Row, Typography } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
 import {
   MdBusinessCenter,
@@ -10,8 +10,11 @@ import {
   MdOutlineEmail,
   MdOutlinePhone,
 } from "react-icons/md";
+import { GiBodyHeight } from "react-icons/gi";
 import { IdcardOutlined } from "@ant-design/icons";
 import { TbGenderBigender } from "react-icons/tb";
+import { FaCity, FaRegAddressBook, FaUserTie, FaWeight } from "react-icons/fa";
+import { IoResizeSharp } from "react-icons/io5";
 
 const CollaboratorPersonalDataFormData: React.FC<{
   nameUserFormData: string;
@@ -21,9 +24,22 @@ const CollaboratorPersonalDataFormData: React.FC<{
   genderNameUserFormData: string;
   positionUserFormData: string;
   serviceUserFormData: string;
-  principalEmailUserUserFormData: string;
-  personalEmailUserUserFormData: string;
-  personalCellphoneUserUserFormData: number | string;
+  inmediateBossUserFormData: string;
+  principalEmailUserFormData: string;
+  personalEmailUserFormData: string;
+  personalCellphoneUserFormData: number | string;
+  corporateCellphoneUserFormData: number | string;
+  corporateEmailUserFormData: string;
+  affiliationEpsUserProfileFormData: string;
+  residenceDepartmentUserProfileFormData: string;
+  residenceCityUserProfileFormData: string;
+  residenceAddressUserProfileFormData: string;
+  residenceNeighborhoodUserProfileFormData: string;
+  heightUserProfileFormData: string;
+  weightUserProfileFormData: string;
+  shirtSizeUserProfileFormData: string;
+  pantsSizeUserProfileFormData: string;
+  shoesSizeUserProfileFormData: string;
   iconChangeEditUserDataForm: ReactNode;
   onClickChangeEditUserDataForm: () => void;
 }> = ({
@@ -34,9 +50,22 @@ const CollaboratorPersonalDataFormData: React.FC<{
   genderNameUserFormData,
   positionUserFormData,
   serviceUserFormData,
-  principalEmailUserUserFormData,
-  personalEmailUserUserFormData,
-  personalCellphoneUserUserFormData,
+  inmediateBossUserFormData,
+  principalEmailUserFormData,
+  personalEmailUserFormData,
+  personalCellphoneUserFormData,
+  corporateCellphoneUserFormData,
+  corporateEmailUserFormData,
+  affiliationEpsUserProfileFormData,
+  residenceDepartmentUserProfileFormData,
+  residenceCityUserProfileFormData,
+  residenceAddressUserProfileFormData,
+  residenceNeighborhoodUserProfileFormData,
+  heightUserProfileFormData,
+  weightUserProfileFormData,
+  shirtSizeUserProfileFormData,
+  pantsSizeUserProfileFormData,
+  shoesSizeUserProfileFormData,
   iconChangeEditUserDataForm,
   onClickChangeEditUserDataForm,
 }) => {
@@ -61,7 +90,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
       </h2>
 
       <Row gutter={24}>
-        <Col span={12} style={{ marginBottom: "13px" }}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Nombre(s):
@@ -79,7 +108,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
           </div>
         </Col>
 
-        <Col span={12} style={{ marginBottom: "13px" }}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Apellido(s):
@@ -96,10 +125,8 @@ const CollaboratorPersonalDataFormData: React.FC<{
             />
           </div>
         </Col>
-      </Row>
 
-      <Row gutter={24}>
-        <Col span={10} style={{ marginBottom: "13px" }}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Tipo de documento:
@@ -115,7 +142,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
           </div>
         </Col>
 
-        <Col span={8} style={{ marginBottom: "13px" }}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Número de documento:
@@ -130,7 +157,9 @@ const CollaboratorPersonalDataFormData: React.FC<{
             />
           </div>
         </Col>
+      </Row>
 
+      <Row gutter={24}>
         <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
@@ -146,10 +175,8 @@ const CollaboratorPersonalDataFormData: React.FC<{
             />
           </div>
         </Col>
-      </Row>
 
-      <Row gutter={24}>
-        <Col span={12} style={{ marginBottom: "13px" }}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Cargo:
@@ -165,7 +192,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
           </div>
         </Col>
 
-        <Col span={12} style={{ marginBottom: "13px" }}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Servicio:
@@ -176,6 +203,22 @@ const CollaboratorPersonalDataFormData: React.FC<{
               prefix={<MdBusinessCenter className="site-form-item-icon" />}
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
               value={serviceUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Jefe inmediato:
+            </Typography.Title>
+
+            <Input
+              id="inmediate-boss-user-auto-input"
+              prefix={<FaUserTie className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={inmediateBossUserFormData}
               disabled
             />
           </div>
@@ -193,7 +236,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
               id="principal-email-user-auto-input"
               prefix={<MdOutlineEmail className="site-form-item-icon" />}
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              value={principalEmailUserUserFormData}
+              value={principalEmailUserFormData}
               disabled
             />
           </div>
@@ -209,7 +252,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
               id="personal-email-user-auto-input"
               prefix={<MdOutlineEmail className="site-form-item-icon" />}
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              value={personalEmailUserUserFormData}
+              value={personalEmailUserFormData}
               disabled
             />
           </div>
@@ -225,7 +268,240 @@ const CollaboratorPersonalDataFormData: React.FC<{
               id="personal-cellphone-user-auto-input"
               prefix={<MdOutlinePhone className="site-form-item-icon" />}
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              value={personalCellphoneUserUserFormData}
+              value={personalCellphoneUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+      </Row>
+
+      <Row gutter={24}>
+        <Col span={12} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Correo corporativo:
+            </Typography.Title>
+
+            <Input
+              id="corporate-email-user-auto-input"
+              prefix={<MdOutlineEmail className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={corporateEmailUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={12} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Celular corporativo:
+            </Typography.Title>
+
+            <Input
+              id="corporate-cellphone-user-auto-input"
+              prefix={<MdOutlinePhone className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={corporateCellphoneUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+      </Row>
+
+      <Divider />
+
+      <h2
+        className="title-profile-data-user"
+        style={{
+          ...titleStyleCss,
+          marginBottom: "13px",
+          textAlign: "center",
+        }}
+      >
+        Mi perfil
+      </h2>
+
+      <Row gutter={24}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Tipo de sangre:
+            </Typography.Title>
+
+            <Input
+              id="name-user-auto-input"
+              prefix={
+                <MdDriveFileRenameOutline className="site-form-item-icon" />
+              }
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={nameUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Afiliación eps:
+            </Typography.Title>
+
+            <Input
+              id="affiliation-eps-user-auto-input"
+              prefix={
+                <MdDriveFileRenameOutline className="site-form-item-icon" />
+              }
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={affiliationEpsUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Departamento:
+            </Typography.Title>
+
+            <Input
+              id="residence-department-user-auto-input"
+              prefix={<FaCity className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={residenceDepartmentUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Ciudad:
+            </Typography.Title>
+
+            <Input
+              id="residence-city-user-auto-input"
+              prefix={<FaCity className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={residenceCityUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+      </Row>
+
+      <Row gutter={24}>
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Barrio:
+            </Typography.Title>
+
+            <Input
+              id="residence-neighborhood-auto-input"
+              prefix={<FaCity className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={residenceNeighborhoodUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Dirección:
+            </Typography.Title>
+
+            <Input
+              id="residence-address-user-auto-input"
+              prefix={<FaRegAddressBook className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={residenceAddressUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Peso (Kg):
+            </Typography.Title>
+
+            <Input
+              id="weight-user-auto-input"
+              prefix={<FaWeight className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={weightUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Estatura (m):
+            </Typography.Title>
+
+            <Input
+              id="height-user-auto-input"
+              prefix={<GiBodyHeight className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={heightUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+      </Row>
+
+      <Row gutter={24}>
+        <Col span={8} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Talla de camisa:
+            </Typography.Title>
+
+            <Input
+              id="shirt-size-auto-input"
+              prefix={<IoResizeSharp className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={shirtSizeUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={8} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Talla de pantalón:
+            </Typography.Title>
+
+            <Input
+              id="pants-size-user-auto-input"
+              prefix={<IoResizeSharp className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={pantsSizeUserProfileFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={8} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Talla de zapatos:
+            </Typography.Title>
+
+            <Input
+              id="shoes-size-user-auto-input"
+              prefix={<IoResizeSharp className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={shoesSizeUserProfileFormData}
               disabled
             />
           </div>

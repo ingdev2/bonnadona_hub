@@ -3,13 +3,19 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
-import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
+import {
+  useGetUserActiveByIdNumberQuery,
+  useGetUserActiveProfileByIdQuery,
+} from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
 import {
+  setCollaboratorInmediateBossUser,
   setCollaboratorPositionUser,
   setCollaboratorServiceUser,
+  setCorporateCellphoneUser,
+  setCorporateEmailUser,
   setGenderAbbrevUser,
   setGenderUser,
   setIdTypeAbbrevUser,
@@ -22,6 +28,19 @@ import {
 } from "@/redux/features/user/userSlice";
 import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
 import CollaboratorPersonalDataForm from "./collaborator_personal_data_forms/CollaboratorPersonalDataForm";
+import {
+  setAffiliationEpsUserProfile,
+  setBloodGroupUserProfile,
+  setResidenceAddressUserProfile,
+  setResidenceCityUserProfile,
+  setResidenceDepartmentUserProfile,
+  setResidenceNeighborhoodUserProfile,
+  setUserHeightUserProfile,
+  setUserPantsSizeUserProfile,
+  setUserShirtSizeUserProfile,
+  setUserShoeSizeUserProfile,
+  setUserWeightUserProfile,
+} from "@/redux/features/user_profile/userProfileSlice";
 
 const CollaboratorPersonalDataContent = () => {
   const dispatch = useAppDispatch();
@@ -52,8 +71,16 @@ const CollaboratorPersonalDataContent = () => {
     (state) => state.user.principal_email
   );
 
+  const corporateEmailUserState = useAppSelector(
+    (state) => state.user.corporate_email
+  );
+
   const personalCellphoneUserState = useAppSelector(
     (state) => state.user.personal_cellphone
+  );
+
+  const corporateCellphoneUserState = useAppSelector(
+    (state) => state.user.corporate_cellphone
   );
 
   const {
@@ -62,6 +89,15 @@ const CollaboratorPersonalDataContent = () => {
     isFetching: userActiveByIdNumberFetching,
     error: userActiveByIdNumberError,
   } = useGetUserActiveByIdNumberQuery(idNumberUserState);
+
+  const {
+    data: userActiveProfileByIdData,
+    isLoading: userActiveProfileByIdLoading,
+    isFetching: userActiveProfileByIdFetching,
+    error: userActiveProfileByIdError,
+  } = useGetUserActiveProfileByIdQuery(userActiveByIdNumberData?.id!, {
+    skip: !userActiveByIdNumberData?.id,
+  });
 
   const {
     data: allIdTypesData,
@@ -92,6 +128,8 @@ const CollaboratorPersonalDataContent = () => {
       !collaboratorServiceUserState ||
       !personalEmailUserState ||
       !principalEmailUserState ||
+      !corporateCellphoneUserState ||
+      !corporateEmailUserState ||
       (!personalCellphoneUserState &&
         userActiveByIdNumberData &&
         !userActiveByIdNumberLoading &&
@@ -118,6 +156,59 @@ const CollaboratorPersonalDataContent = () => {
       dispatch(
         setPersonalCellphoneUser(userActiveByIdNumberData?.personal_cellphone)
       );
+      dispatch(
+        setCorporateEmailUser(userActiveByIdNumberData?.corporate_email)
+      );
+      dispatch(
+        setCorporateCellphoneUser(userActiveByIdNumberData?.corporate_cellphone)
+      );
+      dispatch(
+        setCollaboratorInmediateBossUser(
+          userActiveByIdNumberData?.collaborator_immediate_boss
+        )
+      );
+    }
+
+    if (userActiveProfileByIdData) {
+      dispatch(
+        setBloodGroupUserProfile(userActiveProfileByIdData?.user_blood_group)
+      );
+      dispatch(
+        setAffiliationEpsUserProfile(userActiveProfileByIdData?.affiliation_eps)
+      );
+      dispatch(
+        setResidenceDepartmentUserProfile(
+          userActiveProfileByIdData?.residence_department
+        )
+      );
+      dispatch(
+        setResidenceCityUserProfile(userActiveProfileByIdData?.residence_city)
+      );
+      dispatch(
+        setResidenceAddressUserProfile(
+          userActiveProfileByIdData?.residence_address
+        )
+      );
+      dispatch(
+        setResidenceNeighborhoodUserProfile(
+          userActiveProfileByIdData?.residence_neighborhood
+        )
+      );
+      dispatch(
+        setUserHeightUserProfile(userActiveProfileByIdData?.user_height)
+      );
+      dispatch(
+        setUserWeightUserProfile(userActiveProfileByIdData?.user_weight)
+      );
+      dispatch(
+        setUserShirtSizeUserProfile(userActiveProfileByIdData?.user_shirt_size)
+      );
+      dispatch(
+        setUserPantsSizeUserProfile(userActiveProfileByIdData?.user_pants_size)
+      );
+      dispatch(
+        setUserShoeSizeUserProfile(userActiveProfileByIdData?.user_shoe_size)
+      );
     }
 
     if (idTypeNumberUserState && allIdTypesData) {
@@ -140,11 +231,14 @@ const CollaboratorPersonalDataContent = () => {
     collaboratorServiceUserState,
     personalEmailUserState,
     principalEmailUserState,
+    corporateCellphoneUserState,
+    corporateEmailUserState,
     userActiveByIdNumberData,
     userActiveByIdNumberLoading,
     userActiveByIdNumberFetching,
     allIdTypesData,
     allGenderTypesData,
+    userActiveProfileByIdData,
   ]);
 
   return (
@@ -154,7 +248,7 @@ const CollaboratorPersonalDataContent = () => {
           <>
             <div
               style={{
-                width: "80%",
+                width: "90%",
                 display: "flex",
                 flexFlow: "column wrap",
               }}

@@ -75,10 +75,8 @@ const MainViewContent: React.FC = () => {
         passwordPolicyData.password_expiry_days
       )
     ) {
-      console.log("estoy aqui en true");
       dispatch(setChangePasswordExpiryModalIsOpen(true));
     } else {
-      console.log("estoy aqui en false");
       dispatch(setChangePasswordExpiryModalIsOpen(false));
     }
   }, [userSessionLogData, passwordPolicyData, lastPasswordUpdateAdminState]);

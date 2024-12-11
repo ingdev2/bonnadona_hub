@@ -17,6 +17,7 @@ const CollaboratorPersonalDataForm: React.FC = () => {
 
   const NOT_REGISTER: string = "NO REGISTRA";
 
+  //GLOBAL STATE USER
   const nameUserState = useAppSelector((state) => state.user.name);
   const lastNameUserState = useAppSelector((state) => state.user.last_name);
   const idTypeNameUserState = useAppSelector(
@@ -32,6 +33,9 @@ const CollaboratorPersonalDataForm: React.FC = () => {
   const serviceUserState = useAppSelector(
     (state) => state.user.collaborator_service
   );
+  const inmediateBossUserState = useAppSelector(
+    (state) => state.user.collaborator_immediate_boss
+  );
   const principalEmailUserState = useAppSelector(
     (state) => state.user.principal_email
   );
@@ -41,7 +45,49 @@ const CollaboratorPersonalDataForm: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.user.personal_cellphone
   );
+  const corporateEmailUserState = useAppSelector(
+    (state) => state.user.corporate_email
+  );
+  const corporateCellphoneUserState = useAppSelector(
+    (state) => state.user.corporate_cellphone
+  );
+
   const errorsUserState = useAppSelector((state) => state.user.errors);
+
+  //GLOBAL STATE PROFILE USER
+  const bloodGroupNameUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_blood_group
+  );
+  const affiliationEpsUserProfileState = useAppSelector(
+    (state) => state.userProfile.affiliation_eps
+  );
+  const residenceDepartmentUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_department
+  );
+  const residenceCityUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_city
+  );
+  const residenceAddressUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_address
+  );
+  const residenceNeighborhoodUserProfileState = useAppSelector(
+    (state) => state.userProfile.residence_neighborhood
+  );
+  const heightUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_height
+  );
+  const weightUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_weight
+  );
+  const shirtSizeUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_shirt_size
+  );
+  const pantsSizeUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_pants_size
+  );
+  const shoesSizeUserProfileState = useAppSelector(
+    (state) => state.userProfile.user_shoe_size
+  );
 
   const isOpenModalChangeData = useAppSelector(
     (state) => state.modal.collaboratorModalIsOpen
@@ -81,7 +127,8 @@ const CollaboratorPersonalDataForm: React.FC = () => {
           {isOpenModalChangeData && (
             <CustomModalNoContent
               key={"custom-modal-edit-user-data"}
-              widthCustomModalNoContent={"31%"}
+              // widthCustomModalNoContent={"31%"}
+              widthCustomModalNoContent={"71%"}
               openCustomModalState={isOpenModalChangeData}
               closableCustomModal={true}
               maskClosableCustomModal={true}
@@ -100,14 +147,41 @@ const CollaboratorPersonalDataForm: React.FC = () => {
             genderNameUserFormData={genderNameUserState || NOT_REGISTER}
             positionUserFormData={positionUserState || NOT_REGISTER}
             serviceUserFormData={serviceUserState || NOT_REGISTER}
-            personalCellphoneUserUserFormData={
+            inmediateBossUserFormData={inmediateBossUserState || NOT_REGISTER}
+            personalCellphoneUserFormData={
               personalCellphoneUserState || NOT_REGISTER
             }
-            personalEmailUserUserFormData={
-              personalEmailUserState || NOT_REGISTER
+            personalEmailUserFormData={personalEmailUserState || NOT_REGISTER}
+            principalEmailUserFormData={principalEmailUserState || NOT_REGISTER}
+            corporateCellphoneUserFormData={
+              corporateCellphoneUserState || NOT_REGISTER
             }
-            principalEmailUserUserFormData={
-              principalEmailUserState || NOT_REGISTER
+            corporateEmailUserFormData={corporateEmailUserState || NOT_REGISTER}
+            affiliationEpsUserProfileFormData={
+              affiliationEpsUserProfileState || NOT_REGISTER
+            }
+            residenceDepartmentUserProfileFormData={
+              residenceDepartmentUserProfileState || NOT_REGISTER
+            }
+            residenceCityUserProfileFormData={
+              residenceCityUserProfileState || NOT_REGISTER
+            }
+            residenceAddressUserProfileFormData={
+              residenceAddressUserProfileState || NOT_REGISTER
+            }
+            residenceNeighborhoodUserProfileFormData={
+              residenceNeighborhoodUserProfileState || NOT_REGISTER
+            }
+            weightUserProfileFormData={weightUserProfileState || NOT_REGISTER}
+            heightUserProfileFormData={heightUserProfileState || NOT_REGISTER}
+            shirtSizeUserProfileFormData={
+              shirtSizeUserProfileState || NOT_REGISTER
+            }
+            pantsSizeUserProfileFormData={
+              pantsSizeUserProfileState || NOT_REGISTER
+            }
+            shoesSizeUserProfileFormData={
+              shoesSizeUserProfileState || NOT_REGISTER
             }
             iconChangeEditUserDataForm={<TbPasswordUser size={17} />}
             onClickChangeEditUserDataForm={() => {
