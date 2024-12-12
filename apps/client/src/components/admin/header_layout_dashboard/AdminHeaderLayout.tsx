@@ -65,7 +65,7 @@ const AdminHeaderLayout: React.FC = () => {
             lastNameAdminState
           )}`}
           iconCustomItem1={<PiUserListBold />}
-          titleCustomItem1="Mis Datos"
+          titleCustomItem1="Mis Datos Personales"
           iconCustomItem2={<FaSignOutAlt />}
           titleCustomItem2="Cerrar Sesión"
           handleClickCustomItem1={handleClickUpdatePersonalData}

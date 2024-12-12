@@ -152,6 +152,7 @@ const UserLoginForm: React.FC = () => {
         style={{
           width: "100vw",
           height: "100vh",
+          minWidth: "888px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -184,7 +185,7 @@ const UserLoginForm: React.FC = () => {
           }}
         />
 
-        <Row gutter={[22, 32]} style={{ width: "100%", maxWidth: "1000px" }}>
+        <Row gutter={[32, 32]} style={{ width: "100%", maxWidth: "1000px" }}>
           <Col
             className="col-carousel"
             span={12}

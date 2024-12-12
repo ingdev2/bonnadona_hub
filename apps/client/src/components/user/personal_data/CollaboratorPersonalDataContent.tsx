@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useRouter } from "next/navigation";
 
+import { Button } from "antd";
 import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
 import UserHeaderLayout from "../header_layout_dashboard/UserHeaderLayout";
 import CollaboratorPersonalDataForm from "./collaborator_personal_data_forms/CollaboratorPersonalDataForm";
 import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 import {
   useGetUserActiveByIdNumberQuery,
@@ -55,6 +59,7 @@ import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswo
 
 const CollaboratorPersonalDataContent = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const lastPasswordUpdateCollaboratorState = useAppSelector(
     (state) => state.user.last_password_update
@@ -105,6 +110,8 @@ const CollaboratorPersonalDataContent = () => {
   const bloodGroupNameUserProfileState = useAppSelector(
     (state) => state.userProfile.user_blood_group
   );
+
+  const [isSubmittingBackPage, setIsSubmittingBackPage] = useState(false);
 
   const {
     data: userActiveByIdNumberData,
@@ -316,17 +323,78 @@ const CollaboratorPersonalDataContent = () => {
         <CustomDashboardLayoutCollaborators
           customLayoutHeader={<UserHeaderLayout />}
           customLayoutContent={
-            <>
-              <div
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexFlow: "column wrap",
-                }}
-              >
-                <CollaboratorPersonalDataForm />
-              </div>
-            </>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexFlow: "column wrap",
+                alignContent: "center",
+                justifyContent: "center",
+              }}
+            >
+              {!userActiveProfileByIdData &&
+              userActiveProfileByIdLoading &&
+              userActiveProfileByIdFetching ? (
+                <CustomSpin />
+              ) : (
+                <>
+                  {isSubmittingBackPage ? (
+                    <CustomSpin />
+                  ) : (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexFlow: "column wrap",
+                        justifyContent: "center",
+                        alignContent: "flex-start",
+                        alignItems: "center",
+                        marginBlock: "7px",
+                      }}
+                    >
+                      <Button
+                        type="link"
+                        size="large"
+                        icon={<IoMdArrowRoundBack size={17} />}
+                        style={{
+                          color: "#015E90",
+                          fontWeight: "bold",
+                          display: "flex",
+                          flexFlow: "row wrap",
+                          alignContent: "center",
+                          alignItems: "center",
+                          paddingInline: "7px",
+                        }}
+                        htmlType="button"
+                        className="reason-for-rejection-register-back-button"
+                        onClick={async () => {
+                          try {
+                            setIsSubmittingBackPage(true);
+
+                            await router.back();
+                          } catch (error) {
+                            console.error(error);
+                          } finally {
+                            setIsSubmittingBackPage(false);
+                          }
+                        }}
+                      >
+                        Volver atrás
+                      </Button>
+                    </div>
+                  )}
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexFlow: "column wrap",
+                      width: "88%",
+                    }}
+                  >
+                    <CollaboratorPersonalDataForm />
+                  </div>
+                </>
+              )}
+            </div>
           }
         />
       </div>

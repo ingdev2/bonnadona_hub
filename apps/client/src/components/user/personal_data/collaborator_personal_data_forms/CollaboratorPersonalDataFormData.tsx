@@ -78,15 +78,15 @@ const CollaboratorPersonalDataFormData: React.FC<{
       span={24}
       style={{
         margin: "0px",
-        paddingInline: "13px",
-        paddingTop: "22px",
+        paddingInline: "7px",
+        paddingBlock: "7px",
       }}
     >
       <h2
         className="title-personal-data-user"
         style={{
           ...titleStyleCss,
-          marginBottom: "13px",
+          paddingBottom: "13px",
           textAlign: "center",
         }}
       >
@@ -164,23 +164,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
       </Row>
 
       <Row gutter={24}>
-        <Col span={6} style={{ marginBottom: "13px" }}>
-          <div style={{ textAlign: "start" }}>
-            <Typography.Title style={{ marginTop: 7 }} level={5}>
-              Género:
-            </Typography.Title>
-
-            <Input
-              id="gender-user-auto-input"
-              prefix={<TbGenderBigender className="site-form-item-icon" />}
-              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              value={genderNameUserFormData}
-              disabled
-            />
-          </div>
-        </Col>
-
-        <Col span={6} style={{ marginBottom: "13px" }}>
+        <Col span={12} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Cargo:
@@ -249,14 +233,14 @@ const CollaboratorPersonalDataFormData: React.FC<{
         <Col span={8} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
-              Correo personal:
+              Celular corporativo:
             </Typography.Title>
 
             <Input
-              id="personal-email-user-auto-input"
-              prefix={<MdOutlineEmail className="site-form-item-icon" />}
+              id="corporate-cellphone-user-auto-input"
+              prefix={<MdOutlinePhone className="site-form-item-icon" />}
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              value={personalEmailUserFormData}
+              value={corporateCellphoneUserFormData}
               disabled
             />
           </div>
@@ -299,14 +283,14 @@ const CollaboratorPersonalDataFormData: React.FC<{
         <Col span={12} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
-              Celular corporativo:
+              Correo personal:
             </Typography.Title>
 
             <Input
-              id="corporate-cellphone-user-auto-input"
-              prefix={<MdOutlinePhone className="site-form-item-icon" />}
+              id="personal-email-user-auto-input"
+              prefix={<MdOutlineEmail className="site-form-item-icon" />}
               style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-              value={corporateCellphoneUserFormData}
+              value={personalEmailUserFormData}
               disabled
             />
           </div>
@@ -330,7 +314,23 @@ const CollaboratorPersonalDataFormData: React.FC<{
         <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
-              Tipo de sangre:
+              Género:
+            </Typography.Title>
+
+            <Input
+              id="gender-user-auto-input"
+              prefix={<TbGenderBigender className="site-form-item-icon" />}
+              style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+              value={genderNameUserFormData}
+              disabled
+            />
+          </div>
+        </Col>
+
+        <Col span={6} style={{ marginBottom: "13px" }}>
+          <div style={{ textAlign: "start" }}>
+            <Typography.Title style={{ marginTop: 7 }} level={5}>
+              Grupo sanguíneo:
             </Typography.Title>
 
             <Input
@@ -345,7 +345,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
           </div>
         </Col>
 
-        <Col span={6} style={{ marginBottom: "13px" }}>
+        <Col span={12} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Afiliación eps:
@@ -362,7 +362,9 @@ const CollaboratorPersonalDataFormData: React.FC<{
             />
           </div>
         </Col>
+      </Row>
 
+      <Row gutter={24}>
         <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
@@ -394,9 +396,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
             />
           </div>
         </Col>
-      </Row>
 
-      <Row gutter={24}>
         <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
@@ -428,7 +428,9 @@ const CollaboratorPersonalDataFormData: React.FC<{
             />
           </div>
         </Col>
+      </Row>
 
+      <Row gutter={24}>
         <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
@@ -460,10 +462,8 @@ const CollaboratorPersonalDataFormData: React.FC<{
             />
           </div>
         </Col>
-      </Row>
 
-      <Row gutter={24}>
-        <Col span={8} style={{ marginBottom: "13px" }}>
+        <Col span={4} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Talla de camisa:
@@ -479,7 +479,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
           </div>
         </Col>
 
-        <Col span={8} style={{ marginBottom: "13px" }}>
+        <Col span={4} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Talla de pantalón:
@@ -495,7 +495,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
           </div>
         </Col>
 
-        <Col span={8} style={{ marginBottom: "13px" }}>
+        <Col span={4} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
               Talla de zapatos:

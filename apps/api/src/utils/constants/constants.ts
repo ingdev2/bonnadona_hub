@@ -1,2 +1,2 @@
-// CONTACT PBX NUMBER
+// CONTACT EMAIL
 export const SUPPORT_CONTACT_EMAIL = 'coordserviciostics@bonnadona.co';
