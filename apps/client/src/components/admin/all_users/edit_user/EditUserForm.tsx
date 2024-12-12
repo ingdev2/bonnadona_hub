@@ -213,10 +213,10 @@ const EditUserForm: React.FC = () => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
-    if (permissionUserState) {
-      setPermissionUserLocalState(permissionUserState);
-    }
-  }, [userData, idUserState, permissionUserState]);
+    // if (permissionUserState) {
+    //   setPermissionUserLocalState(permissionUserState);
+    // }
+  }, [userData, idUserState]);
 
   const handleConfirmUpdatePersonalData = async (
     e: React.FormEvent<HTMLFormElement>
@@ -391,6 +391,7 @@ const EditUserForm: React.FC = () => {
           setHasChanges(true);
 
           setPermissionUserLocalState(selectedRoles);
+          console.log("STATE PER", permissionUserState);
         }}
         allRolesFormData={allRolesData}
         loadingAllRolesFormData={allRolesLoading}
