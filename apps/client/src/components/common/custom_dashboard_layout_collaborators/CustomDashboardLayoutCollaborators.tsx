@@ -43,7 +43,7 @@ const CustomDashboardLayoutCollaborators: React.FC<{
             display: "flex",
             flexFlow: "column wrap",
             alignContent: "center",
-            backgroundColor: "#015E90",
+            backgroundColor: "#013B5A",
             top: "0px",
             padding: "0 31px",
             margin: "0px",
