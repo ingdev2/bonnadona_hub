@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { redirect } from "next/navigation";
 
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 import {
@@ -81,6 +82,12 @@ const HomePage = () => {
   useEffect(() => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
+    }
+
+    if (status === "unauthenticated") {
+      setShowErrorMessage(true);
+      setErrorMessage("¡No autenticado!");
+      redirect("/login_admin");
     }
     if (userActiveDatabyIdNumberData) {
       dispatch(

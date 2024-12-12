@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { redirect } from "next/navigation";
 
 import { setIdNumberUser } from "@/redux/features/user/userSlice";
 
@@ -48,6 +49,11 @@ const ManagePermissionsPage = () => {
   useEffect(() => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
+    }
+    if (status === "unauthenticated") {
+      setShowErrorMessage(true);
+      setErrorMessage("¡No autenticado!");
+      redirect("/login_admin");
     }
   }, [status, idNumberUserSessionState]);
 

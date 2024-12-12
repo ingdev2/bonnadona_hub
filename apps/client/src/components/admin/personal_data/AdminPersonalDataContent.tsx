@@ -5,17 +5,13 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 
-import { ItemKeys } from "@/components/common/custom_dashboard_layout_admins/enums/item_names_and_keys.enums";
 import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
 
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 
-import {
-  setChangePasswordExpiryModalIsOpen,
-  setSelectedKey,
-} from "@/redux/features/common/modal/modalSlice";
+import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 import {
   setCollaboratorPositionUser,
   setCollaboratorServiceUser,
@@ -74,8 +70,6 @@ const AdminPersonalDataContent: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.user.personal_cellphone
   );
-
-  const selectedKeyState = useAppSelector((state) => state.modal.selectedKey);
 
   const {
     data: userActiveByIdNumberData,
@@ -172,10 +166,6 @@ const AdminPersonalDataContent: React.FC = () => {
       const genderName = genderTypeGetName[genderNumberUserState];
 
       dispatch(setGenderAbbrevUser(genderName));
-    }
-
-    if (selectedKeyState !== ItemKeys.SUB_UPDATE_PERSONAL_DATA_KEY) {
-      dispatch(setSelectedKey(ItemKeys.SUB_UPDATE_PERSONAL_DATA_KEY));
     }
   }, [
     passwordPolicyData,

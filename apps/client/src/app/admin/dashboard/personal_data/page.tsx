@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 import { setIdNumberUser } from "@/redux/features/user/userSlice";
 import { setIsPageLoading } from "@/redux/features/common/modal/modalSlice";
@@ -48,6 +49,11 @@ const AdminPersonalDataPage = () => {
   useEffect(() => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
+    }
+    if (status === "unauthenticated") {
+      setShowErrorMessage(true);
+      setErrorMessage("¡No autenticado!");
+      redirect("/login_admin");
     }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));

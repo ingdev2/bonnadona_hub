@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { redirect } from "next/navigation";
 
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
@@ -48,6 +49,11 @@ const RegisterPermissionPage = () => {
   useEffect(() => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
+    }
+    if (status === "unauthenticated") {
+      setShowErrorMessage(true);
+      setErrorMessage("¡No autenticado!");
+      redirect("/login_admin");
     }
   }, [status, idNumberUserSessionState]);
 
