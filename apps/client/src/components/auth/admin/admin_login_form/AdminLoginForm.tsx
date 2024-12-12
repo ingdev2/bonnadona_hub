@@ -1,18 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useRouter } from "next/navigation";
 
-import {
-  Form,
-  Input,
-  Button,
-  Typography,
-  Col,
-  Carousel,
-  Row,
-  Image,
-} from "antd";
+import { Form, Input, Button, Typography } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
 
 import { UserOutlined } from "@ant-design/icons";
@@ -30,12 +20,9 @@ import {
 } from "@/redux/features/login/adminLoginSlice";
 import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
 import { setAdminModalIsOpen } from "@/redux/features/common/modal/modalSlice";
-import UserModalVerificationCode from "../../user/user_modal_verification_code/UserModalVerificationCode";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import AdminForgotPasswordForm from "../admin_forgot_password_form/AdminForgotPasswordForm";
 import AdminModalVerificationCode from "../admin_modal_verification_code/AdminModalVerificationCode";
-
-const { Title } = Typography;
 
 const AdminLoginForm: React.FC = () => {
   const { data: session, status } = useSession();
@@ -142,7 +129,7 @@ const AdminLoginForm: React.FC = () => {
       )}
       <div
         style={{
-          width: "100%",
+          width: "100vw",
           height: "100vh",
           display: "flex",
           justifyContent: "center",
@@ -176,10 +163,10 @@ const AdminLoginForm: React.FC = () => {
         />
         <div
           style={{
-            backgroundColor: "rgba(255, 255, 255, 1)",
+            backgroundColor: "rgba(255, 255, 255, 2)",
             padding: "32px",
             borderRadius: "20px",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+            boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
             maxWidth: "400px",
             width: "100%",
             position: "relative",
@@ -197,21 +184,20 @@ const AdminLoginForm: React.FC = () => {
             <img
               src="/logos/logo_horizontal.png"
               alt="Logo de Bonnadona HUB"
-              style={{ width: "270px", marginBlock: "25px", marginBottom: 0 }}
+              style={{ width: "301px", marginBlock: "13px" }}
             />
           </div>
-          <Title
-            className="title-login"
+
+          <h2
             style={{
+              ...titleStyleCss,
               textAlign: "center",
-              fontWeight: "normal",
-              lineHeight: 1.3,
-              marginBlock: "13px",
+              marginBlock: "22px",
+              color: "#070707",
             }}
-            level={3}
           >
-            Iniciar sesión administradores
-          </Title>
+            Iniciar sesión
+          </h2>
 
           <Form
             id="login-form"
@@ -226,6 +212,14 @@ const AdminLoginForm: React.FC = () => {
               name="login-email-form"
               rules={[
                 { required: true, message: "Por favor ingrese su correo" },
+                {
+                  min: 5,
+                  message: "¡Por favor ingresa mínimo 5 caracteres!",
+                },
+                {
+                  max: 50,
+                  message: "¡Por favor ingresa máximo 50 caracteres!",
+                },
                 {
                   pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                   message: "Por favor ingrese un correo válido",
@@ -252,6 +246,10 @@ const AdminLoginForm: React.FC = () => {
                 {
                   required: true,
                   message: "Por favor ingrese su contraseña",
+                },
+                {
+                  max: 70,
+                  message: "¡La contraseña debe tener máximo 70 caracteres!",
                 },
               ]}
             >
@@ -291,6 +289,7 @@ const AdminLoginForm: React.FC = () => {
                   id="login-button"
                   type="primary"
                   htmlType="submit"
+                  size="middle"
                   style={{
                     borderRadius: "30px",
                     textAlign: "center",

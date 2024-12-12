@@ -46,6 +46,7 @@ const CustomResultOneButton: React.FC<{
           <Button
             key={"button-custom-result"}
             className="button-custom-result"
+            size="middle"
             style={{
               borderRadius: "30px",
               backgroundColor: "#015E90",

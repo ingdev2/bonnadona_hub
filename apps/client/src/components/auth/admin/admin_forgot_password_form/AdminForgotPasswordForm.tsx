@@ -356,6 +356,7 @@ const AdminForgotPasswordForm: React.FC<{
                   <CustomSpin />
                 ) : (
                   <Button
+                    size="middle"
                     style={{
                       paddingInline: 45,
                       borderRadius: "30px",

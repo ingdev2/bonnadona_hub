@@ -48,7 +48,7 @@ const CustomDeletePopConfirm: React.FC<DeletePopConfirmProps> = ({
       onCancel={handleCancel}
     >
       <Button
-        size={"small"}
+        size={"middle"}
         title={titleButton}
         shape="circle"
         icon={<DeleteOutlined />}

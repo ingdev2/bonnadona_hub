@@ -161,7 +161,7 @@ const AdminPersonalEditDataFormData: React.FC<{
           <CustomSpin />
         ) : (
           <Button
-            size="large"
+            size="middle"
             style={{
               paddingInline: 45,
               borderRadius: 31,
