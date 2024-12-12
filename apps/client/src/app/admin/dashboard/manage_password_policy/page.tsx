@@ -38,10 +38,10 @@ const ManagePasswordPolicy = () => {
   ];
   useRoleValidation(allowedRoles);
 
-  // usePermissionsAppAndModuleValidationInPage({
-  //   allowedApplications: [ApplicationsEnum.BONNA_HUB],
-  //   allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PASSWORD_POLICY],
-  // });
+  usePermissionsAppAndModuleValidationInPage({
+    allowedApplications: [ApplicationsEnum.BONNA_HUB],
+    allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PASSWORD_POLICY],
+  });
 
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number

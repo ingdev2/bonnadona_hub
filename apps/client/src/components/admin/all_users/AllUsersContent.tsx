@@ -265,7 +265,6 @@ const AllUsersContent: React.FC = () => {
 
     refecthAllUsersWithProfile();
 
-    // USER DATA
     dispatch(setIdSelectedUser(record?.id));
     dispatch(setNameSelectedUser(record?.name));
     dispatch(setLastNameSelectedUser(record?.last_name));

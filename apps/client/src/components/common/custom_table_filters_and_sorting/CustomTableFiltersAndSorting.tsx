@@ -381,12 +381,9 @@ const CustomTableFiltersAndSorting: React.FC<{
           alignItems: "center",
           padding: "0px",
           marginBlock: "13px",
-          // overflowX: "auto",
-          // overflowY: "auto",
         }}
         scroll={{
           x: "min-content",
-          // y: "max-content",
           scrollToFirstRowOnChange: true,
         }}
         rowKey={(record) => record.id}
