@@ -3,13 +3,21 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
+import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
+import UserHeaderLayout from "../header_layout_dashboard/UserHeaderLayout";
+import CollaboratorPersonalDataForm from "./collaborator_personal_data_forms/CollaboratorPersonalDataForm";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+
 import {
   useGetUserActiveByIdNumberQuery,
   useGetUserActiveProfileByIdQuery,
 } from "@/redux/apis/users/userApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
-import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
+import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+
+import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 import {
   setCollaboratorInmediateBossUser,
   setCollaboratorPositionUser,
@@ -26,10 +34,6 @@ import {
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
-import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
-
-import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
-import CollaboratorPersonalDataForm from "./collaborator_personal_data_forms/CollaboratorPersonalDataForm";
 import {
   setAffiliationEpsUserProfile,
   setBloodGroupAbbrevUserProfile,
@@ -46,11 +50,8 @@ import {
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
 
+import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
-
-import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
-import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
-import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const CollaboratorPersonalDataContent = () => {
   const dispatch = useAppDispatch();
@@ -313,6 +314,7 @@ const CollaboratorPersonalDataContent = () => {
 
       <div className="custom-dashboard-layout-users">
         <CustomDashboardLayoutCollaborators
+          customLayoutHeader={<UserHeaderLayout />}
           customLayoutContent={
             <>
               <div
