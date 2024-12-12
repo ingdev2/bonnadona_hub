@@ -899,6 +899,8 @@ export class UsersService {
       order: {
         name: 'ASC',
       },
+      loadEagerRelations: false,
+      loadRelationIds: true,
     });
 
     if (!allUsersWithProfile.length) {
