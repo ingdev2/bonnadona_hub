@@ -23,6 +23,7 @@ const CustomDashboardLayoutCollaborators: React.FC<{
       className="custom-dashboard-layout"
       style={{
         minHeight: "100vh",
+        minWidth: "720px",
         backgroundColor: "transparent",
       }}
     >
@@ -38,7 +39,6 @@ const CustomDashboardLayoutCollaborators: React.FC<{
         <Header
           className="custom-dashboard-layout-header"
           style={{
-            minWidth: "450px",
             position: "sticky",
             display: "flex",
             flexFlow: "column wrap",
@@ -56,7 +56,6 @@ const CustomDashboardLayoutCollaborators: React.FC<{
         <Content
           className="custom--dashboard-layout-content"
           style={{
-            minWidth: "450px",
             display: "flex",
             flexFlow: "column wrap",
             alignItems: "center",

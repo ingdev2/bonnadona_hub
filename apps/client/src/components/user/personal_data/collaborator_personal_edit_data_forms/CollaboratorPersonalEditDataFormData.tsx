@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Store } from "antd/es/form/interface";
-import { Button, Col, Divider, Form, Input, Row, Select } from "antd";
+import { Button, Col, Form, Input, Row, Select } from "antd";
 
 import { titleStyleCss } from "@/theme/text_styles";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
@@ -110,7 +110,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
           textAlign: "center",
         }}
       >
-        Actualizar datos de usuario
+        Actualizar datos personales
       </h2>
 
       <Row gutter={24}>
@@ -178,7 +178,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
       </Row>
 
       <Row gutter={24}>
-        <Col span={12}>
+        <Col span={8}>
           <Form.Item
             id="current-edit-user-personal-cellphone"
             name="current-edit-user-personal-cellphone"
@@ -221,26 +221,11 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             />
           </Form.Item>
         </Col>
-      </Row>
 
-      <Divider />
-
-      <h2
-        className="title-change-password-admin"
-        style={{
-          ...titleStyleCss,
-          marginBlock: 22,
-          textAlign: "center",
-        }}
-      >
-        Actualizar perfil
-      </h2>
-
-      <Row gutter={24}>
         <Col span={6}>
           <Form.Item
             name="current-edit-user-blood-group"
-            label="Tipo de sangre:"
+            label="Grupo sanguíneo:"
             tooltip="Aquí debes seleccionar tu tipo de sangre."
             style={{ marginBottom: "13px" }}
           >
@@ -263,7 +248,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
           </Form.Item>
         </Col>
 
-        <Col span={6}>
+        <Col span={10}>
           <Form.Item
             id="current-edit-user-affiliation-eps"
             name="current-edit-user-affiliation-eps"
@@ -290,7 +275,9 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             />
           </Form.Item>
         </Col>
+      </Row>
 
+      <Row gutter={24}>
         <Col span={6}>
           <Form.Item
             id="current-edit-user-residence-department"
@@ -346,9 +333,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             />
           </Form.Item>
         </Col>
-      </Row>
 
-      <Row gutter={24}>
         <Col span={6}>
           <Form.Item
             id="current-edit-user-residence-neighborhood"
@@ -398,8 +383,10 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             />
           </Form.Item>
         </Col>
+      </Row>
 
-        <Col span={6}>
+      <Row gutter={24}>
+        <Col span={5}>
           <Form.Item
             name="current-edit-user-weight"
             label="Peso:"
@@ -421,7 +408,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
           </Form.Item>
         </Col>
 
-        <Col span={6}>
+        <Col span={5}>
           <Form.Item
             name="current-edit-user-height"
             label="Estatura:"
@@ -442,10 +429,8 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             </Select>
           </Form.Item>
         </Col>
-      </Row>
 
-      <Row gutter={24}>
-        <Col span={8}>
+        <Col span={5}>
           <Form.Item
             name="current-edit-user-shirt-size"
             label="Talla camisa:"
@@ -467,7 +452,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
           </Form.Item>
         </Col>
 
-        <Col span={8}>
+        <Col span={5}>
           <Form.Item
             name="current-edit-user-pants-size"
             label="Talla pantalón:"
@@ -489,7 +474,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
           </Form.Item>
         </Col>
 
-        <Col span={8}>
+        <Col span={4}>
           <Form.Item
             name="current-edit-user-shoe-size"
             label="Talla zapatos:"
@@ -515,6 +500,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
       <Form.Item
         style={{
           textAlign: "center",
+          paddingTop: "13px",
         }}
       >
         {isSubmittingEditUserData ? (
@@ -523,11 +509,10 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
           <Button
             size="middle"
             style={{
-              paddingInline: 45,
-              borderRadius: 31,
               backgroundColor: !hasChangesFormData ? "#D8D8D8" : "#015E90",
               color: !hasChangesFormData ? "#A0A0A0" : "#f2f2f2",
-              marginBlock: 7,
+              borderRadius: "31px",
+              padding: "13px 31px",
             }}
             htmlType="submit"
             className="edit-data-form-button-user"

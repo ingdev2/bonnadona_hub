@@ -100,100 +100,80 @@ const CollaboratorPersonalDataForm: React.FC = () => {
 
   return (
     <>
-      {!nameUserState ||
-      !lastNameUserState ||
-      !idTypeNameUserState ||
-      !idNumberUserState ||
-      !genderNameUserState ||
-      !positionUserState ||
-      !serviceUserState ||
-      !principalEmailUserState ? (
-        <CustomSpin />
-      ) : (
-        <>
-          {showErrorMessage && (
-            <CustomMessage
-              typeMessage="error"
-              message={errorsUserState?.toString() || "¡Error en la petición!"}
-            />
-          )}
-
-          {showSuccessMessage && (
-            <CustomMessage
-              typeMessage="success"
-              message={successMessage || "¡Proceso finalizado con éxito!"}
-            />
-          )}
-
-          {isOpenModalChangeData && (
-            <CustomModalNoContent
-              key={"custom-modal-edit-user-data"}
-              // widthCustomModalNoContent={"31%"}
-              widthCustomModalNoContent={"71%"}
-              openCustomModalState={isOpenModalChangeData}
-              closableCustomModal={true}
-              maskClosableCustomModal={true}
-              handleCancelCustomModal={() => {
-                dispatch(setCollaboratorModalIsOpen(false));
-              }}
-              contentCustomModal={<CollaboratorPersonalEditDataForm />}
-            />
-          )}
-
-          <CollaboratorPersonalDataFormData
-            nameUserFormData={nameUserState || NOT_REGISTER}
-            lastNameUserFormData={lastNameUserState || NOT_REGISTER}
-            idTypeNameUserFormData={idTypeNameUserState || NOT_REGISTER}
-            idNumberUserFormData={idNumberUserState || NOT_REGISTER}
-            genderNameUserFormData={genderNameUserState || NOT_REGISTER}
-            positionUserFormData={positionUserState || NOT_REGISTER}
-            serviceUserFormData={serviceUserState || NOT_REGISTER}
-            inmediateBossUserFormData={inmediateBossUserState || NOT_REGISTER}
-            personalCellphoneUserFormData={
-              personalCellphoneUserState || NOT_REGISTER
-            }
-            personalEmailUserFormData={personalEmailUserState || NOT_REGISTER}
-            principalEmailUserFormData={principalEmailUserState || NOT_REGISTER}
-            corporateCellphoneUserFormData={
-              corporateCellphoneUserState || NOT_REGISTER
-            }
-            corporateEmailUserFormData={corporateEmailUserState || NOT_REGISTER}
-            bloodGroupAbbrevUserProfileFormData={
-              bloodGroupAbbrevUserProfileState || NOT_REGISTER
-            }
-            affiliationEpsUserProfileFormData={
-              affiliationEpsUserProfileState || NOT_REGISTER
-            }
-            residenceDepartmentUserProfileFormData={
-              residenceDepartmentUserProfileState || NOT_REGISTER
-            }
-            residenceCityUserProfileFormData={
-              residenceCityUserProfileState || NOT_REGISTER
-            }
-            residenceAddressUserProfileFormData={
-              residenceAddressUserProfileState || NOT_REGISTER
-            }
-            residenceNeighborhoodUserProfileFormData={
-              residenceNeighborhoodUserProfileState || NOT_REGISTER
-            }
-            weightUserProfileFormData={weightUserProfileState || NOT_REGISTER}
-            heightUserProfileFormData={heightUserProfileState || NOT_REGISTER}
-            shirtSizeUserProfileFormData={
-              shirtSizeUserProfileState || NOT_REGISTER
-            }
-            pantsSizeUserProfileFormData={
-              pantsSizeUserProfileState || NOT_REGISTER
-            }
-            shoesSizeUserProfileFormData={
-              shoesSizeUserProfileState || NOT_REGISTER
-            }
-            iconChangeEditUserDataForm={<TbPasswordUser size={17} />}
-            onClickChangeEditUserDataForm={() => {
-              dispatch(setCollaboratorModalIsOpen(true));
-            }}
-          />
-        </>
+      {showErrorMessage && (
+        <CustomMessage
+          typeMessage="error"
+          message={errorsUserState?.toString() || "¡Error en la petición!"}
+        />
       )}
+
+      {showSuccessMessage && (
+        <CustomMessage
+          typeMessage="success"
+          message={successMessage || "¡Proceso finalizado con éxito!"}
+        />
+      )}
+
+      {isOpenModalChangeData && (
+        <CustomModalNoContent
+          key={"custom-modal-edit-user-data"}
+          widthCustomModalNoContent={"72%"}
+          openCustomModalState={isOpenModalChangeData}
+          closableCustomModal={true}
+          maskClosableCustomModal={true}
+          handleCancelCustomModal={() => {
+            dispatch(setCollaboratorModalIsOpen(false));
+          }}
+          contentCustomModal={<CollaboratorPersonalEditDataForm />}
+        />
+      )}
+
+      <CollaboratorPersonalDataFormData
+        nameUserFormData={nameUserState || NOT_REGISTER}
+        lastNameUserFormData={lastNameUserState || NOT_REGISTER}
+        idTypeNameUserFormData={idTypeNameUserState || NOT_REGISTER}
+        idNumberUserFormData={idNumberUserState || NOT_REGISTER}
+        genderNameUserFormData={genderNameUserState || NOT_REGISTER}
+        positionUserFormData={positionUserState || NOT_REGISTER}
+        serviceUserFormData={serviceUserState || NOT_REGISTER}
+        inmediateBossUserFormData={inmediateBossUserState || NOT_REGISTER}
+        personalCellphoneUserFormData={
+          personalCellphoneUserState || NOT_REGISTER
+        }
+        personalEmailUserFormData={personalEmailUserState || NOT_REGISTER}
+        principalEmailUserFormData={principalEmailUserState || NOT_REGISTER}
+        corporateCellphoneUserFormData={
+          corporateCellphoneUserState || NOT_REGISTER
+        }
+        corporateEmailUserFormData={corporateEmailUserState || NOT_REGISTER}
+        bloodGroupAbbrevUserProfileFormData={
+          bloodGroupAbbrevUserProfileState || NOT_REGISTER
+        }
+        affiliationEpsUserProfileFormData={
+          affiliationEpsUserProfileState || NOT_REGISTER
+        }
+        residenceDepartmentUserProfileFormData={
+          residenceDepartmentUserProfileState || NOT_REGISTER
+        }
+        residenceCityUserProfileFormData={
+          residenceCityUserProfileState || NOT_REGISTER
+        }
+        residenceAddressUserProfileFormData={
+          residenceAddressUserProfileState || NOT_REGISTER
+        }
+        residenceNeighborhoodUserProfileFormData={
+          residenceNeighborhoodUserProfileState || NOT_REGISTER
+        }
+        weightUserProfileFormData={weightUserProfileState || NOT_REGISTER}
+        heightUserProfileFormData={heightUserProfileState || NOT_REGISTER}
+        shirtSizeUserProfileFormData={shirtSizeUserProfileState || NOT_REGISTER}
+        pantsSizeUserProfileFormData={pantsSizeUserProfileState || NOT_REGISTER}
+        shoesSizeUserProfileFormData={shoesSizeUserProfileState || NOT_REGISTER}
+        iconChangeEditUserDataForm={<TbPasswordUser size={17} />}
+        onClickChangeEditUserDataForm={() => {
+          dispatch(setCollaboratorModalIsOpen(true));
+        }}
+      />
     </>
   );
 };

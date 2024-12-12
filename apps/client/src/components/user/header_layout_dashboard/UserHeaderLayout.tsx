@@ -55,13 +55,15 @@ const UserHeaderLayout: React.FC = () => {
       gutter={24}
       justify={"center"}
       align={"stretch"}
-      style={{ width: "100%" }}
+      style={{ width: "100%", height: "100%" }}
     >
       <Col
         span={6}
         style={{
           display: "flex",
-          flexFlow: "row wrap",
+          flexFlow: "column wrap",
+          width: "100%",
+          height: "100%",
           justifyContent: "flex-start",
           alignContent: "flex-start",
         }}
@@ -79,15 +81,15 @@ const UserHeaderLayout: React.FC = () => {
             overflow: "hidden",
           }}
           onClick={() => {
-            router.replace("/patient/homepage", { scroll: true });
+            router.replace("/user/dashboard", { scroll: true });
           }}
         >
           <img
             src="/logos/logo_horizontal.png"
             alt="Logo de BonnaHub"
             style={{
-              width: "80%",
-              height: "auto",
+              width: "88%",
+              maxWidth: "222px",
               objectFit: "contain",
             }}
           />
@@ -111,7 +113,7 @@ const UserHeaderLayout: React.FC = () => {
               lastNameUserState
             )}`}
             iconCustomItem1={<PiUserListBold />}
-            titleCustomItem1="Mis Datos"
+            titleCustomItem1="Mis Datos Personales"
             iconCustomItem2={<FaSignOutAlt />}
             titleCustomItem2="Cerrar Sesión"
             handleClickCustomItem1={handleClickUpdatePersonalData}
