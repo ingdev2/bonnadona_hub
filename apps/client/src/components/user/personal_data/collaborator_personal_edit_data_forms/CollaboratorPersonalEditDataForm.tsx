@@ -7,6 +7,8 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import { Col } from "antd";
 
+import CollaboratorPersonalEditDataFormData from "./CollaboratorPersonalEditDataFormData";
+
 import {
   useGetUserActiveByIdNumberQuery,
   useGetUserActiveProfileByIdQuery,
@@ -21,7 +23,6 @@ import {
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
-import CollaboratorPersonalEditDataFormData from "./CollaboratorPersonalEditDataFormData";
 import {
   setAffiliationEpsUserProfile,
   setBloodGroupUserProfile,
@@ -37,6 +38,7 @@ import {
   setUserShoeSizeUserProfile,
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
+
 import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
 
 const CollaboratorPersonalEditDataForm: React.FC = () => {
@@ -309,8 +311,6 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
         }),
       ]);
 
-      console.log("userResponse", userResponse);
-      console.log("profileResponse", profileResponse);
       // Validar errores de updateUser
       let editUserDataError = userResponse.error;
       let editUserDataStatus = userResponse.data?.statusCode;

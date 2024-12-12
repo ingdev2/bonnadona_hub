@@ -381,7 +381,7 @@ const AllUsersContent: React.FC = () => {
         )}
       </div>
 
-      <div className="collaborator-modal-check-password-expiry">
+      <div className="modal-check-password-expiry">
         {modalIsOpenChangePasswordExpiry && (
           <ChangePasswordModal
             titleModal={"Tu contraseña se ha expirado"}

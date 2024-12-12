@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Button } from "antd";
@@ -14,7 +14,10 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import { FaEdit } from "react-icons/fa";
 
-import { setTableRowId } from "@/redux/features/common/modal/modalSlice";
+import {
+  setChangePasswordExpiryModalIsOpen,
+  setTableRowId,
+} from "@/redux/features/common/modal/modalSlice";
 
 import {
   setIdPermission,
@@ -24,21 +27,34 @@ import {
   setApplicationModulesPermission,
   setModuleActionsPermission,
   setResetPermission,
-  setErrorsPermission,
 } from "@/redux/features/permission/permissionSlice";
 
 import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+
 import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const ManagePermissionsContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const NOT_REGISTER: string = "NO REGISTRA";
-
   const editPermissionAction = PermissionsActionsValidation({
     allowedActions: [ModuleActionsEnum.UPDATE_PERMISSIONS],
   });
+
+  const permissionErrorsState = useAppSelector(
+    (state) => state.permission.errors
+  );
+
+  const lastPasswordUpdateCollaboratorState = useAppSelector(
+    (state) => state.user.last_password_update
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
+  );
 
   const [isEditVisibleLocalState, setIsEditVisibleLocalState] = useState(false);
   const [isModalVisibleLocalState, setIsModalVisibleLocalState] =
@@ -53,10 +69,6 @@ const ManagePermissionsContent: React.FC = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
-  const permissionErrorsState = useAppSelector(
-    (state) => state.permission.errors
-  );
-
   const {
     data: allPermissionsData,
     isLoading: allPermissionsLoading,
@@ -64,6 +76,29 @@ const ManagePermissionsContent: React.FC = () => {
     error: allPermissionsError,
     refetch: refecthAllPermissions,
   } = useGetAllPermissionsQuery(null);
+
+  const {
+    data: passwordPolicyData,
+    isLoading: passwordPolicyLoading,
+    isFetching: passwordPolicyFetching,
+    error: passwordPolicyError,
+  } = useGetPasswordPolicyQuery(null);
+
+  useEffect(() => {
+    if (
+      passwordPolicyData &&
+      passwordPolicyData.password_expiry_days &&
+      lastPasswordUpdateCollaboratorState &&
+      checkPasswordExpiry(
+        lastPasswordUpdateCollaboratorState,
+        passwordPolicyData.password_expiry_days
+      )
+    ) {
+      dispatch(setChangePasswordExpiryModalIsOpen(true));
+    } else {
+      dispatch(setChangePasswordExpiryModalIsOpen(false));
+    }
+  }, [passwordPolicyData, lastPasswordUpdateCollaboratorState]);
 
   const transformedData = Array.isArray(allPermissionsData)
     ? allPermissionsData.map((req: any) => ({
@@ -112,6 +147,15 @@ const ManagePermissionsContent: React.FC = () => {
           }
         />
       )}
+
+      <div className="modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
 
       {isModalVisibleLocalState && (
         <CustomModalNoContent

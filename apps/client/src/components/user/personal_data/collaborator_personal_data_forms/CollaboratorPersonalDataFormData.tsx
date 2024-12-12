@@ -4,12 +4,14 @@ import React, { ReactNode } from "react";
 
 import { Button, Col, Divider, Input, Row, Typography } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
+
 import {
   MdBusinessCenter,
   MdDriveFileRenameOutline,
   MdOutlineEmail,
   MdOutlinePhone,
 } from "react-icons/md";
+
 import { GiBodyHeight } from "react-icons/gi";
 import { IdcardOutlined } from "@ant-design/icons";
 import { TbGenderBigender } from "react-icons/tb";

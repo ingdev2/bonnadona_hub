@@ -10,11 +10,12 @@ import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_i
 
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
-import {
-  useGetUserActiveByIdNumberQuery,
-} from "@/redux/apis/users/userApi";
+import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 
-import { setSelectedKey } from "@/redux/features/common/modal/modalSlice";
+import {
+  setChangePasswordExpiryModalIsOpen,
+  setSelectedKey,
+} from "@/redux/features/common/modal/modalSlice";
 import {
   setCollaboratorPositionUser,
   setCollaboratorServiceUser,
@@ -29,9 +30,20 @@ import {
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
 import AdminPersonalDataForm from "./admin_personal_data_forms/AdminPersonalDataForm";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const AdminPersonalDataContent: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const lastPasswordUpdateCollaboratorState = useAppSelector(
+    (state) => state.user.last_password_update
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
+  );
 
   const idNumberUserState = useAppSelector((state) => state.user.id_number);
 
@@ -88,10 +100,31 @@ const AdminPersonalDataContent: React.FC = () => {
     refetch: refecthAllGenderTypes,
   } = useGetAllGenderTypesQuery(null);
 
+  const {
+    data: passwordPolicyData,
+    isLoading: passwordPolicyLoading,
+    isFetching: passwordPolicyFetching,
+    error: passwordPolicyError,
+  } = useGetPasswordPolicyQuery(null);
+
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
 
   useEffect(() => {
+    if (
+      passwordPolicyData &&
+      passwordPolicyData.password_expiry_days &&
+      lastPasswordUpdateCollaboratorState &&
+      checkPasswordExpiry(
+        lastPasswordUpdateCollaboratorState,
+        passwordPolicyData.password_expiry_days
+      )
+    ) {
+      dispatch(setChangePasswordExpiryModalIsOpen(true));
+    } else {
+      dispatch(setChangePasswordExpiryModalIsOpen(false));
+    }
+
     if (
       !nameUserState ||
       !lastNameUserState ||
@@ -145,6 +178,8 @@ const AdminPersonalDataContent: React.FC = () => {
       dispatch(setSelectedKey(ItemKeys.SUB_UPDATE_PERSONAL_DATA_KEY));
     }
   }, [
+    passwordPolicyData,
+    lastPasswordUpdateCollaboratorState,
     nameUserState,
     lastNameUserState,
     idTypeNumberUserState,
@@ -160,19 +195,30 @@ const AdminPersonalDataContent: React.FC = () => {
     allGenderTypesData,
   ]);
   return (
-    <CustomDashboardLayoutAdmins
-      customLayoutContent={
-        <div
-          style={{
-            width: "80%",
-            display: "flex",
-            flexFlow: "column wrap",
-          }}
-        >
-          <AdminPersonalDataForm />
-        </div>
-      }
-    />
+    <>
+      <div className="modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
+
+      <CustomDashboardLayoutAdmins
+        customLayoutContent={
+          <div
+            style={{
+              width: "80%",
+              display: "flex",
+              flexFlow: "column wrap",
+            }}
+          >
+            <AdminPersonalDataForm />
+          </div>
+        }
+      />
+    </>
   );
 };
 

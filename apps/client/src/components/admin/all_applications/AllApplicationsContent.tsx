@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Button } from "antd";
@@ -14,7 +14,10 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import { FaEdit } from "react-icons/fa";
 
-import { setTableRowId } from "@/redux/features/common/modal/modalSlice";
+import {
+  setChangePasswordExpiryModalIsOpen,
+  setTableRowId,
+} from "@/redux/features/common/modal/modalSlice";
 
 import {
   setIdApplication,
@@ -28,11 +31,24 @@ import {
   useGetAllApplicationsQuery,
   useBanApplicationMutation,
 } from "@/redux/apis/permission/application/applicationApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const AllApplicationsContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
-  const NOT_REGISTER: string = "NO REGISTRA";
+  const applicationErrorsState = useAppSelector(
+    (state) => state.application.errors
+  );
+
+  const lastPasswordUpdateCollaboratorState = useAppSelector(
+    (state) => state.user.last_password_update
+  );
+
+  const modalIsOpenChangePasswordExpiry = useAppSelector(
+    (state) => state.modal.changePasswordExpiryModalIsOpen
+  );
 
   const [isEditVisibleLocalState, setIsEditVisibleLocalState] = useState(false);
   const [isModalVisibleLocalState, setIsModalVisibleLocalState] =
@@ -47,10 +63,6 @@ const AllApplicationsContent: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-
-  const applicationErrorsState = useAppSelector(
-    (state) => state.application.errors
-  );
 
   const [
     banApplication,
@@ -71,6 +83,29 @@ const AllApplicationsContent: React.FC = () => {
     error: allApplicationsError,
     refetch: refecthAllApplications,
   } = useGetAllApplicationsQuery(null);
+
+  const {
+    data: passwordPolicyData,
+    isLoading: passwordPolicyLoading,
+    isFetching: passwordPolicyFetching,
+    error: passwordPolicyError,
+  } = useGetPasswordPolicyQuery(null);
+
+  useEffect(() => {
+    if (
+      passwordPolicyData &&
+      passwordPolicyData.password_expiry_days &&
+      lastPasswordUpdateCollaboratorState &&
+      checkPasswordExpiry(
+        lastPasswordUpdateCollaboratorState,
+        passwordPolicyData.password_expiry_days
+      )
+    ) {
+      dispatch(setChangePasswordExpiryModalIsOpen(true));
+    } else {
+      dispatch(setChangePasswordExpiryModalIsOpen(false));
+    }
+  }, [passwordPolicyData, lastPasswordUpdateCollaboratorState]);
 
   const transformedData = Array.isArray(allApplicationsData)
     ? allApplicationsData.map((req: any) => ({
@@ -163,6 +198,15 @@ const AllApplicationsContent: React.FC = () => {
           }
         />
       )}
+
+      <div className="modal-check-password-expiry">
+        {modalIsOpenChangePasswordExpiry && (
+          <ChangePasswordModal
+            titleModal={"Tu contraseña se ha expirado"}
+            subtitleModal={"Debes actualizar tu contraseña:"}
+          />
+        )}
+      </div>
 
       {isModalVisibleLocalState && (
         <CustomModalNoContent

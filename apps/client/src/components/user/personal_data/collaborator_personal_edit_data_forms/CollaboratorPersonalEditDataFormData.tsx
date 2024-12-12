@@ -1,12 +1,14 @@
 import React from "react";
 
 import { Store } from "antd/es/form/interface";
+import { Button, Col, Divider, Form, Input, Row, Select } from "antd";
 
 import { titleStyleCss } from "@/theme/text_styles";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import { Button, Col, Divider, Form, Input, Row, Select } from "antd";
+
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
+
 import { UserWeightEnum } from "@/utils/enums/user_profile/user_weight.enum";
 import { UserHeightEnum } from "@/utils/enums/user_profile/user_height.enum";
 import { UserShirtSizeEnum } from "@/utils/enums/user_profile/user_shirt_size.enum";
@@ -439,24 +441,6 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               ))}
             </Select>
           </Form.Item>
-          {/* <Form.Item
-            id="current-edit-user-height"
-            name="current-edit-user-height"
-            className="current-edit-user-height"
-            label="Estatura:"
-            style={{ marginBottom: "13px" }}
-          >
-            <Input
-              prefix={
-                <MdDriveFileRenameOutline className="site-form-item-icon" />
-              }
-              type="text"
-              value={heightUserProfileFormData}
-              placeholder="Estatura"
-              onChange={onChangeHeightUserProfileFormData}
-              autoComplete="off"
-            />
-          </Form.Item> */}
         </Col>
       </Row>
 
@@ -481,32 +465,6 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               ))}
             </Select>
           </Form.Item>
-          {/* <Form.Item
-            id="current-edit-user-shirt-size"
-            name="current-edit-user-shirt-size"
-            className="current-edit-user-shirt-size"
-            label="Talla camisa:"
-            style={{ marginBottom: "13px" }}
-            rules={[
-              {
-                pattern:
-                  /^(XS|S|M|L|XL|XXL|XXXL|xs|s|m|l|xl|xxl|xxxl[0-9]{2,3})$/,
-                message:
-                  "Ingresa una talla válida: XS, S, M, L, XL, XXL, XXXL, o un número (38, 40, etc.).",
-              },
-            ]}
-          >
-            <Input
-              prefix={
-                <MdDriveFileRenameOutline className="site-form-item-icon" />
-              }
-              type="text"
-              value={shirtSizeUserProfileFormData}
-              placeholder="Talla camisa"
-              onChange={onChangeShirtSizeUserProfileFormData}
-              autoComplete="off"
-            />
-          </Form.Item> */}
         </Col>
 
         <Col span={8}>
@@ -529,30 +487,6 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               ))}
             </Select>
           </Form.Item>
-          {/* <Form.Item
-            id="current-edit-user-pants-size"
-            name="current-edit-user-pants-size"
-            className="current-edit-user-pants-size"
-            label="Talla pantalón:"
-            style={{ marginBottom: "13px" }}
-            rules={[
-              {
-                pattern: /^(2[5-9]|[3-5][0-9]|60)$/,
-                message: "¡Ingresa una talla válida entre 25 y 60!",
-              },
-            ]}
-          >
-            <Input
-              prefix={
-                <MdDriveFileRenameOutline className="site-form-item-icon" />
-              }
-              type="text"
-              value={pantsSizeUserProfileFormData}
-              placeholder="Talla pantalón"
-              onChange={onChangePantsSizeUserProfileFormData}
-              autoComplete="off"
-            />
-          </Form.Item> */}
         </Col>
 
         <Col span={8}>
@@ -575,30 +509,6 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               ))}
             </Select>
           </Form.Item>
-          {/* <Form.Item
-            id="current-edit-user-shoe-size"
-            name="current-edit-user-shoe-size"
-            className="current-edit-user-shoe-size"
-            label="Talla zapatos:"
-            style={{ marginBottom: "13px" }}
-            rules={[
-              {
-                pattern: /^[0-9]+$/,
-                message: "¡Ingresa la talla en números sin puntos, ni comas!",
-              },
-            ]}
-          >
-            <Input
-              prefix={
-                <MdDriveFileRenameOutline className="site-form-item-icon" />
-              }
-              type="text"
-              value={shoeSizeUserProfileFormData}
-              placeholder="Talla zapatos"
-              onChange={onChangeShoeSizeUserProfileFormData}
-              autoComplete="off"
-            />
-          </Form.Item> */}
         </Col>
       </Row>
 
