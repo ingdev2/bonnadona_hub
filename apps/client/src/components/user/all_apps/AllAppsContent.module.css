@@ -1,21 +1,21 @@
 .card {
-    width: 173px;
-    height: 150px;
-    background: rgba(217, 217, 217, 0.58);
-    border: 1px solid white;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.22);
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.5s;
-    display: flex;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    color: #070707;
-    overflow: hidden;
-  }
-  
-  .card:hover {
-    border: 1px solid #015E90;
-    transform: scale(1.09);
-  }
+  width: 137px;
+  height: 123px;
+  background: #eff7f8;
+  border: 0.22px solid #a7afba;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.22);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: all 0.4s;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: #070707;
+  overflow: hidden;
+}
+
+.card:hover {
+  border: 2px solid #015e90;
+  transform: scale(1.09);
+}
