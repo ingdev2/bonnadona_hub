@@ -5,10 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
 
 import { setIdNumberUser } from "@/redux/features/user/userSlice";
-import {
-  setAdminModalIsOpen,
-  setIsPageLoading,
-} from "@/redux/features/common/modal/modalSlice";
+import { setIsPageLoading } from "@/redux/features/common/modal/modalSlice";
 
 import { useRoleValidation } from "@/utils/hooks/use_role_validation";
 import useAuthValidationAdmin from "@/utils/hooks/use_auth_validation_admin";
@@ -51,9 +48,6 @@ const AdminPersonalDataPage = () => {
   useEffect(() => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
-    }
-    if (adminModalState) {
-      dispatch(setAdminModalIsOpen(false));
     }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));

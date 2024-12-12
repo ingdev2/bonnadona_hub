@@ -60,9 +60,6 @@ const AllUsersPage = () => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
     }
-    if (adminModalState) {
-      dispatch(setAdminModalIsOpen(false));
-    }
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }

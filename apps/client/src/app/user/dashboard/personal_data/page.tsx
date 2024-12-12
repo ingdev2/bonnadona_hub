@@ -3,10 +3,7 @@
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CollaboratorPersonalDataContent from "@/components/user/personal_data/CollaboratorPersonalDataContent";
-import {
-  setIsPageLoading,
-  setCollaboratorModalIsOpen,
-} from "@/redux/features/common/modal/modalSlice";
+import { setIsPageLoading } from "@/redux/features/common/modal/modalSlice";
 import { setIdNumberUser } from "@/redux/features/user/userSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
@@ -41,9 +38,7 @@ const CollaboratorPersonalDataPage = () => {
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
     }
-    // if (userModalState) {
-    //   dispatch(setCollaboratorModalIsOpen(false));
-    // }
+
     if (isPageLoadingState) {
       dispatch(setIsPageLoading(false));
     }
