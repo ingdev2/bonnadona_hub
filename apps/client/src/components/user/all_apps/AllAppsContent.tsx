@@ -3,7 +3,7 @@
 import React, { useEffect } from "react";
 import { useSession } from "next-auth/react";
 
-import { Card, Col, Empty, Row } from "antd";
+import { Col, Empty, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
 
 import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
@@ -20,15 +20,13 @@ import {
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import CustomOptionWithImageCard from "@/components/common/custom_option_with_image_card/CustomOptionWithImageCard";
-import { useGetAllActiveApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
-import { permission } from "process";
 import UserHeaderLayout from "../header_layout_dashboard/UserHeaderLayout";
 
 const AllAppsContent: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
-  const permissionUser = session?.user.permission;
+  const permissionUser: IPermissions[] | undefined = session?.user.permission;
 
   const principalEmailCollaboratorState = useAppSelector(
     (state) => state.user.principal_email
@@ -71,16 +69,7 @@ const AllAppsContent: React.FC = () => {
     error: passwordPolicyError,
   } = useGetPasswordPolicyQuery(null);
 
-  const {
-    data: allActiveApplicationData,
-    isLoading: allActiveApplicationLoading,
-    isFetching: allActiveApplicationFetching,
-    error: allActiveApplicationError,
-  } = useGetAllActiveApplicationsQuery(null);
-
   useEffect(() => {
-    console.log("PERMISOS USUARIO", permissionUser);
-
     if (
       userSessionLogData &&
       userActiveDatabyIdNumberData &&
@@ -138,24 +127,22 @@ const AllAppsContent: React.FC = () => {
           customLayoutHeader={<UserHeaderLayout />}
           customLayoutContent={
             <div style={{ width: "100%" }}>
-              <Row gutter={[0, 48]} justify="center" align={"middle"}>
-                {allActiveApplicationData?.length! > 0 &&
-                allActiveApplicationData &&
-                permissionUser ? (
+              <Row gutter={[0, 24]} justify="center" align={"middle"}>
+                {permissionUser ? (
                   <>
-                    {allActiveApplicationData
-                      ?.flatMap((data) => data || [])
+                    {permissionUser
+                      ?.flatMap((data) => data.applications || [])
                       .map((application: IApplication, index: number) => (
                         <Col
                           key={index}
-                          xs={24}
-                          sm={12}
-                          md={8}
-                          lg={6}
+                          xs={12}
+                          sm={8}
+                          md={6}
+                          lg={4}
                           style={{
                             display: "flex",
                             justifyContent: "center",
-                            padding: "0px",
+                            paddingBlock: "22px",
                             margin: "0px",
                           }}
                         >
@@ -166,7 +153,7 @@ const AllAppsContent: React.FC = () => {
                             }
                             classNameCardCustomOptionWithImageCard={styles.card}
                             styleImgCustomOptionWithImageCard={{
-                              width: "88px",
+                              width: "72px",
                               objectFit: "contain",
                             }}
                             entryLinkUrlCustomOptionWithImageCard={

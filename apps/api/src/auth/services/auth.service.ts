@@ -23,7 +23,6 @@ import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
-import { IdUserDto } from '../dto/id_user.dto';
 
 const schedule = require('node-schedule');
 
@@ -38,7 +37,6 @@ import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enu
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
 import { PrincipalEmailDto } from '../dto/principal_email.dto';
-import { IUserPayload } from 'src/utils/interfaces/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -411,7 +409,7 @@ export class AuthService {
     );
 
     const payload: Payload = {
-      sub: collaboratorFound.id,
+      id: collaboratorFound.id,
       name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
       principal_email: collaboratorFound.principal_email,
       user_id_type: collaboratorFound.user_id_type,
@@ -420,7 +418,7 @@ export class AuthService {
         id: role.id,
         name: role.name,
       })),
-      permissions: collaboratorFound.permission.map((permission) => ({
+      permission: collaboratorFound.permission.map((permission) => ({
         id: permission.id,
         name: permission.name,
         applications: permission.applications.map((app) => ({
@@ -452,7 +450,7 @@ export class AuthService {
       id_number: payload.id_number,
       principal_email: payload.principal_email,
       role: payload.role,
-      permission: payload.permissions,
+      permission: payload.permission,
     };
   }
 
@@ -510,7 +508,7 @@ export class AuthService {
     );
 
     const payload: Payload = {
-      sub: adminOrAuditorFound.id,
+      id: adminOrAuditorFound.id,
       name: `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}`,
       principal_email: adminOrAuditorFound.principal_email,
       user_id_type: adminOrAuditorFound.user_id_type,
@@ -519,7 +517,7 @@ export class AuthService {
         id: role.id,
         name: role.name,
       })),
-      permissions: adminOrAuditorFound.permission.map((permission) => ({
+      permission: adminOrAuditorFound.permission.map((permission) => ({
         id: permission.id,
         name: permission.name,
         applications: permission.applications.map((app) => ({
@@ -575,7 +573,7 @@ export class AuthService {
       id_number: payload.id_number,
       principal_email: payload.principal_email,
       role: payload.role,
-      permission: payload.permissions,
+      permission: payload.permission,
     };
   }
 
@@ -629,14 +627,14 @@ export class AuthService {
     return expiresInInSeconds;
   }
 
-  private async generateTokens(user: IUserPayload): Promise<Tokens> {
+  private async generateTokens(userPayload: Payload): Promise<Tokens> {
     const jwtUserPayload: Payload = {
-      sub: user.sub,
-      name: user.name,
-      principal_email: user.principal_email,
-      user_id_type: user.user_id_type,
-      id_number: user.id_number,
-      role: user.role,
+      id: userPayload.id,
+      name: userPayload.name,
+      principal_email: userPayload.principal_email,
+      user_id_type: userPayload.user_id_type,
+      id_number: userPayload.id_number,
+      role: userPayload.role,
     };
 
     const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
@@ -664,17 +662,17 @@ export class AuthService {
 
   async refreshToken(refreshToken: string): Promise<any> {
     try {
-      const user: Partial<User> = this.jwtService.verify(refreshToken, {
+      const userPayload: Payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_CONSTANTS_SECRET,
       });
 
       const payload: Payload = {
-        sub: user.id,
-        name: user.name,
-        principal_email: user.principal_email,
-        user_id_type: user.user_id_type,
-        id_number: user.id_number,
-        role: user.role,
+        id: userPayload.id,
+        name: userPayload.name,
+        principal_email: userPayload.principal_email,
+        user_id_type: userPayload.user_id_type,
+        id_number: userPayload.id_number,
+        role: userPayload.role,
       };
 
       const { access_token, refresh_token, access_token_expires_in } =

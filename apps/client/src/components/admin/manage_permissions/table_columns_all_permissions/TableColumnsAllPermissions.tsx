@@ -53,7 +53,7 @@ export const tableColumnsAllPermissions = ({
           paddingInline: 13,
           paddingBlock: 13,
         }}
-        size="middle"
+        size="small"
         icon={<FaRegEye />}
         onClick={() => {
           handleClickSeeMore(record);

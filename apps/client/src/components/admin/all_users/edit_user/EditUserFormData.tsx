@@ -298,16 +298,17 @@ const EditUserFormData: React.FC<{
           }}
         >
           <Col
-            span={5}
+            span={6}
             style={{
-              overflowY: "auto",
-              maxHeight: "720px",
+              height: "321px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
+              overflowY: "auto",
             }}
           >
-            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Roles</h3>
+            <h3 style={{ marginTop: "2px", marginBottom: "13px" }}>Roles</h3>
+
             {loadingAllRolesFormData || fetchingAllRolesFormData ? (
               <CustomSpin />
             ) : (
@@ -323,7 +324,7 @@ const EditUserFormData: React.FC<{
                     <Checkbox
                       key={role.id}
                       value={role.id}
-                      style={{ marginBottom: "8px" }}
+                      style={{ marginBottom: "8px", paddingBlock: "2px" }}
                     >
                       {role.name}
                     </Checkbox>
@@ -334,16 +335,18 @@ const EditUserFormData: React.FC<{
           </Col>
 
           <Col
-            span={19}
+            span={18}
             style={{
-              overflowY: "auto",
-              maxHeight: "450px",
-              padding: "7px",
+              height: "321px",
+              paddingInline: "13px",
+              paddingBlock: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
+              overflow: "auto",
             }}
           >
-            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Permisos</h3>
+            <h3 style={{ marginTop: "2px", marginBottom: "13px" }}>Permisos</h3>
+
             {loadingAllPermissionFormData || fetchingAllPermissionFormData ? (
               <CustomSpin />
             ) : (
@@ -373,6 +376,7 @@ const EditUserFormData: React.FC<{
                               style={{
                                 display: "flex",
                                 alignItems: "flex-start",
+                                paddingBlock: "2px",
                               }}
                             >
                               <span
