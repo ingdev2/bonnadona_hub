@@ -94,7 +94,9 @@ const UserForgotPasswordForm: React.FC<{
 
   useEffect(() => {
     if (userActiveDatabyIdNumberData) {
-      setEmailCollaboratorLocalState(userActiveDatabyIdNumberData?.principal_email);
+      setEmailCollaboratorLocalState(
+        userActiveDatabyIdNumberData?.principal_email
+      );
     }
 
     if (
@@ -377,6 +379,7 @@ const UserForgotPasswordForm: React.FC<{
                   <CustomSpin />
                 ) : (
                   <Button
+                    size="middle"
                     style={{
                       paddingInline: 45,
                       borderRadius: "30px",

@@ -12,8 +12,14 @@ import CustomLoadingOverlay from "@/components/common/custom_loading_overlay/Cus
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import { setFirstLoginModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { useGetUserActiveByIdNumberQuery, useUpdateUserPasswordMutation } from "@/redux/apis/users/userApi";
-import { setErrorsUser, setLastPasswordUpdateUser } from "@/redux/features/user/userSlice";
+import {
+  useGetUserActiveByIdNumberQuery,
+  useUpdateUserPasswordMutation,
+} from "@/redux/apis/users/userApi";
+import {
+  setErrorsUser,
+  setLastPasswordUpdateUser,
+} from "@/redux/features/user/userSlice";
 
 const ChangePasswordModal: React.FC<{
   titleModal: string;
@@ -297,6 +303,7 @@ const ChangePasswordModal: React.FC<{
                   key={"update-password-button"}
                   className="update-password-button"
                   disabled={isPageLoadingState}
+                  size="middle"
                   style={{
                     backgroundColor: isPageLoadingState ? "#D8D8D8" : "#015E90",
                     color: isPageLoadingState ? "#A0A0A0" : "#f2f2f2",

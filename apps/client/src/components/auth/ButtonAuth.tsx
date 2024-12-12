@@ -54,6 +54,7 @@ const ButtonAuth = () => {
             {principalEmailUserState}
           </h5>
           <Button
+            size="middle"
             type="primary"
             onClick={() => signOut()}
             className="button-signout"
@@ -75,6 +76,7 @@ const ButtonAuth = () => {
 
   return (
     <Button
+      size="middle"
       onClick={() => signIn()}
       className="button-signin"
       type="primary"

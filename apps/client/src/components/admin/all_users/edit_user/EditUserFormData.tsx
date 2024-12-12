@@ -5,11 +5,8 @@ import { Store } from "antd/es/form/interface";
 import { titleStyleCss } from "@/theme/text_styles";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
-import PhoneInput, { PhoneNumber } from "antd-phone-input";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { IRole } from "@/utils/interfaces/auth/role.interface";
-import CustomButton from "@/components/common/custom_button/CustomButton";
-import { FaDeleteLeft } from "react-icons/fa6";
 
 const EditUserFormData: React.FC<{
   principalEmailUserFormData: string;
@@ -414,7 +411,7 @@ const EditUserFormData: React.FC<{
             }}
           >
             <Button
-              size="large"
+              size="middle"
               style={{
                 backgroundColor: !hasChangesFormData ? "#D8D8D8" : "#015E90",
                 color: !hasChangesFormData ? "#A0A0A0" : "#f2f2f2",

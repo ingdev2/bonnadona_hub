@@ -106,7 +106,7 @@ const CustomModalTwoOptions: React.FC<{
               <Button
                 key={"confirm-button-custom-modal"}
                 className="confirm-button-custom-modal"
-                size="large"
+                size="middle"
                 style={{
                   paddingInline: 54,
                   borderRadius: 31,
@@ -124,7 +124,7 @@ const CustomModalTwoOptions: React.FC<{
             <Button
               key="cancel-button-custom-modal"
               className="cancel-button-custom-modal"
-              size="large"
+              size="middle"
               style={{
                 paddingInline: 54,
                 borderRadius: 31,

@@ -22,6 +22,7 @@ import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswo
 import CustomOptionWithImageCard from "@/components/common/custom_option_with_image_card/CustomOptionWithImageCard";
 import { useGetAllActiveApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
 import { permission } from "process";
+import UserHeaderLayout from "../header_layout_dashboard/UserHeaderLayout";
 
 const AllAppsContent: React.FC = () => {
   const { data: session, status } = useSession();
@@ -78,6 +79,8 @@ const AllAppsContent: React.FC = () => {
   } = useGetAllActiveApplicationsQuery(null);
 
   useEffect(() => {
+    console.log("PERMISOS USUARIO", permissionUser);
+
     if (
       userSessionLogData &&
       userActiveDatabyIdNumberData &&
@@ -132,13 +135,17 @@ const AllAppsContent: React.FC = () => {
 
       <div className="custom-dashboard-layout-users">
         <CustomDashboardLayoutCollaborators
+          customLayoutHeader={<UserHeaderLayout />}
           customLayoutContent={
             <div style={{ width: "100%" }}>
-              <Row gutter={[0, 48]} justify="center">
-                {allActiveApplicationData?.length! > 0 && permissionUser ? (
+              <Row gutter={[0, 48]} justify="center" align={"middle"}>
+                {allActiveApplicationData?.length! > 0 &&
+                allActiveApplicationData &&
+                permissionUser ? (
                   <>
-                    {permissionUser[0].applications?.map(
-                      (application: IApplication, index: number) => (
+                    {allActiveApplicationData
+                      ?.flatMap((data) => data || [])
+                      .map((application: IApplication, index: number) => (
                         <Col
                           key={index}
                           xs={24}
@@ -167,8 +174,7 @@ const AllAppsContent: React.FC = () => {
                             }
                           />
                         </Col>
-                      )
-                    )}
+                      ))}
                   </>
                 ) : (
                   <Col
