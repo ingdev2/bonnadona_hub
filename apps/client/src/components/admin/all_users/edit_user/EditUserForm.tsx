@@ -9,6 +9,7 @@ import {
   useUpdateUserMutation,
 } from "@/redux/apis/users/userApi";
 import {
+  setCorporateCellphoneSelectedUser,
   setCorporateEmailSelectedUser,
   setErrorsSelectedUser,
   setIdSelectedUser,
@@ -299,7 +300,7 @@ const EditUserForm: React.FC = () => {
           )
         );
         dispatch(
-          setCorporateEmailSelectedUser(
+          setCorporateCellphoneSelectedUser(
             parseInt(corporateCellphoneUserLocalState, 10) ||
               corporateCellphoneUserState
           )
