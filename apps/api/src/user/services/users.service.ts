@@ -1151,7 +1151,6 @@ export class UsersService {
   ) {
     const userFound = await this.userRepository.findOneBy({
       id,
-      // is_active: true,
     });
 
     if (!userFound) {
@@ -1359,7 +1358,6 @@ export class UsersService {
     const userFound = await this.userRepository.findOne({
       where: {
         id,
-        //  is_active: true
       },
     });
 
@@ -1403,7 +1401,6 @@ export class UsersService {
     const userFound = await this.userRepository.findOne({
       where: {
         id,
-        //  is_active: true
       },
     });
 
