@@ -38,7 +38,7 @@ import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enu
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
 import { PrincipalEmailDto } from '../dto/principal_email.dto';
-import { permission } from 'process';
+import { IUserPayload } from 'src/utils/interfaces/user.interface';
 
 @Injectable()
 export class AuthService {
@@ -416,8 +416,28 @@ export class AuthService {
       principal_email: collaboratorFound.principal_email,
       user_id_type: collaboratorFound.user_id_type,
       id_number: collaboratorFound.id_number,
-      role: collaboratorFound.role,
-      permissions: collaboratorFound.permission,
+      role: collaboratorFound.role.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
+      permissions: collaboratorFound.permission.map((permission) => ({
+        id: permission.id,
+        name: permission.name,
+        applications: permission.applications.map((app) => ({
+          id: app.id,
+          name: app.name,
+          image_path: app.image_path,
+          entry_link: app.entry_link,
+        })),
+        application_modules: permission.application_modules.map((module) => ({
+          id: module.id,
+          name: module.name,
+        })),
+        module_actions: permission.module_actions.map((action) => ({
+          id: action.id,
+          name: action.name,
+        })),
+      })),
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -427,12 +447,12 @@ export class AuthService {
       access_token,
       refresh_token,
       access_token_expires_in,
-      name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
-      id_type: collaboratorFound.user_id_type,
-      id_number: collaboratorFound.id_number,
-      principal_email: collaboratorFound.principal_email,
-      role: collaboratorFound.role,
-      permission: collaboratorFound.permission,
+      name: payload.name,
+      id_type: payload.user_id_type,
+      id_number: payload.id_number,
+      principal_email: payload.principal_email,
+      role: payload.role,
+      permission: payload.permissions,
     };
   }
 
@@ -495,8 +515,28 @@ export class AuthService {
       principal_email: adminOrAuditorFound.principal_email,
       user_id_type: adminOrAuditorFound.user_id_type,
       id_number: adminOrAuditorFound.id_number,
-      role: adminOrAuditorFound.role,
-      permissions: adminOrAuditorFound.permission,
+      role: adminOrAuditorFound.role.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
+      permissions: adminOrAuditorFound.permission.map((permission) => ({
+        id: permission.id,
+        name: permission.name,
+        applications: permission.applications.map((app) => ({
+          id: app.id,
+          name: app.name,
+          image_path: app.image_path,
+          entry_link: app.entry_link,
+        })),
+        application_modules: permission.application_modules.map((module) => ({
+          id: module.id,
+          name: module.name,
+        })),
+        module_actions: permission.module_actions.map((action) => ({
+          id: action.id,
+          name: action.name,
+        })),
+      })),
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -530,12 +570,12 @@ export class AuthService {
       access_token,
       refresh_token,
       access_token_expires_in,
-      name: `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}`,
-      id_type: adminOrAuditorFound.user_id_type,
-      id_number: adminOrAuditorFound.id_number,
-      principal_email: adminOrAuditorFound.principal_email,
-      role: adminOrAuditorFound.role,
-      permission: adminOrAuditorFound.permission,
+      name: payload.name,
+      id_type: payload.user_id_type,
+      id_number: payload.id_number,
+      principal_email: payload.principal_email,
+      role: payload.role,
+      permission: payload.permissions,
     };
   }
 
@@ -589,15 +629,14 @@ export class AuthService {
     return expiresInInSeconds;
   }
 
-  private async generateTokens(user: Partial<User>): Promise<Tokens> {
+  private async generateTokens(user: IUserPayload): Promise<Tokens> {
     const jwtUserPayload: Payload = {
-      sub: user.id,
+      sub: user.sub,
       name: user.name,
       principal_email: user.principal_email,
       user_id_type: user.user_id_type,
       id_number: user.id_number,
       role: user.role,
-      permissions: user.permission,
     };
 
     const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
@@ -636,7 +675,6 @@ export class AuthService {
         user_id_type: user.user_id_type,
         id_number: user.id_number,
         role: user.role,
-        permissions: user.permission,
       };
 
       const { access_token, refresh_token, access_token_expires_in } =

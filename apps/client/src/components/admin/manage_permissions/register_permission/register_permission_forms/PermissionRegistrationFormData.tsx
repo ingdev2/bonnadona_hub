@@ -354,7 +354,7 @@ const PermissionRegistrationFormData: React.FC<{
                   </Checkbox>
 
                   <Button
-                    size="small"
+                    size="middle"
                     type="dashed"
                     onClick={() => toggleExpandedApp(app.id)}
                     icon={
@@ -406,7 +406,7 @@ const PermissionRegistrationFormData: React.FC<{
                   </Checkbox>
 
                   <Button
-                    size="small"
+                    size="middle"
                     type="dashed"
                     onClick={() => toggleExpandedModule(module.id)}
                     icon={
@@ -481,7 +481,7 @@ const PermissionRegistrationFormData: React.FC<{
           <CustomSpin />
         ) : (
           <Button
-            size="large"
+            size="middle"
             style={{
               paddingInline: 62,
               borderRadius: 31,

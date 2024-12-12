@@ -1,6 +1,6 @@
-import { IRole } from 'src/utils/interfaces/role.interface';
+import { IRole } from './role.interface';
 
-export interface Payload {
+export interface IUserPayload {
   sub: string;
   name: string;
   principal_email: string;

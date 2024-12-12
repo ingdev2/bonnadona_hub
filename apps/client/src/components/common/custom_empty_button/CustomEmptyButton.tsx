@@ -15,7 +15,7 @@ const CustomEmptyButton: React.FC<{
   >
     <Button
       type="primary"
-      size="large"
+      size="middle"
       className="custom-empty-button"
       style={{
         paddingInline: 31,

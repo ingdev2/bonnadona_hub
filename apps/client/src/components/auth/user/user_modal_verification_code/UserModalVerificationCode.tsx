@@ -320,6 +320,7 @@ const UserModalVerificationCode: React.FC = () => {
                 key={"confirm-code-button"}
                 className="confirm-code-button"
                 disabled={isPageLoadingState}
+                size="middle"
                 style={{
                   backgroundColor: isPageLoadingState ? "#D8D8D8" : "#015E90",
                   color: isPageLoadingState ? "#A0A0A0" : "#f2f2f2",
@@ -341,6 +342,7 @@ const UserModalVerificationCode: React.FC = () => {
               key="resend-button-user"
               className="resend-button-user"
               disabled={resendCodeDisable}
+              size="middle"
               style={{
                 backgroundColor: resendCodeDisable ? "#D8D8D8" : "transparent",
                 color: resendCodeDisable ? "#A7BAB7" : "#015E90",
@@ -368,6 +370,7 @@ const UserModalVerificationCode: React.FC = () => {
           <Button
             key="cancel-button-user"
             className="cancel-button-user"
+            size="middle"
             style={{
               paddingInline: 45,
               backgroundColor: "#8C1111",

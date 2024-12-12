@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-import { getFirstName } from "@/helpers/get_first_name/get_first_name";
-
+import { Col, Row } from "antd";
 import CustomDropdown from "@/components/common/custom_dropdown/CustomDropdown";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 
@@ -16,6 +15,8 @@ import { PiUserListBold } from "react-icons/pi";
 
 import { resetLoginStateUser } from "@/redux/features/login/userLoginSlice";
 import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
+
+import { getFirstName } from "@/helpers/get_first_name/get_first_name";
 
 const UserHeaderLayout: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -50,24 +51,76 @@ const UserHeaderLayout: React.FC = () => {
   };
 
   return (
-    <>
-      {!nameUserState && !lastNameUserState ? (
-        <CustomSpin />
-      ) : (
-        <CustomDropdown
-          titleCustomDropdown={`HOLA, ${getFirstName(nameUserState)} ${getFirstName(
-            lastNameUserState
-          )}`}
-          iconCustomItem1={<PiUserListBold />}
-          titleCustomItem1="Mis Datos"
-          iconCustomItem2={<FaSignOutAlt />}
-          titleCustomItem2="Cerrar Sesión"
-          handleClickCustomItem1={handleClickUpdatePersonalData}
-          handleClickCustomItem2={handleClickSignOut}
-          iconCustomDropdown={<UserOutlined />}
-        />
-      )}
-    </>
+    <Row
+      gutter={24}
+      justify={"center"}
+      align={"stretch"}
+      style={{ width: "100%" }}
+    >
+      <Col
+        span={6}
+        style={{
+          display: "flex",
+          flexFlow: "row wrap",
+          justifyContent: "flex-start",
+          alignContent: "flex-start",
+        }}
+      >
+        <a
+          className="custom-layout-logo-header-patient"
+          style={{
+            display: "flex",
+            alignContent: "center",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "#f2f2f2",
+            overflow: "hidden",
+          }}
+          onClick={() => {
+            router.replace("/patient/homepage", { scroll: true });
+          }}
+        >
+          <img
+            src="/logos/logo_horizontal.png"
+            alt="Logo de BonnaHub"
+            style={{
+              width: "80%",
+              height: "auto",
+              objectFit: "contain",
+            }}
+          />
+        </a>
+      </Col>
+
+      <Col
+        span={18}
+        style={{
+          display: "flex",
+          flexFlow: "row wrap",
+          justifyContent: "flex-end",
+          alignContent: "center",
+        }}
+      >
+        {!nameUserState && !lastNameUserState ? (
+          <CustomSpin />
+        ) : (
+          <CustomDropdown
+            titleCustomDropdown={`${getFirstName(nameUserState)} ${getFirstName(
+              lastNameUserState
+            )}`}
+            iconCustomItem1={<PiUserListBold />}
+            titleCustomItem1="Mis Datos"
+            iconCustomItem2={<FaSignOutAlt />}
+            titleCustomItem2="Cerrar Sesión"
+            handleClickCustomItem1={handleClickUpdatePersonalData}
+            handleClickCustomItem2={handleClickSignOut}
+            iconCustomDropdown={<UserOutlined />}
+          />
+        )}
+      </Col>
+    </Row>
   );
 };
 

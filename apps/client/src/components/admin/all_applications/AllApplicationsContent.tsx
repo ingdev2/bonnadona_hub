@@ -199,7 +199,7 @@ const AllApplicationsContent: React.FC = () => {
 
                   <Button
                     className="edit-application-button"
-                    size="large"
+                    size="middle"
                     style={{
                       backgroundColor: "#015E90",
                       color: "#F7F7F7",

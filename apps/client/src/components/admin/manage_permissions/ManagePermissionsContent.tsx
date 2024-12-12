@@ -146,7 +146,7 @@ const ManagePermissionsContent: React.FC = () => {
                   {editPermissionAction ? (
                     <Button
                       className="edit-permission-button"
-                      size="large"
+                      size="middle"
                       style={{
                         backgroundColor: "#015E90",
                         color: "#F7F7F7",
