@@ -1151,7 +1151,7 @@ export class UsersService {
   ) {
     const userFound = await this.userRepository.findOneBy({
       id,
-      is_active: true,
+      // is_active: true,
     });
 
     if (!userFound) {
@@ -1357,7 +1357,10 @@ export class UsersService {
     @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: {
+        id,
+        //  is_active: true
+      },
     });
 
     if (!userFound) {
@@ -1398,7 +1401,10 @@ export class UsersService {
     @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: {
+        id,
+        //  is_active: true
+      },
     });
 
     if (!userFound) {

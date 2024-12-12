@@ -18,9 +18,10 @@ import {
   Row,
   Tooltip,
 } from "antd";
+import TextArea from "antd/es/input/TextArea";
+
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { subtitleStyleCss, titleStyleCss } from "@/theme/text_styles";
-import TextArea from "antd/es/input/TextArea";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 
 const PermissionRegistrationFormData: React.FC<{

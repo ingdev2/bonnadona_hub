@@ -4,21 +4,23 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Button } from "antd";
+
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 import CustomTableFiltersAndSorting from "@/components/common/custom_table_filters_and_sorting/CustomTableFiltersAndSorting";
+import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
 import EditPermissionForm from "./edit_permission/EditPermissionForm";
+import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import { tableColumnsAllPermissions } from "./table_columns_all_permissions/TableColumnsAllPermissions";
 import ModalPermissionDetails from "./modal_permission_details/ModalPermissionDetails";
 import CreateButton from "./create_button/CreateButton";
-import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
-import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+
 import { FaEdit } from "react-icons/fa";
 
 import {
   setChangePasswordExpiryModalIsOpen,
   setTableRowId,
 } from "@/redux/features/common/modal/modalSlice";
-
 import {
   setIdPermission,
   setNamePermission,
@@ -35,7 +37,6 @@ import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/password
 import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
-import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 
 const ManagePermissionsContent: React.FC = () => {
   const dispatch = useAppDispatch();
