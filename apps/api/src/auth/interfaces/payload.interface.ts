@@ -1,12 +1,11 @@
-import { Role } from 'src/role/entities/role.entity';
-import { Permissions } from 'src/permissions/entities/permissions.entity';
+import { IRole } from 'src/utils/interfaces/role.interface';
 
 export interface Payload {
-  sub: string;
+  id: string;
   name: string;
   principal_email: string;
   user_id_type: number;
   id_number: number;
-  role: Role[];
-  permissions: Permissions[];
+  role?: IRole[];
+  permission?: IPermissions[];
 }

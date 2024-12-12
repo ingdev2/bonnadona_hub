@@ -40,7 +40,7 @@ const RegisterPermissionContent: React.FC = () => {
             >
               <Button
                 type="link"
-                size="large"
+                size="middle"
                 icon={<IoMdArrowRoundBack size={17} />}
                 style={{
                   color: "#015E90",

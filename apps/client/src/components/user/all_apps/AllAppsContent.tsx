@@ -1,33 +1,35 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
 
-import { Card, Col, Empty, Row } from "antd";
+import { Col, Empty, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
 
 import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
+import UserHeaderLayout from "../header_layout_dashboard/UserHeaderLayout";
+import CustomOptionWithImageCard from "@/components/common/custom_option_with_image_card/CustomOptionWithImageCard";
 import ChangePasswordModal from "../../common/change_password_modal/ChangePasswordModal";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import {
-  useGetUserActiveByIdNumberQuery,
-  useGetUserSessionLogByEmailQuery,
-} from "@/redux/apis/users/userApi";
+
 import {
   setChangePasswordExpiryModalIsOpen,
   setFirstLoginModalIsOpen,
 } from "@/redux/features/common/modal/modalSlice";
+
+import {
+  useGetUserActiveByIdNumberQuery,
+  useGetUserSessionLogByEmailQuery,
+} from "@/redux/apis/users/userApi";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
-import CustomOptionWithImageCard from "@/components/common/custom_option_with_image_card/CustomOptionWithImageCard";
-import { useGetAllActiveApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
-import { permission } from "process";
 
 const AllAppsContent: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
-  const permissionUser = session?.user.permission;
+  const permissionUser: IPermissions[] | undefined = session?.user.permission;
 
   const principalEmailCollaboratorState = useAppSelector(
     (state) => state.user.principal_email
@@ -69,13 +71,6 @@ const AllAppsContent: React.FC = () => {
     isFetching: passwordPolicyFetching,
     error: passwordPolicyError,
   } = useGetPasswordPolicyQuery(null);
-
-  const {
-    data: allActiveApplicationData,
-    isLoading: allActiveApplicationLoading,
-    isFetching: allActiveApplicationFetching,
-    error: allActiveApplicationError,
-  } = useGetAllActiveApplicationsQuery(null);
 
   useEffect(() => {
     if (
@@ -132,23 +127,25 @@ const AllAppsContent: React.FC = () => {
 
       <div className="custom-dashboard-layout-users">
         <CustomDashboardLayoutCollaborators
+          customLayoutHeader={<UserHeaderLayout />}
           customLayoutContent={
             <div style={{ width: "100%" }}>
-              <Row gutter={[0, 48]} justify="center">
-                {allActiveApplicationData?.length! > 0 && permissionUser ? (
+              <Row gutter={[0, 24]} justify="center" align={"middle"}>
+                {permissionUser ? (
                   <>
-                    {permissionUser[0].applications?.map(
-                      (application: IApplication, index: number) => (
+                    {permissionUser
+                      ?.flatMap((data) => data.applications || [])
+                      .map((application: IApplication, index: number) => (
                         <Col
                           key={index}
-                          xs={24}
-                          sm={12}
-                          md={8}
-                          lg={6}
+                          xs={12}
+                          sm={8}
+                          md={6}
+                          lg={4}
                           style={{
                             display: "flex",
                             justifyContent: "center",
-                            padding: "0px",
+                            paddingBlock: "22px",
                             margin: "0px",
                           }}
                         >
@@ -159,7 +156,7 @@ const AllAppsContent: React.FC = () => {
                             }
                             classNameCardCustomOptionWithImageCard={styles.card}
                             styleImgCustomOptionWithImageCard={{
-                              width: "88px",
+                              width: "72px",
                               objectFit: "contain",
                             }}
                             entryLinkUrlCustomOptionWithImageCard={
@@ -167,8 +164,7 @@ const AllAppsContent: React.FC = () => {
                             }
                           />
                         </Col>
-                      )
-                    )}
+                      ))}
                   </>
                 ) : (
                   <Col

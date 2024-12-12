@@ -23,7 +23,6 @@ import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
-import { IdUserDto } from '../dto/id_user.dto';
 
 const schedule = require('node-schedule');
 
@@ -38,7 +37,6 @@ import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enu
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
 import { PrincipalEmailDto } from '../dto/principal_email.dto';
-import { permission } from 'process';
 
 @Injectable()
 export class AuthService {
@@ -411,13 +409,33 @@ export class AuthService {
     );
 
     const payload: Payload = {
-      sub: collaboratorFound.id,
+      id: collaboratorFound.id,
       name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
       principal_email: collaboratorFound.principal_email,
       user_id_type: collaboratorFound.user_id_type,
       id_number: collaboratorFound.id_number,
-      role: collaboratorFound.role,
-      permissions: collaboratorFound.permission,
+      role: collaboratorFound.role.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
+      permission: collaboratorFound.permission.map((permission) => ({
+        id: permission.id,
+        name: permission.name,
+        applications: permission.applications.map((app) => ({
+          id: app.id,
+          name: app.name,
+          image_path: app.image_path,
+          entry_link: app.entry_link,
+        })),
+        application_modules: permission.application_modules.map((module) => ({
+          id: module.id,
+          name: module.name,
+        })),
+        module_actions: permission.module_actions.map((action) => ({
+          id: action.id,
+          name: action.name,
+        })),
+      })),
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -427,12 +445,12 @@ export class AuthService {
       access_token,
       refresh_token,
       access_token_expires_in,
-      name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
-      id_type: collaboratorFound.user_id_type,
-      id_number: collaboratorFound.id_number,
-      principal_email: collaboratorFound.principal_email,
-      role: collaboratorFound.role,
-      permission: collaboratorFound.permission,
+      name: payload.name,
+      id_type: payload.user_id_type,
+      id_number: payload.id_number,
+      principal_email: payload.principal_email,
+      role: payload.role,
+      permission: payload.permission,
     };
   }
 
@@ -490,13 +508,33 @@ export class AuthService {
     );
 
     const payload: Payload = {
-      sub: adminOrAuditorFound.id,
+      id: adminOrAuditorFound.id,
       name: `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}`,
       principal_email: adminOrAuditorFound.principal_email,
       user_id_type: adminOrAuditorFound.user_id_type,
       id_number: adminOrAuditorFound.id_number,
-      role: adminOrAuditorFound.role,
-      permissions: adminOrAuditorFound.permission,
+      role: adminOrAuditorFound.role.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
+      permission: adminOrAuditorFound.permission.map((permission) => ({
+        id: permission.id,
+        name: permission.name,
+        applications: permission.applications.map((app) => ({
+          id: app.id,
+          name: app.name,
+          image_path: app.image_path,
+          entry_link: app.entry_link,
+        })),
+        application_modules: permission.application_modules.map((module) => ({
+          id: module.id,
+          name: module.name,
+        })),
+        module_actions: permission.module_actions.map((action) => ({
+          id: action.id,
+          name: action.name,
+        })),
+      })),
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -530,12 +568,12 @@ export class AuthService {
       access_token,
       refresh_token,
       access_token_expires_in,
-      name: `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}`,
-      id_type: adminOrAuditorFound.user_id_type,
-      id_number: adminOrAuditorFound.id_number,
-      principal_email: adminOrAuditorFound.principal_email,
-      role: adminOrAuditorFound.role,
-      permission: adminOrAuditorFound.permission,
+      name: payload.name,
+      id_type: payload.user_id_type,
+      id_number: payload.id_number,
+      principal_email: payload.principal_email,
+      role: payload.role,
+      permission: payload.permission,
     };
   }
 
@@ -589,15 +627,14 @@ export class AuthService {
     return expiresInInSeconds;
   }
 
-  private async generateTokens(user: Partial<User>): Promise<Tokens> {
+  private async generateTokens(userPayload: Payload): Promise<Tokens> {
     const jwtUserPayload: Payload = {
-      sub: user.id,
-      name: user.name,
-      principal_email: user.principal_email,
-      user_id_type: user.user_id_type,
-      id_number: user.id_number,
-      role: user.role,
-      permissions: user.permission,
+      id: userPayload.id,
+      name: userPayload.name,
+      principal_email: userPayload.principal_email,
+      user_id_type: userPayload.user_id_type,
+      id_number: userPayload.id_number,
+      role: userPayload.role,
     };
 
     const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
@@ -625,18 +662,17 @@ export class AuthService {
 
   async refreshToken(refreshToken: string): Promise<any> {
     try {
-      const user: Partial<User> = this.jwtService.verify(refreshToken, {
+      const userPayload: Payload = this.jwtService.verify(refreshToken, {
         secret: process.env.JWT_CONSTANTS_SECRET,
       });
 
       const payload: Payload = {
-        sub: user.id,
-        name: user.name,
-        principal_email: user.principal_email,
-        user_id_type: user.user_id_type,
-        id_number: user.id_number,
-        role: user.role,
-        permissions: user.permission,
+        id: userPayload.id,
+        name: userPayload.name,
+        principal_email: userPayload.principal_email,
+        user_id_type: userPayload.user_id_type,
+        id_number: userPayload.id_number,
+        role: userPayload.role,
       };
 
       const { access_token, refresh_token, access_token_expires_in } =

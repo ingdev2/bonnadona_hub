@@ -80,6 +80,7 @@ const handler = NextAuth({
         return admin;
       },
     }),
+
     CredentialsProvider({
       id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,

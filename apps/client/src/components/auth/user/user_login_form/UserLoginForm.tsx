@@ -5,16 +5,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRouter } from "next/navigation";
 
-import {
-  Form,
-  Input,
-  Button,
-  Typography,
-  Col,
-  Carousel,
-  Row,
-  Image,
-} from "antd";
+import { Form, Input, Button, Typography, Col, Carousel, Row } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
 
 import { UserOutlined } from "@ant-design/icons";
@@ -37,8 +28,6 @@ import {
 import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { setCollaboratorModalIsOpen } from "@/redux/features/common/modal/modalSlice";
-
-const { Title } = Typography;
 
 const UserLoginForm: React.FC = () => {
   const { data: session, status } = useSession();
@@ -161,7 +150,7 @@ const UserLoginForm: React.FC = () => {
 
       <div
         style={{
-          width: "100%",
+          width: "100vw",
           height: "100vh",
           display: "flex",
           justifyContent: "center",
@@ -183,6 +172,7 @@ const UserLoginForm: React.FC = () => {
             backgroundRepeat: "no-repeat",
           }}
         />
+
         <div
           style={{
             position: "absolute",
@@ -193,17 +183,18 @@ const UserLoginForm: React.FC = () => {
             backgroundColor: "rgba(255, 255, 255, 0.4)",
           }}
         />
+
         <Row gutter={[22, 32]} style={{ width: "100%", maxWidth: "1000px" }}>
           <Col
             className="col-carousel"
             span={12}
             style={{
               backgroundColor: "#017DC0",
-              borderRadius: "20px",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+              borderRadius: "13px",
+              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
             }}
           >
-            <div style={{ padding: "32px" }}>
+            <div style={{ padding: "31px" }}>
               <Carousel
                 autoplaySpeed={3000}
                 autoplay
@@ -218,7 +209,6 @@ const UserLoginForm: React.FC = () => {
                       alt={`Imagen ${index + 1}`}
                       style={{
                         width: "100%",
-                        height: "200%",
                         objectFit: "cover",
                       }}
                     />
@@ -227,13 +217,14 @@ const UserLoginForm: React.FC = () => {
               </Carousel>
             </div>
           </Col>
+
           <Col span={12} className="col-login">
             <div
               style={{
-                backgroundColor: "rgba(255, 255, 255, 1)",
-                padding: "32px",
-                borderRadius: "20px",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.3)",
+                backgroundColor: "rgba(255, 255, 255, 2)",
+                padding: "31px",
+                borderRadius: "13px",
+                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
                 maxWidth: "400px",
                 width: "100%",
                 position: "relative",
@@ -245,27 +236,27 @@ const UserLoginForm: React.FC = () => {
                 style={{
                   display: "flex",
                   justifyContent: "center",
-                  paddingBlock: "1px",
+                  paddingBlock: "2px",
                 }}
               >
                 <img
                   src="/logos/logo_horizontal.png"
                   alt="Logo de Bonnadona HUB"
-                  style={{ width: "270px", marginBlock: "25px" }}
+                  style={{ width: "301px", marginBlock: "13px" }}
                 />
               </div>
-              <Title
-                className="title-login"
+
+              <h2
                 style={{
+                  ...titleStyleCss,
                   textAlign: "center",
-                  fontWeight: "normal",
-                  lineHeight: 1.3,
-                  marginBlock: "13px",
+                  marginBlock: "22px",
+                  color: "#070707",
                 }}
-                level={2}
               >
                 Iniciar sesión
-              </Title>
+              </h2>
+
               <Form
                 id="login-form"
                 className="login-form"
@@ -279,6 +270,14 @@ const UserLoginForm: React.FC = () => {
                   name="login-email-form"
                   rules={[
                     { required: true, message: "Por favor ingrese su correo" },
+                    {
+                      min: 5,
+                      message: "¡Por favor ingresa mínimo 5 caracteres!",
+                    },
+                    {
+                      max: 50,
+                      message: "¡Por favor ingresa máximo 50 caracteres!",
+                    },
                     {
                       pattern:
                         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -300,6 +299,7 @@ const UserLoginForm: React.FC = () => {
                     }
                   />
                 </Form.Item>
+
                 <Form.Item
                   id="login-password-form"
                   className="login-password-form"
@@ -308,6 +308,11 @@ const UserLoginForm: React.FC = () => {
                     {
                       required: true,
                       message: "Por favor ingrese su contraseña",
+                    },
+                    {
+                      max: 70,
+                      message:
+                        "¡La contraseña debe tener máximo 70 caracteres!",
                     },
                   ]}
                 >
@@ -346,13 +351,14 @@ const UserLoginForm: React.FC = () => {
                     <CustomSpin />
                   ) : (
                     <Button
+                      size="middle"
                       className="login-button"
                       name="login-button"
                       id="login-button"
                       type="primary"
                       htmlType="submit"
                       style={{
-                        borderRadius: "30px",
+                        borderRadius: "31px",
                         textAlign: "center",
                         backgroundColor: "#015E90",
                       }}
@@ -367,6 +373,7 @@ const UserLoginForm: React.FC = () => {
           </Col>
         </Row>
       </div>
+
       {modalForgotMyPasswordIsOpen && (
         <CustomModalNoContent
           key={"custom-modal-forgot-my-password"}

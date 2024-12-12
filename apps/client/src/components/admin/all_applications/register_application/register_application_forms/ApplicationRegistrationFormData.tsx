@@ -153,7 +153,7 @@ const ApplicationRegistrationFormData: React.FC<{
           <CustomSpin />
         ) : (
           <Button
-            size="large"
+            size="middle"
             style={{
               paddingInline: 62,
               borderRadius: 31,

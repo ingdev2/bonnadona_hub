@@ -170,7 +170,7 @@ const EditApplicationFormData: React.FC<{
             }}
           >
             <Button
-              size="large"
+              size="middle"
               style={{
                 backgroundColor: !hasChangesFormData ? "#D8D8D8" : "#015E90",
                 color: !hasChangesFormData ? "#A0A0A0" : "#f2f2f2",
