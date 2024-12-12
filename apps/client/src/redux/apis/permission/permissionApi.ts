@@ -40,14 +40,14 @@ export const permissionApi = createApi({
       query: () => "getAll",
     }),
 
-    getPermissionById: builder.query<IPermission, number>({
+    getPermissionById: builder.query<IPermission, string>({
       query: (id) => `getPermission/${id}`,
     }),
 
     updatePermissionById: builder.mutation<
       any,
       {
-        id: number;
+        id: string;
         updatePermission: Partial<IPermission>;
       }
     >({
