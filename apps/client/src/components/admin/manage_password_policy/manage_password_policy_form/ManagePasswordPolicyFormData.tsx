@@ -23,6 +23,7 @@ const ManagePasswordFormData: React.FC<{
   inactivityDaysFormData: number;
   passwordHistoryLimitFormData: number;
   updatePasswordPolicyLoading: boolean;
+  editPasswordPolicyAction: boolean;
   setMinLenghtPasswordLocalState: (value: number) => void;
   setPasswordExpiryDaysLocalState: (value: number) => void;
   setInactivityDaysLocalState: (value: number) => void;
@@ -43,6 +44,7 @@ const ManagePasswordFormData: React.FC<{
   inactivityDaysFormData,
   passwordHistoryLimitFormData,
   updatePasswordPolicyLoading,
+  editPasswordPolicyAction,
   setMinLenghtPasswordLocalState,
   setPasswordExpiryDaysLocalState,
   setInactivityDaysLocalState,
@@ -357,6 +359,7 @@ const ManagePasswordFormData: React.FC<{
           >
             <Col>
               <Form.Item style={{ width: "100%", marginBottom: "-5px" }}>
+                {/* {editPasswordPolicyAction ? ( */}
                 <CustomButton
                   classNameCustomButton="generate-report-button"
                   idCustomButton="generate-report-button"
@@ -383,6 +386,7 @@ const ManagePasswordFormData: React.FC<{
                   iconPositionCustomButton={"end"}
                   sizeCustomButton={"middle"}
                 />
+                {/* ) : null} */}
               </Form.Item>
             </Col>
           </Row>

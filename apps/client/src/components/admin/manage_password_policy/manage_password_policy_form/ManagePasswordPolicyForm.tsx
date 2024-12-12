@@ -12,13 +12,17 @@ import {
   useUpdatePasswordPolicyMutation,
 } from "@/redux/apis/password_policy/passwordPolicyApi";
 
-import {
-  setDefaultValuesPasswordPolicy,
-  setErrorsPasswordPolicy,
-} from "@/redux/features/password_policy/passwordPolicySlice";
+import { setErrorsPasswordPolicy } from "@/redux/features/password_policy/passwordPolicySlice";
+
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
+import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
 
 const ManagePasswordPolicyForm: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const editPasswordPolicyAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.UPDATE_PASSWORD_POLICY],
+  });
 
   const minLenghtPasswordPolicyState = useAppSelector(
     (state) => state.passwordPolicy.min_length
@@ -221,6 +225,7 @@ const ManagePasswordPolicyForm: React.FC = () => {
             }
             requireUpperCasePasswordFormData={requireUpperCaseLocalState}
             updatePasswordPolicyLoading={updatePasswordPolicyLoading}
+            editPasswordPolicyAction={editPasswordPolicyAction}
             setMinLenghtPasswordLocalState={setMinLenghtPasswordLocalState}
             setPasswordExpiryDaysLocalState={setPasswordExpiryDaysLocalState}
             setInactivityDaysLocalState={setInactivityDaysLocalState}

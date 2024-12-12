@@ -10,11 +10,18 @@ import { subtitleStyleCss } from "@/theme/text_styles";
 
 import { useGetAllApplicationsQuery } from "@/redux/apis/permission/application/applicationApi";
 
+import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
+
 const CreateButton: React.FC<{
   isSubmittingCreateButton: boolean;
   setIsSubmittingCreateButton: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ isSubmittingCreateButton, setIsSubmittingCreateButton }) => {
   const router = useRouter();
+
+  const createApplicationAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.CREATE_APPS],
+  });
 
   const {
     data: allApplicationsData,
@@ -79,39 +86,43 @@ const CreateButton: React.FC<{
         {isSubmittingCreateButton ? (
           <CustomSpin />
         ) : (
-          <Button
-            type="primary"
-            size="middle"
-            icon={<IoMdAddCircleOutline size={17} />}
-            style={{
-              backgroundColor: "#1D8348",
-              color: "#f2f2f2",
-              fontWeight: "bold",
-              display: "flex",
-              flexFlow: "row wrap",
-              alignContent: "center",
-              alignItems: "center",
-              paddingInline: "13px",
-              margin: "0px",
-            }}
-            htmlType="button"
-            className="application-register-button"
-            onClick={async () => {
-              try {
-                setIsSubmittingCreateButton(true);
+          <>
+            {createApplicationAction ? (
+              <Button
+                type="primary"
+                size="middle"
+                icon={<IoMdAddCircleOutline size={17} />}
+                style={{
+                  backgroundColor: "#1D8348",
+                  color: "#f2f2f2",
+                  fontWeight: "bold",
+                  display: "flex",
+                  flexFlow: "row wrap",
+                  alignContent: "center",
+                  alignItems: "center",
+                  paddingInline: "13px",
+                  margin: "0px",
+                }}
+                htmlType="button"
+                className="application-register-button"
+                onClick={async () => {
+                  try {
+                    setIsSubmittingCreateButton(true);
 
-                await router.push("applications/register", {
-                  scroll: true,
-                });
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsSubmittingCreateButton(false);
-              }
-            }}
-          >
-            Crear nuevo
-          </Button>
+                    await router.push("applications/register", {
+                      scroll: true,
+                    });
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setIsSubmittingCreateButton(false);
+                  }
+                }}
+              >
+                Crear nuevo
+              </Button>
+            ) : null}
+          </>
         )}
       </Col>
     </Row>

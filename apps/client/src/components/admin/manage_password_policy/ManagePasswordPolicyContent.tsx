@@ -2,8 +2,11 @@ import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+import ManagePasswordPolicyForm from "./manage_password_policy_form/ManagePasswordPolicyForm";
 
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+
 import {
   setInactivityDaysPasswordPolicy,
   setMinLenghtPasswordPolicy,
@@ -14,10 +17,9 @@ import {
   setRequireSpecialCharactersPasswordPolicy,
   setRequireUpperCasePasswordPolicy,
 } from "@/redux/features/password_policy/passwordPolicySlice";
-import ManagePasswordPolicyForm from "./manage_password_policy_form/ManagePasswordPolicyForm";
-import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
-import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 
 const ManagePasswordPolicyContent: React.FC = () => {
   const dispatch = useAppDispatch();

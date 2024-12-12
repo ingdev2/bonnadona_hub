@@ -75,10 +75,20 @@ import {
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
 import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 
 const AllUsersContent: React.FC = () => {
   const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
+
+  const editUserAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.UPDATE_USER_DATA],
+  });
+
+  const blockUserAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.BLOCK_USER],
+  });
 
   const userIdNumber = session?.user.id_number;
 
@@ -518,35 +528,36 @@ const AllUsersContent: React.FC = () => {
                       selectedRowDataLocalState?.user_shoe_size || NOT_REGISTER
                     }
                   />
-
-                  <Button
-                    className="edit-user-button"
-                    size="middle"
-                    style={{
-                      backgroundColor: "#015E90",
-                      color: "#F7F7F7",
-                      borderRadius: "31px",
-                      paddingInline: "31px",
-                      marginBlock: "13px",
-                    }}
-                    onClick={() => {
-                      setIsEditUserVisibleLocalState(true);
-                    }}
-                  >
-                    <div
+                  {editUserAction ? (
+                    <Button
+                      className="edit-user-button"
+                      size="middle"
                       style={{
-                        minWidth: "137px",
-                        display: "flex",
-                        flexFlow: "row wrap",
-                        alignItems: "center",
-                        alignContent: "center",
-                        justifyContent: "center",
+                        backgroundColor: "#015E90",
+                        color: "#F7F7F7",
+                        borderRadius: "31px",
+                        paddingInline: "31px",
+                        marginBlock: "13px",
+                      }}
+                      onClick={() => {
+                        setIsEditUserVisibleLocalState(true);
                       }}
                     >
-                      <TbUserEdit size={17} />
-                      &nbsp; Editar usuario
-                    </div>
-                  </Button>
+                      <div
+                        style={{
+                          minWidth: "137px",
+                          display: "flex",
+                          flexFlow: "row wrap",
+                          alignItems: "center",
+                          alignContent: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <TbUserEdit size={17} />
+                        &nbsp; Editar usuario
+                      </div>
+                    </Button>
+                  ) : null}
                 </>
               ) : (
                 <EditUserForm />
@@ -587,6 +598,7 @@ const AllUsersContent: React.FC = () => {
                 handleOnChangeSwitch: handleOnChangeSwitch,
                 onClickSwitch: handleButtonClick,
                 isLoadingSwitch: isSubmittingBanUser,
+                blockUserAction: blockUserAction,
                 collaboratorPositionsData: allCollaboratorPositionsData,
                 idTypesData: allIdTypesData,
                 genderTypesData: allGenderTypesData,

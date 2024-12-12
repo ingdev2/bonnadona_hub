@@ -12,13 +12,13 @@ import ModalApplicationDetails from "./modal_application_details/ModalApplicatio
 import CreateButton from "./create_button/CreateButton";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 import { FaEdit } from "react-icons/fa";
 
 import {
   setChangePasswordExpiryModalIsOpen,
   setTableRowId,
 } from "@/redux/features/common/modal/modalSlice";
-
 import {
   setIdApplication,
   setNameApplication,
@@ -32,11 +32,17 @@ import {
   useBanApplicationMutation,
 } from "@/redux/apis/permission/application/applicationApi";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+
+import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
-import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 
 const AllApplicationsContent: React.FC = () => {
   const dispatch = useAppDispatch();
+
+  const editApplicationAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.UPDATE_APPS],
+  });
 
   const applicationErrorsState = useAppSelector(
     (state) => state.application.errors
@@ -240,35 +246,36 @@ const AllApplicationsContent: React.FC = () => {
                       selectedRowDataLocalState?.entry_link
                     }
                   />
-
-                  <Button
-                    className="edit-application-button"
-                    size="middle"
-                    style={{
-                      backgroundColor: "#015E90",
-                      color: "#F7F7F7",
-                      borderRadius: "31px",
-                      paddingInline: "31px",
-                      marginBlock: "13px",
-                    }}
-                    onClick={() => {
-                      setIsEditVisibleLocalState(true);
-                    }}
-                  >
-                    <div
+                  {editApplicationAction ? (
+                    <Button
+                      className="edit-application-button"
+                      size="middle"
                       style={{
-                        minWidth: "137px",
-                        display: "flex",
-                        flexFlow: "row wrap",
-                        alignItems: "center",
-                        alignContent: "center",
-                        justifyContent: "center",
+                        backgroundColor: "#015E90",
+                        color: "#F7F7F7",
+                        borderRadius: "31px",
+                        paddingInline: "31px",
+                        marginBlock: "13px",
+                      }}
+                      onClick={() => {
+                        setIsEditVisibleLocalState(true);
                       }}
                     >
-                      <FaEdit size={17} />
-                      &nbsp; Editar aplicación
-                    </div>
-                  </Button>
+                      <div
+                        style={{
+                          minWidth: "137px",
+                          display: "flex",
+                          flexFlow: "row wrap",
+                          alignItems: "center",
+                          alignContent: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <FaEdit size={17} />
+                        &nbsp; Editar aplicación
+                      </div>
+                    </Button>
+                  ) : null}
                 </>
               ) : (
                 <EditApplicationForm />
