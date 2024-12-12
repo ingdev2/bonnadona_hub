@@ -255,11 +255,28 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-affiliation-eps"
             label="Afiliación eps:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toUpperCase()
+                .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               {
-                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                min: 3,
+                message: "El nombre de la eps debe tener al menos 3 caracteres",
+              },
+              {
+                max: 40,
+                message: "El nombre de la eps no puede tener más de 40 caracteres",
+              },
+              {
+                pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
                 message:
-                  "En este campo no puede tener numeros ni caracteres especiales.",
+                  "El nombre de la eps solo puede contener letras mayúsculas con tildes y espacios",
               },
             ]}
           >
@@ -285,11 +302,28 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-residence-department"
             label="Departamento:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toUpperCase()
+                .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               {
-                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                min: 3,
+                message: "El nombre del departamento debe tener al menos 3 caracteres",
+              },
+              {
+                max: 40,
+                message: "El nombre del departamento no puede tener más de 40 caracteres",
+              },
+              {
+                pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
                 message:
-                  "En este campo no puede tener numeros ni caracteres especiales.",
+                  "El nombre del departamento solo puede contener letras mayúsculas con tildes y espacios",
               },
             ]}
           >
@@ -313,11 +347,28 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-residence-city"
             label="Ciudad:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toUpperCase()
+                .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               {
-                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                min: 3,
+                message: "El nombre de la ciudad debe tener al menos 3 caracteres",
+              },
+              {
+                max: 40,
+                message: "El nombre de la ciudad no puede tener más de 40 caracteres",
+              },
+              {
+                pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
                 message:
-                  "En este campo no puede tener numeros ni caracteres especiales.",
+                  "El nombre de la ciudad solo puede contener letras mayúsculas con tildes y espacios",
               },
             ]}
           >
@@ -341,11 +392,28 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-residence-neighborhood"
             label="Barrio:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toUpperCase()
+                .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               {
-                pattern: /^[$a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/,
+                min: 3,
+                message: "El nombre del barrio debe tener al menos 3 caracteres",
+              },
+              {
+                max: 40,
+                message: "El nombre del barrio no puede tener más de 40 caracteres",
+              },
+              {
+                pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
                 message:
-                  "En este campo no puede tener numeros ni caracteres especiales.",
+                  "El nombre del barrio solo puede contener letras mayúsculas con tildes y espacios",
               },
             ]}
           >
@@ -370,6 +438,14 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-residence-address"
             label="Dirección:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toUpperCase()
+
+              return filteredValue;
+            }}
           >
             <Input
               prefix={
