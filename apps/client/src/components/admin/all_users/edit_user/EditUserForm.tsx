@@ -27,21 +27,8 @@ const EditUserForm: React.FC = () => {
   const NOT_REGISTER: string = "NO REGISTRA";
 
   const idUserState = useAppSelector((state) => state.selectedUser.id);
-  const nameUserState = useAppSelector((state) => state.selectedUser.name);
-  const lastNameUserState = useAppSelector(
-    (state) => state.selectedUser.last_name
-  );
-  const idTypeNameUserState = useAppSelector(
-    (state) => state.selectedUser.user_id_type
-  );
   const idNumberUserState = useAppSelector(
     (state) => state.selectedUser.id_number
-  );
-  const genderNameUserState = useAppSelector(
-    (state) => state.selectedUser.user_gender
-  );
-  const birthdateUserState = useAppSelector(
-    (state) => state.selectedUser.birthdate
   );
   const principalEmailUserState = useAppSelector(
     (state) => state.selectedUser.principal_email
@@ -63,56 +50,10 @@ const EditUserForm: React.FC = () => {
     (state) => state.selectedUser.permission
   );
 
-  const serviceTypeNameUserState = useAppSelector(
-    (state) => state.selectedUser.collaborator_service_type
-  );
-  const immediateBossUserState = useAppSelector(
-    (state) => state.selectedUser.collaborator_immediate_boss
-  );
-  const UnitUserState = useAppSelector(
-    (state) => state.selectedUser.collaborator_unit
-  );
-  const serviceUserState = useAppSelector(
-    (state) => state.selectedUser.collaborator_service
-  );
   const positionUserState = useAppSelector(
     (state) => state.selectedUser.collaborator_position
   );
   const userErrorsState = useAppSelector((state) => state.selectedUser.errors);
-
-  const bloodGroupNameUserProfileState = useAppSelector(
-    (state) => state.userProfile.user_blood_group
-  );
-  const affiliationEpsUserProfileState = useAppSelector(
-    (state) => state.userProfile.affiliation_eps
-  );
-  const residenceDepartmentUserProfileState = useAppSelector(
-    (state) => state.userProfile.residence_department
-  );
-  const residenceCityUserProfileState = useAppSelector(
-    (state) => state.userProfile.residence_city
-  );
-  const residenceAddressUserProfileState = useAppSelector(
-    (state) => state.userProfile.residence_address
-  );
-  const residenceNeighborhoodUserProfileState = useAppSelector(
-    (state) => state.userProfile.residence_neighborhood
-  );
-  const heightUserProfileState = useAppSelector(
-    (state) => state.userProfile.user_height
-  );
-  const weightUserProfileState = useAppSelector(
-    (state) => state.userProfile.user_weight
-  );
-  const shirtSizeUserProfileState = useAppSelector(
-    (state) => state.userProfile.user_shirt_size
-  );
-  const pantsSizeUserProfileState = useAppSelector(
-    (state) => state.userProfile.user_pants_size
-  );
-  const shoeSizeUserProfileState = useAppSelector(
-    (state) => state.userProfile.user_shoe_size
-  );
 
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -132,42 +73,6 @@ const EditUserForm: React.FC = () => {
   const [permissionUserLocalState, setPermissionUserLocalState] = useState<
     IPermission[]
   >([]);
-
-  const [bloodGroupUserProfileLocalState, setBloodGroupUserProfileLocalState] =
-    useState(0);
-  const [
-    affiliationEpsUserProfileLocalState,
-    setAffiliationEpsUserProfileLocalState,
-  ] = useState("");
-  const [
-    residenceDepartmentUserProfileLocalState,
-    setResidenceDepartmentUserProfileLocalState,
-  ] = useState("");
-  const [
-    residenceCityUserProfileLocalState,
-    setResidenceCityUserProfileLocalState,
-  ] = useState("");
-  const [
-    residenceAddressUserProfileLocalState,
-    setResidenceAddressUserProfileLocalState,
-  ] = useState("");
-  const [
-    residenceNeighborhoodUserProfileLocalState,
-    setResidenceNeighborhoodUserProfileLocalState,
-  ] = useState("");
-  const [heightUserProfileLocalState, setHeightUserProfileLocalState] =
-    useState("");
-  const [weightUserProfileLocalState, setWeightUserProfileLocalState] =
-    useState("");
-  const [shirtSizeUserProfileLocalState, setShirtSizeUserProfileLocalState] =
-    useState("");
-  const [pantsSizeUserProfileLocalState, setPantsSizeUserProfileLocalState] =
-    useState("");
-  const [shoeSizeUserProfileLocalState, setShoeSizeUserProfileLocalState] =
-    useState("");
-  const [bloodGroupListLocalState, setBloodGroupListLocalState]: any = useState(
-    []
-  );
 
   const [isSubmittingUpdatePersonal, setIsSubmittingUpdatePersonal] =
     useState(false);
@@ -213,10 +118,7 @@ const EditUserForm: React.FC = () => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
-    if (permissionUserState) {
-      setPermissionUserLocalState(permissionUserState);
-    }
-  }, [userData, idUserState, permissionUserState]);
+  }, [userData, idUserState]);
 
   const handleConfirmUpdatePersonalData = async (
     e: React.FormEvent<HTMLFormElement>

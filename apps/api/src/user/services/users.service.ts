@@ -899,8 +899,6 @@ export class UsersService {
       order: {
         name: 'ASC',
       },
-      loadEagerRelations: false,
-      loadRelationIds: true,
     });
 
     if (!allUsersWithProfile.length) {
@@ -912,6 +910,12 @@ export class UsersService {
       const result = [];
 
       allUsersWithProfile.map((item) => {
+        const userPermissionsId = item.permission?.map(
+          (permission, index: number) => permission.id,
+        );
+
+        const userRoleId = item.role?.map((role, index: number) => role.id);
+
         result.push({
           id: item.id,
           name: item.name,
@@ -952,8 +956,8 @@ export class UsersService {
           user_shirt_size: item.user_profile?.user_shirt_size,
           user_pants_size: item.user_profile?.user_pants_size,
           user_shoe_size: item.user_profile?.user_shoe_size,
-          role: item.role,
-          permission: item.permission,
+          role: userRoleId,
+          permission: userPermissionsId,
         });
       });
 
@@ -1147,7 +1151,6 @@ export class UsersService {
   ) {
     const userFound = await this.userRepository.findOneBy({
       id,
-      is_active: true,
     });
 
     if (!userFound) {
@@ -1353,7 +1356,9 @@ export class UsersService {
     @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: {
+        id,
+      },
     });
 
     if (!userFound) {
@@ -1394,7 +1399,9 @@ export class UsersService {
     @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: {
+        id,
+      },
     });
 
     if (!userFound) {

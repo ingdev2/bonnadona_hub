@@ -58,7 +58,6 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
     (state) => state.user.personal_cellphone
   );
 
-  // GLOBAL STATUS PROFILE
   const idUserProfileState = useAppSelector((state) => state.userProfile.id);
   const bloodGroupNameUserProfileState = useAppSelector(
     (state) => state.userProfile.user_blood_group
@@ -311,7 +310,6 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
         }),
       ]);
 
-      // Validar errores de updateUser
       let editUserDataError = userResponse.error;
       let editUserDataStatus = userResponse.data?.statusCode;
       let editUserDataValidationData = userResponse.data?.message;
@@ -331,7 +329,6 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
         return;
       }
 
-      // Validar errores de updateProfileUser
       let editProfileDataError = profileResponse.error;
       let editProfileDataStatus = profileResponse.data?.status;
       let editProfileDataValidationData = profileResponse.data?.message;

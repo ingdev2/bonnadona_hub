@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import AdminPersonalEditDataFormData from "./AdminPersonalEditDataFormData";
+
 import { Col } from "antd";
 
 import {
@@ -19,7 +21,6 @@ import {
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
-import AdminPersonalEditDataFormData from "./AdminPersonalEditDataFormData";
 
 const AdminPersonalEditDataForm: React.FC = () => {
   const dispatch = useAppDispatch();

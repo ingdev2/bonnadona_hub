@@ -4,12 +4,13 @@ import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
-
-import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+import AdminPersonalDataForm from "./admin_personal_data_forms/AdminPersonalDataForm";
 
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
+import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 
 import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 import {
@@ -25,10 +26,9 @@ import {
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
-import AdminPersonalDataForm from "./admin_personal_data_forms/AdminPersonalDataForm";
-import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
+
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
-import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
 
 const AdminPersonalDataContent: React.FC = () => {
   const dispatch = useAppDispatch();

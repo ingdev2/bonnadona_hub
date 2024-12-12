@@ -1,11 +1,13 @@
 import React from "react";
 
-import { Button, Checkbox, Col, Form, Input, List, Row, Select } from "antd";
 import { Store } from "antd/es/form/interface";
+
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import { Button, Checkbox, Col, Form, Input, Row } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
+
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
-import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { IRole } from "@/utils/interfaces/auth/role.interface";
 
 const EditUserFormData: React.FC<{

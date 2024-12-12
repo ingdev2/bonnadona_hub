@@ -17,7 +17,6 @@ const CollaboratorPersonalDataForm: React.FC = () => {
 
   const NOT_REGISTER: string = "NO REGISTRA";
 
-  //GLOBAL STATE USER
   const nameUserState = useAppSelector((state) => state.user.name);
   const lastNameUserState = useAppSelector((state) => state.user.last_name);
   const idTypeNameUserState = useAppSelector(
@@ -54,7 +53,6 @@ const CollaboratorPersonalDataForm: React.FC = () => {
 
   const errorsUserState = useAppSelector((state) => state.user.errors);
 
-  //GLOBAL STATE PROFILE USER
   const bloodGroupUserProfileState = useAppSelector(
     (state) => state.userProfile.user_blood_group
   );

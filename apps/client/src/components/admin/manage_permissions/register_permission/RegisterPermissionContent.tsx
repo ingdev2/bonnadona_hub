@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "antd";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
-import PermissionRegistrationForm from "./register_permission_forms/PermissionRegistrationForm";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import PermissionRegistrationForm from "./register_permission_forms/PermissionRegistrationForm";
+
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 const RegisterPermissionContent: React.FC = () => {

@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 
 import { Button, Col, Row } from "antd";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { subtitleStyleCss } from "@/theme/text_styles";
-import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 
 import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
 
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
 
 const CreateButton: React.FC<{

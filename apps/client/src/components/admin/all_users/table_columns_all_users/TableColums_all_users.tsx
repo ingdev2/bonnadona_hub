@@ -27,6 +27,7 @@ interface TableColumnProps {
   handleOnChangeSwitch: (record: User) => void;
   onClickSwitch: () => void;
   isLoadingSwitch: boolean;
+  blockUserAction: boolean;
   collaboratorPositionsData: string[] | undefined;
   idTypesData: IdType[] | undefined;
   genderTypesData: GenderType[] | undefined;
@@ -37,6 +38,7 @@ export const tableColumnsAllUsers = ({
   handleOnChangeSwitch,
   onClickSwitch,
   isLoadingSwitch,
+  blockUserAction,
   collaboratorPositionsData,
   idTypesData,
   genderTypesData,
@@ -169,17 +171,18 @@ export const tableColumnsAllUsers = ({
               handleClickSeeMore(record);
             }}
           />
-
-          <CustomSwitch
-            checkedChildrenCustomSwitch={<FaRegCheckCircle />}
-            unCheckedChildrenCustomSwitch={<FaBan />}
-            onChangeCustomSwitch={() => {
-              handleOnChangeSwitch(record);
-            }}
-            onClickCustomSwitch={onClickSwitch}
-            isActiveCustomSwitch={record[userIsActiveKey]}
-            isLoadingCustomSwitch={isLoadingSwitch}
-          />
+          {blockUserAction ? (
+            <CustomSwitch
+              checkedChildrenCustomSwitch={<FaRegCheckCircle />}
+              unCheckedChildrenCustomSwitch={<FaBan />}
+              onChangeCustomSwitch={() => {
+                handleOnChangeSwitch(record);
+              }}
+              onClickCustomSwitch={onClickSwitch}
+              isActiveCustomSwitch={record[userIsActiveKey]}
+              isLoadingCustomSwitch={isLoadingSwitch}
+            />
+          ) : null}
         </Space>
       </div>
     ),

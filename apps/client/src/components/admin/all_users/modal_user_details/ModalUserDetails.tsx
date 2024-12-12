@@ -5,7 +5,6 @@ import React, { ReactNode } from "react";
 import { Card, Row, Col, Descriptions } from "antd";
 
 import { titleStyleCss, subtitleStyleCss } from "@/theme/text_styles";
-import { useAppSelector } from "@/redux/hooks";
 
 const ModalUserDetails: React.FC<{
   titleDescription: string;
