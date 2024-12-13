@@ -45,7 +45,7 @@ const CustomDashboardLayoutCollaborators: React.FC<{
             alignContent: "center",
             backgroundColor: "#013B5A",
             top: "0px",
-            padding: "0 31px",
+            padding: "0px",
             margin: "0px",
             zIndex: 1,
           }}

@@ -20,7 +20,7 @@ async function refreshAccessToken(token: any) {
     const refreshedTokens = await response.json();
 
     if (!response.ok) {
-      throw refreshedTokens;
+      throw new Error("No se pudo refrescar el token.");
     }
 
     return {

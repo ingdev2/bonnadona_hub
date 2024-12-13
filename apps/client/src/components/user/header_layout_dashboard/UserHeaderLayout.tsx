@@ -55,25 +55,27 @@ const UserHeaderLayout: React.FC = () => {
       gutter={24}
       justify={"center"}
       align={"stretch"}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "100%", padding: "0px", margin: "0px" }}
     >
       <Col
-        span={6}
+        span={8}
         style={{
           display: "flex",
           flexFlow: "column wrap",
           width: "100%",
           height: "100%",
+          alignContent: "center",
           justifyContent: "flex-start",
-          alignContent: "flex-start",
+          padding: "0px 31px",
+          margin: "0px",
         }}
       >
         <a
           className="custom-layout-logo-header-patient"
           style={{
             display: "flex",
-            alignContent: "center",
             alignItems: "center",
+            alignContent: "center",
             justifyContent: "center",
             width: "100%",
             height: "100%",
@@ -97,12 +99,14 @@ const UserHeaderLayout: React.FC = () => {
       </Col>
 
       <Col
-        span={18}
+        span={16}
         style={{
           display: "flex",
           flexFlow: "row wrap",
           justifyContent: "flex-end",
           alignContent: "center",
+          padding: "0px 31px",
+          margin: "0px",
         }}
       >
         {!nameUserState && !lastNameUserState ? (
