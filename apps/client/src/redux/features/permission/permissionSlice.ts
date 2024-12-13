@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState: IPermission = {
-  id: 0,
+  id: "",
   name: "",
   description: "",
   applications: [],
@@ -48,7 +48,7 @@ export const permissionSlice = createSlice({
       state.errors = action.payload;
     },
     setResetPermission: (state) => {
-      state.id = 0;
+      state.id = "";
       state.name = "";
       state.description = "";
       state.applications = [];
