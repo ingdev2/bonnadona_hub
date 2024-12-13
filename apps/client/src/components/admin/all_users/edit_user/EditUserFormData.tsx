@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import { Store } from "antd/es/form/interface";

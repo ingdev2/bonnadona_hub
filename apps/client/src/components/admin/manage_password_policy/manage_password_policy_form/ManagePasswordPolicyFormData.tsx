@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import { Col, Form, Input, Row, Switch, Typography } from "antd";

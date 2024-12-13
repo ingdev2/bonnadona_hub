@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import { Store } from "antd/es/form/interface";
@@ -271,7 +273,8 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               },
               {
                 max: 40,
-                message: "El nombre de la eps no puede tener más de 40 caracteres",
+                message:
+                  "El nombre de la eps no puede tener más de 40 caracteres",
               },
               {
                 pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
@@ -314,11 +317,13 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             rules={[
               {
                 min: 3,
-                message: "El nombre del departamento debe tener al menos 3 caracteres",
+                message:
+                  "El nombre del departamento debe tener al menos 3 caracteres",
               },
               {
                 max: 40,
-                message: "El nombre del departamento no puede tener más de 40 caracteres",
+                message:
+                  "El nombre del departamento no puede tener más de 40 caracteres",
               },
               {
                 pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
@@ -359,11 +364,13 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             rules={[
               {
                 min: 3,
-                message: "El nombre de la ciudad debe tener al menos 3 caracteres",
+                message:
+                  "El nombre de la ciudad debe tener al menos 3 caracteres",
               },
               {
                 max: 40,
-                message: "El nombre de la ciudad no puede tener más de 40 caracteres",
+                message:
+                  "El nombre de la ciudad no puede tener más de 40 caracteres",
               },
               {
                 pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
@@ -404,11 +411,13 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             rules={[
               {
                 min: 3,
-                message: "El nombre del barrio debe tener al menos 3 caracteres",
+                message:
+                  "El nombre del barrio debe tener al menos 3 caracteres",
               },
               {
                 max: 40,
-                message: "El nombre del barrio no puede tener más de 40 caracteres",
+                message:
+                  "El nombre del barrio no puede tener más de 40 caracteres",
               },
               {
                 pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
@@ -441,8 +450,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             normalize={(value) => {
               if (!value) return "";
 
-              const filteredValue = value
-                .toUpperCase()
+              const filteredValue = value.toUpperCase();
 
               return filteredValue;
             }}
