@@ -113,7 +113,7 @@ const UserHeaderLayout: React.FC = () => {
           <CustomSpin />
         ) : (
           <CustomDropdown
-            titleCustomDropdown={`${getFirstName(nameUserState)} ${getFirstName(
+            titleCustomDropdown={`HOLA, ${getFirstName(nameUserState)} ${getFirstName(
               lastNameUserState
             )}`}
             iconCustomItem1={<PiUserListBold />}
