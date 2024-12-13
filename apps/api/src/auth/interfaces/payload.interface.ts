@@ -1,9 +1,9 @@
 import { IRole } from 'src/utils/interfaces/role.interface';
 
 export interface Payload {
-  id: string;
+  sub: string;
   name: string;
-  principal_email: string;
+  email: string;
   user_id_type: number;
   id_number: number;
   role?: IRole[];

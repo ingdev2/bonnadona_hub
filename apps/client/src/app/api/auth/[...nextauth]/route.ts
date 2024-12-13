@@ -25,9 +25,9 @@ async function refreshAccessToken(token: any) {
 
     return {
       ...token,
-      accessToken: refreshedTokens.access_token,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
-      acessTokenExpires:
+      access_token: refreshedTokens.access_token,
+      refresh_token: refreshedTokens.refresh_token,
+      access_token_expires_in:
         Date.now() + refreshedTokens.access_token_expires_in * 1000,
     };
   } catch (error) {
@@ -150,8 +150,8 @@ const handler = NextAuth({
           if (!refreshedToken.error) {
             return {
               ...token,
-              access_token: refreshedToken.accessToken,
-              access_token_expires_in: refreshedToken.accessTokenExpires,
+              access_token: refreshedToken.access_token,
+              access_token_expires_in: refreshedToken.access_token_expires_in,
             };
           } else {
             return {};

@@ -358,6 +358,75 @@ export class AuthService {
     return { principal_email };
   }
 
+  private getExpirationInSeconds(expiresIn: string): number {
+    const expiresInInSeconds = parseInt(expiresIn, 10) * 60;
+
+    return expiresInInSeconds;
+  }
+
+  private async generateTokens(user): Promise<Tokens> {
+    const jwtUserPayload = {
+      sub: user.sub,
+      name: user.name,
+      user_id_type: user.user_id_type,
+      id_number: user.id_number,
+      email: user.email,
+      role: user.role,
+    };
+
+    const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
+      [
+        await this.jwtService.signAsync(jwtUserPayload, {
+          secret: process.env.JWT_CONSTANTS_SECRET,
+          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+        }),
+
+        await this.jwtService.signAsync(jwtUserPayload, {
+          secret: process.env.JWT_CONSTANTS_SECRET,
+          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
+        }),
+
+        await this.getExpirationInSeconds(process.env.ACCESS_TOKEN_EXPIRES_IN),
+      ],
+    );
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      access_token_expires_in: accessTokenExpiresIn,
+    };
+  }
+
+  async refreshToken(refreshToken: string): Promise<any> {
+    try {
+      const user = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_CONSTANTS_SECRET,
+      });
+
+      const payload: Payload = {
+        sub: user.sub,
+        name: user.name,
+        user_id_type: user.user_id_type,
+        id_number: user.id_number,
+        email: user.email,
+        role: user.role,
+      };
+
+      const { access_token, refresh_token, access_token_expires_in } =
+        await this.generateTokens(payload);
+
+      return {
+        access_token,
+        refresh_token,
+        access_token_expires_in,
+        status: HttpStatus.CREATED,
+        message: '¡Refresh Token Successfully!',
+      };
+    } catch (error) {
+      throw new UnauthorizedException(`¡Refresh Token Failed!`);
+    }
+  }
+
   async verifyCodeAndLoginCollaboratorUser(
     principal_email: string,
     verification_code: number,
@@ -408,12 +477,12 @@ export class AuthService {
       true,
     );
 
-    const payload: Payload = {
-      id: collaboratorFound.id,
+    const payload = {
+      sub: collaboratorFound.id,
       name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
-      principal_email: collaboratorFound.principal_email,
       user_id_type: collaboratorFound.user_id_type,
       id_number: collaboratorFound.id_number,
+      email: collaboratorFound.principal_email,
       role: collaboratorFound.role.map((role) => ({
         id: role.id,
         name: role.name,
@@ -446,9 +515,8 @@ export class AuthService {
       refresh_token,
       access_token_expires_in,
       name: payload.name,
-      id_type: payload.user_id_type,
       id_number: payload.id_number,
-      principal_email: payload.principal_email,
+      principal_email: payload.email,
       role: payload.role,
       permission: payload.permission,
     };
@@ -508,11 +576,11 @@ export class AuthService {
     );
 
     const payload: Payload = {
-      id: adminOrAuditorFound.id,
+      sub: adminOrAuditorFound.id,
       name: `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}`,
-      principal_email: adminOrAuditorFound.principal_email,
       user_id_type: adminOrAuditorFound.user_id_type,
       id_number: adminOrAuditorFound.id_number,
+      email: adminOrAuditorFound.principal_email,
       role: adminOrAuditorFound.role.map((role) => ({
         id: role.id,
         name: role.name,
@@ -568,10 +636,8 @@ export class AuthService {
       access_token,
       refresh_token,
       access_token_expires_in,
-      name: payload.name,
-      id_type: payload.user_id_type,
       id_number: payload.id_number,
-      principal_email: payload.principal_email,
+      principal_email: payload.email,
       role: payload.role,
       permission: payload.permission,
     };
@@ -619,74 +685,5 @@ export class AuthService {
     });
 
     return { email: userCollaboratorWithCode.principal_email };
-  }
-
-  private getExpirationInSeconds(expiresIn: string): number {
-    const expiresInInSeconds = parseInt(expiresIn, 10) * 60;
-
-    return expiresInInSeconds;
-  }
-
-  private async generateTokens(userPayload: Payload): Promise<Tokens> {
-    const jwtUserPayload: Payload = {
-      id: userPayload.id,
-      name: userPayload.name,
-      principal_email: userPayload.principal_email,
-      user_id_type: userPayload.user_id_type,
-      id_number: userPayload.id_number,
-      role: userPayload.role,
-    };
-
-    const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
-      [
-        await this.jwtService.signAsync(jwtUserPayload, {
-          secret: process.env.JWT_CONSTANTS_SECRET,
-          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
-        }),
-
-        await this.jwtService.signAsync(jwtUserPayload, {
-          secret: process.env.JWT_CONSTANTS_SECRET,
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
-        }),
-
-        await this.getExpirationInSeconds(process.env.ACCESS_TOKEN_EXPIRES_IN),
-      ],
-    );
-
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      access_token_expires_in: accessTokenExpiresIn,
-    };
-  }
-
-  async refreshToken(refreshToken: string): Promise<any> {
-    try {
-      const userPayload: Payload = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_CONSTANTS_SECRET,
-      });
-
-      const payload: Payload = {
-        id: userPayload.id,
-        name: userPayload.name,
-        principal_email: userPayload.principal_email,
-        user_id_type: userPayload.user_id_type,
-        id_number: userPayload.id_number,
-        role: userPayload.role,
-      };
-
-      const { access_token, refresh_token, access_token_expires_in } =
-        await this.generateTokens(payload);
-
-      return {
-        access_token,
-        refresh_token,
-        access_token_expires_in,
-        status: HttpStatus.CREATED,
-        message: '¡Refresh Token Successfully!',
-      };
-    } catch (error) {
-      throw new UnauthorizedException(`¡Refresh Token Failed!`);
-    }
   }
 }

@@ -434,7 +434,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
         <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
-              Peso (Kg):
+              Peso (kg):
             </Typography.Title>
 
             <Input
@@ -450,7 +450,7 @@ const CollaboratorPersonalDataFormData: React.FC<{
         <Col span={6} style={{ marginBottom: "13px" }}>
           <div style={{ textAlign: "start" }}>
             <Typography.Title style={{ marginTop: 7 }} level={5}>
-              Estatura (m):
+              Estatura (cm):
             </Typography.Title>
 
             <Input
