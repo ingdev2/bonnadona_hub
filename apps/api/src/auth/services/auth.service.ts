@@ -191,7 +191,7 @@ export class AuthService {
 
     if (bannedUserFound) {
       throw new UnauthorizedException(
-        `¡Usuario bloqueado, por favor intente más tarde!`,
+        `¡Usuario bloqueado, por favor comunicarse con el equipo de soportes TICS!`,
       );
     }
 
@@ -283,7 +283,7 @@ export class AuthService {
 
     if (bannedAdminOrAuditorFound) {
       throw new UnauthorizedException(
-        `¡Usuario bloqueado, por favor intente más tarde!`,
+        `¡Usuario bloqueado, por favor comunicarse con el equipo de soportes TICS!`,
       );
     }
 

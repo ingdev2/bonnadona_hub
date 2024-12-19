@@ -11,8 +11,8 @@ const CustomTags: React.FC<{ tag: CustomTag }> = ({ tag }) => {
       color={tag.color}
       style={{
         color: tag.textColor,
-        margin: "0px",
         paddingInline: "13px",
+        margin: "4px",
       }}
     >
       {tag.label}

@@ -58,7 +58,7 @@ const UserHeaderLayout: React.FC = () => {
       style={{ width: "100%", height: "100%", padding: "0px", margin: "0px" }}
     >
       <Col
-        span={8}
+        span={6}
         style={{
           display: "flex",
           flexFlow: "column wrap",
@@ -99,7 +99,7 @@ const UserHeaderLayout: React.FC = () => {
       </Col>
 
       <Col
-        span={16}
+        span={18}
         style={{
           display: "flex",
           flexFlow: "row wrap",

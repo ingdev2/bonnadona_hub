@@ -4,22 +4,17 @@ import { FaRegEye } from "react-icons/fa";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FaBan } from "react-icons/fa";
 
+import { RolesEnum } from "@/utils/enums/roles/roles.enum";
+
 const userIdKey: keyof User = "id";
 const userNameKey: keyof User = "name";
 const userLastNameKey: keyof User = "last_name";
 const userPositionKey: keyof User = "collaborator_position";
+const userRoleKey: keyof User = "user_role";
 const userIdTypeKey: keyof User = "user_id_type";
 const userIdNumberKey: keyof User = "id_number";
 const userGenderKey: keyof User = "user_gender";
 const userPrincipalEmailKey: keyof User = "principal_email";
-const userCorporateEmailKey: keyof User = "corporate_email";
-const userPersonalEmailKey: keyof User = "personal_email";
-const userCorporateCellphoneKey: keyof User = "corporate_cellphone";
-const userPersonalCellphoneKey: keyof User = "personal_cellphone";
-const userResidenteDepartmentKey: keyof User = "residence_department";
-const userResidenceCityKey: keyof User = "residence_city";
-const userResidenceAddressKey: keyof User = "residence_address";
-const userResidenceNeighborhoodKey: keyof User = "residence_neighborhood";
 const userIsActiveKey: keyof User = "is_active";
 
 interface TableColumnProps {
@@ -32,6 +27,12 @@ interface TableColumnProps {
   idTypesData: IdType[] | undefined;
   genderTypesData: GenderType[] | undefined;
 }
+
+const enumDataFilters = (enumData: Object) =>
+  Object.values(enumData).map((value) => ({
+    text: value,
+    value,
+  }));
 
 export const tableColumnsAllUsers = ({
   handleClickSeeMore,
@@ -65,7 +66,6 @@ export const tableColumnsAllUsers = ({
     },
     ellipsis: true,
     searchable: true,
-    fixed: "left" as "left",
   },
   {
     title: "CARGO",
@@ -83,6 +83,19 @@ export const tableColumnsAllUsers = ({
     filterSearch: true,
     ellipsis: true,
     render: (position: string) => position,
+  },
+  {
+    title: "ROLE(S) DE USUARIO",
+    key: userRoleKey,
+    dataIndex: userRoleKey,
+    width: 270,
+    ellipsis: true,
+    filters: enumDataFilters(RolesEnum),
+    onFilter: (value: any, record: any) => {
+      return record[userRoleKey].includes(value);
+    },
+    render: (roles: string) => roles,
+    filterSearch: true,
   },
   {
     title: "TIPO DE ID",

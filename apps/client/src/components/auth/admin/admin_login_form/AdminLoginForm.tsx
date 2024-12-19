@@ -196,9 +196,10 @@ const AdminLoginForm: React.FC = () => {
               textAlign: "center",
               marginBlock: "22px",
               color: "#070707",
+              fontSize: "22px",
             }}
           >
-            Iniciar sesión
+            Iniciar sesión Administradores
           </h2>
 
           <Form
@@ -212,6 +213,11 @@ const AdminLoginForm: React.FC = () => {
               id="login-email-form"
               className="login-email-form"
               name="login-email-form"
+              normalize={(value) => {
+                if (!value) return "";
+
+                return value.toLowerCase().replace(/[^a-z0-9@._-]/g, "");
+              }}
               rules={[
                 { required: true, message: "Por favor ingrese su correo" },
                 {
@@ -227,6 +233,7 @@ const AdminLoginForm: React.FC = () => {
                   message: "Por favor ingrese un correo válido",
                 },
               ]}
+              hasFeedback
             >
               <Input
                 className="email-input"
@@ -240,6 +247,7 @@ const AdminLoginForm: React.FC = () => {
                 }
               />
             </Form.Item>
+
             <Form.Item
               id="login-password-form"
               className="login-password-form"
@@ -254,11 +262,12 @@ const AdminLoginForm: React.FC = () => {
                   message: "¡La contraseña debe tener máximo 70 caracteres!",
                 },
               ]}
+              hasFeedback
             >
               <Input.Password
                 className="password-input"
                 prefix={
-                  <RiLockPasswordLine style={{ color: "rgba(0,0,0,.25)" }} />
+                  <RiLockPasswordLine style={{ color: "rgba(0,0,0,.22)" }} />
                 }
                 type="password"
                 value={passwordAdminLocalState}

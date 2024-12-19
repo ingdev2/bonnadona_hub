@@ -22,9 +22,12 @@ interface User {
   collaborator_position: string;
   is_active: boolean;
   role?: Role[];
+  user_role?: string[];
   permission?: IPermission[];
   roleIdsToAdd?: number[];
-  permissionIdsToAdd?: IPermission[];
+  permissionIdsToAdd?: string[];
+  selectedRoleIdsToAdd?: number[];
+  selectedPermissionIdsToAdd?: string[];
   createdAt: string;
   updateAt: string;
   deletedAt: string;

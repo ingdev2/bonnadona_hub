@@ -96,7 +96,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
             src={collapsed ? "/logos/icono.png" : "/logos/logo_horizontal.png"}
             alt="Logo de Bonnadona Hub"
             style={{
-              maxWidth: collapsed ? "63%" : "77%",
+              maxWidth: collapsed ? "62%" : "76%",
               height: "auto",
               objectFit: "contain",
             }}

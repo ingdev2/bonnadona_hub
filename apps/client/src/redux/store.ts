@@ -13,6 +13,7 @@ import applicationReducer from "./features/permission/application/applicationSli
 import applicationModuleReducer from "./features/permission/application_module/applicationModuleSlice";
 import moduleActionReducer from "./features/permission/module_action/moduleActionSlice";
 import passwordPolicyReducer from "./features/password_policy/passwordPolicySlice";
+import auditLogReducer from "./features/audit_log/auditLogSlice";
 import modalReducer from "./features/common/modal/modalSlice";
 
 import { userApi } from "./apis/users/userApi";
@@ -28,6 +29,7 @@ import { moduleActionApi } from "./apis/permission/module_action/moduleActionApi
 import { passwordPolicyApi } from "./apis/password_policy/passwordPolicyApi";
 import { serviceTypesApi } from "./apis/service_types/serviceTypesApi";
 import { roleApi } from "./apis/role/roleApi";
+import { auditLogsApi } from "./apis/audit_logs/auditLogsApi";
 
 const persistConfig = {
   key: "root",
@@ -60,6 +62,7 @@ const rootReducer = combineReducers({
   applicationModule: applicationModuleReducer,
   moduleAction: moduleActionReducer,
   passwordPolicy: passwordPolicyReducer,
+  auditLog: auditLogReducer,
   modal: modalReducer,
 
   [userApi.reducerPath]: userApi.reducer,
@@ -75,6 +78,7 @@ const rootReducer = combineReducers({
   [passwordPolicyApi.reducerPath]: passwordPolicyApi.reducer,
   [serviceTypesApi.reducerPath]: serviceTypesApi.reducer,
   [roleApi.reducerPath]: roleApi.reducer,
+  [auditLogsApi.reducerPath]: auditLogsApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -99,6 +103,7 @@ export const store = configureStore({
       passwordPolicyApi.middleware,
       serviceTypesApi.middleware,
       roleApi.middleware,
+      auditLogsApi.middleware,
     ]),
 });
 

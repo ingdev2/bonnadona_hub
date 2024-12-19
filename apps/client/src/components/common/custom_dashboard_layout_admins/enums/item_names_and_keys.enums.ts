@@ -12,6 +12,9 @@ export enum ItemNames {
   SUB_APPLICATIONS = "Aplicaciones",
   SUB_MODULES_AND_ACTIONS = "Módulos y acciones",
 
+  ITEM_AUDIT = "Auditoria",
+  SUB_AUDIT_LOGS = "Total de registros",
+
   ITEM_MY_PROFILE = "Mi perfil",
   SUB_UPDATE_PERSONAL_DATA = "Mis datos",
 }
@@ -29,6 +32,9 @@ export enum ItemKeys {
   ITEM_APPLICATIONS_AND_MODULES_KEY = "applications_modules",
   SUB_APPLICATIONS_KEY = "applications",
   SUB_MODULES_AND_ACTIONS_KEY = "modules_actions",
+
+  ITEM_AUDIT_KEY = "audit",
+  SUB_AUDIT_LOGS_KEY = "audit_logs",
 
   ITEM_MY_PROFILE_KEY = "my_profile",
   SUB_UPDATE_PERSONAL_DATA_KEY = "personal_data",

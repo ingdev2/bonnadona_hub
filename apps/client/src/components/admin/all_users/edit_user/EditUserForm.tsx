@@ -16,10 +16,15 @@ import {
   setPersonalCellphoneSelectedUser,
   setPersonalEmailSelectedUser,
   setPrincipalEmailSelectedUser,
+  setSelectedPermissionIdsToAddSelectedUser,
+  setSelectedRoleIdsToAddSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
 import EditUserFormData from "./EditUserFormData";
 import { useGetAllRolesQuery } from "@/redux/apis/role/roleApi";
-import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
+import {
+  useGetAllPermissionsQuery,
+  useGetPermissionByIdQuery,
+} from "@/redux/apis/permission/permissionApi";
 
 const EditUserForm: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -45,9 +50,18 @@ const EditUserForm: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.selectedUser.personal_cellphone
   );
-  const roleUserState = useAppSelector((state) => state.selectedUser.role);
-  const permissionUserState = useAppSelector(
-    (state) => state.selectedUser.permission
+
+  const roleIdsUserState = useAppSelector(
+    (state) => state.selectedUser.roleIdsToAdd
+  );
+  const permissionIdsUserState = useAppSelector(
+    (state) => state.selectedUser.permissionIdsToAdd
+  );
+  const selectedRoleIdsUserState = useAppSelector(
+    (state) => state.selectedUser.selectedRoleIdsToAdd
+  );
+  const selectedPermissionIdsUserState = useAppSelector(
+    (state) => state.selectedUser.selectedPermissionIdsToAdd
   );
 
   const positionUserState = useAppSelector(
@@ -69,10 +83,6 @@ const EditUserForm: React.FC = () => {
     corporateCellphoneUserLocalState,
     setCorporateCellphoneUserLocalState,
   ] = useState("");
-  const [roleUserLocalState, setRoleUserLocalState] = useState([]);
-  const [permissionUserLocalState, setPermissionUserLocalState] = useState<
-    IPermission[]
-  >([]);
 
   const [isSubmittingUpdatePersonal, setIsSubmittingUpdatePersonal] =
     useState(false);
@@ -100,6 +110,7 @@ const EditUserForm: React.FC = () => {
     isLoading: allPermissionsLoading,
     isFetching: allPermissionsFetching,
     error: allPermissionsError,
+    refetch: refetchAllPermissions,
   } = useGetAllPermissionsQuery(null);
 
   const [
@@ -118,7 +129,20 @@ const EditUserForm: React.FC = () => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
-  }, [userData, idUserState]);
+    if (selectedRoleIdsUserState?.length === 0) {
+      dispatch(setSelectedRoleIdsToAddSelectedUser(roleIdsUserState));
+    }
+    if (selectedPermissionIdsUserState?.length === 0) {
+      dispatch(
+        setSelectedPermissionIdsToAddSelectedUser(permissionIdsUserState)
+      );
+    }
+  }, [
+    userData,
+    idUserState,
+    selectedRoleIdsUserState,
+    selectedPermissionIdsUserState,
+  ]);
 
   const handleConfirmUpdatePersonalData = async (
     e: React.FormEvent<HTMLFormElement>
@@ -140,8 +164,9 @@ const EditUserForm: React.FC = () => {
           corporate_cellphone:
             parseInt(corporateCellphoneUserLocalState, 10) ||
             corporateCellphoneUserState,
-          roleIdsToAdd: roleUserLocalState || roleUserState,
-          permissionIdsToAdd: permissionUserLocalState || permissionUserState,
+          roleIdsToAdd: selectedRoleIdsUserState || roleIdsUserState,
+          permissionIdsToAdd:
+            selectedPermissionIdsUserState || permissionIdsUserState,
         },
       });
       let editUserDataError = response.error;
@@ -180,6 +205,9 @@ const EditUserForm: React.FC = () => {
       if (editUserDataStatus === 202 && !editUserDataError) {
         setHasChanges(false);
 
+        setSuccessMessage("¡Datos del usuario actualizados correctamente!");
+        setShowSuccessMessage(true);
+
         dispatch(
           setPrincipalEmailSelectedUser(
             principalEmailUserLocalState || principalEmailUserState
@@ -207,9 +235,6 @@ const EditUserForm: React.FC = () => {
               corporateCellphoneUserState
           )
         );
-
-        setSuccessMessage("¡Datos del usuario actualizados correctamente!");
-        setShowSuccessMessage(true);
       }
     } catch (error) {
       console.error(error);
@@ -220,9 +245,10 @@ const EditUserForm: React.FC = () => {
   };
 
   const handleButtonClick = () => {
+    refetchAllPermissions();
+
     setSuccessMessage("");
     setShowSuccessMessage(false);
-
     setShowErrorMessage(false);
   };
 
@@ -282,22 +308,24 @@ const EditUserForm: React.FC = () => {
           setCorporateCellphoneUserLocalState(e.target.value);
         }}
         positionFormData={positionUserState}
-        roleUserFormData={roleUserState}
+        allRolesFormData={allRolesData}
+        roleUserFormData={selectedRoleIdsUserState || []}
         onChangeRoleUserFormData={(selectedRoles) => {
           setHasChanges(true);
 
-          setRoleUserLocalState(selectedRoles);
+          dispatch(setSelectedRoleIdsToAddSelectedUser(selectedRoles));
         }}
-        permissionUserFormData={permissionUserState}
-        onChangePermissionUserFormData={(selectedRoles) => {
+        allPermissionsFormData={allPermissionsData}
+        permissionUserFormData={selectedPermissionIdsUserState || []}
+        onChangePermissionUserFormData={(selectedPermissions) => {
           setHasChanges(true);
 
-          setPermissionUserLocalState(selectedRoles);
+          dispatch(
+            setSelectedPermissionIdsToAddSelectedUser(selectedPermissions)
+          );
         }}
-        allRolesFormData={allRolesData}
         loadingAllRolesFormData={allRolesLoading}
         fetchingAllRolesFormData={allRolesFetching}
-        allPermissionsFormData={allPermissionsData}
         loadingAllPermissionFormData={allPermissionsLoading}
         fetchingAllPermissionFormData={allPermissionsFetching}
         handleConfirmEditAdminFormData={handleConfirmUpdatePersonalData}
@@ -308,8 +336,6 @@ const EditUserForm: React.FC = () => {
           "edit-user-personal-cellphone": personalCellphoneUserState,
           "edit-user-corporate-cellphone": corporateCellphoneUserState,
           "edit-user-position": positionUserState || NOT_REGISTER,
-          "edit-user-role": roleUserState,
-          "edit-user-permission": permissionUserState,
         }}
         isSubmittingEditUserData={isSubmittingUpdatePersonal}
         hasChangesFormData={hasChanges}

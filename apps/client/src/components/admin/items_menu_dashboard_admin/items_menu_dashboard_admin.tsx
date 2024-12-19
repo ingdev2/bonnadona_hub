@@ -15,6 +15,7 @@ import { TbPasswordUser } from "react-icons/tb";
 import { MdPassword } from "react-icons/md";
 import { TbApps } from "react-icons/tb";
 import { IoIosApps } from "react-icons/io";
+import { AiOutlineAudit } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { PiUserListBold } from "react-icons/pi";
 
@@ -57,6 +58,11 @@ export const useMenuItems = () => {
   const passwordPolicyModule = PermissionsAppAndModuleValidationInComponent({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PASSWORD_POLICY],
+  });
+
+  const auditLogsModule = PermissionsAppAndModuleValidationInComponent({
+    allowedApplications: [ApplicationsEnum.BONNA_HUB],
+    allowedModules: [ApplicationModulesEnum.BONNA_HUB_LOG_FOR_AUDITS],
   });
 
   const idNumberUserSessionState = useAppSelector(
@@ -135,6 +141,21 @@ export const useMenuItems = () => {
               getItem(
                 ItemNames.SUB_APPLICATIONS,
                 ItemKeys.SUB_APPLICATIONS_KEY,
+                <IoIosApps size={15} />
+              ),
+            ].filter(Boolean)
+          )
+        : null,
+
+      auditLogsModule
+        ? getItem(
+            ItemNames.ITEM_AUDIT,
+            ItemKeys.ITEM_AUDIT_KEY,
+            <AiOutlineAudit size={17} />,
+            [
+              getItem(
+                ItemNames.SUB_AUDIT_LOGS,
+                ItemKeys.SUB_AUDIT_LOGS_KEY,
                 <IoIosApps size={15} />
               ),
             ].filter(Boolean)

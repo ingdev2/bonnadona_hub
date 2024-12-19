@@ -5,11 +5,13 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
 
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
+import { tableColumnsAllUsers } from "./table_columns_all_users/TableColums_all_users";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import CustomTableFiltersAndSorting from "@/components/common/custom_table_filters_and_sorting/CustomTableFiltersAndSorting";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
 import ModalUserDetails from "./modal_user_details/ModalUserDetails";
 import EditUserForm from "./edit_user/EditUserForm";
+import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 import { subtitleStyleCss } from "@/theme/text_styles";
 import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
 import { Button } from "antd";
@@ -22,14 +24,12 @@ import {
   useGetUserActiveByIdNumberQuery,
   useGetUserSessionLogByEmailQuery,
 } from "@/redux/apis/users/userApi";
+import { useGetAllRolesQuery } from "@/redux/apis/role/roleApi";
 import { useGetAllIdTypesQuery } from "@/redux/apis/id_types/idTypesApi";
 import { useGetAllGenderTypesQuery } from "@/redux/apis/gender_types/genderTypesApi";
 import { useGetAllServiceTypesQuery } from "@/redux/apis/service_types/serviceTypesApi";
 import { useGetAllBloodGroupsQuery } from "@/redux/apis/blood_group/bloodGroupApi";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
-
-import { transformIdToNameMap } from "@/helpers/transform_id_to_name/transform_id_to_name";
-import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 
 import {
   setChangePasswordExpiryModalIsOpen,
@@ -52,15 +52,14 @@ import {
   setIdTypeSelectedUser,
   setLastNameSelectedUser,
   setNameSelectedUser,
+  setPermissionIdsToAddSelectedUser,
   setPermissionSelectedUser,
   setPersonalCellphoneSelectedUser,
   setPersonalEmailSelectedUser,
   setPrincipalEmailSelectedUser,
+  setRoleIdsToAddSelectedUser,
   setRoleSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
-
-import { tableColumnsAllUsers } from "./table_columns_all_users/TableColums_all_users";
-
 import {
   setAffiliationEpsUserProfile,
   setBloodGroupUserProfile,
@@ -74,8 +73,14 @@ import {
   setUserShoeSizeUserProfile,
   setUserWeightUserProfile,
 } from "@/redux/features/user_profile/userProfileSlice";
-import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
+
 import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
+
+import {
+  mapTransformIdsToNames,
+  transformIdToNameMap,
+} from "@/helpers/transform_id_to_name/transform_id_to_name";
+import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
 
 const AllUsersContent: React.FC = () => {
@@ -198,6 +203,14 @@ const AllUsersContent: React.FC = () => {
   } = useGetAllCollaboratorPositionsQuery(null);
 
   const {
+    data: allRolesData,
+    isLoading: allRolesLoading,
+    isFetching: allRolesFetching,
+    error: allRolesError,
+    refetch: refecthAllRoles,
+  } = useGetAllRolesQuery(null);
+
+  const {
     data: allServiceTypesData,
     isLoading: allServiceTypesLoading,
     isFetching: allServiceTypesFetching,
@@ -251,6 +264,7 @@ const AllUsersContent: React.FC = () => {
   const genderTypeGetName = transformIdToNameMap(allGenderTypesData);
   const serviceTypeGetName = transformIdToNameMap(allServiceTypesData);
   const bloodGroupGetName = transformIdToNameMap(allBloodGroupData);
+  const roleGetName = transformIdToNameMap(allRolesData);
 
   const transformedData = Array.isArray(allUsersWithProfileData)
     ? allUsersWithProfileData.map((req: any) => ({
@@ -262,18 +276,20 @@ const AllUsersContent: React.FC = () => {
           req.collaborator_service_type,
         user_blood_group:
           bloodGroupGetName?.[req.user_blood_group] || req.user_blood_group,
+        user_role: mapTransformIdsToNames(req.role, roleGetName),
       }))
     : [];
 
   const handleClickSeeMore = (record: User) => {
+    refecthAllUsersWithProfile();
+
     dispatch(setTableRowId(""));
+
     setSelectedRowDataLocalState(record);
 
     dispatch(setTableRowId(record.id));
 
     setIsModalVisibleLocalState(true);
-
-    refecthAllUsersWithProfile();
 
     dispatch(setIdSelectedUser(record?.id));
     dispatch(setNameSelectedUser(record?.name));
@@ -296,7 +312,9 @@ const AllUsersContent: React.FC = () => {
       setCollaboratorPositionSelectedUser(record?.collaborator_position)
     );
     dispatch(setRoleSelectedUser(record?.role));
+    dispatch(setRoleIdsToAddSelectedUser(record?.role));
     dispatch(setPermissionSelectedUser(record?.permission));
+    dispatch(setPermissionIdsToAddSelectedUser(record?.permission));
     dispatch(setBloodGroupUserProfile(record?.user_blood_group));
     dispatch(setAffiliationEpsUserProfile(record?.affiliation_eps));
     dispatch(setResidenceDepartmentUserProfile(record?.residence_department));
@@ -540,6 +558,8 @@ const AllUsersContent: React.FC = () => {
                         marginBlock: "13px",
                       }}
                       onClick={() => {
+                        refecthAllUsersWithProfile();
+
                         setIsEditUserVisibleLocalState(true);
                       }}
                     >

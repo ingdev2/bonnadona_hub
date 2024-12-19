@@ -255,7 +255,7 @@ const UserLoginForm: React.FC = () => {
                   color: "#070707",
                 }}
               >
-                Iniciar sesión
+                Iniciar sesión Usuarios
               </h2>
 
               <Form
@@ -269,6 +269,11 @@ const UserLoginForm: React.FC = () => {
                   id="login-email-form"
                   className="login-email-form"
                   name="login-email-form"
+                  normalize={(value) => {
+                    if (!value) return "";
+
+                    return value.toLowerCase().replace(/[^a-z0-9@._-]/g, "");
+                  }}
                   rules={[
                     { required: true, message: "Por favor ingrese su correo" },
                     {
@@ -285,6 +290,7 @@ const UserLoginForm: React.FC = () => {
                       message: "Por favor ingrese un correo válido",
                     },
                   ]}
+                  hasFeedback
                 >
                   <Input
                     className="email-input"
@@ -316,12 +322,13 @@ const UserLoginForm: React.FC = () => {
                         "¡La contraseña debe tener máximo 70 caracteres!",
                     },
                   ]}
+                  hasFeedback
                 >
                   <Input.Password
                     className="password-input"
                     prefix={
                       <RiLockPasswordLine
-                        style={{ color: "rgba(0,0,0,.25)" }}
+                        style={{ color: "rgba(0,0,0,.22)" }}
                       />
                     }
                     type="password"
