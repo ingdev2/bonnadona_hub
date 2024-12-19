@@ -73,6 +73,7 @@ const AllAppsContent: React.FC = () => {
   } = useGetPasswordPolicyQuery(null);
 
   useEffect(() => {
+    console.log("permissionUser", permissionUser);
     if (
       userSessionLogData &&
       userActiveDatabyIdNumberData &&
@@ -135,6 +136,11 @@ const AllAppsContent: React.FC = () => {
                   <>
                     {permissionUser
                       ?.flatMap((data) => data.applications || [])
+                      .filter(
+                        (app, index, self) =>
+                          (app.is_active ?? true) &&
+                          self.findIndex((a) => a.id === app.id) === index
+                      )
                       .map((application: IApplication, index: number) => (
                         <Col
                           key={index}

@@ -501,6 +501,7 @@ export class AuthService {
           name: app.name,
           image_path: app.image_path,
           entry_link: app.entry_link,
+          is_active: app.is_active,
         })),
         application_modules: permission.application_modules.map((module) => ({
           id: module.id,
@@ -599,6 +600,7 @@ export class AuthService {
           name: app.name,
           image_path: app.image_path,
           entry_link: app.entry_link,
+          is_active: app.is_active,
         })),
         application_modules: permission.application_modules.map((module) => ({
           id: module.id,
