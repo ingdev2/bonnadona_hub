@@ -26,8 +26,14 @@ export class PermissionsController {
 
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
-  createPermission(@Body() createPermission: CreatePermissionDto) {
-    return this.permissionsService.createPermission(createPermission);
+  createPermission(
+    @Body() createPermission: CreatePermissionDto,
+    @Req() requestAuditLog: any,
+  ) {
+    return this.permissionsService.createPermission(
+      createPermission,
+      requestAuditLog,
+    );
   }
 
   // GET METHODS //

@@ -31,9 +31,11 @@ export class AuthController {
   @Post('/registerUserCollaborator')
   async registerUserCollaborator(
     @Body() registerUserCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
   ) {
     return await this.authService.registerUserCollaborator(
       registerUserCollaborator,
+      requestAuditLog,
     );
   }
 

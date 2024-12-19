@@ -26,8 +26,14 @@ export class ApplicationController {
 
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
-  createApplication(@Body() createApplication: CreateApplicationDto) {
-    return this.applicationService.createApplication(createApplication);
+  createApplication(
+    @Body() createApplication: CreateApplicationDto,
+    @Req() requestAuditLog: any,
+  ) {
+    return this.applicationService.createApplication(
+      createApplication,
+      requestAuditLog,
+    );
   }
 
   // GET METHODS //
@@ -54,8 +60,13 @@ export class ApplicationController {
   updateApplication(
     @Param('id') id: number,
     @Body() updateApplication: UpdateApplicationDto,
+    @Req() requestAuditLog: any,
   ) {
-    return this.applicationService.updateApplication(id, updateApplication);
+    return this.applicationService.updateApplication(
+      id,
+      updateApplication,
+      requestAuditLog,
+    );
   }
 
   @EnableAuditLog()

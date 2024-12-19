@@ -21,7 +21,10 @@ export class ApplicationService {
 
   // CREATE FUNTIONS //
 
-  async createApplication(application: CreateApplicationDto) {
+  async createApplication(
+    application: CreateApplicationDto,
+    requestAuditLog: any,
+  ) {
     const applicationFound = await this.applicationRepository.findOne({
       where: {
         name: application.name,
@@ -36,6 +39,16 @@ export class ApplicationService {
     }
 
     const newApplication = await this.applicationRepository.create(application);
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.CREATE_APP,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.APP_MODULE,
+      module_record_id: newApplication.id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     return await this.applicationRepository.save(newApplication);
   }
@@ -98,7 +111,11 @@ export class ApplicationService {
 
   // UPDATE FUNTIONS //
 
-  async updateApplication(id: number, application: UpdateApplicationDto) {
+  async updateApplication(
+    id: number,
+    application: UpdateApplicationDto,
+    requestAuditLog: any,
+  ) {
     const applicationFound = await this.applicationRepository.findOneBy({ id });
 
     if (!applicationFound) {
@@ -132,6 +149,16 @@ export class ApplicationService {
         HttpStatus.NOT_FOUND,
       );
     }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_APP,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.APP_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     throw new HttpException(
       `¡Datos guardados correctamente!`,

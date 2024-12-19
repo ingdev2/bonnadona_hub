@@ -383,7 +383,10 @@ export class UsersService {
     return data;
   }
 
-  async createUserCollaborator(userCollaborator: CreateUserDto) {
+  async createUserCollaborator(
+    userCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
     const data = await this.searchCollaborator({
       idType: userCollaborator.user_id_type,
       idNumber: userCollaborator.id_number,
@@ -551,6 +554,16 @@ export class UsersService {
       loadEagerRelations: false,
       loadRelationIds: true,
     });
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.CREATE_USER,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: userCollaboratorCreated.id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     const emailDetailsToSend = new SendEmailDto();
 

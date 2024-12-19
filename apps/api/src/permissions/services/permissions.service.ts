@@ -47,7 +47,10 @@ export class PermissionsService {
 
   // CREATE FUNTIONS //
 
-  async createPermission(permissionDto: CreatePermissionDto) {
+  async createPermission(
+    permissionDto: CreatePermissionDto,
+    @Req() requestAuditLog: any,
+  ) {
     const {
       applications: app_ids,
       application_modules: app_module_ids,
@@ -107,6 +110,16 @@ export class PermissionsService {
       application_modules: modules,
       module_actions: actions,
     });
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.CREATE_PERMISSION,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.PERMISSIONS_MODULE,
+      module_record_id: permission.id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     return await this.permissionRepo.save(permission);
   }

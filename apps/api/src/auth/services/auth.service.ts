@@ -64,39 +64,15 @@ export class AuthService {
 
   // REGISTER FUNTIONS //
 
-  async registerUserCollaborator({
-    name,
-    last_name,
-    user_id_type,
-    id_number,
-    user_gender,
-    birthdate,
-    password,
-    principal_email,
-    personal_email,
-    personal_cellphone,
-    corporate_email,
-    corporate_cellphone,
-    collaborator_service_type,
-    collaborator_unit,
-    collaborator_service,
-    collaborator_position,
-    collaborator_position_level,
-    collaborator_immediate_boss,
-    residence_address,
-  }: CreateUserDto) {
-    await this.userService.getUserByIdNumberAndRole(id_number, [
-      RolesEnum.COLLABORATOR,
-    ]);
-
-    return await this.userService.createUserCollaborator({
+  async registerUserCollaborator(
+    {
       name,
       last_name,
       user_id_type,
       id_number,
       user_gender,
       birthdate,
-      password: await bcryptjs.hash(password, 10),
+      password,
       principal_email,
       personal_email,
       personal_cellphone,
@@ -109,7 +85,37 @@ export class AuthService {
       collaborator_position_level,
       collaborator_immediate_boss,
       residence_address,
-    });
+    }: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    await this.userService.getUserByIdNumberAndRole(id_number, [
+      RolesEnum.COLLABORATOR,
+    ]);
+
+    return await this.userService.createUserCollaborator(
+      {
+        name,
+        last_name,
+        user_id_type,
+        id_number,
+        user_gender,
+        birthdate,
+        password: await bcryptjs.hash(password, 10),
+        principal_email,
+        personal_email,
+        personal_cellphone,
+        corporate_email,
+        corporate_cellphone,
+        collaborator_service_type,
+        collaborator_unit,
+        collaborator_service,
+        collaborator_position,
+        collaborator_position_level,
+        collaborator_immediate_boss,
+        residence_address,
+      },
+      requestAuditLog,
+    );
   }
 
   async createAllNewUsersFromKactus() {
