@@ -89,7 +89,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
             overflow: "hidden",
           }}
           onClick={() => {
-            router.replace("/admin/dashboard", { scroll: true });
+            router.replace("/admin/dashboard/all_user", { scroll: true });
           }}
         >
           <img

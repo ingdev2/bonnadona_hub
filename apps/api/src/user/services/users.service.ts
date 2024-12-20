@@ -627,15 +627,17 @@ export class UsersService {
       );
     }
 
-    const isCorporateEmail = await validateCorporateEmail(
-      userCollaborator.corporate_email,
-    );
-
-    if (!isCorporateEmail) {
-      throw new HttpException(
-        `El email : ${userCollaborator.corporate_email} no es un correo corporativo válido.`,
-        HttpStatus.BAD_REQUEST,
+    if (userCollaborator.corporate_email) {
+      const isCorporateEmail = await validateCorporateEmail(
+        userCollaborator.corporate_email,
       );
+
+      if (!isCorporateEmail) {
+        throw new HttpException(
+          `El email: ${userCollaborator.corporate_email} no es un correo corporativo válido.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
 
     const collaboratorServiceTypeFound =
@@ -1109,7 +1111,7 @@ export class UsersService {
           banned_user_until: item.banned_user_until,
           user_profile: item.user_profile,
           user_session_log: item.user_session_log,
-          user_blood_group: item.user_profile.user_blood_group,
+          user_blood_group: item.user_profile?.user_blood_group,
           profile_photo: item.user_profile?.profile_photo,
           affiliation_eps: item.user_profile?.affiliation_eps,
           residence_department: item.user_profile?.residence_department,

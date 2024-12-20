@@ -39,7 +39,7 @@ export class AuthController {
     );
   }
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/registerUserCollaboratorFromBonnadonaHub')
   async registerUserCollaboratorFromBonnadonaHub(
     @Body() registerUserCollaborator: CreateUserDto,
