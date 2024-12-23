@@ -30,8 +30,8 @@ export class UserProfile {
   @Column({ nullable: true })
   user_blood_group: number;
 
-  @Column({ type: 'text', array: true, nullable: true })
-  profile_photo: string[];
+  @Column({ type: 'text', nullable: true })
+  profile_photo: string;
 
   @Column({ type: 'text', nullable: true })
   affiliation_eps: string;
@@ -48,8 +48,8 @@ export class UserProfile {
   @Column({ nullable: true })
   residence_neighborhood: string;
 
-  @Column({ type: 'text', array: true, nullable: true })
-  digital_signature: string[];
+  @Column({ type: 'text', nullable: true })
+  digital_signature: string;
 
   @Column({ type: 'text', nullable: true })
   user_height: UserHeightEnum;

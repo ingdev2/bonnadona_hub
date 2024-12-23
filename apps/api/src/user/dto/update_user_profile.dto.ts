@@ -11,7 +11,7 @@ export class UpdateUserProfileDto {
 
   @IsOptional()
   @IsArray()
-  profile_photo: string[];
+  profile_photo: string;
 
   @IsOptional()
   @IsString()
@@ -32,10 +32,6 @@ export class UpdateUserProfileDto {
   @IsOptional()
   @IsString()
   residence_neighborhood: string;
-
-  @IsOptional()
-  @IsArray()
-  digital_signature: string[];
 
   @IsOptional()
   @IsEnum(UserHeightEnum)

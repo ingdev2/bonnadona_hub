@@ -119,6 +119,18 @@ export const userApi = createApi({
       }),
     }),
 
+    updateUserDigitalSignature: builder.mutation<
+      any,
+      { userId: string; digitalSignature: IDigitalSignature }
+    >({
+      query: ({ userId, digitalSignature }) => ({
+        url: `updateUserDigitalSign/${userId}`,
+        method: "PATCH",
+        params: { userId },
+        body: digitalSignature,
+      }),
+    }),
+
     updateUserPassword: builder.mutation<
       any,
       { id: string; passwords: UpdatePassword }
@@ -181,9 +193,10 @@ export const {
   useGetUserByIdNumberQuery,
   useGetUserRolesQuery,
   useUpdateUserMutation,
+  useUpdateUserPasswordMutation,
+  useUpdateUserProfileMutation,
+  useUpdateUserDigitalSignatureMutation,
   useBanUserMutation,
   useForgotUserPasswordMutation,
   useResetUserPasswordMutation,
-  useUpdateUserPasswordMutation,
-  useUpdateUserProfileMutation,
 } = userApi;

@@ -4,13 +4,13 @@ const initialState: UserProfile = {
   id: "",
   user_blood_group: 0,
   user_blood_group_abbrev: "",
-  profile_photo: [],
+  profile_photo: "",
   affiliation_eps: "",
   residence_department: "",
   residence_city: "",
   residence_address: "",
   residence_neighborhood: "",
-  digital_signature: [],
+  digital_signature: "",
   user_height: "",
   user_weight: "",
   user_shirt_size: "",
@@ -78,9 +78,9 @@ export const userProfileSlice = createSlice({
       state.id = "";
       state.user_blood_group = 0;
       state.user_blood_group_abbrev = "";
-      state.profile_photo = [];
+      state.profile_photo = "";
       state.affiliation_eps = "";
-      state.digital_signature = [];
+      state.digital_signature = "";
       state.user_height = "";
       state.user_weight = "";
       state.user_shirt_size = "";

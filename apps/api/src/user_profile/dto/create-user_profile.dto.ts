@@ -1,12 +1,12 @@
-import { IsOptional, IsString, IsArray, IsEmail } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateUserProfileDto {
   @IsOptional()
   user_blood_group: number;
 
   @IsOptional()
-  @IsArray()
-  profile_photo: string[];
+  @IsString()
+  profile_photo: string;
 
   @IsOptional()
   @IsString()
@@ -27,10 +27,6 @@ export class CreateUserProfileDto {
   @IsOptional()
   @IsString()
   residence_neighborhood: string;
-
-  @IsOptional()
-  @IsArray()
-  digital_signature: string[];
 
   @IsOptional()
   @IsString()

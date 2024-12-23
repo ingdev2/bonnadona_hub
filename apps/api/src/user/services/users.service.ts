@@ -45,6 +45,7 @@ import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { CreateDigitalSignatureDto } from 'src/user_profile/dto/create-digital-signature.dto';
 import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
 import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
@@ -1361,6 +1362,38 @@ export class UsersService {
       `¡Datos guardados correctamente!`,
       HttpStatus.ACCEPTED,
     );
+  }
+
+  async updateUserDigitalSignature(
+    userId: string,
+    { digital_signature }: CreateDigitalSignatureDto,
+  ) {
+    const userFound = await this.userRepository.findOneBy({
+      id: userId,
+      is_active: true,
+    });
+
+    if (!userFound) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.CONFLICT);
+    }
+
+    if (!digital_signature) {
+      throw new HttpException(`Firma no encontrada.`, HttpStatus.CONFLICT);
+    }
+
+    userFound.user_profile.digital_signature = digital_signature;
+
+    const updateUserProfile = await this.userProfileRepository.update(
+      { id: userFound.user_profile.id },
+      userFound.user_profile,
+    );
+
+    if (updateUserProfile) {
+      throw new HttpException(
+        `¡Datos guardados correctamente!`,
+        HttpStatus.ACCEPTED,
+      );
+    }
   }
 
   async updateUserRoles(

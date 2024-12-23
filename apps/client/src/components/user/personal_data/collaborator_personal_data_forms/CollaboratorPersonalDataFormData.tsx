@@ -79,7 +79,6 @@ const CollaboratorPersonalDataFormData: React.FC<{
       style={{
         margin: "0px",
         paddingInline: "7px",
-        paddingBlock: "7px",
       }}
     >
       <h2
@@ -520,7 +519,6 @@ const CollaboratorPersonalDataFormData: React.FC<{
           alignContent: "center",
           justifyContent: "center",
           paddingTop: "22px",
-          paddingBottom: "13px",
         }}
       >
         <Button

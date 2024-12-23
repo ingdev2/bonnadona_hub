@@ -15,6 +15,7 @@ import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
+import { CreateDigitalSignatureDto } from 'src/user_profile/dto/create-digital-signature.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
 import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
 import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
@@ -227,6 +228,23 @@ export class UsersController {
       id,
       updateUser,
       requestAuditLog,
+    );
+  }
+
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
+  @Patch('/updateUserDigitalSign/:userId')
+  async updateUserDigitalSignature(
+    @Param('userId') userId: string,
+    @Body() digital_signature: CreateDigitalSignatureDto,
+  ) {
+    return await this.usersService.updateUserDigitalSignature(
+      userId,
+      digital_signature,
     );
   }
 

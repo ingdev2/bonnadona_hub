@@ -8,6 +8,7 @@ import { Button } from "antd";
 import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashboard_layout_collaborators/CustomDashboardLayoutCollaborators";
 import UserHeaderLayout from "../header_layout_dashboard/UserHeaderLayout";
 import CollaboratorPersonalDataForm from "./collaborator_personal_data_forms/CollaboratorPersonalDataForm";
+import DigitalSignatureModal from "./digital_signature/DigitalSignatureModal";
 import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -23,26 +24,27 @@ import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/password
 
 import { setChangePasswordExpiryModalIsOpen } from "@/redux/features/common/modal/modalSlice";
 import {
+  setIdUser,
+  setNameUser,
+  setLastNameUser,
+  setGenderUser,
+  setGenderAbbrevUser,
+  setIdTypeUser,
+  setIdTypeAbbrevUser,
   setCollaboratorInmediateBossUser,
   setCollaboratorPositionUser,
   setCollaboratorServiceUser,
   setCorporateCellphoneUser,
   setCorporateEmailUser,
-  setGenderAbbrevUser,
-  setGenderUser,
-  setIdTypeAbbrevUser,
-  setIdTypeUser,
-  setLastNameUser,
-  setNameUser,
   setPersonalCellphoneUser,
   setPersonalEmailUser,
   setPrincipalEmailUser,
 } from "@/redux/features/user/userSlice";
 import {
+  setIdUserProfile,
   setAffiliationEpsUserProfile,
   setBloodGroupAbbrevUserProfile,
   setBloodGroupUserProfile,
-  setIdUserProfile,
   setResidenceAddressUserProfile,
   setResidenceCityUserProfile,
   setResidenceDepartmentUserProfile,
@@ -195,6 +197,7 @@ const CollaboratorPersonalDataContent = () => {
         !userActiveByIdNumberLoading &&
         !userActiveByIdNumberFetching)
     ) {
+      dispatch(setIdUser(userActiveByIdNumberData?.id));
       dispatch(setNameUser(userActiveByIdNumberData?.name));
       dispatch(setLastNameUser(userActiveByIdNumberData?.last_name));
       dispatch(setIdTypeUser(userActiveByIdNumberData?.user_id_type));
@@ -231,6 +234,7 @@ const CollaboratorPersonalDataContent = () => {
 
     if (userActiveProfileByIdData) {
       dispatch(setIdUserProfile(userActiveProfileByIdData.id));
+
       dispatch(
         setBloodGroupUserProfile(userActiveProfileByIdData.user_blood_group)
       );
@@ -391,6 +395,16 @@ const CollaboratorPersonalDataContent = () => {
                     }}
                   >
                     <CollaboratorPersonalDataForm />
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexFlow: "column wrap",
+                      width: "88%",
+                    }}
+                  >
+                    <DigitalSignatureModal />
                   </div>
                 </>
               )}

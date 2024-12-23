@@ -73,7 +73,6 @@ const AllAppsContent: React.FC = () => {
   } = useGetPasswordPolicyQuery(null);
 
   useEffect(() => {
-    console.log("permissionUser", permissionUser);
     if (
       userSessionLogData &&
       userActiveDatabyIdNumberData &&
