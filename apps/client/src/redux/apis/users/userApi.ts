@@ -43,6 +43,10 @@ export const userApi = createApi({
       query: () => "getAllColaboratorPositions",
     }),
 
+    getAllCollaboratorServices: builder.query<string[], null>({
+      query: () => "getAllColaboratorService",
+    }),
+
     getUser: builder.query<User, string>({
       query: (Id) => `getUser/${Id}`,
     }),
@@ -178,6 +182,7 @@ export const {
   useGetAllUsersWithProfileQuery,
   useGetAllActiveUsersQuery,
   useGetAllCollaboratorPositionsQuery,
+  useGetAllCollaboratorServicesQuery,
   useGetUserQuery,
   useGetUserProfileByIdQuery,
   useGetUserActiveProfileByIdQuery,
