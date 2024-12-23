@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { Button } from "antd";
 import CustomDashboardLayoutAdmins from "@/components/common/custom_dashboard_layout_admins/CustomDashboardLayoutAdmins";
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import CustomButton from "@/components/common/custom_button/CustomButton";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import UserRegistrationForm from "./register_user_form/UserRegistrationForm";
 
 const RegisterUserContent: React.FC = () => {
   const router = useRouter();
@@ -64,6 +64,8 @@ const RegisterUserContent: React.FC = () => {
               />
             </div>
           )}
+
+          <UserRegistrationForm />
         </div>
       }
     />
