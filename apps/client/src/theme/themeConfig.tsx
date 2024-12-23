@@ -42,16 +42,16 @@ const themeConfig: ThemeConfig = {
       colorPrimaryHover: "#3F97AF",
     },
     Select: {
-      borderRadius: 30,
+      borderRadius: 27,
     },
     Input: {
-      borderRadius: 30,
+      borderRadius: 27,
     },
     InputNumber: {
-      borderRadius: 30,
+      borderRadius: 27,
     },
     DatePicker: {
-      borderRadius: 30,
+      borderRadius: 27,
     },
   },
 };
