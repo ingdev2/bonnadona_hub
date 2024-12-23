@@ -24,6 +24,7 @@ export class PermissionsController {
 
   // POST METHODS //
 
+  @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
   createPermission(

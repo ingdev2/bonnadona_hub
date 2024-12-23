@@ -16,6 +16,7 @@ interface User {
   password: string;
   last_password_update: string;
   collaborator_service_type: number;
+  collaborator_position_level?: number;
   collaborator_immediate_boss: string;
   collaborator_unit: string;
   collaborator_service: string;
