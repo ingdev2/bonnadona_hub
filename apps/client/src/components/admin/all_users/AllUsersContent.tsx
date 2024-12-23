@@ -12,7 +12,6 @@ import CustomModalNoContent from "@/components/common/custom_modal_no_content/Cu
 import ModalUserDetails from "./modal_user_details/ModalUserDetails";
 import EditUserForm from "./edit_user/EditUserForm";
 import ChangePasswordModal from "@/components/common/change_password_modal/ChangePasswordModal";
-import { subtitleStyleCss } from "@/theme/text_styles";
 import { getTagComponentIdTypes } from "@/components/common/custom_tags_id_types/CustomTagsIdTypes";
 import { Button } from "antd";
 import { TbUserEdit } from "react-icons/tb";
