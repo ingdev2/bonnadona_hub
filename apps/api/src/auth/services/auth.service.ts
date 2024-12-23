@@ -118,6 +118,21 @@ export class AuthService {
     );
   }
 
+  async registerUserCollaboratorFromBonnadonaHub(
+    userCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    await this.userService.getUserByIdNumberAndRole(
+      userCollaborator.id_number,
+      [RolesEnum.COLLABORATOR],
+    );
+
+    return await this.userService.createUserCollaboratorFromBonnadonaHub(
+      userCollaborator,
+      requestAuditLog,
+    );
+  }
+
   async createAllNewUsersFromKactus() {
     try {
       const collaborators =

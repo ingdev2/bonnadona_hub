@@ -580,6 +580,161 @@ export class UsersService {
     return userCollaboratorCreated;
   }
 
+  async createUserCollaboratorFromBonnadonaHub(
+    userCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    const idNumber = userCollaborator.id_number;
+    userCollaborator.password = await bcryptjs.hash(idNumber, 10);
+
+    const userCollaboratorFound = await this.userRepository.findOne({
+      where: {
+        id_number: userCollaborator.id_number,
+      },
+    });
+
+    if (userCollaboratorFound) {
+      throw new HttpException(
+        `El usuario con número de identificación ${userCollaborator.id_number} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPrincipalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          principal_email: userCollaborator.principal_email,
+        },
+      });
+
+    if (userCollaboratorPrincipalEmailFound) {
+      throw new HttpException(
+        `El correo principal ${userCollaborator.principal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPersonalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          personal_email: userCollaborator.personal_email,
+        },
+      });
+
+    if (userCollaboratorPersonalEmailFound) {
+      throw new HttpException(
+        `El correo personal ${userCollaborator.personal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    if (userCollaborator.corporate_email) {
+      const isCorporateEmail = await validateCorporateEmail(
+        userCollaborator.corporate_email,
+      );
+
+      if (!isCorporateEmail) {
+        throw new HttpException(
+          `El email: ${userCollaborator.corporate_email} no es un correo corporativo válido.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    const collaboratorServiceTypeFound =
+      await this.serviceTypeRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_service_type,
+        },
+      });
+
+    if (!collaboratorServiceTypeFound) {
+      throw new HttpException(
+        `Tipo de servicio no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const collaboratorPositionLevelFound =
+      await this.positionLevelRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_position_level,
+        },
+      });
+
+    if (!collaboratorPositionLevelFound) {
+      throw new HttpException(
+        `Nivel de cargo no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorCreate =
+      await this.userRepository.create(userCollaborator);
+
+    const collaboratorRole = await this.roleRepository.findOne({
+      where: { name: RolesEnum.COLLABORATOR },
+    });
+
+    if (!collaboratorRole) {
+      throw new HttpException(
+        `El role ${RolesEnum.COLLABORATOR} no existe.`,
+        HttpStatus.CONFLICT,
+      );
+    } else {
+      userCollaboratorCreate.role = [collaboratorRole];
+    }
+
+    const userCollaboratorSave = await this.userRepository.save(
+      userCollaboratorCreate,
+    );
+
+    await this.permissionsService.assignDefaultPermissionsToUser(
+      userCollaboratorSave,
+      userCollaborator.collaborator_position,
+    );
+
+    const userSessionLog = new UserSessionLog();
+
+    userSessionLog.user = userCollaboratorSave;
+
+    const userSessionCreate =
+      await this.userSessionLogRepository.create(userSessionLog);
+
+    userCollaboratorSave.user_session_log = userSessionCreate;
+
+    await this.userRepository.save(userCollaboratorSave);
+
+    const userCollaboratorCreated = await this.userRepository.findOne({
+      where: { id: userCollaboratorSave.id },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.CREATE_USER,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: userCollaboratorCreated.id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    return userCollaboratorCreated;
+  }
+
   async createAllNewUsersCollaboratorsFromKactus(
     userCollaborator: CreateUserDto,
   ) {
@@ -957,7 +1112,7 @@ export class UsersService {
           banned_user_until: item.banned_user_until,
           user_profile: item.user_profile,
           user_session_log: item.user_session_log,
-          user_blood_group: item.user_profile.user_blood_group,
+          user_blood_group: item.user_profile?.user_blood_group,
           profile_photo: item.user_profile?.profile_photo,
           affiliation_eps: item.user_profile?.affiliation_eps,
           residence_department: item.user_profile?.residence_department,
@@ -1154,6 +1309,17 @@ export class UsersService {
       .getRawMany();
 
     return positions.map((position) => position.user_collaborator_position);
+  }
+
+  async getAllColaboratorService() {
+    const service = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.collaborator_service')
+      .orderBy('user.collaborator_service', 'ASC')
+      .distinct(true)
+      .getRawMany();
+
+    return service.map((service) => service.user_collaborator_service);
   }
 
   // UPDATE FUNTIONS //

@@ -82,6 +82,7 @@ import {
 } from "@/helpers/transform_id_to_name/transform_id_to_name";
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
+import CreateButton from "./create_button/CreateButton";
 
 const AllUsersContent: React.FC = () => {
   const { data: session, status } = useSession();
@@ -596,21 +597,11 @@ const AllUsersContent: React.FC = () => {
               flexFlow: "column wrap",
             }}
           >
-            <div>
-              <h2
-                style={{
-                  ...subtitleStyleCss,
-                  textAlign: "center",
-                  marginLeft: "45px",
-                }}
-              >
-                Total de&nbsp;
-                <b>
-                  {allUsersWithProfileData?.length || 0}
-                  &nbsp;usuario(s)
-                </b>
-              </h2>
-            </div>
+            <CreateButton
+              isSubmittingCreateButton={isSubmittingRegisterPageUser}
+              setIsSubmittingCreateButton={setIsSubmittingRegisterPageUser}
+            />
+
             <CustomTableFiltersAndSorting
               dataCustomTable={transformedData || []}
               columnsCustomTable={tableColumnsAllUsers({

@@ -39,6 +39,18 @@ export class AuthController {
     );
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Post('/registerUserCollaboratorFromBonnadonaHub')
+  async registerUserCollaboratorFromBonnadonaHub(
+    @Body() registerUserCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    return await this.authService.registerUserCollaboratorFromBonnadonaHub(
+      registerUserCollaborator,
+      requestAuditLog,
+    );
+  }
+
   @Post('/createAllNewUsersFromKactus')
   async createAllNewUsersFromKactus() {
     return await this.authService.createAllNewUsersFromKactus();

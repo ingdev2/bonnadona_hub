@@ -193,6 +193,12 @@ export class UsersController {
     return await this.usersService.getAllColaboratorPositions();
   }
 
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Get('/getAllColaboratorService')
+  async getAllColaboratorService() {
+    return await this.usersService.getAllColaboratorService();
+  }
+
   // PATCH METHODS //
 
   @EnableAuditLog()
