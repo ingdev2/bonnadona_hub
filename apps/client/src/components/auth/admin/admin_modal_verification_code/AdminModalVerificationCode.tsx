@@ -112,7 +112,7 @@ const AdminModalVerificationCode: React.FC = () => {
         dispatch(setPasswordLoginUser(""));
         dispatch(setVerificationCodeLoginUser(0));
 
-        await router.replace("/admin/dashboard", { scroll: false });
+        await router.replace("/admin/dashboard/all_user", { scroll: false });
 
         await new Promise((resolve) => setTimeout(resolve, 4000));
       }

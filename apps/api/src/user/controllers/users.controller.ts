@@ -186,13 +186,13 @@ export class UsersController {
     return await this.usersService.getUserPermissions(id);
   }
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAllColaboratorPositions')
   async getAllColaboratorPositions() {
     return await this.usersService.getAllColaboratorPositions();
   }
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAllColaboratorService')
   async getAllColaboratorService() {
     return await this.usersService.getAllColaboratorService();
