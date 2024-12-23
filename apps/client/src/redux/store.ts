@@ -30,6 +30,8 @@ import { passwordPolicyApi } from "./apis/password_policy/passwordPolicyApi";
 import { serviceTypesApi } from "./apis/service_types/serviceTypesApi";
 import { roleApi } from "./apis/role/roleApi";
 import { auditLogsApi } from "./apis/audit_logs/auditLogsApi";
+import { positionLevelsApi } from "./apis/position_levels/positionLevelsApi";
+import { registerUserApi } from "./apis/register/registerUserApi";
 
 const persistConfig = {
   key: "root",
@@ -79,6 +81,8 @@ const rootReducer = combineReducers({
   [serviceTypesApi.reducerPath]: serviceTypesApi.reducer,
   [roleApi.reducerPath]: roleApi.reducer,
   [auditLogsApi.reducerPath]: auditLogsApi.reducer,
+  [positionLevelsApi.reducerPath]: positionLevelsApi.reducer,
+  [registerUserApi.reducerPath]: registerUserApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -104,6 +108,8 @@ export const store = configureStore({
       serviceTypesApi.middleware,
       roleApi.middleware,
       auditLogsApi.middleware,
+      positionLevelsApi.middleware,
+      registerUserApi.middleware,
     ]),
 });
 

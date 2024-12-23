@@ -27,6 +27,7 @@ export class AuthController {
 
   // REGISTER //
 
+  @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/registerUserCollaborator')
   async registerUserCollaborator(
@@ -39,6 +40,7 @@ export class AuthController {
     );
   }
 
+  @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/registerUserCollaboratorFromBonnadonaHub')
   async registerUserCollaboratorFromBonnadonaHub(
