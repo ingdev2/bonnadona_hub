@@ -8,9 +8,11 @@ import { titleStyleCss } from "@/theme/text_styles";
 import { MdDriveFileRenameOutline, MdOutlineEmail } from "react-icons/md";
 import { IdcardOutlined } from "@ant-design/icons";
 import { FiPhone } from "react-icons/fi";
+import CustomDatePicker from "@/components/common/custom_date_picker/CustomDatePicker";
+import { validateRequiredDate } from "@/helpers/validate_required_values/validate_required_files";
 
-const UserRegistrationDataForm: React.FC<{
-  handleCreateDataForm: () => void;
+const UserRegistrationFormData: React.FC<{
+  handleCreateUserDataForm: () => void;
   userNameDataForm: string;
   handleOnChangeUserNameDataForm: (e: any) => void;
   userLastNameDataForm: string;
@@ -25,17 +27,20 @@ const UserRegistrationDataForm: React.FC<{
   userGenderListDataForm: string[];
   userIdNumberDataForm: number;
   handleOnChangeUserIdNumberDataForm: (e: any) => void;
+  onChangeDateCustomDatePicker: (
+    date: any,
+    dateString: string | string[]
+  ) => void;
   userBirthdateDataForm: string;
-  handleOnChangeUserBirthdateDataForm: (e: any) => void;
   userPrincipalEmailDataForm: string;
   handleOnChangeUserPrincipalEmailDataForm: (e: any) => void;
   userCorporateEmailDataForm: string;
   handleOnChangeUserCorporateEmailDataForm: (e: any) => void;
   userPersonalEmailDataForm: string;
   handleOnChangeUserPersonalEmailDataForm: (e: any) => void;
-  userPersonalCellphoneDataForm: string;
+  userPersonalCellphoneDataForm: number;
   handleOnChangeUserPersonalCellphoneDataForm: (e: any) => void;
-  userCorporateCellphoneDataForm: string;
+  userCorporateCellphoneDataForm: number;
   handleOnChangeUserCorporateCellphoneDataForm: (e: any) => void;
   serviceTypeSelectorLoadingDataForm: boolean;
   userServiceTypeValueDataForm: number;
@@ -45,13 +50,28 @@ const UserRegistrationDataForm: React.FC<{
   userPositionLevelValueDataForm: number;
   handleOnChangeSelectPositionLevelDataForm: (value: number) => void;
   userPositionLevelListDataForm: string[];
+  positionSelectorLoadingDataForm: boolean;
+  userPositionValueDataForm: string;
+  handleOnChangeSelectPositionDataForm: (value: string) => void;
+  userPositionListDataForm: string[];
+  serviceSelectorLoadingDataForm: boolean;
+  userServiceValueDataForm: string;
+  handleOnChangeSelectServiceDataForm: (value: string) => void;
+  userServiceListDataForm: string[];
+  inmediateBossNameDataForm: string;
+  optionsInmediateBossNameFormData: any[];
+  handleOnChangeInmediateBossNameDataForm: (e: any) => void;
+  handleSearchNameInmediateBossNameDataForm: (e: any) => void;
+  buttonSubmitFormLoadingDataForm: boolean;
+  handleButtonSubmitDataForm: () => void;
 }> = ({
-  handleCreateDataForm,
+  handleCreateUserDataForm,
   handleOnChangeSelectGenderDataForm,
   handleOnChangeSelectIdTypeDataForm,
   handleOnChangeSelectPositionLevelDataForm,
+  handleOnChangeSelectPositionDataForm,
+  handleOnChangeSelectServiceDataForm,
   handleOnChangeSelectServiceTypeDataForm,
-  handleOnChangeUserBirthdateDataForm,
   handleOnChangeUserCorporateEmailDataForm,
   handleOnChangeUserIdNumberDataForm,
   handleOnChangeUserLastNameDataForm,
@@ -60,9 +80,15 @@ const UserRegistrationDataForm: React.FC<{
   handleOnChangeUserCorporateCellphoneDataForm,
   handleOnChangeUserPersonalEmailDataForm,
   handleOnChangeUserPrincipalEmailDataForm,
+  onChangeDateCustomDatePicker,
+  handleOnChangeInmediateBossNameDataForm,
+  handleSearchNameInmediateBossNameDataForm,
+  handleButtonSubmitDataForm,
   genderSelectorLoadingDataForm,
   idTypeSelectorLoadingDataForm,
   positionLevelSelectorLoadingDataForm,
+  positionSelectorLoadingDataForm,
+  serviceSelectorLoadingDataForm,
   serviceTypeSelectorLoadingDataForm,
   userBirthdateDataForm,
   userCorporateEmailDataForm,
@@ -78,16 +104,23 @@ const UserRegistrationDataForm: React.FC<{
   userPersonalEmailDataForm,
   userPositionLevelListDataForm,
   userPositionLevelValueDataForm,
+  userPositionListDataForm,
+  userPositionValueDataForm,
+  userServiceListDataForm,
+  userServiceValueDataForm,
   userPrincipalEmailDataForm,
   userServiceTypeListDataForm,
   userServiceTypeValueDataForm,
+  inmediateBossNameDataForm,
+  optionsInmediateBossNameFormData,
+  buttonSubmitFormLoadingDataForm,
 }) => {
   return (
     <Form
       id="create-user-form"
       name="create-user-form"
       className="create-user-form"
-      onFinish={handleCreateDataForm}
+      onFinish={handleCreateUserDataForm}
       initialValues={{ remember: false }}
       autoComplete="false"
       layout="vertical"
@@ -191,9 +224,9 @@ const UserRegistrationDataForm: React.FC<{
                 <MdDriveFileRenameOutline className="site-form-item-icon" />
               }
               type="text"
-              value={userNameDataForm}
+              value={userLastNameDataForm}
               placeholder="Apellido(s) completos"
-              onChange={handleOnChangeUserNameDataForm}
+              onChange={handleOnChangeUserLastNameDataForm}
               autoComplete="off"
             />
           </Form.Item>
@@ -306,7 +339,26 @@ const UserRegistrationDataForm: React.FC<{
           </Form.Item>
         </Col>
 
-        <Col>{/* AQUI FECHA DE NACIMIENTO */}</Col>
+        <Col span={12}>
+          <Form.Item
+            name="date-picker-new-user"
+            label="Fecha de nacimiento del usuario"
+            style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                required: true,
+                validator: validateRequiredDate(
+                  userBirthdateDataForm,
+                  "¡Por favor seleccionar la fecha de nacimiento!"
+                ),
+              },
+            ]}
+          >
+            <CustomDatePicker
+              onChangeDateCustomDatePicker={onChangeDateCustomDatePicker}
+            />
+          </Form.Item>
+        </Col>
       </Row>
 
       <Row gutter={24}>
@@ -517,9 +569,203 @@ const UserRegistrationDataForm: React.FC<{
             />
           </Form.Item>
         </Col>
+
+        <Col span={12}>
+          <Form.Item
+            name="new-user-service-types"
+            label="Tipo de servicio"
+            style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                required: true,
+                message: "¡Por favor selecciona el tipo de servicio!",
+              },
+            ]}
+          >
+            {serviceTypeSelectorLoadingDataForm ? (
+              <CustomSpin />
+            ) : (
+              <Select
+                value={userServiceTypeValueDataForm}
+                placeholder="Tipo de sercicio"
+                onChange={handleOnChangeSelectServiceTypeDataForm}
+              >
+                {userServiceTypeListDataForm?.map((option: any) => (
+                  <Select.Option key={option.id} value={option.id}>
+                    {option.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
+        </Col>
       </Row>
+
+      <Row gutter={24}>
+        <Col span={12}>
+          <Form.Item
+            name="new-user-position-level"
+            label="Nivel de cargo"
+            style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                required: true,
+                message: "¡Por favor selecciona el nivel de cargo!",
+              },
+            ]}
+          >
+            {positionLevelSelectorLoadingDataForm ? (
+              <CustomSpin />
+            ) : (
+              <Select
+                value={userPositionLevelValueDataForm}
+                placeholder="Nivel de cargo"
+                onChange={handleOnChangeSelectPositionLevelDataForm}
+              >
+                {userPositionLevelListDataForm?.map((option: any) => (
+                  <Select.Option key={option.id} value={option.id}>
+                    {option.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item
+            name="new-user-position"
+            label="Cargo"
+            style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                required: true,
+                message: "¡Por favor selecciona el cargo!",
+              },
+            ]}
+          >
+            {positionSelectorLoadingDataForm ? (
+              <CustomSpin />
+            ) : (
+              <Select
+                value={userPositionValueDataForm}
+                placeholder="Cargo"
+                onChange={handleOnChangeSelectPositionDataForm}
+              >
+                {userPositionListDataForm?.map((option: any) => (
+                  <Select.Option key={option} value={option}>
+                    {option}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={24}>
+        <Col span={12}>
+          <Form.Item
+            name="new-user-service"
+            label="Servicio"
+            style={{ marginBottom: "13px" }}
+            rules={[
+              {
+                required: true,
+                message: "¡Por favor selecciona el servicio!",
+              },
+            ]}
+          >
+            {serviceSelectorLoadingDataForm ? (
+              <CustomSpin />
+            ) : (
+              <Select
+                value={userServiceValueDataForm}
+                placeholder="Servicio"
+                onChange={handleOnChangeSelectServiceDataForm}
+              >
+                {userServiceListDataForm?.map((option: any) => (
+                  <Select.Option key={option} value={option}>
+                    {option}
+                  </Select.Option>
+                ))}
+              </Select>
+            )}
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
+          <Form.Item
+            name="new-user-boss-inmediate-name"
+            label="Nombre del jefe inmediato:"
+            style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toUpperCase()
+                .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, "");
+
+              return filteredValue;
+            }}
+            rules={[
+              {
+                required: false,
+                message: "¡Por favor ingrese el nombre del jefe inmediato!",
+              },
+              {
+                min: 3,
+                message: "El nombre debe tener al menos 3 caracteres",
+              },
+              {
+                max: 50,
+                message: "El nombre no puede tener más de 50 caracteres",
+              },
+              {
+                pattern: /^[A-ZÁÉÍÓÚÑ\s]*$/,
+                message:
+                  "El nombre solo puede contener letras mayúsculas con tildes y espacios",
+              },
+            ]}
+          >
+            <AutoComplete
+              id="name-inmediate-boss"
+              options={optionsInmediateBossNameFormData}
+              style={{ width: "100%" }}
+              onSearch={handleSearchNameInmediateBossNameDataForm}
+              placeholder="Nombre del Jefe inmediato"
+              value={inmediateBossNameDataForm}
+              onChange={handleOnChangeInmediateBossNameDataForm}
+              filterOption={false}
+            >
+              <Input type="text" autoComplete="off" />
+            </AutoComplete>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Form.Item style={{ textAlign: "center", marginBlock: "17px" }}>
+        {buttonSubmitFormLoadingDataForm ? (
+          <CustomSpin />
+        ) : (
+          <Button
+            size="large"
+            style={{
+              paddingInline: 62,
+              borderRadius: 31,
+              backgroundColor: "#015E90",
+              color: "#f2f2f2",
+            }}
+            htmlType="submit"
+            className="create-user-form-button"
+            onClick={handleButtonSubmitDataForm}
+          >
+            Crear usuario
+          </Button>
+        )}
+      </Form.Item>
     </Form>
   );
 };
 
-export default UserRegistrationDataForm;
+export default UserRegistrationFormData;
