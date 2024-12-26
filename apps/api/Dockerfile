@@ -25,5 +25,5 @@ EXPOSE 3001
 # Start the server using the production build
 CMD ["npm", "run", "start"]
 
-#sudo docker build -t bonnadona-hub-back-[version] 
+#sudo docker build -t bonnadona-hub-back-[version] .
 #sudo docker run -p 3001:3001 bonnadona-hub-back-[version]

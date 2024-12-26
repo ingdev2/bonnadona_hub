@@ -42,5 +42,5 @@ USER node
 # Start the Next.js app
 CMD ["npm", "start"]
 
-#sudo docker build -t bonnadona-hub-front-[version] 
+#sudo docker build -t bonnadona-hub-front-[version] .
 #sudo docker run -p 3001:3001 bonnadona-hub-front-[version]
