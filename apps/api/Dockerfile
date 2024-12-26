@@ -20,11 +20,10 @@ COPY . .
 RUN npm run build
 
 # Expose the port on which the app will run
-EXPOSE 3002
+EXPOSE 3001
 
 # Start the server using the production build
 CMD ["npm", "run", "start"]
 
-#sudo docker build -t bonnadona-hub-back-[version] .
-#sudo docker run -p 3002:3002 bonnadona-hub-back-[version]
-#we need to change the app PORT in mainTS when we Deploy
+#sudo docker build -t bonnadona-hub-back-[version] 
+#sudo docker run -p 3001:3001 bonnadona-hub-back-[version]
