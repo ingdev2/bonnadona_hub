@@ -43,4 +43,4 @@ USER node
 CMD ["npm", "start"]
 
 #sudo docker build -t bonnadona-hub-front-[version] .
-#sudo docker run -p 3001:3001 bonnadona-hub-front-[version]
+#sudo docker run -p 4001:4001 bonnadona-hub-front-[version]
