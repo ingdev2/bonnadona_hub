@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -14,16 +14,42 @@ import { UserOutlined } from "@ant-design/icons";
 import { PiUserListBold } from "react-icons/pi";
 
 import { resetLoginStateUser } from "@/redux/features/login/userLoginSlice";
-import { setDefaultValuesUser } from "@/redux/features/user/userSlice";
+import {
+  setDefaultValuesUser,
+  setLastNameUser,
+  setNameUser,
+} from "@/redux/features/user/userSlice";
 
 import { getFirstName } from "@/helpers/get_first_name/get_first_name";
+import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
 
 const UserHeaderLayout: React.FC = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
+  const idNumberAdminState = useAppSelector((state) => state.user.id_number);
+
   const nameUserState = useAppSelector((state) => state.user.name);
   const lastNameUserState = useAppSelector((state) => state.user.last_name);
+
+  const {
+    data: userActiveDatabyIdNumberData,
+    isLoading: userActiveDatabyIdNumberLoading,
+    isFetching: userActiveDatabyIdNumberFetching,
+    isError: userActiveDatabyIdNumberError,
+  } = useGetUserActiveByIdNumberQuery(idNumberAdminState, {
+    skip: !idNumberAdminState,
+  });
+
+  useEffect(() => {
+    if (
+      !nameUserState ||
+      (!lastNameUserState && userActiveDatabyIdNumberData)
+    ) {
+      dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
+      dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
+    }
+  }, [userActiveDatabyIdNumberData, nameUserState, lastNameUserState]);
 
   const handleClickUpdatePersonalData = async () => {
     try {
