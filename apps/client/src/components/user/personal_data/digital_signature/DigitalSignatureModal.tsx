@@ -47,8 +47,7 @@ const DigitalSignatureModal: React.FC<{}> = () => {
           backgroundColor: "#015E90",
           fontWeight: "bold",
           borderRadius: "31px",
-          paddingBlock: "20px",
-          paddingInline: "31px",
+          paddingInline: "22px",
         }}
         type="primary"
         size="middle"

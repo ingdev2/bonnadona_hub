@@ -2,7 +2,6 @@
 
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useSession } from "next-auth/react";
 
 import { Col, Empty, Row } from "antd";
 import styles from "./AllAppsContent.module.css";
@@ -11,6 +10,7 @@ import CustomDashboardLayoutCollaborators from "@/components/common/custom_dashb
 import UserHeaderLayout from "../header_layout_dashboard/UserHeaderLayout";
 import CustomOptionWithImageCard from "@/components/common/custom_option_with_image_card/CustomOptionWithImageCard";
 import ChangePasswordModal from "../../common/change_password_modal/ChangePasswordModal";
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 
 import {
   setChangePasswordExpiryModalIsOpen,
@@ -19,6 +19,7 @@ import {
 
 import {
   useGetUserActiveByIdNumberQuery,
+  useGetUserPermissionsQuery,
   useGetUserSessionLogByEmailQuery,
 } from "@/redux/apis/users/userApi";
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
@@ -26,15 +27,12 @@ import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/password
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
 
 const AllAppsContent: React.FC = () => {
-  const { data: session, status } = useSession();
   const dispatch = useAppDispatch();
 
-  const permissionUser: IPermissions[] | undefined = session?.user.permission;
-
+  const idNumberUserState = useAppSelector((state) => state.user.id_number);
   const principalEmailCollaboratorState = useAppSelector(
     (state) => state.user.principal_email
   );
-
   const lastPasswordUpdateCollaboratorState = useAppSelector(
     (state) => state.user.last_password_update
   );
@@ -52,8 +50,17 @@ const AllAppsContent: React.FC = () => {
     isLoading: userActiveDatabyIdNumberLoading,
     isFetching: userActiveDatabyIdNumberFetching,
     isError: userActiveDatabyIdNumberError,
-  } = useGetUserActiveByIdNumberQuery(session?.user.id_number ?? 0, {
-    skip: !session?.user.id_number,
+  } = useGetUserActiveByIdNumberQuery(idNumberUserState, {
+    skip: !idNumberUserState,
+  });
+
+  const {
+    data: userPermissionsData,
+    isLoading: userPermissionsLoading,
+    isFetching: userPermissionsFetching,
+    isError: userPermissionsError,
+  } = useGetUserPermissionsQuery(idNumberUserState, {
+    skip: !idNumberUserState,
   });
 
   const {
@@ -129,58 +136,70 @@ const AllAppsContent: React.FC = () => {
         <CustomDashboardLayoutCollaborators
           customLayoutHeader={<UserHeaderLayout />}
           customLayoutContent={
-            <div style={{ width: "100%" }}>
-              <Row gutter={[0, 24]} justify="center" align={"middle"}>
-                {permissionUser ? (
-                  <>
-                    {permissionUser
-                      ?.flatMap((data) => data.applications || [])
-                      .filter(
-                        (app, index, self) =>
-                          (app.is_active ?? true) &&
-                          self.findIndex((a) => a.id === app.id) === index
-                      )
-                      .map((application: IApplication, index: number) => (
-                        <Col
-                          key={index}
-                          xs={12}
-                          sm={8}
-                          md={6}
-                          lg={4}
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            paddingBlock: "22px",
-                            margin: "0px",
-                          }}
-                        >
-                          <CustomOptionWithImageCard
-                            altCustomOptionWithImageCard={application.name}
-                            srcCustomOptionWithImageCard={
-                              application.image_path
-                            }
-                            classNameCardCustomOptionWithImageCard={styles.card}
-                            styleImgCustomOptionWithImageCard={{
-                              width: "72px",
-                              objectFit: "contain",
-                            }}
-                            entryLinkUrlCustomOptionWithImageCard={
-                              application.entry_link
-                            }
-                          />
-                        </Col>
-                      ))}
-                  </>
-                ) : (
-                  <Col
-                    span={24}
-                    style={{ display: "flex", justifyContent: "center" }}
-                  >
-                    <Empty description={"No hay applicaciones para mostrar"} />
-                  </Col>
-                )}
-              </Row>
-            </div>
+            <>
+              {userPermissionsData &&
+              !userPermissionsFetching &&
+              !userPermissionsLoading ? (
+                <div style={{ width: "100%" }}>
+                  <Row gutter={[0, 24]} justify="center" align={"middle"}>
+                    {userPermissionsData ? (
+                      <>
+                        {userPermissionsData
+                          ?.flatMap((data) => data.applications || [])
+                          .filter(
+                            (app, index, self) =>
+                              (app.is_active ?? true) &&
+                              self.findIndex((a) => a.id === app.id) === index
+                          )
+                          .map((application: IApplication, index: number) => (
+                            <Col
+                              key={index}
+                              xs={12}
+                              sm={8}
+                              md={6}
+                              lg={4}
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                paddingBlock: "22px",
+                                margin: "0px",
+                              }}
+                            >
+                              <CustomOptionWithImageCard
+                                altCustomOptionWithImageCard={application.name}
+                                srcCustomOptionWithImageCard={
+                                  application.image_path
+                                }
+                                classNameCardCustomOptionWithImageCard={
+                                  styles.card
+                                }
+                                styleImgCustomOptionWithImageCard={{
+                                  width: "72px",
+                                  objectFit: "contain",
+                                }}
+                                entryLinkUrlCustomOptionWithImageCard={
+                                  application.entry_link
+                                }
+                              />
+                            </Col>
+                          ))}
+                      </>
+                    ) : (
+                      <Col
+                        span={24}
+                        style={{ display: "flex", justifyContent: "center" }}
+                      >
+                        <Empty
+                          description={"No hay applicaciones para mostrar"}
+                        />
+                      </Col>
+                    )}
+                  </Row>
+                </div>
+              ) : (
+                <CustomSpin />
+              )}
+            </>
           }
         />
       </div>

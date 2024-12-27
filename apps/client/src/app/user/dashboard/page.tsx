@@ -37,6 +37,7 @@ const AllAppsPage = () => {
   const allowedRoles = [RolesEnum.COLLABORATOR];
   useRoleValidation(allowedRoles);
 
+  const idUserSessionState = useAppSelector((state) => state.user.id);
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number
   );
@@ -62,6 +63,8 @@ const AllAppsPage = () => {
   });
 
   useEffect(() => {
+    console.log("SESSION", session);
+
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
     }
@@ -70,13 +73,13 @@ const AllAppsPage = () => {
       setErrorMessage("¡No autenticado!");
       redirect("/login");
     }
-    if (userActiveDatabyIdNumberData) {
-      dispatch(
-        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
-      );
+    if (userActiveDatabyIdNumberData && !idUserSessionState) {
       dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
       dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
       dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
+      dispatch(
+        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
+      );
       dispatch(
         setLastPasswordUpdateUser(
           userActiveDatabyIdNumberData?.last_password_update
@@ -92,6 +95,7 @@ const AllAppsPage = () => {
   }, [
     idNumberUserSessionState,
     userActiveDatabyIdNumberData,
+    idUserSessionState,
     collaboratorModalState,
     isPageLoadingState,
   ]);

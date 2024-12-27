@@ -177,14 +177,14 @@ export class UsersController {
     return await this.usersService.getUserActiveByEmail(principal_email);
   }
 
-  @Get('/getUserRoles/:id')
-  async getUserRoles(@Param('id') id: string) {
-    return await this.usersService.getUserRoles(id);
+  @Get('/getUserRoles/:idNumber')
+  async getUserRoles(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserRoles(idNumber);
   }
 
-  @Get('/getUserPermissions/:id')
-  async getUserPermissions(@Param('id') id: string) {
-    return await this.usersService.getUserPermissions(id);
+  @Get('/getUserPermissions/:idNumber')
+  async getUserPermissions(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserPermissions(idNumber);
   }
 
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)

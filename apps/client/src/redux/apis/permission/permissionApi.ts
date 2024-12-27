@@ -5,7 +5,7 @@ const addTokenToRequest = async (headers: any, { getState }: any) => {
   const session: any = await getSession();
 
   if (session?.user?.access_token) {
-    headers.set("Authorization", `Bearer ${session.user.access_token}`);
+    headers.set("Authorization", `Bearer ${session?.user.access_token}`);
   }
   return headers;
 };

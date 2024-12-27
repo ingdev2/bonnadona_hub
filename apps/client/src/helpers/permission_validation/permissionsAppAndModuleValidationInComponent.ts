@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
+
+import { useGetUserPermissionsQuery } from "@/redux/apis/users/userApi";
 
 import { ApplicationsEnum } from "../../utils/enums/permissions/applications/applications.enum";
 import { ApplicationModulesEnum } from "../../utils/enums/permissions/application_modules/application_modules.enum";
@@ -14,15 +17,25 @@ export const PermissionsAppAndModuleValidationInComponent = ({
   allowedModules = [],
 }: PermissionValidationParams) => {
   const { data: session, status } = useSession();
+
   const [hasPermission, setHasPermission] = useState(false);
 
-  useEffect(() => {
-    if (status === "authenticated" && session && session.user.permission) {
-      const userPermissions = session.user.permission;
+  const idNumberUserState = useAppSelector((state) => state.user.id_number);
 
+  const {
+    data: userPermissionsData,
+    isLoading: userPermissionsLoading,
+    isFetching: userPermissionsFetching,
+    isError: userPermissionsError,
+  } = useGetUserPermissionsQuery(idNumberUserState, {
+    skip: !idNumberUserState,
+  });
+
+  useEffect(() => {
+    if (status === "authenticated" && userPermissionsData) {
       const hasApplicationPermission =
         allowedApplications.length > 0
-          ? userPermissions.some((permission) =>
+          ? userPermissionsData.some((permission) =>
               permission.applications.some((app: IApplication) =>
                 allowedApplications.includes(app.name as ApplicationsEnum)
               )
@@ -31,7 +44,7 @@ export const PermissionsAppAndModuleValidationInComponent = ({
 
       const hasModulePermission =
         allowedModules.length > 0
-          ? userPermissions.some((permission) =>
+          ? userPermissionsData.some((permission) =>
               permission.application_modules.some(
                 (module: IApplicationModule) =>
                   allowedModules.includes(module.name as ApplicationModulesEnum)
@@ -41,7 +54,7 @@ export const PermissionsAppAndModuleValidationInComponent = ({
 
       setHasPermission(hasApplicationPermission && hasModulePermission);
     }
-  }, [session, status, allowedApplications, allowedModules]);
+  }, [status, allowedApplications, allowedModules, userPermissionsData]);
 
   return hasPermission;
 };

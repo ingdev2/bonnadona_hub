@@ -1,4 +1,4 @@
-import { IRole } from "./role.interface";
+import { IRole } from './role.interface';
 
 export interface IUserSession {
   id: string;
@@ -7,5 +7,4 @@ export interface IUserSession {
   user_id_type: number;
   id_number: number;
   role: IRole[];
-  permission: IPermissions[];
 }

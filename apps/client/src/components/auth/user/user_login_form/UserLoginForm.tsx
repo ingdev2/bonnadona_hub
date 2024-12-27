@@ -69,7 +69,7 @@ const UserLoginForm: React.FC = () => {
   useEffect(() => {
     if (
       status === "authenticated" &&
-      session.user.role === RolesEnum.COLLABORATOR
+      session?.user.role === RolesEnum.COLLABORATOR
     ) {
       signOut();
     }

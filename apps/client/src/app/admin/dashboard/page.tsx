@@ -53,6 +53,7 @@ const HomePage = () => {
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_ALL_USERS],
   });
 
+  const idUserSessionState = useAppSelector((state) => state.user.id);
   const idNumberUserSessionState = useAppSelector(
     (state) => state.user.id_number
   );
@@ -89,13 +90,13 @@ const HomePage = () => {
       setErrorMessage("¡No autenticado!");
       redirect("/login_admin");
     }
-    if (userActiveDatabyIdNumberData) {
-      dispatch(
-        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
-      );
+    if (userActiveDatabyIdNumberData && !idUserSessionState) {
       dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
       dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
       dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
+      dispatch(
+        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
+      );
       dispatch(
         setLastPasswordUpdateUser(
           userActiveDatabyIdNumberData?.last_password_update
@@ -115,6 +116,7 @@ const HomePage = () => {
   }, [
     idNumberUserSessionState,
     userActiveDatabyIdNumberData,
+    idUserSessionState,
     adminModalState,
     isPageLoadingState,
   ]);

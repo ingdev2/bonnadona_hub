@@ -75,7 +75,12 @@ const AdminPersonalEditDataForm: React.FC = () => {
   } = useGetUserActiveByIdNumberQuery(idNumberUserState);
 
   useEffect(() => {
-    if (!idUserState && idNumberUserState && userActiveByIdNumberData) {
+    if (userActiveByIdNumberError) {
+      dispatch(setErrorsUser("¡No se pudo obtener los datos del usuario!"));
+      setShowErrorMessage(true);
+    }
+
+    if (userActiveByIdNumberData && !userActiveByIdNumberError) {
       dispatch(setIdUser(userActiveByIdNumberData?.id));
       dispatch(
         setPrincipalEmailUser(userActiveByIdNumberData?.principal_email)
@@ -85,7 +90,7 @@ const AdminPersonalEditDataForm: React.FC = () => {
         setPersonalCellphoneUser(userActiveByIdNumberData?.personal_cellphone)
       );
     }
-  }, [idUserState, idNumberUserState, userActiveByIdNumberData]);
+  }, [idNumberUserState, userActiveByIdNumberData, userActiveByIdNumberError]);
 
   const handleChangeEditUser = async (e: React.FormEvent<HTMLFormElement>) => {
     try {

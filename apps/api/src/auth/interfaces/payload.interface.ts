@@ -6,6 +6,5 @@ export interface Payload {
   email: string;
   user_id_type: number;
   id_number: number;
-  role?: IRole[];
-  permission?: IPermissions[];
+  role: IRole[];
 }

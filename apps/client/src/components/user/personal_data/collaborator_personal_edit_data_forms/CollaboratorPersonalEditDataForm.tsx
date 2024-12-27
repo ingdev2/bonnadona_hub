@@ -192,7 +192,12 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
   } = useGetAllBloodGroupsQuery(null);
 
   useEffect(() => {
-    if (!idUserState && idNumberUserState && userActiveByIdNumberData) {
+    if (userActiveByIdNumberError) {
+      dispatch(setErrorsUser("¡No se pudo obtener los datos del usuario!"));
+      setShowErrorMessage(true);
+    }
+
+    if (userActiveByIdNumberData && !userActiveByIdNumberError) {
       dispatch(setIdUser(userActiveByIdNumberData?.id));
       dispatch(
         setPrincipalEmailUser(userActiveByIdNumberData?.principal_email)
@@ -201,18 +206,13 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
       dispatch(
         setPersonalCellphoneUser(userActiveByIdNumberData?.personal_cellphone)
       );
+    }
 
-      if (userActiveByIdNumberError) {
-        dispatch(setErrorsUser("¡No se pudo obtener los datos del usuario!"));
-        setShowErrorMessage(true);
-      }
-
-      if (allBloodGroupsError) {
-        dispatch(
-          setErrorsUserProfile("¡No se pudo obtener los grupos sanguíneos!")
-        );
-        setShowErrorMessage(true);
-      }
+    if (allBloodGroupsError) {
+      dispatch(
+        setErrorsUserProfile("¡No se pudo obtener los grupos sanguíneos!")
+      );
+      setShowErrorMessage(true);
     }
 
     if (userActiveProfileByIdData) {
@@ -254,7 +254,6 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
       );
     }
   }, [
-    idUserState,
     idNumberUserState,
     userActiveByIdNumberData,
     userActiveProfileByIdData,

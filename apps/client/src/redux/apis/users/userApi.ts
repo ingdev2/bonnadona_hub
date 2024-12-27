@@ -1,11 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSession } from "next-auth/react";
 
+import { IRole } from "@/utils/interfaces/auth/role.interface";
+
 const addTokenToRequest = async (headers: any, { getState }: any) => {
   const session: any = await getSession();
 
   if (session?.user?.access_token) {
-    headers.set("Authorization", `Bearer ${session.user.access_token}`);
+    headers.set("Authorization", `Bearer ${session?.user.access_token}`);
   }
   return headers;
 };
@@ -91,8 +93,12 @@ export const userApi = createApi({
       query: (id_number) => `getUserByIdNumber/${id_number}`,
     }),
 
-    getUserRoles: builder.query<User, string>({
-      query: (Id) => `getUserRoles/${Id}`,
+    getUserRoles: builder.query<IRole, number>({
+      query: (idNumber) => `getUserRoles/${idNumber}`,
+    }),
+
+    getUserPermissions: builder.query<IPermissions[], number>({
+      query: (idNumber) => `getUserPermissions/${idNumber}`,
     }),
 
     updateUser: builder.mutation<
@@ -192,6 +198,7 @@ export const {
   useGetUserActiveByIdNumberQuery,
   useGetUserByIdNumberQuery,
   useGetUserRolesQuery,
+  useGetUserPermissionsQuery,
   useUpdateUserMutation,
   useUpdateUserPasswordMutation,
   useUpdateUserProfileMutation,

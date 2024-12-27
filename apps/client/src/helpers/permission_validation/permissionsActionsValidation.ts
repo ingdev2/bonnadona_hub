@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
+
+import { useGetUserPermissionsQuery } from "@/redux/apis/users/userApi";
 
 import { ModuleActionsEnum } from "../../utils/enums/permissions/module_actions/module_actions.enum";
 
@@ -11,15 +14,25 @@ export const PermissionsActionsValidation = ({
   allowedActions = [],
 }: PermissionValidationParams) => {
   const { data: session, status } = useSession();
+
   const [hasPermission, setHasPermission] = useState(false);
 
-  useEffect(() => {
-    if (status === "authenticated" && session && session.user.permission) {
-      const userPermissions = session.user.permission;
+  const idNumberUserState = useAppSelector((state) => state.user.id_number);
 
+  const {
+    data: userPermissionsData,
+    isLoading: userPermissionsLoading,
+    isFetching: userPermissionsFetching,
+    isError: userPermissionsError,
+  } = useGetUserPermissionsQuery(idNumberUserState, {
+    skip: !idNumberUserState,
+  });
+
+  useEffect(() => {
+    if (status === "authenticated" && userPermissionsData) {
       const hasActionPermission =
         allowedActions.length > 0
-          ? userPermissions.some((permission) =>
+          ? userPermissionsData.some((permission) =>
               permission.module_actions.some((action: IModuleAction) =>
                 allowedActions.includes(action.name as ModuleActionsEnum)
               )
@@ -28,7 +41,7 @@ export const PermissionsActionsValidation = ({
 
       setHasPermission(hasActionPermission);
     }
-  }, [session, status, allowedActions]);
+  }, [status, allowedActions, userPermissionsData]);
 
   return hasPermission;
 };

@@ -1242,6 +1242,7 @@ export class UsersService {
         'principal_email',
         'role',
       ],
+      loadEagerRelations: false,
     });
   }
 
@@ -1249,41 +1250,45 @@ export class UsersService {
     principalEmail: string,
     verificationCode: number,
   ) {
-    return await this.userRepository.findOneBy({
-      principal_email: principalEmail,
-      verification_code: verificationCode,
-      is_active: true,
+    return await this.userRepository.findOne({
+      where: {
+        principal_email: principalEmail,
+        verification_code: verificationCode,
+        is_active: true,
+      },
+      select: ['id', 'name', 'last_name', 'principal_email', 'id_number'],
+      loadEagerRelations: false,
+      relations: { role: true },
     });
   }
 
-  async getUserRoles(
-    id: string,
-  ): Promise<{ assignedRoles: Role[]; unassignedRoles: Role[] }> {
+  async getUserRoles(idNumber: number) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: { id_number: idNumber, is_active: true },
     });
 
     if (!userFound) {
       throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
-    const allRoles = await this.roleRepository.find();
+    if (!userFound.role.length) {
+      throw new HttpException(
+        `Este usuario no tiene roles asignados.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
-    const assignedRoles = userFound.role;
+    const transformedRoles = userFound.role.map((role) => ({
+      id: role.id,
+      name: role.name,
+    }));
 
-    const unassignedRoles = allRoles.filter(
-      (role) => !assignedRoles.some((assigned) => assigned.id === role.id),
-    );
-
-    return {
-      assignedRoles,
-      unassignedRoles,
-    };
+    return transformedRoles;
   }
 
-  async getUserPermissions(id: string) {
+  async getUserPermissions(idNumber: number) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: { id_number: idNumber, is_active: true },
     });
 
     if (!userFound) {
@@ -1297,7 +1302,30 @@ export class UsersService {
       );
     }
 
-    return userFound.permission;
+    const transformedPermissions = userFound.permission.map((permission) => ({
+      id: permission.id,
+      name: permission.name,
+      description: permission.description,
+      applications: permission.applications.map((app) => ({
+        id: app.id,
+        name: app.name,
+        image_path: app.image_path,
+        entry_link: app.entry_link,
+        is_active: app.is_active,
+      })),
+      application_modules: permission.application_modules.map((module) => ({
+        id: module.id,
+        name: module.name,
+        app_id: module.app_id,
+      })),
+      module_actions: permission.module_actions.map((action) => ({
+        id: action.id,
+        name: action.name,
+        app_module_id: action.app_module_id,
+      })),
+    }));
+
+    return transformedPermissions;
   }
 
   async getAllColaboratorPositions() {

@@ -10,9 +10,9 @@ export const useRoleValidation = (allowedRoles: AllowedRoleType[]) => {
     if (
       status === "authenticated" &&
       session &&
-      Array.isArray(session.user.role)
+      Array.isArray(session?.user.role)
     ) {
-      const userRoles = session.user.role.map(
+      const userRoles = session?.user.role.map(
         (role: { name: string }) => role.name
       );
 
