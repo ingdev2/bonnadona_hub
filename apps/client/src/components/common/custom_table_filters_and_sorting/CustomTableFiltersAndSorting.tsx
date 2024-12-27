@@ -234,7 +234,7 @@ const CustomTableFiltersAndSorting: React.FC<{
     filterDropdownProps: {
       onOpenChange: (visible) => {
         if (visible) {
-          setTimeout(() => searchInput.current?.select(), 100);
+          setTimeout(() => searchInput.current?.select(), 22);
         }
       },
     },

@@ -346,8 +346,6 @@ const AllUsersContent: React.FC = () => {
       if (banUserSuccess?.statusCode === 202 && !banUserError) {
         const successMessage = banUserSuccess?.message;
 
-        console.log("successMessage :>> ", successMessage);
-
         setSuccessMessageUser(successMessage);
         setShowSuccessMessageUser(true);
       } else {

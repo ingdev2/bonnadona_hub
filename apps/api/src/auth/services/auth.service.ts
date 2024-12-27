@@ -382,7 +382,7 @@ export class AuthService {
       name: user.name,
       user_id_type: user.user_id_type,
       id_number: user.id_number,
-      email: user.principal_email,
+      email: user.email,
       role: user.role,
     };
 
@@ -420,7 +420,7 @@ export class AuthService {
         name: user.name,
         user_id_type: user.user_id_type,
         id_number: user.id_number,
-        email: user.principal_email,
+        email: user.email,
         role: user.role,
       };
 
@@ -511,7 +511,7 @@ export class AuthService {
       access_token_expires_in,
       name: payload.name,
       id_number: payload.id_number,
-      principal_email: payload.email,
+      email: payload.email,
       role: payload.role,
     };
   }
@@ -614,7 +614,7 @@ export class AuthService {
       refresh_token,
       access_token_expires_in,
       id_number: payload.id_number,
-      principal_email: payload.email,
+      email: payload.email,
       role: payload.role,
     };
   }
