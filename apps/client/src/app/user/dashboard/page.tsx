@@ -63,8 +63,6 @@ const AllAppsPage = () => {
   });
 
   useEffect(() => {
-    console.log("SESSION", session);
-
     if (!idNumberUserSessionState && status === "authenticated") {
       dispatch(setIdNumberUser(idNumberUserSession));
     }
