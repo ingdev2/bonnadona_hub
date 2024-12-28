@@ -587,7 +587,6 @@ export class UsersService {
   ) {
     const idNumber = userCollaborator.id_number;
     userCollaborator.password = await bcryptjs.hash(String(idNumber), 10);
-    console.log('requestAuditLog', requestAuditLog);
     const userCollaboratorFound = await this.userRepository.findOne({
       where: {
         id_number: userCollaborator.id_number,
