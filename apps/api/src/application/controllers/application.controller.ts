@@ -24,6 +24,7 @@ export class ApplicationController {
 
   // POST METHODS //
 
+  @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/create')
   createApplication(
@@ -55,6 +56,7 @@ export class ApplicationController {
 
   // PATCH METHODS //
 
+  @EnableAuditLog()
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Patch('/update/:id')
   updateApplication(

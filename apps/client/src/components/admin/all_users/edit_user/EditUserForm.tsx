@@ -21,10 +21,7 @@ import {
 } from "@/redux/features/user/selectedUserSlice";
 import EditUserFormData from "./EditUserFormData";
 import { useGetAllRolesQuery } from "@/redux/apis/role/roleApi";
-import {
-  useGetAllPermissionsQuery,
-  useGetPermissionByIdQuery,
-} from "@/redux/apis/permission/permissionApi";
+import { useGetAllPermissionsQuery } from "@/redux/apis/permission/permissionApi";
 
 const EditUserForm: React.FC = () => {
   const dispatch = useAppDispatch();
