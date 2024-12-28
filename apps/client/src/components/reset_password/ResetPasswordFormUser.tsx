@@ -195,39 +195,6 @@ const ResetPasswordFormUser = () => {
                   required: true,
                   message: "¡Por favor ingresa tu contraseña nueva!",
                 },
-                {
-                  min: 8,
-                  message: "¡La contraseña debe tener mínimo 8 caracteres!",
-                },
-                {
-                  max: 31,
-                  message: "¡La contraseña debe tener máximo 31 caracteres!",
-                },
-                {
-                  validator: (_, value) => {
-                    const containsLowercase = /[a-z]/.test(value ?? "");
-                    const containsUppercase = /[A-Z]/.test(value ?? "");
-                    if (!containsLowercase || !containsUppercase) {
-                      return Promise.reject(
-                        "¡La contraseña debe contener al menos una letra minúscula y una letra mayúscula!"
-                      );
-                    }
-                    return Promise.resolve();
-                  },
-                },
-                {
-                  validator: (_, value) => {
-                    const containsSpecialChar = /[_\-*&%#$\/.,+=]/.test(
-                      value ?? ""
-                    );
-                    if (!containsSpecialChar) {
-                      return Promise.reject(
-                        "La contraseña debe contener al menos un carácter especial (_ - * & % # $ / . , + =)"
-                      );
-                    }
-                    return Promise.resolve();
-                  },
-                },
               ]}
               hasFeedback
             >
