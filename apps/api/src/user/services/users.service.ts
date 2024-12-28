@@ -2020,6 +2020,20 @@ export class UsersService {
 
     this.validatePasswordPolicy(newPassword, passwordPolicy);
 
+    const isPasswordInHistory =
+      await this.passwordHistoryService.isPasswordInHistory(
+        userFound.id,
+        newPassword,
+        passwordPolicy.password_history_limit,
+      );
+
+    if (isPasswordInHistory) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a ninguna de las últimas ${passwordPolicy.password_history_limit} contraseñas utilizadas.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
     this.validatePersonalDataInPassword(userFound, newPassword);
 
     const hashedNewPassword = await bcryptjs.hash(newPassword, 10);
