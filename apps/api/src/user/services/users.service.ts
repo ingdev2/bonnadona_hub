@@ -690,6 +690,15 @@ export class UsersService {
       userCollaboratorCreate,
     );
 
+    const userProfile = new UserProfile();
+
+    userProfile.user = userCollaboratorSave;
+
+    const userProfileCreate =
+      await this.userProfileRepository.create(userProfile);
+
+    userCollaboratorSave.user_profile = userProfileCreate;
+
     await this.permissionsService.assignDefaultPermissionsToUser(
       userCollaboratorSave,
       userCollaborator.collaborator_position,
