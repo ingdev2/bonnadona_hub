@@ -221,10 +221,12 @@ const ChangePasswordModal: React.FC<{
               initialValues={{ remember: false }}
               autoComplete="false"
               onFinish={handleSubmit}
+              layout="vertical"
             >
               <Form.Item
                 id="current-password-form"
                 className="current-password-form"
+                label="Contraseña actual"
                 name={"current-password-form"}
                 style={{ textAlign: "center" }}
                 rules={[
@@ -248,7 +250,6 @@ const ChangePasswordModal: React.FC<{
                     width: "100%",
                     fontSize: "14px",
                     borderWidth: "2px",
-                    marginTop: "10px",
                     borderRadius: "30px",
                   }}
                   placeholder="Contraseña actual"
@@ -263,6 +264,7 @@ const ChangePasswordModal: React.FC<{
                 id="new-password-form"
                 className="new-password-form"
                 name={"new-password-form"}
+                label="Contraseña nueva"
                 style={{ textAlign: "center" }}
                 rules={[
                   {
