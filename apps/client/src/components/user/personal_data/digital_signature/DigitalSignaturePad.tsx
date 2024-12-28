@@ -93,8 +93,8 @@ function DigitalSignaturePad() {
           willReadFrequently: true,
         });
 
-        const width = 720;
-        const height = 405;
+        const width = 321;
+        const height = 180;
 
         resizedCanvas.width = width;
         resizedCanvas.height = height;
@@ -267,6 +267,7 @@ function DigitalSignaturePad() {
               alignItems: "center",
               alignContent: "center",
               justifyContent: "center",
+              cursor: "crosshair",
             }}
           >
             <SignatureCanvas

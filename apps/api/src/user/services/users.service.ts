@@ -65,6 +65,7 @@ import { SUPPORT_CONTACT_EMAIL } from 'src/utils/constants/constants';
 import { maskEmailUser } from '../helpers/mask_email';
 
 const schedule = require('node-schedule');
+const sharp = require('sharp');
 
 @Injectable()
 export class UsersService {
@@ -1558,6 +1559,33 @@ export class UsersService {
     );
   }
 
+  private async processDigitalSignature(base64Data: string): Promise<string> {
+    try {
+      const base64String = base64Data.split(',')[1];
+      const buffer = Buffer.from(base64String, 'base64');
+
+      const optimizedBuffer = await sharp(buffer)
+        .resize(207, 113)
+        .toColourspace('b-w')
+        .flatten({ background: { r: 255, g: 255, b: 255 } })
+        .png({
+          quality: 7,
+          compressionLevel: 9,
+          adaptiveFiltering: true,
+          bitdepth: 8,
+        })
+        .withMetadata(false)
+        .toBuffer();
+
+      return `data:image/png;base64,${optimizedBuffer.toString('base64')}`;
+    } catch (error) {
+      throw new HttpException(
+        `Error al procesar la firma digital: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async updateUserDigitalSignature(
     userId: string,
     { digital_signature }: CreateDigitalSignatureDto,
@@ -1568,26 +1596,27 @@ export class UsersService {
     });
 
     if (!userFound) {
-      throw new HttpException(`Usuario no encontrado.`, HttpStatus.CONFLICT);
+      throw new HttpException('Usuario no encontrado.', HttpStatus.CONFLICT);
     }
 
     if (!digital_signature) {
-      throw new HttpException(`Firma no encontrada.`, HttpStatus.CONFLICT);
+      throw new HttpException('Firma no encontrada.', HttpStatus.CONFLICT);
     }
 
-    userFound.user_profile.digital_signature = digital_signature;
+    const optimizedSignature =
+      await this.processDigitalSignature(digital_signature);
 
-    const updateUserProfile = await this.userProfileRepository.update(
+    userFound.user_profile.digital_signature = optimizedSignature;
+
+    await this.userProfileRepository.update(
       { id: userFound.user_profile.id },
       userFound.user_profile,
     );
 
-    if (updateUserProfile) {
-      throw new HttpException(
-        `¡Datos guardados correctamente!`,
-        HttpStatus.ACCEPTED,
-      );
-    }
+    throw new HttpException(
+      '¡Datos guardados correctamente!',
+      HttpStatus.ACCEPTED,
+    );
   }
 
   async updateUserRoles(
