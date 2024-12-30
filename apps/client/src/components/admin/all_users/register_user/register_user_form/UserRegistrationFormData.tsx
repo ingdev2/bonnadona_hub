@@ -254,6 +254,18 @@ const UserRegistrationFormData: React.FC<{
                 value={userIdTypeValueDataForm}
                 placeholder="Tipo de identificación"
                 onChange={handleOnChangeSelectIdTypeDataForm}
+                showSearch
+                allowClear
+                filterOption={(input, option) => {
+                  return (
+                    (option?.children &&
+                      option.children
+                        .toString()
+                        .toUpperCase()
+                        .includes(input.toUpperCase())) ||
+                    false
+                  );
+                }}
               >
                 {userIdTypeListDataForm?.map((option: any) => (
                   <Select.Option key={option.id} value={option.id}>
@@ -621,6 +633,18 @@ const UserRegistrationFormData: React.FC<{
                 value={userPositionLevelValueDataForm}
                 placeholder="Nivel de cargo"
                 onChange={handleOnChangeSelectPositionLevelDataForm}
+                showSearch
+                allowClear
+                filterOption={(input, option) => {
+                  return (
+                    (option?.children &&
+                      option.children
+                        .toString()
+                        .toUpperCase()
+                        .includes(input.toUpperCase())) ||
+                    false
+                  );
+                }}
               >
                 {userPositionLevelListDataForm?.map((option: any) => (
                   <Select.Option key={option.id} value={option.id}>
@@ -651,6 +675,18 @@ const UserRegistrationFormData: React.FC<{
                 value={userPositionValueDataForm}
                 placeholder="Cargo"
                 onChange={handleOnChangeSelectPositionDataForm}
+                showSearch
+                allowClear
+                filterOption={(input, option) => {
+                  return (
+                    (option?.children &&
+                      option.children
+                        .toString()
+                        .toUpperCase()
+                        .includes(input.toUpperCase())) ||
+                    false
+                  );
+                }}
               >
                 {userPositionListDataForm?.map((option: any) => (
                   <Select.Option key={option} value={option}>
@@ -683,6 +719,18 @@ const UserRegistrationFormData: React.FC<{
                 value={userServiceValueDataForm}
                 placeholder="Servicio"
                 onChange={handleOnChangeSelectServiceDataForm}
+                showSearch
+                allowClear
+                filterOption={(input, option) => {
+                  return (
+                    (option?.children &&
+                      option.children
+                        .toString()
+                        .toUpperCase()
+                        .includes(input.toUpperCase())) ||
+                    false
+                  );
+                }}
               >
                 {userServiceListDataForm?.map((option: any) => (
                   <Select.Option key={option} value={option}>
