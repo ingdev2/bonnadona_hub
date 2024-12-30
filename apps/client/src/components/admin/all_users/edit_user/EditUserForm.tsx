@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
 import {
+  useGetAllUsersWithProfileQuery,
   useGetUserByIdNumberQuery,
   useUpdateUserMutation,
 } from "@/redux/apis/users/userApi";
@@ -16,8 +17,10 @@ import {
   setPersonalCellphoneSelectedUser,
   setPersonalEmailSelectedUser,
   setPrincipalEmailSelectedUser,
-  setSelectedPermissionIdsToAddSelectedUser,
-  setSelectedRoleIdsToAddSelectedUser,
+  setRoleSelectedUser,
+  setPermissionIdsToAddSelectedUser,
+  setRoleIdsToAddSelectedUser,
+  setPermissionSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
 import EditUserFormData from "./EditUserFormData";
 import { useGetAllRolesQuery } from "@/redux/apis/role/roleApi";
@@ -48,16 +51,17 @@ const EditUserForm: React.FC = () => {
     (state) => state.selectedUser.personal_cellphone
   );
 
-  const roleIdsUserState = useAppSelector(
-    (state) => state.selectedUser.roleIdsToAdd
+  const roleSelectedUserState = useAppSelector(
+    (state) => state.selectedUser.role
   );
-  const permissionIdsUserState = useAppSelector(
-    (state) => state.selectedUser.permissionIdsToAdd
+  const permissionSelectedUserState = useAppSelector(
+    (state) => state.selectedUser.permission
   );
-  const selectedRoleIdsUserState = useAppSelector(
+
+  const selectedRoleIdsToAddUserState = useAppSelector(
     (state) => state.selectedUser.selectedRoleIdsToAdd
   );
-  const selectedPermissionIdsUserState = useAppSelector(
+  const selectedPermissionIdsToAddUserState = useAppSelector(
     (state) => state.selectedUser.selectedPermissionIdsToAdd
   );
 
@@ -100,6 +104,7 @@ const EditUserForm: React.FC = () => {
     isLoading: allRolesLoading,
     isFetching: allRolesFetching,
     error: allRolesError,
+    refetch: refectAllRoles,
   } = useGetAllRolesQuery(null);
 
   const {
@@ -126,19 +131,15 @@ const EditUserForm: React.FC = () => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
-    if (selectedRoleIdsUserState?.length === 0) {
-      dispatch(setSelectedRoleIdsToAddSelectedUser(roleIdsUserState));
-    }
-    if (selectedPermissionIdsUserState?.length === 0) {
-      dispatch(
-        setSelectedPermissionIdsToAddSelectedUser(permissionIdsUserState)
-      );
+    if (roleSelectedUserState || permissionSelectedUserState) {
+      dispatch(setRoleIdsToAddSelectedUser(roleSelectedUserState));
+      dispatch(setPermissionIdsToAddSelectedUser(permissionSelectedUserState));
     }
   }, [
     userData,
     idUserState,
-    selectedRoleIdsUserState,
-    selectedPermissionIdsUserState,
+    roleSelectedUserState,
+    permissionSelectedUserState,
   ]);
 
   const handleConfirmUpdatePersonalData = async (
@@ -161,9 +162,8 @@ const EditUserForm: React.FC = () => {
           corporate_cellphone:
             parseInt(corporateCellphoneUserLocalState, 10) ||
             corporateCellphoneUserState,
-          roleIdsToAdd: selectedRoleIdsUserState || roleIdsUserState,
-          permissionIdsToAdd:
-            selectedPermissionIdsUserState || permissionIdsUserState,
+          roleIdsToAdd: selectedRoleIdsToAddUserState,
+          permissionIdsToAdd: selectedPermissionIdsToAddUserState,
         },
       });
       let editUserDataError = response.error;
@@ -201,10 +201,6 @@ const EditUserForm: React.FC = () => {
 
       if (editUserDataStatus === 202 && !editUserDataError) {
         setHasChanges(false);
-
-        setSuccessMessage("¡Datos del usuario actualizados correctamente!");
-        setShowSuccessMessage(true);
-
         dispatch(
           setPrincipalEmailSelectedUser(
             principalEmailUserLocalState || principalEmailUserState
@@ -232,6 +228,13 @@ const EditUserForm: React.FC = () => {
               corporateCellphoneUserState
           )
         );
+        dispatch(setRoleSelectedUser(selectedRoleIdsToAddUserState));
+        dispatch(
+          setPermissionSelectedUser(selectedPermissionIdsToAddUserState)
+        );
+
+        setSuccessMessage("¡Datos del usuario actualizados correctamente!");
+        setShowSuccessMessage(true);
       }
     } catch (error) {
       console.error(error);
@@ -306,20 +309,18 @@ const EditUserForm: React.FC = () => {
         }}
         positionFormData={positionUserState}
         allRolesFormData={allRolesData}
-        roleUserFormData={selectedRoleIdsUserState || []}
-        onChangeRoleUserFormData={(selectedRoles) => {
+        roleUserFormData={selectedRoleIdsToAddUserState || []}
+        onChangeRoleUserFormData={(checkedValues) => {
           setHasChanges(true);
 
-          dispatch(setSelectedRoleIdsToAddSelectedUser(selectedRoles));
+          dispatch(setRoleIdsToAddSelectedUser(checkedValues));
         }}
         allPermissionsFormData={allPermissionsData}
-        permissionUserFormData={selectedPermissionIdsUserState || []}
-        onChangePermissionUserFormData={(selectedPermissions) => {
+        permissionUserFormData={selectedPermissionIdsToAddUserState || []}
+        onChangePermissionUserFormData={(checkedValues) => {
           setHasChanges(true);
 
-          dispatch(
-            setSelectedPermissionIdsToAddSelectedUser(selectedPermissions)
-          );
+          dispatch(setPermissionIdsToAddSelectedUser(checkedValues));
         }}
         loadingAllRolesFormData={allRolesLoading}
         fetchingAllRolesFormData={allRolesFetching}

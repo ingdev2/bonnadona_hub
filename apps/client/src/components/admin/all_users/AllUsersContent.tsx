@@ -51,12 +51,12 @@ import {
   setIdTypeSelectedUser,
   setLastNameSelectedUser,
   setNameSelectedUser,
-  setPermissionIdsToAddSelectedUser,
+  // setPermissionIdsToAddSelectedUser,
   setPermissionSelectedUser,
   setPersonalCellphoneSelectedUser,
   setPersonalEmailSelectedUser,
   setPrincipalEmailSelectedUser,
-  setRoleIdsToAddSelectedUser,
+  // setRoleIdsToAddSelectedUser,
   setRoleSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
 import {
@@ -257,7 +257,6 @@ const AllUsersContent: React.FC = () => {
     passwordPolicyData,
     lastPasswordUpdateAdminState,
     principalEmailAdminState,
-    allUsersWithProfileData,
   ]);
 
   const idTypeGetName = transformIdToNameMap(allIdTypesData);
@@ -280,11 +279,10 @@ const AllUsersContent: React.FC = () => {
       }))
     : [];
 
-  const handleClickSeeMore = (record: User) => {
+  const handleClickSeeMore = async (record: User) => {
     refecthAllUsersWithProfile();
 
     dispatch(setTableRowId(""));
-
     setSelectedRowDataLocalState(record);
 
     dispatch(setTableRowId(record.id));
@@ -312,9 +310,7 @@ const AllUsersContent: React.FC = () => {
       setCollaboratorPositionSelectedUser(record?.collaborator_position)
     );
     dispatch(setRoleSelectedUser(record?.role));
-    dispatch(setRoleIdsToAddSelectedUser(record?.role));
     dispatch(setPermissionSelectedUser(record?.permission));
-    dispatch(setPermissionIdsToAddSelectedUser(record?.permission));
     dispatch(setBloodGroupUserProfile(record?.user_blood_group));
     dispatch(setAffiliationEpsUserProfile(record?.affiliation_eps));
     dispatch(setResidenceDepartmentUserProfile(record?.residence_department));

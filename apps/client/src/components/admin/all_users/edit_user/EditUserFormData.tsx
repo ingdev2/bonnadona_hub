@@ -5,7 +5,7 @@ import React from "react";
 import { Store } from "antd/es/form/interface";
 
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
-import { Button, Checkbox, Col, Form, Input, Row } from "antd";
+import { Button, Checkbox, Col, Form, Input, Row, Tooltip } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
 
 import { MdDriveFileRenameOutline } from "react-icons/md";
@@ -328,7 +328,7 @@ const EditUserFormData: React.FC<{
                     value={role.id}
                     style={{ marginBottom: "8px", paddingBlock: "2px" }}
                   >
-                    {role.name}
+                    <Tooltip title={role.name}>{role.name}</Tooltip>
                   </Checkbox>
                 ))}
               </Checkbox.Group>
@@ -403,7 +403,9 @@ const EditUserFormData: React.FC<{
                           }}
                         >
                           <span style={{ textAlign: "left", width: "100%" }}>
-                            {permission.name}
+                            <Tooltip title={permission.name}>
+                              {permission.name}
+                            </Tooltip>
                           </span>
                         </Checkbox>
                       </Col>
