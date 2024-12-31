@@ -461,15 +461,15 @@ const UserRegistrationForm: React.FC = () => {
         userGenderListDataForm={userGenderListLocalState}
         userPrincipalEmailDataForm={userPrincipalEmailLocalState}
         handleOnChangeUserPrincipalEmailDataForm={(e) =>
-          setUserPrincipalEmailLocalState(e.target.value.toUpperCase())
+          setUserPrincipalEmailLocalState(e.target.value)
         }
         userCorporateEmailDataForm={userCorporateEmailLocalState}
         handleOnChangeUserCorporateEmailDataForm={(e) =>
-          setUserCorporateEmailLocalState(e.target.value.toUpperCase())
+          setUserCorporateEmailLocalState(e.target.value)
         }
         userPersonalEmailDataForm={userPersonalEmailLocalState}
         handleOnChangeUserPersonalEmailDataForm={(e) => {
-          setUserPersonalEmailLocalState(e.target.value.toUpperCase());
+          setUserPersonalEmailLocalState(e.target.value);
         }}
         userPersonalCellphoneDataForm={userPersonalCellphoneUserLocalState}
         handleOnChangeUserPersonalCellphoneDataForm={(e) => {

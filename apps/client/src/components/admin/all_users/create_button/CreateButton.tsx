@@ -8,12 +8,18 @@ import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { TiUserAdd } from "react-icons/ti";
 import { subtitleStyleCss } from "@/theme/text_styles";
 import { useGetAllUsersWithProfileQuery } from "@/redux/apis/users/userApi";
+import { PermissionsActionsValidation } from "@/helpers/permission_validation/permissionsActionsValidation";
+import { ModuleActionsEnum } from "@/utils/enums/permissions/module_actions/module_actions.enum";
 
 const CreateButton: React.FC<{
   isSubmittingCreateButton: boolean;
   setIsSubmittingCreateButton: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ isSubmittingCreateButton, setIsSubmittingCreateButton }) => {
   const router = useRouter();
+
+  const createUserAction = PermissionsActionsValidation({
+    allowedActions: [ModuleActionsEnum.CREATE_USER_DATA],
+  });
 
   const {
     data: allUsersWithProfileData,
@@ -78,39 +84,43 @@ const CreateButton: React.FC<{
         {isSubmittingCreateButton ? (
           <CustomSpin />
         ) : (
-          <Button
-            type="primary"
-            size="middle"
-            icon={<TiUserAdd size={17} />}
-            style={{
-              backgroundColor: "#1D8348",
-              color: "#f2f2f2",
-              fontWeight: "bold",
-              display: "flex",
-              flexFlow: "row wrap",
-              alignContent: "center",
-              alignItems: "center",
-              paddingInline: "13px",
-              margin: "0px",
-            }}
-            htmlType="button"
-            className="user-register-button"
-            onClick={async () => {
-              try {
-                setIsSubmittingCreateButton(true);
+          <>
+            {createUserAction ? (
+              <Button
+                type="primary"
+                size="middle"
+                icon={<TiUserAdd size={17} />}
+                style={{
+                  backgroundColor: "#1D8348",
+                  color: "#f2f2f2",
+                  fontWeight: "bold",
+                  display: "flex",
+                  flexFlow: "row wrap",
+                  alignContent: "center",
+                  alignItems: "center",
+                  paddingInline: "13px",
+                  margin: "0px",
+                }}
+                htmlType="button"
+                className="user-register-button"
+                onClick={async () => {
+                  try {
+                    setIsSubmittingCreateButton(true);
 
-                await router.push("all_user/register", {
-                  scroll: true,
-                });
-              } catch (error) {
-                console.error(error);
-              } finally {
-                setIsSubmittingCreateButton(false);
-              }
-            }}
-          >
-            Crear nuevo
-          </Button>
+                    await router.push("all_user/register", {
+                      scroll: true,
+                    });
+                  } catch (error) {
+                    console.error(error);
+                  } finally {
+                    setIsSubmittingCreateButton(false);
+                  }
+                }}
+              >
+                Crear nuevo
+              </Button>
+            ) : null}
+          </>
         )}
       </Col>
     </Row>

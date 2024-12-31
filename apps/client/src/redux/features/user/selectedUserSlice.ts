@@ -26,10 +26,8 @@ const initialState: User = {
   deletedAt: "",
   role: [],
   user_role: [],
-  roleIdsToAdd: [],
   selectedRoleIdsToAdd: [],
   permission: [],
-  permissionIdsToAdd: [],
   selectedPermissionIdsToAdd: [],
   errors: [],
 };
@@ -105,18 +103,12 @@ export const selectedUserSlice = createSlice({
       state.user_role = action.payload;
     },
     setRoleIdsToAddSelectedUser: (state, action) => {
-      state.roleIdsToAdd = action.payload;
-    },
-    setSelectedRoleIdsToAddSelectedUser: (state, action) => {
       state.selectedRoleIdsToAdd = action.payload;
     },
     setPermissionSelectedUser: (state, action) => {
       state.permission = action.payload;
     },
     setPermissionIdsToAddSelectedUser: (state, action) => {
-      state.permissionIdsToAdd = action.payload;
-    },
-    setSelectedPermissionIdsToAddSelectedUser: (state, action) => {
       state.selectedPermissionIdsToAdd = action.payload;
     },
     setErrorsSelectedUser: (state, action) => {
@@ -143,10 +135,10 @@ export const selectedUserSlice = createSlice({
       state.collaborator_service = "";
       state.collaborator_position = "";
       state.role = [];
-      state.roleIdsToAdd = [];
+      // state.roleIdsToAdd = [];
       state.selectedRoleIdsToAdd = [];
       state.permission = [];
-      state.permissionIdsToAdd = [];
+      // state.permissionIdsToAdd = [];
       state.selectedPermissionIdsToAdd = [];
       state.errors = [];
     },
@@ -177,10 +169,8 @@ export const {
   setRoleSelectedUser,
   setUserRoleSelectedUser,
   setRoleIdsToAddSelectedUser,
-  setSelectedRoleIdsToAddSelectedUser,
   setPermissionSelectedUser,
   setPermissionIdsToAddSelectedUser,
-  setSelectedPermissionIdsToAddSelectedUser,
   setErrorsSelectedUser,
   setDefaultValuesSelectedUser,
 } = selectedUserSlice.actions;
