@@ -23,7 +23,6 @@ import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
-import { IdUserDto } from '../dto/id_user.dto';
 
 const schedule = require('node-schedule');
 
@@ -38,7 +37,7 @@ import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enu
 import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
 import { PrincipalEmailDto } from '../dto/principal_email.dto';
-import { permission } from 'process';
+import { IUserSession } from 'src/utils/interfaces/user_session.interface';
 
 @Injectable()
 export class AuthService {
@@ -66,39 +65,15 @@ export class AuthService {
 
   // REGISTER FUNTIONS //
 
-  async registerUserCollaborator({
-    name,
-    last_name,
-    user_id_type,
-    id_number,
-    user_gender,
-    birthdate,
-    password,
-    principal_email,
-    personal_email,
-    personal_cellphone,
-    corporate_email,
-    corporate_cellphone,
-    collaborator_service_type,
-    collaborator_unit,
-    collaborator_service,
-    collaborator_position,
-    collaborator_position_level,
-    collaborator_immediate_boss,
-    residence_address,
-  }: CreateUserDto) {
-    await this.userService.getUserByIdNumberAndRole(id_number, [
-      RolesEnum.COLLABORATOR,
-    ]);
-
-    return await this.userService.createUserCollaborator({
+  async registerUserCollaborator(
+    {
       name,
       last_name,
       user_id_type,
       id_number,
       user_gender,
       birthdate,
-      password: await bcryptjs.hash(password, 10),
+      password,
       principal_email,
       personal_email,
       personal_cellphone,
@@ -111,7 +86,52 @@ export class AuthService {
       collaborator_position_level,
       collaborator_immediate_boss,
       residence_address,
-    });
+    }: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    await this.userService.getUserByIdNumberAndRole(id_number, [
+      RolesEnum.COLLABORATOR,
+    ]);
+
+    return await this.userService.createUserCollaborator(
+      {
+        name,
+        last_name,
+        user_id_type,
+        id_number,
+        user_gender,
+        birthdate,
+        password: await bcryptjs.hash(password, 10),
+        principal_email,
+        personal_email,
+        personal_cellphone,
+        corporate_email,
+        corporate_cellphone,
+        collaborator_service_type,
+        collaborator_unit,
+        collaborator_service,
+        collaborator_position,
+        collaborator_position_level,
+        collaborator_immediate_boss,
+        residence_address,
+      },
+      requestAuditLog,
+    );
+  }
+
+  async registerUserCollaboratorFromBonnadonaHub(
+    userCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    await this.userService.getUserByIdNumberAndRole(
+      userCollaborator.id_number,
+      [RolesEnum.COLLABORATOR],
+    );
+
+    return await this.userService.createUserCollaboratorFromBonnadonaHub(
+      userCollaborator,
+      requestAuditLog,
+    );
   }
 
   async createAllNewUsersFromKactus() {
@@ -193,7 +213,7 @@ export class AuthService {
 
     if (bannedUserFound) {
       throw new UnauthorizedException(
-        `¡Usuario bloqueado, por favor intente más tarde!`,
+        `¡Usuario bloqueado, por favor comunicarse con el equipo de soportes TICS!`,
       );
     }
 
@@ -206,13 +226,14 @@ export class AuthService {
 
     const verifiedCollaboratorRole = await this.userRepository
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.role', 'role')
+      .innerJoin('user.role', 'role')
+      .select(['user.principal_email', 'user.id_number'])
       .where('user.principal_email = :principal_email', { principal_email })
       .andWhere('role.id IN (:...roleIds)', {
         roleIds: collaboratorUserRoleFound.map((role) => role.id),
       })
       .andWhere('user.is_active = :isActive', { isActive: true })
-      .getOne();
+      .getRawOne();
 
     if (!verifiedCollaboratorRole) {
       throw new UnauthorizedException(`¡Usuario no autorizado!`);
@@ -241,12 +262,6 @@ export class AuthService {
       { verification_code: verificationCode },
     );
 
-    const userCollaboratorWithCode = await this.userRepository.findOne({
-      where: {
-        id: collaboratorFound.id,
-      },
-    });
-
     const emailDetailsToSend = new SendEmailDto();
 
     emailDetailsToSend.recipients = [collaboratorFound.principal_email];
@@ -254,7 +269,7 @@ export class AuthService {
     emailDetailsToSend.subject = SUBJECT_EMAIL_VERIFICATION_CODE;
     emailDetailsToSend.emailTemplate = EMAIL_VERIFICATION_CODE;
     emailDetailsToSend.verificationCode =
-      userCollaboratorWithCode.verification_code;
+      verifiedCollaboratorRole.verification_code;
 
     await this.nodemailerService.sendEmail(emailDetailsToSend);
 
@@ -285,7 +300,7 @@ export class AuthService {
 
     if (bannedAdminOrAuditorFound) {
       throw new UnauthorizedException(
-        `¡Usuario bloqueado, por favor intente más tarde!`,
+        `¡Usuario bloqueado, por favor comunicarse con el equipo de soportes TICS!`,
       );
     }
 
@@ -298,13 +313,14 @@ export class AuthService {
 
     const verifiedAdminOrAuditorRole = await this.userRepository
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.role', 'role')
+      .innerJoin('user.role', 'role')
+      .select(['user.principal_email', 'user.id_number'])
       .where('user.principal_email = :principal_email', { principal_email })
       .andWhere('role.id IN (:...roleIds)', {
         roleIds: adminOrAuditorUserRoleFound.map((role) => role.id),
       })
       .andWhere('user.is_active = :isActive', { isActive: true })
-      .getOne();
+      .getRawOne();
 
     if (!verifiedAdminOrAuditorRole) {
       throw new UnauthorizedException(`¡Usuario no autorizado!`);
@@ -333,12 +349,6 @@ export class AuthService {
       { verification_code: verificationCode },
     );
 
-    const userAdminOrAuditorWithCode = await this.userRepository.findOne({
-      where: {
-        id: adminOrAuditorFound.id,
-      },
-    });
-
     const emailDetailsToSend = new SendEmailDto();
 
     emailDetailsToSend.recipients = [adminOrAuditorFound.principal_email];
@@ -346,7 +356,7 @@ export class AuthService {
     emailDetailsToSend.subject = SUBJECT_EMAIL_VERIFICATION_CODE;
     emailDetailsToSend.emailTemplate = EMAIL_VERIFICATION_CODE;
     emailDetailsToSend.verificationCode =
-      userAdminOrAuditorWithCode.verification_code;
+      verifiedAdminOrAuditorRole.verification_code;
 
     await this.nodemailerService.sendEmail(emailDetailsToSend);
 
@@ -358,6 +368,75 @@ export class AuthService {
     });
 
     return { principal_email };
+  }
+
+  private getExpirationInSeconds(expiresIn: string): number {
+    const expiresInInSeconds = parseInt(expiresIn, 10) * 60;
+
+    return expiresInInSeconds;
+  }
+
+  private async generateTokens(user: Partial<IUserSession>): Promise<Tokens> {
+    const jwtUserPayload = {
+      sub: user.id,
+      name: user.name,
+      user_id_type: user.user_id_type,
+      id_number: user.id_number,
+      email: user.email,
+      role: user.role,
+    };
+
+    const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
+      [
+        await this.jwtService.signAsync(jwtUserPayload, {
+          secret: process.env.JWT_CONSTANTS_SECRET,
+          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
+        }),
+
+        await this.jwtService.signAsync(jwtUserPayload, {
+          secret: process.env.JWT_CONSTANTS_SECRET,
+          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
+        }),
+
+        await this.getExpirationInSeconds(process.env.ACCESS_TOKEN_EXPIRES_IN),
+      ],
+    );
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      access_token_expires_in: accessTokenExpiresIn,
+    };
+  }
+
+  async refreshToken(refreshToken: string): Promise<any> {
+    try {
+      const user: IUserSession = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_CONSTANTS_SECRET,
+      });
+
+      const payload: Payload = {
+        sub: user.id,
+        name: user.name,
+        user_id_type: user.user_id_type,
+        id_number: user.id_number,
+        email: user.email,
+        role: user.role,
+      };
+
+      const { access_token, refresh_token, access_token_expires_in } =
+        await this.generateTokens(payload);
+
+      return {
+        access_token,
+        refresh_token,
+        access_token_expires_in,
+        status: HttpStatus.CREATED,
+        message: '¡Refresh Token Successfully!',
+      };
+    } catch (error) {
+      throw new UnauthorizedException(`¡Refresh Token Failed!`);
+    }
   }
 
   async verifyCodeAndLoginCollaboratorUser(
@@ -374,7 +453,8 @@ export class AuthService {
 
     const verifiedCollaboratorRole = await this.userRepository
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.role', 'role')
+      .innerJoin('user.role', 'role')
+      .select(['user.principal_email', 'user.id_number'])
       .where('user.principal_email = :principal_email', {
         principal_email: principal_email,
       })
@@ -382,7 +462,7 @@ export class AuthService {
         roleIds: collaboratorUserRoleFound.map((role) => role.id),
       })
       .andWhere('user.is_active = :isActive', { isActive: true })
-      .getOne();
+      .getRawOne();
 
     if (!verifiedCollaboratorRole) {
       throw new UnauthorizedException(`¡Usuario no autorizado!`);
@@ -413,11 +493,13 @@ export class AuthService {
     const payload: Payload = {
       sub: collaboratorFound.id,
       name: `${collaboratorFound.name} ${collaboratorFound.last_name}`,
-      principal_email: collaboratorFound.principal_email,
       user_id_type: collaboratorFound.user_id_type,
       id_number: collaboratorFound.id_number,
-      role: collaboratorFound.role,
-      permissions: collaboratorFound.permission,
+      email: collaboratorFound.principal_email,
+      role: collaboratorFound.role.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -427,11 +509,10 @@ export class AuthService {
       access_token,
       refresh_token,
       access_token_expires_in,
-      id_type: collaboratorFound.user_id_type,
-      id_number: collaboratorFound.id_number,
-      principal_email: collaboratorFound.principal_email,
-      role: collaboratorFound.role,
-      permission: collaboratorFound.permission,
+      name: payload.name,
+      id_number: payload.id_number,
+      email: payload.email,
+      role: payload.role,
     };
   }
 
@@ -452,7 +533,8 @@ export class AuthService {
 
     const verifiedAdminOrAuditorRole = await this.userRepository
       .createQueryBuilder('user')
-      .innerJoinAndSelect('user.role', 'role')
+      .innerJoin('user.role', 'role')
+      .select(['user.principal_email', 'user.id_number'])
       .where('user.principal_email = :principal_email', {
         principal_email: principal_email,
       })
@@ -460,7 +542,7 @@ export class AuthService {
         roleIds: adminOrAuditorUserRoleFound.map((role) => role.id),
       })
       .andWhere('user.is_active = :isActive', { isActive: true })
-      .getOne();
+      .getRawOne();
 
     if (!verifiedAdminOrAuditorRole) {
       throw new UnauthorizedException(`¡Usuario no autorizado!`);
@@ -491,11 +573,13 @@ export class AuthService {
     const payload: Payload = {
       sub: adminOrAuditorFound.id,
       name: `${adminOrAuditorFound.name} ${adminOrAuditorFound.last_name}`,
-      principal_email: adminOrAuditorFound.principal_email,
       user_id_type: adminOrAuditorFound.user_id_type,
       id_number: adminOrAuditorFound.id_number,
-      role: adminOrAuditorFound.role,
-      permissions: adminOrAuditorFound.permission,
+      email: adminOrAuditorFound.principal_email,
+      role: adminOrAuditorFound.role.map((role) => ({
+        id: role.id,
+        name: role.name,
+      })),
     };
 
     const { access_token, refresh_token, access_token_expires_in } =
@@ -529,11 +613,9 @@ export class AuthService {
       access_token,
       refresh_token,
       access_token_expires_in,
-      id_type: adminOrAuditorFound.user_id_type,
-      id_number: adminOrAuditorFound.id_number,
-      principal_email: adminOrAuditorFound.principal_email,
-      role: adminOrAuditorFound.role,
-      permission: adminOrAuditorFound.permission,
+      id_number: payload.id_number,
+      email: payload.email,
+      role: payload.role,
     };
   }
 
@@ -578,77 +660,6 @@ export class AuthService {
       );
     });
 
-    return userCollaboratorWithCode.principal_email;
-  }
-
-  private getExpirationInSeconds(expiresIn: string): number {
-    const expiresInInSeconds = parseInt(expiresIn, 10) * 60;
-
-    return expiresInInSeconds;
-  }
-
-  private async generateTokens(user: Partial<User>): Promise<Tokens> {
-    const jwtUserPayload: Payload = {
-      sub: user.id,
-      name: user.name,
-      principal_email: user.principal_email,
-      user_id_type: user.user_id_type,
-      id_number: user.id_number,
-      role: user.role,
-      permissions: user.permission,
-    };
-
-    const [accessToken, refreshToken, accessTokenExpiresIn] = await Promise.all(
-      [
-        await this.jwtService.signAsync(jwtUserPayload, {
-          secret: process.env.JWT_CONSTANTS_SECRET,
-          expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN,
-        }),
-
-        await this.jwtService.signAsync(jwtUserPayload, {
-          secret: process.env.JWT_CONSTANTS_SECRET,
-          expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN,
-        }),
-
-        await this.getExpirationInSeconds(process.env.ACCESS_TOKEN_EXPIRES_IN),
-      ],
-    );
-
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      access_token_expires_in: accessTokenExpiresIn,
-    };
-  }
-
-  async refreshToken(refreshToken: string): Promise<any> {
-    try {
-      const user: Partial<User> = this.jwtService.verify(refreshToken, {
-        secret: process.env.JWT_CONSTANTS_SECRET,
-      });
-
-      const payload: Payload = {
-        sub: user.id,
-        name: user.name,
-        principal_email: user.principal_email,
-        user_id_type: user.user_id_type,
-        id_number: user.id_number,
-        role: user.role,
-        permissions: user.permission,
-      };
-
-      const { access_token, refresh_token, access_token_expires_in } =
-        await this.generateTokens(payload);
-
-      return {
-        access_token,
-        refresh_token,
-        access_token_expires_in,
-        status: HttpStatus.CREATED,
-        message: '¡Refresh Token Successfully!',
-      };
-    } catch (error) {
-      throw new UnauthorizedException(`¡Refresh Token Failed!`);
-    }
+    return { email: userCollaboratorWithCode.principal_email };
   }
 }

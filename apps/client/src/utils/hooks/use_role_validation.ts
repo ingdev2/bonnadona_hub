@@ -1,8 +1,7 @@
-import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 import { notFound } from "next/navigation";
 import { AllowedRoleType } from "../types/allowed_role_type";
-import { RolesEnum } from "../enums/roles/roles.enum";
 
 export const useRoleValidation = (allowedRoles: AllowedRoleType[]) => {
   const { data: session, status } = useSession();
@@ -11,14 +10,14 @@ export const useRoleValidation = (allowedRoles: AllowedRoleType[]) => {
     if (
       status === "authenticated" &&
       session &&
-      Array.isArray(session.user.role)
+      Array.isArray(session?.user.role)
     ) {
-      const userRoles = session.user.role.map(
+      const userRoles = session?.user.role.map(
         (role: { name: string }) => role.name
       );
 
-      const hasAllowedRole = userRoles.some((role: string) =>
-        allowedRoles.includes(role as AllowedRoleType)
+      const hasAllowedRole = allowedRoles.some((allowedRole) =>
+        userRoles.includes(allowedRole as AllowedRoleType)
       );
 
       if (!hasAllowedRole) {

@@ -20,14 +20,14 @@ async function refreshAccessToken(token: any) {
     const refreshedTokens = await response.json();
 
     if (!response.ok) {
-      throw refreshedTokens;
+      throw new Error("No se pudo refrescar el token.");
     }
 
     return {
       ...token,
-      accessToken: refreshedTokens.access_token,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
-      acessTokenExpires:
+      access_token: refreshedTokens.access_token,
+      refresh_token: refreshedTokens.refresh_token,
+      access_token_expires_in:
         Date.now() + refreshedTokens.access_token_expires_in * 1000,
     };
   } catch (error) {
@@ -37,6 +37,50 @@ async function refreshAccessToken(token: any) {
 
 const handler = NextAuth({
   providers: [
+    CredentialsProvider({
+      id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
+      name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
+      credentials: {
+        principal_email: {
+          label: "Correo",
+          type: "string",
+          inputMode: "text",
+        },
+        verification_code: {
+          label: "Código de verificación",
+          type: "number",
+          inputMode: "numeric",
+          pattern: "[0-9]*",
+        },
+      },
+
+      async authorize(credentials) {
+        if (!credentials) {
+          throw new Error("Credenciales no definidas.");
+        }
+
+        const { principal_email } = credentials;
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verifyCodeAndLoginAdminAndAuditorUser/${principal_email}`,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              principal_email: credentials?.principal_email,
+              verification_code: credentials?.verification_code,
+            }),
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        const admin = await res.json();
+
+        if (admin.error) throw admin;
+
+        return admin;
+      },
+    }),
+
     CredentialsProvider({
       id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
       name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
@@ -106,15 +150,15 @@ const handler = NextAuth({
           if (!refreshedToken.error) {
             return {
               ...token,
-              access_token: refreshedToken.accessToken,
-              access_token_expires_in: refreshedToken.accessTokenExpires,
+              access_token: refreshedToken.access_token,
+              access_token_expires_in: refreshedToken.access_token_expires_in,
             };
           } else {
             return {};
           }
         }
       }
-      
+
       return token;
     },
     async session({ session, token }) {

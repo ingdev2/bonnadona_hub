@@ -36,7 +36,7 @@ export class AuditLogsInterceptor implements NestInterceptor {
       requestAuditLog.auditLogData = {
         user_name: requestAuditLog.user?.name || NOT_REGISTER,
         user_id_number: requestAuditLog.user?.id_number || NOT_REGISTER,
-        user_email: requestAuditLog.user?.principal_email || NOT_REGISTER,
+        user_email: requestAuditLog.user?.email || NOT_REGISTER,
         user_role: roleNames,
         is_mobile: headers['sec-ch-ua-mobile'] || NOT_REGISTER,
         browser_version: headers['sec-ch-ua'] || NOT_REGISTER,

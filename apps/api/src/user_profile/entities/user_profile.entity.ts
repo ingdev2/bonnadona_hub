@@ -12,12 +12,6 @@ import {
 import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { User } from 'src/user/entities/user.entity';
 
-import { UserHeightEnum } from 'src/utils/enums/user_profile/user_height.enum';
-import { UserWeightEnum } from 'src/utils/enums/user_profile/user_weight.enum';
-import { UserShirtSizeEnum } from 'src/utils/enums/user_profile/user_shirt_size.enum';
-import { UserPantsSizeEnum } from 'src/utils/enums/user_profile/user_pants_size.enum';
-import { UserShoeSizeEnum } from 'src/utils/enums/user_profile/user_shoe_size.enum';
-
 @Entity()
 export class UserProfile {
   @PrimaryGeneratedColumn('uuid')
@@ -30,8 +24,8 @@ export class UserProfile {
   @Column({ nullable: true })
   user_blood_group: number;
 
-  @Column({ type: 'text', array: true, nullable: true })
-  profile_photo: string[];
+  @Column({ type: 'text', nullable: true })
+  profile_photo: string;
 
   @Column({ type: 'text', nullable: true })
   affiliation_eps: string;
@@ -48,23 +42,23 @@ export class UserProfile {
   @Column({ nullable: true })
   residence_neighborhood: string;
 
-  @Column({ type: 'text', array: true, nullable: true })
-  digital_signature: string[];
+  @Column({ type: 'text', nullable: true })
+  digital_signature: string;
 
   @Column({ type: 'text', nullable: true })
-  user_height: UserHeightEnum;
+  user_height: string;
 
   @Column({ type: 'text', nullable: true })
-  user_weight: UserWeightEnum;
+  user_weight: string;
 
   @Column({ type: 'text', nullable: true })
-  user_shirt_size: UserShirtSizeEnum;
+  user_shirt_size: string;
 
   @Column({ type: 'text', nullable: true })
-  user_pants_size: UserPantsSizeEnum;
+  user_pants_size: string;
 
   @Column({ type: 'text', nullable: true })
-  user_shoe_size: UserShoeSizeEnum;
+  user_shoe_size: string;
 
   @OneToOne(() => User, (user) => user.user_profile, {
     onDelete: 'CASCADE',

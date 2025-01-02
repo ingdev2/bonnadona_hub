@@ -15,6 +15,7 @@ import { ValidateCollaboratorDto } from '../dto/validate_collaborator.dto';
 import { SearchCollaboratorDto } from '../dto/search_collaborator.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
+import { CreateDigitalSignatureDto } from 'src/user_profile/dto/create-digital-signature.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
 import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
 import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
@@ -71,15 +72,32 @@ export class UsersController {
   // GET METHODS //
 
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
+  @Get('/getAllActiveUsers')
+  async getAllActiveUsers() {
+    return await this.usersService.getAllActiveUsers();
+  }
+
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
   @Get('/getAllUsers')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
+  }
+
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
+  @Get('/getAllUsersWithProfile')
+  async getAllUsersWithProfile() {
+    return await this.usersService.getAllUsersWithProfile();
   }
 
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getUser/:id')
   async getUserById(@Param('id') id: string) {
     return await this.usersService.getUserById(id);
+  }
+
+  @Get('/getUserActiveProfileById/:id')
+  async getUserActiveProfileById(@Param('id') id: string) {
+    return await this.usersService.getUserActiveProfileById(id);
   }
 
   @Get('/getUserProfileById/:id')
@@ -135,6 +153,23 @@ export class UsersController {
     return await this.usersService.getUserActiveByIdNumber(id_number);
   }
 
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
+  @Get('/getUserByIdNumber/:id_number')
+  async getUserByIdNumber(@Param('id_number') id_number: number) {
+    return await this.usersService.getUserByIdNumber(id_number);
+  }
+
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
   @Get('/getUserActiveByEmail/:principal_email')
   async getUserActiveByEmail(
     @Param('principal_email') principal_email: string,
@@ -142,20 +177,26 @@ export class UsersController {
     return await this.usersService.getUserActiveByEmail(principal_email);
   }
 
-  @Get('/getUserRoles/:id')
-  async getUserRoles(@Param('id') id: string) {
-    return await this.usersService.getUserRoles(id);
+  @Get('/getUserRoles/:idNumber')
+  async getUserRoles(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserRoles(idNumber);
   }
 
-  @Get('/getUserPermissions/:id')
-  async getUserPermissions(@Param('id') id: string) {
-    return await this.usersService.getUserPermissions(id);
+  @Get('/getUserPermissions/:idNumber')
+  async getUserPermissions(@Param('idNumber') idNumber: number) {
+    return await this.usersService.getUserPermissions(idNumber);
   }
 
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Get('/getAllColaboratorPositions')
   async getAllColaboratorPositions() {
     return await this.usersService.getAllColaboratorPositions();
+  }
+
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Get('/getAllColaboratorService')
+  async getAllColaboratorService() {
+    return await this.usersService.getAllColaboratorService();
   }
 
   // PATCH METHODS //
@@ -193,6 +234,23 @@ export class UsersController {
       id,
       updateUser,
       requestAuditLog,
+    );
+  }
+
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.COLLABORATOR,
+    RolesEnum.AUDITOR,
+  )
+  @Patch('/updateUserDigitalSign/:userId')
+  async updateUserDigitalSignature(
+    @Param('userId') userId: string,
+    @Body() digital_signature: CreateDigitalSignatureDto,
+  ) {
+    return await this.usersService.updateUserDigitalSignature(
+      userId,
+      digital_signature,
     );
   }
 

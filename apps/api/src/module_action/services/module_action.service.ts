@@ -57,7 +57,7 @@ export class ModuleActionService {
   async getAllModuleActions() {
     const allModuleActions = await this.moduleActionRepository.find({
       order: {
-        id: 'ASC',
+        name: 'ASC',
       },
     });
 

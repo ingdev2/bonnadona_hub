@@ -1,40 +1,21 @@
 "use client";
 
 import React from "react";
+
 import { Tag } from "antd";
 
-interface CustomTag {
-  idCustom: string;
-  classNameCustom: string;
-  labelCustom: string;
-  numberCustom?: number;
-  colorCustom: string;
-  iconCustom?: React.ReactNode;
-  stylesCustom?: React.CSSProperties;
-}
-
-const CustomTags: React.FC<CustomTag> = ({
-  idCustom,
-  classNameCustom,
-  labelCustom,
-  numberCustom,
-  colorCustom,
-  iconCustom,
-  stylesCustom,
-}) => {
+const CustomTags: React.FC<{ tag: CustomTag }> = ({ tag }) => {
   return (
     <Tag
-      id={idCustom}
-      className={classNameCustom}
-      key={labelCustom}
-      color={colorCustom}
-      style={{ ...stylesCustom }}
+      key={tag.label}
+      color={tag.color}
+      style={{
+        color: tag.textColor,
+        paddingInline: "13px",
+        margin: "4px",
+      }}
     >
-      <div style={{ display: "flex", gap: "10px" }}>
-        {iconCustom}
-        {labelCustom}
-        {numberCustom}
-      </div>
+      {tag.label}
     </Tag>
   );
 };

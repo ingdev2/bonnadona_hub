@@ -1,4 +1,5 @@
 export enum ApplicationsEnum {
+  BONNA_HUB = 'BONNADONA HUB',
   FÉNIX = 'FÉNIX',
   RETO_APP = 'RETO APP',
   HALCÓN = 'HALCÓN',
@@ -10,4 +11,6 @@ export enum ApplicationsEnum {
   EXITUS = 'EXITUS',
   CALADRIUS = 'CALADRIUS',
   CIRUGÍA = 'CIRUGÍA',
+  GOODMED = 'GOODMED',
+  AUXILIAR_CLINICO = 'AUXILIAR CLINICO',
 }

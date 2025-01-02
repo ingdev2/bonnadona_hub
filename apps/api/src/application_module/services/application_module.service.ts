@@ -57,7 +57,7 @@ export class ApplicationModuleService {
   async getAllAppModules() {
     const allAppModules = await this.appModuleRepository.find({
       order: {
-        id: 'ASC',
+        name: 'ASC',
       },
     });
 

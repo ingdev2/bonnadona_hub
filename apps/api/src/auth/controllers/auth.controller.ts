@@ -27,13 +27,29 @@ export class AuthController {
 
   // REGISTER //
 
-  // @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @EnableAuditLog()
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/registerUserCollaborator')
   async registerUserCollaborator(
     @Body() registerUserCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
   ) {
     return await this.authService.registerUserCollaborator(
       registerUserCollaborator,
+      requestAuditLog,
+    );
+  }
+
+  @EnableAuditLog()
+  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
+  @Post('/registerUserCollaboratorFromBonnadonaHub')
+  async registerUserCollaboratorFromBonnadonaHub(
+    @Body() registerUserCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    return await this.authService.registerUserCollaboratorFromBonnadonaHub(
+      registerUserCollaborator,
+      requestAuditLog,
     );
   }
 

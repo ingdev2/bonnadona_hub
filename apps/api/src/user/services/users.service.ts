@@ -17,6 +17,7 @@ import { BloodGroup } from 'src/blood_groups/entities/blood_group.entity';
 import { ServiceType } from 'src/service_types/entities/service_type.entity';
 import { PositionLevel } from 'src/position_levels/entities/position_level.entity';
 import { Role } from 'src/role/entities/role.entity';
+import { Permissions } from 'src/permissions/entities/permissions.entity';
 import { PermissionsService } from 'src/permissions/services/permissions.service';
 import { UserSessionLog } from 'src/user_session_log/entities/user_session_log.entity';
 import { PasswordPolicy } from 'src/password_policy/entities/password_policy.entity';
@@ -44,6 +45,7 @@ import { CreateUserDto } from '../dto/create_user.dto';
 import { UpdateUserDto } from '../dto/update_user.dto';
 import { UpdateUserProfileDto } from '../dto/update_user_profile.dto';
 import { UpdatePasswordUserDto } from '../dto/update_password_user.dto';
+import { CreateDigitalSignatureDto } from 'src/user_profile/dto/create-digital-signature.dto';
 import { ForgotPasswordUserDto } from '../dto/forgot_password_user.dto';
 import { ResetPasswordUserDto } from '../dto/reset_password_user.dto';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
@@ -63,6 +65,7 @@ import { SUPPORT_CONTACT_EMAIL } from 'src/utils/constants/constants';
 import { maskEmailUser } from '../helpers/mask_email';
 
 const schedule = require('node-schedule');
+const sharp = require('sharp');
 
 @Injectable()
 export class UsersService {
@@ -85,6 +88,9 @@ export class UsersService {
     private bloodGroupRepository: Repository<BloodGroup>,
 
     @InjectRepository(Role) private roleRepository: Repository<Role>,
+
+    @InjectRepository(Permissions)
+    private permissionRepository: Repository<Permissions>,
 
     @InjectRepository(ServiceType)
     private serviceTypeRepository: Repository<ServiceType>,
@@ -379,7 +385,10 @@ export class UsersService {
     return data;
   }
 
-  async createUserCollaborator(userCollaborator: CreateUserDto) {
+  async createUserCollaborator(
+    userCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
     const data = await this.searchCollaborator({
       idType: userCollaborator.user_id_type,
       idNumber: userCollaborator.id_number,
@@ -547,6 +556,179 @@ export class UsersService {
       loadEagerRelations: false,
       loadRelationIds: true,
     });
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.CREATE_USER,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: userCollaboratorCreated.id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
+    const emailDetailsToSend = new SendEmailDto();
+
+    emailDetailsToSend.recipients = [userCollaboratorCreated.principal_email];
+    emailDetailsToSend.userNameToEmail = userCollaboratorCreated.name;
+    emailDetailsToSend.subject = SUBJECT_ACCOUNT_CREATED;
+    emailDetailsToSend.emailTemplate = ACCOUNT_CREATED;
+    emailDetailsToSend.bonnaHubUrl = process.env.BONNA_HUB_URL;
+    emailDetailsToSend.supportContactEmail = SUPPORT_CONTACT_EMAIL;
+
+    await this.nodemailerService.sendEmail(emailDetailsToSend);
+
+    return userCollaboratorCreated;
+  }
+
+  async createUserCollaboratorFromBonnadonaHub(
+    userCollaborator: CreateUserDto,
+    @Req() requestAuditLog: any,
+  ) {
+    const idNumber = userCollaborator.id_number;
+    userCollaborator.password = await bcryptjs.hash(String(idNumber), 10);
+    const userCollaboratorFound = await this.userRepository.findOne({
+      where: {
+        id_number: userCollaborator.id_number,
+      },
+    });
+
+    if (userCollaboratorFound) {
+      throw new HttpException(
+        `El usuario con número de identificación ${userCollaborator.id_number} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPrincipalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          principal_email: userCollaborator.principal_email,
+        },
+      });
+
+    if (userCollaboratorPrincipalEmailFound) {
+      throw new HttpException(
+        `El correo principal ${userCollaborator.principal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorPersonalEmailFound =
+      await this.userRepository.findOne({
+        where: {
+          personal_email: userCollaborator.personal_email,
+        },
+      });
+
+    if (userCollaboratorPersonalEmailFound) {
+      throw new HttpException(
+        `El correo personal ${userCollaborator.personal_email} ya está registrado.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    if (userCollaborator.corporate_email) {
+      const isCorporateEmail = await validateCorporateEmail(
+        userCollaborator.corporate_email,
+      );
+
+      if (!isCorporateEmail) {
+        throw new HttpException(
+          `El email: ${userCollaborator.corporate_email} no es un correo corporativo válido.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    const collaboratorServiceTypeFound =
+      await this.serviceTypeRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_service_type,
+        },
+      });
+
+    if (!collaboratorServiceTypeFound) {
+      throw new HttpException(
+        `Tipo de servicio no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const collaboratorPositionLevelFound =
+      await this.positionLevelRepository.findOne({
+        where: {
+          id: userCollaborator.collaborator_position_level,
+        },
+      });
+
+    if (!collaboratorPositionLevelFound) {
+      throw new HttpException(
+        `Nivel de cargo no encontrado en base de datos.`,
+        HttpStatus.CONFLICT,
+      );
+    }
+
+    const userCollaboratorCreate =
+      await this.userRepository.create(userCollaborator);
+
+    const collaboratorRole = await this.roleRepository.findOne({
+      where: { name: RolesEnum.COLLABORATOR },
+    });
+
+    if (!collaboratorRole) {
+      throw new HttpException(
+        `El role ${RolesEnum.COLLABORATOR} no existe.`,
+        HttpStatus.CONFLICT,
+      );
+    } else {
+      userCollaboratorCreate.role = [collaboratorRole];
+    }
+
+    const userCollaboratorSave = await this.userRepository.save(
+      userCollaboratorCreate,
+    );
+
+    const userProfile = new UserProfile();
+
+    userProfile.user = userCollaboratorSave;
+
+    const userProfileCreate =
+      await this.userProfileRepository.create(userProfile);
+
+    userCollaboratorSave.user_profile = userProfileCreate;
+
+    await this.permissionsService.assignDefaultPermissionsToUser(
+      userCollaboratorSave,
+      userCollaborator.collaborator_position,
+    );
+
+    const userSessionLog = new UserSessionLog();
+
+    userSessionLog.user = userCollaboratorSave;
+
+    const userSessionCreate =
+      await this.userSessionLogRepository.create(userSessionLog);
+
+    userCollaboratorSave.user_session_log = userSessionCreate;
+
+    await this.userRepository.save(userCollaboratorSave);
+
+    const userCollaboratorCreated = await this.userRepository.findOne({
+      where: { id: userCollaboratorSave.id },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.CREATE_USER,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: userCollaboratorCreated.id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     const emailDetailsToSend = new SendEmailDto();
 
@@ -849,13 +1031,13 @@ export class UsersService {
 
   // GET FUNTIONS //
 
-  async getAllUsers() {
+  async getAllActiveUsers() {
     const allUsers = await this.userRepository.find({
       where: {
         is_active: true,
       },
       order: {
-        createdAt: 'ASC',
+        name: 'ASC',
       },
       loadEagerRelations: false,
       loadRelationIds: true,
@@ -868,6 +1050,96 @@ export class UsersService {
       );
     } else {
       return allUsers;
+    }
+  }
+
+  async getAllUsers() {
+    const allUsers = await this.userRepository.find({
+      order: {
+        name: 'ASC',
+      },
+      loadEagerRelations: false,
+      loadRelationIds: true,
+    });
+
+    if (!allUsers.length) {
+      throw new HttpException(
+        `No hay usuarios registrados en la base de datos`,
+        HttpStatus.NOT_FOUND,
+      );
+    } else {
+      return allUsers;
+    }
+  }
+
+  async getAllUsersWithProfile() {
+    const allUsersWithProfile = await this.userRepository.find({
+      order: {
+        name: 'ASC',
+      },
+    });
+
+    if (!allUsersWithProfile.length) {
+      throw new HttpException(
+        `No hay usuarios registrados en la base de datos`,
+        HttpStatus.NOT_FOUND,
+      );
+    } else {
+      const result = [];
+
+      allUsersWithProfile.map((item) => {
+        const userPermissionsId = item.permission?.map(
+          (permission, index: number) => permission.id,
+        );
+
+        const userRoleId = item.role?.map((role, index: number) => role.id);
+
+        result.push({
+          id: item.id,
+          name: item.name,
+          last_name: item.last_name,
+          user_id_type: item.user_id_type,
+          id_number: item.id_number,
+          user_gender: item.user_gender,
+          birthdate: item.birthdate,
+          principal_email: item.principal_email,
+          corporate_email: item.corporate_email,
+          personal_email: item.personal_email,
+          personal_cellphone: item.personal_cellphone,
+          corporate_cellphone: item.corporate_cellphone,
+          collaborator_service_type: item.collaborator_service_type,
+          collaborator_immediate_boss: item.collaborator_immediate_boss,
+          collaborator_unit: item.collaborator_unit,
+          collaborator_service: item.collaborator_service,
+          collaborator_position: item.collaborator_position,
+          collaborator_position_level: item.collaborator_position_level,
+          password: item.password,
+          reset_password_token: item.reset_password_token,
+          last_password_update: item.last_password_update,
+          verification_code: item.verification_code,
+          is_active: item.is_active,
+          banned_user_until: item.banned_user_until,
+          user_profile: item.user_profile,
+          user_session_log: item.user_session_log,
+          user_blood_group: item.user_profile?.user_blood_group,
+          profile_photo: item.user_profile?.profile_photo,
+          affiliation_eps: item.user_profile?.affiliation_eps,
+          residence_department: item.user_profile?.residence_department,
+          residence_city: item.user_profile?.residence_city,
+          residence_address: item.user_profile?.residence_address,
+          residence_neighborhood: item.user_profile?.residence_neighborhood,
+          digital_signature: item.user_profile?.digital_signature,
+          user_height: item.user_profile?.user_height,
+          user_weight: item.user_profile?.user_weight,
+          user_shirt_size: item.user_profile?.user_shirt_size,
+          user_pants_size: item.user_profile?.user_pants_size,
+          user_shoe_size: item.user_profile?.user_shoe_size,
+          role: userRoleId,
+          permission: userPermissionsId,
+        });
+      });
+
+      return result;
     }
   }
 
@@ -888,9 +1160,21 @@ export class UsersService {
     }
   }
 
-  async getUserProfileById(userId: string) {
+  async getUserActiveProfileById(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId, is_active: true },
+    });
+
+    if (!user) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    return user.user_profile;
+  }
+
+  async getUserProfileById(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
     });
 
     if (!user) {
@@ -938,6 +1222,12 @@ export class UsersService {
     });
   }
 
+  async getUserByIdNumber(id_number: number) {
+    return await this.userRepository.findOneBy({
+      id_number: id_number,
+    });
+  }
+
   async getUserActiveByEmail(principal_email: string) {
     return await this.userRepository.findOneBy({
       principal_email: principal_email,
@@ -961,6 +1251,7 @@ export class UsersService {
         'principal_email',
         'role',
       ],
+      loadEagerRelations: false,
     });
   }
 
@@ -968,41 +1259,45 @@ export class UsersService {
     principalEmail: string,
     verificationCode: number,
   ) {
-    return await this.userRepository.findOneBy({
-      principal_email: principalEmail,
-      verification_code: verificationCode,
-      is_active: true,
+    return await this.userRepository.findOne({
+      where: {
+        principal_email: principalEmail,
+        verification_code: verificationCode,
+        is_active: true,
+      },
+      select: ['id', 'name', 'last_name', 'principal_email', 'id_number'],
+      loadEagerRelations: false,
+      relations: { role: true },
     });
   }
 
-  async getUserRoles(
-    id: string,
-  ): Promise<{ assignedRoles: Role[]; unassignedRoles: Role[] }> {
+  async getUserRoles(idNumber: number) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: { id_number: idNumber, is_active: true },
     });
 
     if (!userFound) {
       throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
     }
 
-    const allRoles = await this.roleRepository.find();
+    if (!userFound.role.length) {
+      throw new HttpException(
+        `Este usuario no tiene roles asignados.`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
 
-    const assignedRoles = userFound.role;
+    const transformedRoles = userFound.role.map((role) => ({
+      id: role.id,
+      name: role.name,
+    }));
 
-    const unassignedRoles = allRoles.filter(
-      (role) => !assignedRoles.some((assigned) => assigned.id === role.id),
-    );
-
-    return {
-      assignedRoles,
-      unassignedRoles,
-    };
+    return transformedRoles;
   }
 
-  async getUserPermissions(id: string) {
+  async getUserPermissions(idNumber: number) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: { id_number: idNumber, is_active: true },
     });
 
     if (!userFound) {
@@ -1016,7 +1311,30 @@ export class UsersService {
       );
     }
 
-    return userFound.permission;
+    const transformedPermissions = userFound.permission.map((permission) => ({
+      id: permission.id,
+      name: permission.name,
+      description: permission.description,
+      applications: permission.applications.map((app) => ({
+        id: app.id,
+        name: app.name,
+        image_path: app.image_path,
+        entry_link: app.entry_link,
+        is_active: app.is_active,
+      })),
+      application_modules: permission.application_modules.map((module) => ({
+        id: module.id,
+        name: module.name,
+        app_id: module.app_id,
+      })),
+      module_actions: permission.module_actions.map((action) => ({
+        id: action.id,
+        name: action.name,
+        app_module_id: action.app_module_id,
+      })),
+    }));
+
+    return transformedPermissions;
   }
 
   async getAllColaboratorPositions() {
@@ -1030,6 +1348,17 @@ export class UsersService {
     return positions.map((position) => position.user_collaborator_position);
   }
 
+  async getAllColaboratorService() {
+    const service = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.collaborator_service')
+      .orderBy('user.collaborator_service', 'ASC')
+      .distinct(true)
+      .getRawMany();
+
+    return service.map((service) => service.user_collaborator_service);
+  }
+
   // UPDATE FUNTIONS //
 
   async updateUser(
@@ -1039,7 +1368,6 @@ export class UsersService {
   ) {
     const userFound = await this.userRepository.findOneBy({
       id,
-      is_active: true,
     });
 
     if (!userFound) {
@@ -1074,15 +1402,17 @@ export class UsersService {
       );
     }
 
-    const isCorporateEmail = await validateCorporateEmail(
-      updateUser.corporate_email,
-    );
-
-    if (!isCorporateEmail) {
-      throw new HttpException(
-        `El email : ${updateUser.corporate_email} no es un correo corporativo válido.`,
-        HttpStatus.BAD_REQUEST,
+    if (updateUser.corporate_email) {
+      const isCorporateEmail = await validateCorporateEmail(
+        updateUser.corporate_email,
       );
+
+      if (!isCorporateEmail) {
+        throw new HttpException(
+          `El email : ${updateUser.corporate_email} no es un correo corporativo válido.`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
 
     const personalCellphoneUserValidate = await this.userRepository.findOne({
@@ -1133,17 +1463,16 @@ export class UsersService {
       );
     }
 
-    const { roleIdsToAdd, roleIdsToRemove, ...userUpdates } = updateUser;
+    const { roleIdsToAdd, permissionIdsToAdd, ...userUpdates } = updateUser;
 
     const userUpdate = await this.userRepository.update(id, userUpdates);
 
-    if (roleIdsToAdd || roleIdsToRemove) {
-      await this.updateUserRoles(
-        id,
-        roleIdsToAdd,
-        roleIdsToRemove,
-        requestAuditLog,
-      );
+    if (roleIdsToAdd) {
+      await this.updateUserRoles(id, roleIdsToAdd, requestAuditLog);
+    }
+
+    if (permissionIdsToAdd) {
+      await this.updateUserPermissions(id, permissionIdsToAdd, requestAuditLog);
     }
 
     if (userUpdate.affected === 0) {
@@ -1238,14 +1567,75 @@ export class UsersService {
     );
   }
 
+  private async processDigitalSignature(base64Data: string): Promise<string> {
+    try {
+      const base64String = base64Data.split(',')[1];
+      const buffer = Buffer.from(base64String, 'base64');
+
+      const optimizedBuffer = await sharp(buffer)
+        .resize(207, 113)
+        .toColourspace('b-w')
+        .flatten({ background: { r: 255, g: 255, b: 255 } })
+        .png({
+          quality: 7,
+          compressionLevel: 9,
+          adaptiveFiltering: true,
+          bitdepth: 8,
+        })
+        .withMetadata(false)
+        .toBuffer();
+
+      return `data:image/png;base64,${optimizedBuffer.toString('base64')}`;
+    } catch (error) {
+      throw new HttpException(
+        `Error al procesar la firma digital: ${error.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async updateUserDigitalSignature(
+    userId: string,
+    { digital_signature }: CreateDigitalSignatureDto,
+  ) {
+    const userFound = await this.userRepository.findOneBy({
+      id: userId,
+      is_active: true,
+    });
+
+    if (!userFound) {
+      throw new HttpException('Usuario no encontrado.', HttpStatus.CONFLICT);
+    }
+
+    if (!digital_signature) {
+      throw new HttpException('Firma no encontrada.', HttpStatus.CONFLICT);
+    }
+
+    const optimizedSignature =
+      await this.processDigitalSignature(digital_signature);
+
+    userFound.user_profile.digital_signature = optimizedSignature;
+
+    await this.userProfileRepository.update(
+      { id: userFound.user_profile.id },
+      userFound.user_profile,
+    );
+
+    throw new HttpException(
+      '¡Datos guardados correctamente!',
+      HttpStatus.ACCEPTED,
+    );
+  }
+
   async updateUserRoles(
     id: string,
     roleIdsToAdd: number[],
-    roleIdsToRemove: number[],
     @Req() requestAuditLog: any,
   ) {
     const userFound = await this.userRepository.findOne({
-      where: { id, is_active: true },
+      where: {
+        id,
+      },
     });
 
     if (!userFound) {
@@ -1257,31 +1647,62 @@ export class UsersService {
         id: In(roleIdsToAdd),
       });
 
-      userFound.role = [
-        ...userFound.role,
-        ...rolesToAdd.filter(
-          (role) =>
-            !userFound.role.some((existingRole) => existingRole.id === role.id),
-        ),
-      ];
-    }
-
-    if (roleIdsToRemove && roleIdsToRemove.length > 0) {
-      userFound.role = userFound.role.filter(
-        (role) => !roleIdsToRemove.includes(role.id),
-      );
-
-      if (userFound.role.length === 0) {
+      if (rolesToAdd.length !== roleIdsToAdd.length) {
         throw new HttpException(
-          `El usuario debe tener al menos un rol asignado.`,
-          HttpStatus.BAD_REQUEST,
+          `Uno o más roles no existen`,
+          HttpStatus.NOT_FOUND,
         );
       }
+
+      userFound.role = rolesToAdd;
     }
 
     const auditLogData = {
       ...requestAuditLog.auditLogData,
-      action_type: ActionTypesEnum.UPDATE_DATA_USER,
+      action_type: ActionTypesEnum.UPDATE_USER_ROLES,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
+    await this.userRepository.save(userFound);
+  }
+
+  async updateUserPermissions(
+    id: string,
+    permissionIdsToAdd: string[],
+    @Req() requestAuditLog: any,
+  ) {
+    const userFound = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!userFound) {
+      throw new HttpException(`Usuario no encontrado.`, HttpStatus.NOT_FOUND);
+    }
+
+    if (permissionIdsToAdd && permissionIdsToAdd.length > 0) {
+      const rolesToAdd = await this.permissionRepository.findBy({
+        id: In(permissionIdsToAdd),
+      });
+
+      if (rolesToAdd.length !== permissionIdsToAdd.length) {
+        throw new HttpException(
+          `Uno o más roles no existen`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      userFound.permission = rolesToAdd;
+    }
+
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.UPDATE_USER_PERMISSIONS,
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,
@@ -1606,6 +2027,20 @@ export class UsersService {
     }
 
     this.validatePasswordPolicy(newPassword, passwordPolicy);
+
+    const isPasswordInHistory =
+      await this.passwordHistoryService.isPasswordInHistory(
+        userFound.id,
+        newPassword,
+        passwordPolicy.password_history_limit,
+      );
+
+    if (isPasswordInHistory) {
+      throw new HttpException(
+        `La nueva contraseña no puede ser igual a ninguna de las últimas ${passwordPolicy.password_history_limit} contraseñas utilizadas.`,
+        HttpStatus.CONFLICT,
+      );
+    }
 
     this.validatePersonalDataInPassword(userFound, newPassword);
 

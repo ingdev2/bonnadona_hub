@@ -2,32 +2,25 @@
 
 import React, { useRef, useState } from "react";
 
-import { Button, Space, Table, Row, Col, Skeleton, Empty, Input } from "antd";
-import {
-  ReloadOutlined,
-  LoadingOutlined,
-  SearchOutlined,
-  FilterOutlined,
-  CloseCircleOutlined,
-  SortAscendingOutlined,
-} from "@ant-design/icons";
-import { FilterDropdownProps } from "antd/es/table/interface";
-import Highlighter from "react-highlight-words";
-
-import type { CaseReportValidate } from "@/utils/interfaces/case_report_validate/caseReportValidate.interface";
 import type {
   InputRef,
   TableColumnsType,
   TableColumnType,
   TableProps,
 } from "antd";
-import CustomButton from "../custom_button/CustomButton";
-import { FaBroom, FaFilter, FaRegWindowClose, FaSearch } from "react-icons/fa";
-
-type OnChange = NonNullable<TableProps<CaseReportValidate>["onChange"]>;
-type Filters = Parameters<OnChange>[1];
+import { Button, Col, Input, Row, Space, Table } from "antd";
+import { FaFilterCircleXmark } from "react-icons/fa6";
+import { FaSort } from "react-icons/fa";
+import { LuListRestart } from "react-icons/lu";
+import { VscDebugRestart } from "react-icons/vsc";
+import { FaSearch } from "react-icons/fa";
+import { MdRefresh } from "react-icons/md";
+import Highlighter from "react-highlight-words";
 
 type GetSingle<T> = T extends (infer U)[] ? U : never;
+
+type OnChange = NonNullable<TableProps<any>["onChange"]>;
+type Filters = Parameters<OnChange>[1];
 type Sorts = GetSingle<Parameters<OnChange>[2]>;
 
 interface ColumnConfig<T> {
@@ -39,30 +32,22 @@ interface ColumnConfig<T> {
   onFilter?: (value: boolean | React.Key, record: T) => boolean;
   sorter?: (a: T, b: T) => number;
   searchable?: boolean;
-  //   searchableDate?: boolean;
   fixed?: boolean | "left" | "right";
 }
 
 const CustomTableFiltersAndSorting: React.FC<{
   dataCustomTable: any[];
   columnsCustomTable: ColumnConfig<any>[];
-  onClickRechargeCustomTable: () => void;
-  loading: boolean;
-  customButtonNewRegister?: React.ReactNode;
-}> = ({
-  dataCustomTable,
-  columnsCustomTable,
-  onClickRechargeCustomTable,
-  loading,
-  customButtonNewRegister,
-}) => {
+  onClickUpdateCustomTable: () => void;
+}> = ({ dataCustomTable, columnsCustomTable, onClickUpdateCustomTable }) => {
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef<InputRef>(null);
+
   const [filteredInfo, setFilteredInfo] = useState<Filters>({});
   const [sortedInfo, setSortedInfo] = useState<Sorts>({});
 
-  const [searchText, setSearchText] = useState("");
-  //   const [searchDate, setSearchDate] = useState<Dayjs | null>(null);
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef<InputRef>(null);
+  const [pageSize, setPageSize] = useState(7);
 
   const handleChange: OnChange = (pagination, filters, sorter) => {
     setFilteredInfo(filters);
@@ -71,7 +56,7 @@ const CustomTableFiltersAndSorting: React.FC<{
 
   const handleSearch = (
     selectedKeys: string[],
-    confirm: FilterDropdownProps["confirm"],
+    confirm: () => void,
     dataIndex: string
   ) => {
     confirm();
@@ -81,11 +66,11 @@ const CustomTableFiltersAndSorting: React.FC<{
 
   const handleReset = (clearFilters: () => void) => {
     clearFilters();
+    setSearchText("");
   };
 
   const clearFilters = () => {
     setFilteredInfo({});
-    setSearchText("");
   };
 
   const clearSorting = () => {
@@ -98,6 +83,10 @@ const CustomTableFiltersAndSorting: React.FC<{
     handleReset(clearFilters);
   };
 
+  const handlePageSizeChange = (current: number, size: number) => {
+    setPageSize(size);
+  };
+
   const getColumnSearchProps = (dataIndex: string): TableColumnType<any> => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -106,10 +95,22 @@ const CustomTableFiltersAndSorting: React.FC<{
       clearFilters,
       close,
     }) => (
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+      <div
+        style={{
+          display: "flex",
+          flexFlow: "column wrap",
+          width: "231px",
+          justifyContent: "center",
+          alignContent: "center",
+          alignItems: "center",
+          padding: "13px",
+          margin: "0px",
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
         <Input
           ref={searchInput}
-          placeholder={`Buscar...`}
+          placeholder={`Buscar en columna`}
           value={selectedKeys[0]}
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -117,106 +118,130 @@ const CustomTableFiltersAndSorting: React.FC<{
           onPressEnter={() =>
             handleSearch(selectedKeys as string[], confirm, dataIndex)
           }
-          style={{ marginBottom: 8, display: "block" }}
+          style={{ display: "block", marginBottom: "13px", padding: "8px" }}
         />
-        <Space>
-          <CustomButton
-            classNameCustomButton="search-button"
-            idCustomButton="search-button"
-            titleCustomButton="Buscar"
-            typeCustomButton="primary"
-            htmlTypeCustomButton="button"
-            iconCustomButton={<FaSearch />}
-            onClickCustomButton={() =>
-              handleSearch(selectedKeys as string[], confirm, dataIndex)
-            }
-            styleCustomButton={{
-              width: 60,
-              background: "#015E90",
-              color: "#ffffff",
+
+        <Space
+          direction="vertical"
+          size={"small"}
+          style={{
+            width: "100%",
+          }}
+        >
+          <Col
+            style={{
+              display: "flex",
+              flexFlow: "row wrap",
+              justifyContent: "space-evenly",
+              alignContent: "center",
+              alignItems: "center",
+              paddingBottom: "7px",
+              margin: "0px",
             }}
-            iconPositionCustomButton={"start"}
-            sizeCustomButton={"small"}
-          />
-          <CustomButton
-            classNameCustomButton="clean-button"
-            idCustomButton="clean-button"
-            titleCustomButton="Limpiar"
-            typeCustomButton="primary"
-            htmlTypeCustomButton="reset"
-            iconCustomButton={<FaBroom />}
-            onClickCustomButton={() =>
-              clearFilters && handleReset(clearFilters)
-            }
-            styleCustomButton={{
-              width: 65,
-              background: "#FD7E14",
-              color: "#ffffff",
+          >
+            <Button
+              onClick={() =>
+                handleSearch(selectedKeys as string[], confirm, dataIndex)
+              }
+              icon={<FaSearch />}
+              size="middle"
+              style={{
+                width: "45%",
+                backgroundColor: "#015E90",
+                color: "#F7F7F7",
+                borderRadius: 22,
+                justifyContent: "center",
+                alignContent: "center",
+                alignItems: "center",
+                marginInline: "2px",
+              }}
+            >
+              Buscar
+            </Button>
+
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              icon={<VscDebugRestart />}
+              size="middle"
+              style={{
+                width: "45%",
+                color: "#137A2B",
+                borderColor: "#137A2B",
+                borderRadius: 22,
+                borderWidth: 1.3,
+                justifyContent: "center",
+                alignContent: "center",
+                alignItems: "center",
+                marginInline: "2px",
+              }}
+            >
+              Reiniciar
+            </Button>
+          </Col>
+
+          <Button
+            size="middle"
+            style={{
+              width: "100%",
+              color: "#015E90",
+              borderColor: "#015E90",
+              borderRadius: 22,
+              borderWidth: 0.7,
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              paddingInline: "7px",
+              marginBottom: "7px",
             }}
-            iconPositionCustomButton={"start"}
-            sizeCustomButton={"small"}
-          />
-          <CustomButton
-            classNameCustomButton="filter-button"
-            idCustomButton="filter-button"
-            titleCustomButton="Filtrar"
-            typeCustomButton="primary"
-            htmlTypeCustomButton="button"
-            iconCustomButton={<FaFilter />}
-            onClickCustomButton={() => {
+            onClick={() => {
               confirm({ closeDropdown: false });
               setSearchText((selectedKeys as string[])[0]);
               setSearchedColumn(dataIndex);
             }}
-            styleCustomButton={{
-              width: 65,
-              background: "#1D8348",
-              color: "#ffffff",
+          >
+            Filtrar
+          </Button>
+          <Button
+            size="middle"
+            style={{
+              width: "100%",
+              color: "#960202",
+              fontWeight: "bold",
+              borderColor: "#960202",
+              borderRadius: 22,
+              borderWidth: 1.3,
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              paddingInline: "7px",
+              marginBottom: "7px",
             }}
-            iconPositionCustomButton={"start"}
-            sizeCustomButton={"small"}
-          />
-          <CustomButton
-            classNameCustomButton="close-button"
-            idCustomButton="close-button"
-            titleCustomButton="Cerrar"
-            typeCustomButton="primary"
-            htmlTypeCustomButton="button"
-            iconCustomButton={<FaRegWindowClose />}
-            onClickCustomButton={() => close()}
-            styleCustomButton={{
-              width: 65,
-              background: "#8C1111",
-              color: "#ffffff",
-            }}
-            iconPositionCustomButton={"start"}
-            sizeCustomButton={"small"}
-          />
+            onClick={() => close()}
+          >
+            Cerrar
+          </Button>
         </Space>
       </div>
     ),
     filterIcon: (filtered: boolean) => (
-      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+      <FaSearch style={{ color: filtered ? "#1677ff" : undefined }} />
     ),
-    onFilter: (value, record) => {
-      const recordValue = record[dataIndex];
-      if (recordValue !== null && recordValue !== undefined) {
-        return recordValue
-          .toString()
-          .toUpperCase()
-          .includes((value as string).toUpperCase());
-      }
-      return false;
-    },
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
+    onFilter: (value, record) =>
+      record[dataIndex]
+        .toString()
+        .toLowerCase()
+        .includes((value as string).toLowerCase()),
+    filterDropdownProps: {
+      onOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 22);
+        }
+      },
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
         <Highlighter
-          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+          highlightStyle={{ backgroundColor: "#F4D03F", padding: 0 }}
           searchWords={[searchText]}
           autoEscape
           textToHighlight={text ? text.toString() : ""}
@@ -247,124 +272,142 @@ const CustomTableFiltersAndSorting: React.FC<{
 
   return (
     <>
-      <Row justify="center">
-        <Col span={24} style={{ maxWidth: "1000px", width: "100%" }}>
-          <Row style={{ marginBottom: "16px" }}>
-            <Col
-              span={24}
-              style={{
-                display: "flex",
-                justifyContent: "right",
-                alignItems: "center",
-              }}
-            >
-              <CustomButton
-                classNameCustomButton="recharge-button"
-                idCustomButton="recharge-button"
-                titleCustomButton="Recargar"
-                typeCustomButton="primary"
-                htmlTypeCustomButton="button"
-                iconCustomButton={
-                  !loading ? <ReloadOutlined /> : <LoadingOutlined />
-                }
-                onClickCustomButton={() => {
-                  onClickRechargeCustomTable();
-                }}
-                styleCustomButton={{ background: "#002140", color: "#ffffff" }}
-                iconPositionCustomButton="end"
-                sizeCustomButton="middle"
-                disabledCustomButton={loading}
-              />
-              <CustomButton
-                classNameCustomButton="remove-filters-button"
-                idCustomButton="remove-filters-button"
-                titleCustomButton="Quitar filtros"
-                typeCustomButton="primary"
-                htmlTypeCustomButton="button"
-                iconCustomButton={<FilterOutlined />}
-                onClickCustomButton={() => {
-                  clearFilters();
-                }}
-                styleCustomButton={{
-                  marginLeft: "16px",
-                  background: "#6C757D",
-                  color: "#ffffff",
-                }}
-                iconPositionCustomButton="end"
-                sizeCustomButton="middle"
-              />
-              <CustomButton
-                classNameCustomButton="remove-order-button"
-                idCustomButton="remove-order-button"
-                titleCustomButton="Quitar orden"
-                typeCustomButton="primary"
-                htmlTypeCustomButton="button"
-                iconCustomButton={<SortAscendingOutlined />}
-                onClickCustomButton={() => {
-                  clearSorting();
-                }}
-                styleCustomButton={{
-                  marginLeft: "16px",
-                  background: "#868E96",
-                  color: "#ffffff",
-                }}
-                iconPositionCustomButton="end"
-                sizeCustomButton="middle"
-              />
-              <CustomButton
-                classNameCustomButton="clean-all-button"
-                idCustomButton="clean-all-button"
-                titleCustomButton="Limpiar todo"
-                typeCustomButton="primary"
-                htmlTypeCustomButton="button"
-                iconCustomButton={<CloseCircleOutlined />}
-                onClickCustomButton={() => {
-                  clearAll();
-                }}
-                styleCustomButton={{
-                  marginLeft: "16px",
-                  background: "#FF7F50",
-                  color: "#ffffff",
-                }}
-                iconPositionCustomButton="end"
-                sizeCustomButton="middle"
-              />
-              {customButtonNewRegister}
-            </Col>
-          </Row>
-          <Table
-            columns={columns}
-            dataSource={dataCustomTable}
-            onChange={handleChange}
-            bordered
-            rowKey={(record) => record.id}
-            size={"small"}
-            loading={loading}
-            locale={{
-              emptyText: loading ? (
-                <Skeleton active />
-              ) : (
-                <Empty description="No hay nada para mostrar... " />
-              ),
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexFlow: "row wrap",
+          justifyContent: "center",
+          alignContent: "center",
+          alignItems: "center",
+          paddingBlock: "7px",
+        }}
+      >
+        <Space direction="horizontal" size={"small"}>
+          <Button
+            style={{
+              display: "flex",
+              flexFlow: "row wrap",
+              color: "#015E90",
+              borderColor: "#015E90",
+              fontWeight: "bold",
+              borderRadius: 22,
+              borderWidth: 1.3,
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              paddingInline: 13,
+              paddingBlock: 7,
             }}
-            pagination={{
-              size: "small",
-              position: ["bottomCenter"],
-              showQuickJumper: true,
-              style: {
-                margin: "0px",
-                paddingTop: "13px",
-              },
-              showTotal: (total) => `Total ${total} registros`,
-              locale: {
-                jump_to: "Ir a",
-                page: "Página",
-                items_per_page: "/ Página",
-              },
+            size="small"
+            icon={<FaFilterCircleXmark />}
+            onClick={clearFilters}
+          >
+            Quitar fil.
+          </Button>
+          <Button
+            style={{
+              display: "flex",
+              flexFlow: "row wrap",
+              color: "#015E90",
+              borderColor: "#015E90",
+              fontWeight: "bold",
+              borderRadius: 22,
+              borderWidth: 1.3,
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              paddingInline: 13,
+              paddingBlock: 7,
             }}
-          />
-        </Col>
-      </Row>
+            size="small"
+            icon={<FaSort />}
+            onClick={clearSorting}
+          >
+            Quitar orde.
+          </Button>
+          <Button
+            style={{
+              display: "flex",
+              flexFlow: "row wrap",
+              color: "#960202",
+              borderColor: "#960202",
+              fontWeight: "bold",
+              borderRadius: 22,
+              borderWidth: 1.3,
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              paddingInline: 13,
+              paddingBlock: 7,
+            }}
+            size="small"
+            icon={<LuListRestart />}
+            onClick={clearAll}
+          >
+            Quitar todo
+          </Button>
+
+          <Button
+            style={{
+              display: "flex",
+              flexFlow: "row wrap",
+              color: "#137A2B",
+              borderColor: "#1D8348",
+              fontWeight: "bold",
+              borderRadius: 22,
+              borderWidth: 1.3,
+              justifyContent: "center",
+              alignContent: "center",
+              alignItems: "center",
+              paddingInline: 13,
+              paddingBlock: 7,
+              marginLeft: 31,
+            }}
+            size="small"
+            icon={<MdRefresh size={20} />}
+            onClick={onClickUpdateCustomTable}
+          >
+            Actualizar
+          </Button>
+        </Space>
+      </div>
+
+      <Table
+        size="small"
+        style={{
+          width: "540px",
+          minWidth: "100%",
+          justifyContent: "center",
+          alignContent: "center",
+          alignItems: "center",
+          padding: "0px",
+          marginBlock: "13px",
+        }}
+        scroll={{
+          x: "min-content",
+          scrollToFirstRowOnChange: true,
+        }}
+        rowKey={(record) => record.id}
+        columns={columns}
+        dataSource={dataCustomTable}
+        onChange={handleChange}
+        footer={undefined}
+        pagination={{
+          pageSize: pageSize,
+          size: "default",
+          position: ["bottomCenter"],
+          showQuickJumper: true,
+          showSizeChanger: true,
+          onShowSizeChange: handlePageSizeChange,
+          pageSizeOptions: [7, 10, 20, 30, 50, 100, 200, 300],
+          style: {
+            margin: "0px",
+            paddingTop: "13px",
+          },
+        }}
+        bordered
+      />
     </>
   );
 };

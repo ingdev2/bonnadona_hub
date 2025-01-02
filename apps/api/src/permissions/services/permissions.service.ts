@@ -9,7 +9,7 @@ import {
 import { CreatePermissionDto } from '../dto/create-permission.dto';
 import { UpdatePermissionDto } from '../dto/update-permission.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Permissions } from '../entities/permissions.entity';
 import { Application } from 'src/application/entities/application.entity';
 import { ApplicationModule } from 'src/application_module/entities/application_module.entity';
@@ -47,8 +47,15 @@ export class PermissionsService {
 
   // CREATE FUNTIONS //
 
-  async createPermission(permissionDto: CreatePermissionDto) {
-    const { app_ids, app_module_ids, module_action_ids } = permissionDto;
+  async createPermission(
+    permissionDto: CreatePermissionDto,
+    @Req() requestAuditLog: any,
+  ) {
+    const {
+      applications: app_ids,
+      application_modules: app_module_ids,
+      module_actions: module_action_ids,
+    } = permissionDto;
 
     const permissionFound = await this.permissionRepo.findOne({
       where: { name: permissionDto.name },
@@ -61,14 +68,14 @@ export class PermissionsService {
       );
     }
 
-    const positions = await this.usersService.getAllColaboratorPositions();
+    // const positions = await this.usersService.getAllColaboratorPositions();
 
-    if (!positions.includes(permissionDto.name)) {
-      throw new HttpException(
-        `El nombre del permiso debe coincidir con uno de los cargos registrados.`,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    // if (!positions.includes(permissionDto.name)) {
+    //   throw new HttpException(
+    //     `El nombre del permiso debe coincidir con uno de los cargos registrados.`,
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
 
     const apps = await this.applicationRepo.findBy({ id: In(app_ids) });
 
@@ -104,6 +111,16 @@ export class PermissionsService {
       module_actions: actions,
     });
 
+    const auditLogData = {
+      ...requestAuditLog.auditLogData,
+      action_type: ActionTypesEnum.CREATE_PERMISSION,
+      query_type: QueryTypesEnum.PATCH,
+      module_name: ModuleNameEnum.PERMISSIONS_MODULE,
+      module_record_id: permission.id,
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
+
     return await this.permissionRepo.save(permission);
   }
 
@@ -137,7 +154,7 @@ export class PermissionsService {
   async getAllPermissions() {
     const allPermissions = await this.permissionRepo.find({
       order: {
-        createdAt: 'ASC',
+        name: 'ASC',
       },
       loadEagerRelations: false,
       loadRelationIds: true,
@@ -182,16 +199,29 @@ export class PermissionsService {
       throw new HttpException(`Permiso no encontrado`, HttpStatus.NOT_FOUND);
     }
 
+    if (updatePermission.name) {
+      const duplicatePermission = await this.permissionRepo.findOne({
+        where: {
+          id: Not(permissionId),
+          name: permission.name,
+        },
+      });
+
+      if (duplicatePermission) {
+        throw new HttpException(`Permiso duplicado.`, HttpStatus.CONFLICT);
+      }
+    }
+
     if (updatePermission.description) {
       permission.description = updatePermission.description;
     }
 
-    if (updatePermission.app_ids) {
+    if (updatePermission.applications) {
       const apps = await this.applicationRepo.findBy({
-        id: In(updatePermission.app_ids),
+        id: In(updatePermission.applications),
       });
 
-      if (apps.length !== updatePermission.app_ids.length) {
+      if (apps.length !== updatePermission.applications.length) {
         throw new HttpException(
           `Una o más aplicaciones no existen`,
           HttpStatus.NOT_FOUND,
@@ -201,12 +231,12 @@ export class PermissionsService {
       permission.applications = apps;
     }
 
-    if (updatePermission.app_module_ids) {
+    if (updatePermission.application_modules) {
       const modules = await this.moduleRepo.findBy({
-        id: In(updatePermission.app_module_ids),
+        id: In(updatePermission.application_modules),
       });
 
-      if (modules.length !== updatePermission.app_module_ids.length) {
+      if (modules.length !== updatePermission.application_modules.length) {
         throw new HttpException(
           `Uno o más módulos no existen`,
           HttpStatus.NOT_FOUND,
@@ -216,12 +246,12 @@ export class PermissionsService {
       permission.application_modules = modules;
     }
 
-    if (updatePermission.module_action_ids) {
+    if (updatePermission.module_actions) {
       const actions = await this.actionRepo.findBy({
-        id: In(updatePermission.module_action_ids),
+        id: In(updatePermission.module_actions),
       });
 
-      if (actions.length !== updatePermission.module_action_ids.length) {
+      if (actions.length !== updatePermission.module_actions.length) {
         throw new HttpException(
           `Una o más acciones no existen`,
           HttpStatus.NOT_FOUND,

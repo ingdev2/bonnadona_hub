@@ -5,6 +5,7 @@ const themeConfig: ThemeConfig = {
     fontSize: 14,
     colorPrimary: "#015E90",
     colorText: "#070707",
+    colorSplit: "#A7AFBAB2",
   },
   components: {
     Layout: {
@@ -19,10 +20,11 @@ const themeConfig: ThemeConfig = {
       itemSelectedColor: "#00B5E8",
       itemSelectedBg: "#EFF7F8",
       colorBgElevated: "#013B5A",
+      dropdownWidth: 213,
     },
     Descriptions: {
       labelBg: "#015E9017",
-      lineWidth: 2,
+      lineWidth: 1.3,
     },
     Table: {
       rowHoverBg: "#DFEBF2",
@@ -40,14 +42,17 @@ const themeConfig: ThemeConfig = {
       colorPrimaryHover: "#3F97AF",
     },
     Select: {
-      borderRadius: 30
+      borderRadius: 27,
     },
     Input: {
-      borderRadius: 30
+      borderRadius: 27,
+    },
+    InputNumber: {
+      borderRadius: 27,
     },
     DatePicker: {
-      borderRadius: 30
-    }
+      borderRadius: 27,
+    },
   },
 };
 
