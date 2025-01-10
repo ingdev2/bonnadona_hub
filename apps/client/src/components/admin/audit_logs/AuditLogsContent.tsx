@@ -207,6 +207,7 @@ const AuditLogsContent: React.FC = () => {
                 handleClickSeeMore: handleClickSeeMore,
               })}
               onClickUpdateCustomTable={handleButtonUpdate}
+              isLoading={!transformedData || !allAuditLogsData}
             />
           </div>
         }

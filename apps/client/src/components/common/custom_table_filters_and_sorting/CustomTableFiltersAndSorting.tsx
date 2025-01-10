@@ -16,6 +16,7 @@ import { VscDebugRestart } from "react-icons/vsc";
 import { FaSearch } from "react-icons/fa";
 import { MdRefresh } from "react-icons/md";
 import Highlighter from "react-highlight-words";
+import CustomSpin from "../custom_spin/CustomSpin";
 
 type GetSingle<T> = T extends (infer U)[] ? U : never;
 
@@ -39,7 +40,13 @@ const CustomTableFiltersAndSorting: React.FC<{
   dataCustomTable: any[];
   columnsCustomTable: ColumnConfig<any>[];
   onClickUpdateCustomTable: () => void;
-}> = ({ dataCustomTable, columnsCustomTable, onClickUpdateCustomTable }) => {
+  isLoading: boolean;
+}> = ({
+  dataCustomTable,
+  columnsCustomTable,
+  onClickUpdateCustomTable,
+  isLoading,
+}) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef<InputRef>(null);
@@ -392,6 +399,10 @@ const CustomTableFiltersAndSorting: React.FC<{
         columns={columns}
         dataSource={dataCustomTable}
         onChange={handleChange}
+        loading={{
+          spinning: isLoading,
+          indicator: <CustomSpin />,
+        }}
         footer={undefined}
         pagination={{
           pageSize: pageSize,

@@ -6,7 +6,11 @@ import { useSession } from "next-auth/react";
 import { PermissionsAppAndModuleValidationInComponent } from "@/helpers/permission_validation/permissionsAppAndModuleValidationInComponent";
 
 import { MenuItem } from "@/helpers/get_item_menu_dashboard_layout/types/menu_item_type";
-import { getItem } from "@/helpers/get_item_menu_dashboard_layout/get_item_menu_dashboard_layout";
+import {
+  getItem,
+  getItemSpin,
+} from "@/helpers/get_item_menu_dashboard_layout/get_item_menu_dashboard_layout";
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
 import { FaUsers } from "react-icons/fa";
 import { FaUsers as Fa6Users } from "react-icons/fa6";
 import { MdLockPerson } from "react-icons/md";
@@ -85,97 +89,99 @@ export const useMenuItems = () => {
   const waitAdminData =
     idNumberUserSession && idNumberUserSessionState && userSessionData;
 
-  if (waitAdminData) {
-    const items: MenuItem[] = [
-      allUsersModule
-        ? getItem(
-            ItemNames.ITEM_USERS,
-            ItemKeys.ITEM_USERS_KEY,
-            <FaUsers size={17} />,
-            [
-              getItem(
-                ItemNames.SUB_USERS,
-                ItemKeys.SUB_USERS_KEY,
-                <Fa6Users size={15} />
-              ),
-            ].filter(Boolean)
-          )
-        : null,
-
-      permissionsModule
-        ? getItem(
-            ItemNames.ITEM_PERMISSIONS,
-            ItemKeys.ITEM_PERMISSIONS_KEY,
-            <MdLockPerson size={17} />,
-            [
-              getItem(
-                ItemNames.SUB_MANAGE_PERMISSIONS,
-                ItemKeys.SUB_MANAGE_PERMISSIONS_KEY,
-                <SiAdblock size={15} />
-              ),
-            ].filter(Boolean)
-          )
-        : null,
-
-      passwordPolicyModule
-        ? getItem(
-            ItemNames.ITEM_PASSWORD_POLICY,
-            ItemKeys.ITEM_PASSWORD_POLICY_KEY,
-            <TbPasswordUser size={17} />,
-            [
-              getItem(
-                ItemNames.SUB_MANAGE_PASSWORD,
-                ItemKeys.SUB_MANAGE_PASSWORD_POLICY_KEY,
-                <MdPassword size={15} />
-              ),
-            ].filter(Boolean)
-          )
-        : null,
-
-      applicationsAndModulesModule
-        ? getItem(
-            ItemNames.ITEM_APPLICATIONS_AND_MODULES,
-            ItemKeys.ITEM_APPLICATIONS_AND_MODULES_KEY,
-            <TbApps size={17} />,
-            [
-              getItem(
-                ItemNames.SUB_APPLICATIONS,
-                ItemKeys.SUB_APPLICATIONS_KEY,
-                <IoIosApps size={15} />
-              ),
-            ].filter(Boolean)
-          )
-        : null,
-
-      auditLogsModule
-        ? getItem(
-            ItemNames.ITEM_AUDIT,
-            ItemKeys.ITEM_AUDIT_KEY,
-            <AiOutlineAudit size={17} />,
-            [
-              getItem(
-                ItemNames.SUB_AUDIT_LOGS,
-                ItemKeys.SUB_AUDIT_LOGS_KEY,
-                <IoIosApps size={15} />
-              ),
-            ].filter(Boolean)
-          )
-        : null,
-
-      getItem(
-        ItemNames.ITEM_MY_PROFILE,
-        ItemKeys.ITEM_MY_PROFILE_KEY,
-        <CgProfile size={17} />,
-        [
-          getItem(
-            ItemNames.SUB_UPDATE_PERSONAL_DATA,
-            ItemKeys.SUB_UPDATE_PERSONAL_DATA_KEY,
-            <PiUserListBold size={15} />
-          ),
-        ].filter(Boolean)
-      ),
-    ];
-
-    return items;
+  if (!waitAdminData) {
+    return [getItemSpin("spiner")];
   }
+
+  const items: MenuItem[] = [
+    allUsersModule
+      ? getItem(
+          ItemNames.ITEM_USERS,
+          ItemKeys.ITEM_USERS_KEY,
+          <FaUsers size={17} />,
+          [
+            getItem(
+              ItemNames.SUB_USERS,
+              ItemKeys.SUB_USERS_KEY,
+              <Fa6Users size={15} />
+            ),
+          ].filter(Boolean)
+        )
+      : null,
+
+    permissionsModule
+      ? getItem(
+          ItemNames.ITEM_PERMISSIONS,
+          ItemKeys.ITEM_PERMISSIONS_KEY,
+          <MdLockPerson size={17} />,
+          [
+            getItem(
+              ItemNames.SUB_MANAGE_PERMISSIONS,
+              ItemKeys.SUB_MANAGE_PERMISSIONS_KEY,
+              <SiAdblock size={15} />
+            ),
+          ].filter(Boolean)
+        )
+      : null,
+
+    passwordPolicyModule
+      ? getItem(
+          ItemNames.ITEM_PASSWORD_POLICY,
+          ItemKeys.ITEM_PASSWORD_POLICY_KEY,
+          <TbPasswordUser size={17} />,
+          [
+            getItem(
+              ItemNames.SUB_MANAGE_PASSWORD,
+              ItemKeys.SUB_MANAGE_PASSWORD_POLICY_KEY,
+              <MdPassword size={15} />
+            ),
+          ].filter(Boolean)
+        )
+      : null,
+
+    applicationsAndModulesModule
+      ? getItem(
+          ItemNames.ITEM_APPLICATIONS_AND_MODULES,
+          ItemKeys.ITEM_APPLICATIONS_AND_MODULES_KEY,
+          <TbApps size={17} />,
+          [
+            getItem(
+              ItemNames.SUB_APPLICATIONS,
+              ItemKeys.SUB_APPLICATIONS_KEY,
+              <IoIosApps size={15} />
+            ),
+          ].filter(Boolean)
+        )
+      : null,
+
+    auditLogsModule
+      ? getItem(
+          ItemNames.ITEM_AUDIT,
+          ItemKeys.ITEM_AUDIT_KEY,
+          <AiOutlineAudit size={17} />,
+          [
+            getItem(
+              ItemNames.SUB_AUDIT_LOGS,
+              ItemKeys.SUB_AUDIT_LOGS_KEY,
+              <IoIosApps size={15} />
+            ),
+          ].filter(Boolean)
+        )
+      : null,
+
+    getItem(
+      ItemNames.ITEM_MY_PROFILE,
+      ItemKeys.ITEM_MY_PROFILE_KEY,
+      <CgProfile size={17} />,
+      [
+        getItem(
+          ItemNames.SUB_UPDATE_PERSONAL_DATA,
+          ItemKeys.SUB_UPDATE_PERSONAL_DATA_KEY,
+          <PiUserListBold size={15} />
+        ),
+      ].filter(Boolean)
+    ),
+  ].filter(Boolean);
+
+  return items;
 };

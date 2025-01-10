@@ -610,6 +610,7 @@ const AllUsersContent: React.FC = () => {
                 genderTypesData: allGenderTypesData,
               })}
               onClickUpdateCustomTable={handleButtonUpdate}
+              isLoading={!transformedData || !allUsersWithProfileData}
             />
           </div>
         }
