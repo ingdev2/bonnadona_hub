@@ -18,9 +18,10 @@ import { User } from 'src/user/entities/user.entity';
 import { UsersService } from 'src/user/services/users.service';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
 
+import { ApplicationsEnum } from 'src/utils/enums/applications/applications.enum';
+import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
 import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
-import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
 
 @Injectable()
 export class PermissionsService {
@@ -132,11 +133,23 @@ export class PermissionsService {
       where: { name: collaboratorPosition },
     });
 
+    const fenixApp = await this.applicationRepo.findOne({
+      where: {
+        name: ApplicationsEnum.FÉNIX,
+      },
+    });
+
+    const retoApp = await this.applicationRepo.findOne({
+      where: {
+        name: ApplicationsEnum.RETO_APP,
+      },
+    });
+
     if (!positionPermissions.length) {
       const defaultPermission = this.permissionRepo.create({
         name: collaboratorPosition,
         description: `PERMISO POR DEFECTO PARA EL CARGO: ${collaboratorPosition}`,
-        applications: [],
+        applications: [fenixApp, retoApp],
         application_modules: [],
         module_actions: [],
       });
