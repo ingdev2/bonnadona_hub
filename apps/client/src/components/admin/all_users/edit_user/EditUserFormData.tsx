@@ -1,17 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Store } from "antd/es/form/interface";
 
 import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+import CustomTags from "@/components/common/custom_tags/CustomTags";
 import { Button, Checkbox, Col, Form, Input, Row, Tooltip } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
 
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { FiPhone } from "react-icons/fi";
+
 import { IRole } from "@/utils/interfaces/auth/role.interface";
-import CustomTags from "@/components/common/custom_tags/CustomTags";
+import {
+  setPermissionIdsToAddSelectedUser,
+  setHasChangesSelectedUser,
+} from "@/redux/features/user/selectedUserSlice";
 
 const EditUserFormData: React.FC<{
   principalEmailUserFormData: string;
@@ -35,7 +41,6 @@ const EditUserFormData: React.FC<{
   allPermissionsFormData: IPermission[] | undefined;
   loadingAllPermissionFormData: boolean;
   fetchingAllPermissionFormData: boolean;
-
   handleConfirmEditAdminFormData: (
     e: React.FormEvent<HTMLFormElement>
   ) => Promise<void>;
@@ -57,7 +62,6 @@ const EditUserFormData: React.FC<{
   positionFormData,
   roleUserFormData,
   onChangeRoleUserFormData,
-  permissionUserFormData,
   onChangePermissionUserFormData,
   allRolesFormData,
   loadingAllRolesFormData,
@@ -71,6 +75,102 @@ const EditUserFormData: React.FC<{
   hasChangesFormData,
   handleButtonClickFormData,
 }) => {
+  const dispatch = useAppDispatch();
+
+  const [filterText, setFilterText] = useState("");
+  const [autocompleteResults, setAutocompleteResults] = useState<IPermission[]>(
+    []
+  );
+  const [selectAll, setSelectAll] = useState(false);
+
+  const selectedPermissionIdsToAddUserState = useAppSelector(
+    (state) => state.selectedUser.selectedPermissionIdsToAdd
+  );
+
+  useEffect(() => {
+    if (filterText.trim() && allPermissionsFormData) {
+      const regex = new RegExp(filterText.trim(), "i");
+
+      const results = allPermissionsFormData.filter((perm) =>
+        regex.test(perm.name)
+      );
+
+      setAutocompleteResults(results);
+    } else {
+      setAutocompleteResults([]);
+    }
+  }, [filterText, allPermissionsFormData]);
+
+  const handleAutocompleteSelect = (permission: IPermission) => {
+    const permissionId = permission.id;
+
+    if (selectedPermissionIdsToAddUserState?.includes(permissionId)) {
+      const updatedPermissionIds = selectedPermissionIdsToAddUserState.filter(
+        (id) => id !== permissionId
+      );
+
+      dispatch(setPermissionIdsToAddSelectedUser(updatedPermissionIds));
+      dispatch(setHasChangesSelectedUser(true));
+    } else {
+      dispatch(
+        setPermissionIdsToAddSelectedUser([
+          ...(selectedPermissionIdsToAddUserState || []),
+          permissionId,
+        ])
+      );
+      dispatch(setHasChangesSelectedUser(true));
+    }
+
+    setFilterText("");
+    setAutocompleteResults([]);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+
+    if (checked && allPermissionsFormData) {
+      const allPermissionIds = allPermissionsFormData?.map((perm) => perm.id);
+
+      if (
+        allPermissionIds.length !== selectedPermissionIdsToAddUserState?.length
+      ) {
+        dispatch(setPermissionIdsToAddSelectedUser(allPermissionIds));
+        dispatch(setHasChangesSelectedUser(true));
+      }
+    } else {
+      dispatch(setPermissionIdsToAddSelectedUser([]));
+    }
+  };
+
+  const addSelectedPermissionsAsTags = () => {
+    if (
+      !selectedPermissionIdsToAddUserState ||
+      selectedPermissionIdsToAddUserState.length === 0 ||
+      !allPermissionsFormData
+    ) {
+      return null;
+    }
+
+    return selectedPermissionIdsToAddUserState?.map((permissionId) => {
+      const permission = allPermissionsFormData.find(
+        (perm) => perm.id === permissionId
+      );
+
+      if (!permission) return null;
+
+      return (
+        <CustomTags
+          key={permission.id}
+          tag={{
+            label: permission.name,
+            color: "#015E90B2",
+            textColor: "#F7F7F7",
+          }}
+        />
+      );
+    });
+  };
+
   return (
     <Form
       id="edit-admin-form"
@@ -306,7 +406,7 @@ const EditUserFormData: React.FC<{
             span={6}
             style={{
               height: "450px",
-              padding: "7px",
+              padding: "8px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
               overflowY: "auto",
@@ -357,24 +457,69 @@ const EditUserFormData: React.FC<{
             >
               <h3 style={{ paddingBlock: "7px" }}>Permisos</h3>
 
-              {permissionUserFormData?.map((permissionId) => {
-                const permission = allPermissionsFormData?.find(
-                  (perm) => perm.id === permissionId
-                );
+              <Row
+                gutter={24}
+                justify={"center"}
+                align={"middle"}
+                style={{
+                  paddingInline: "13px",
+                }}
+              >
+                <Input
+                  placeholder="Buscar permiso"
+                  value={filterText}
+                  onChange={(e) => {
+                    const inputValue = e.target.value || "";
 
-                return (
-                  permission && (
-                    <CustomTags
-                      key={permission.id}
-                      tag={{
-                        label: permission.name,
-                        color: "#015E90B2",
-                        textColor: "#F7F7F7",
-                      }}
-                    />
-                  )
-                );
-              })}
+                    const transformedValue = inputValue
+                      .toUpperCase()
+                      .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
+
+                    setFilterText(transformedValue);
+                  }}
+                  allowClear
+                  style={{ marginBottom: "8px" }}
+                />
+
+                {autocompleteResults.length > 0 && (
+                  <div
+                    style={{
+                      width: "100%",
+                      maxHeight: "113px",
+                      backgroundColor: "#F7F7F7",
+                      border: "0.7px solid #A7AFBA",
+                      borderRadius: "7px",
+                      overflowY: "auto",
+                      zIndex: 2,
+                      marginBottom: "13px",
+                    }}
+                  >
+                    {autocompleteResults.map((permission) => (
+                      <div
+                        key={permission.id}
+                        style={{
+                          padding: "8px",
+                          cursor: "pointer",
+                          borderBottom: "0.7px solid #eee",
+                        }}
+                        onClick={() => handleAutocompleteSelect(permission)}
+                      >
+                        {permission.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* <Checkbox
+                  checked={selectAll}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  style={{ marginBottom: "8px" }}
+                >
+                  SELECCIONAR TODOS
+                </Checkbox> */}
+              </Row>
+
+              {addSelectedPermissionsAsTags()}
             </div>
 
             {loadingAllPermissionFormData || fetchingAllPermissionFormData ? (
@@ -382,7 +527,7 @@ const EditUserFormData: React.FC<{
             ) : (
               <>
                 <Checkbox.Group
-                  value={permissionUserFormData}
+                  value={selectedPermissionIdsToAddUserState}
                   onChange={onChangePermissionUserFormData}
                   style={{ display: "flex", flexDirection: "column" }}
                 >
@@ -422,7 +567,7 @@ const EditUserFormData: React.FC<{
         style={{
           textAlign: "center",
           marginBlock: "0px",
-          paddingBlock: "13px",
+          paddingBlock: "7px",
         }}
       >
         {isSubmittingEditUserData ? (

@@ -554,8 +554,6 @@ const AllUsersContent: React.FC = () => {
                         marginBlock: "13px",
                       }}
                       onClick={() => {
-                        refecthAllUsersWithProfile();
-
                         setIsEditUserVisibleLocalState(true);
                       }}
                     >

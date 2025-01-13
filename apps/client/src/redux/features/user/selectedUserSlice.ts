@@ -29,6 +29,7 @@ const initialState: User = {
   selectedRoleIdsToAdd: [],
   permission: [],
   selectedPermissionIdsToAdd: [],
+  hasChanges: false,
   errors: [],
 };
 
@@ -111,6 +112,9 @@ export const selectedUserSlice = createSlice({
     setPermissionIdsToAddSelectedUser: (state, action) => {
       state.selectedPermissionIdsToAdd = action.payload;
     },
+    setHasChangesSelectedUser: (state, action) => {
+      state.hasChanges = action.payload;
+    },
     setErrorsSelectedUser: (state, action) => {
       state.errors = action.payload;
     },
@@ -140,6 +144,7 @@ export const selectedUserSlice = createSlice({
       state.permission = [];
       // state.permissionIdsToAdd = [];
       state.selectedPermissionIdsToAdd = [];
+      state.hasChanges = false;
       state.errors = [];
     },
   },
@@ -171,6 +176,7 @@ export const {
   setRoleIdsToAddSelectedUser,
   setPermissionSelectedUser,
   setPermissionIdsToAddSelectedUser,
+  setHasChangesSelectedUser,
   setErrorsSelectedUser,
   setDefaultValuesSelectedUser,
 } = selectedUserSlice.actions;
