@@ -1010,6 +1010,16 @@ export class UsersService {
           hasChanges = true;
         }
 
+        if (user.personal_email !== collaboratorData.empEmail) {
+          user.personal_email = collaboratorData.empEmail.trim();
+          hasChanges = true;
+        }
+
+        if (user.personal_cellphone !== collaboratorData.empPhone) {
+          user.personal_cellphone = collaboratorData.empPhone.trim();
+          hasChanges = true;
+        }
+
         if (hasChanges) {
           await this.userRepository.save(user);
 
