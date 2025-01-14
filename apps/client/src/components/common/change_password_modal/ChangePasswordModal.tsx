@@ -295,11 +295,11 @@ const ChangePasswordModal: React.FC<{
                   onChange={(e) => setNewPasswordLocalState(e.target.value)}
                   autoComplete="off"
                   min={0}
-                  onCopy={(e) => {
+                  onCut={(e) => {
                     e.preventDefault();
                     return false;
                   }}
-                  onCut={(e) => {
+                  onCopy={(e) => {
                     e.preventDefault();
                     return false;
                   }}
@@ -353,7 +353,7 @@ const ChangePasswordModal: React.FC<{
                   onChange={(e) => setNewPasswordLocalState(e.target.value)}
                   autoComplete="off"
                   min={0}
-                  onPaste={(e) => {
+                  onCut={(e) => {
                     e.preventDefault();
                     return false;
                   }}
@@ -361,7 +361,7 @@ const ChangePasswordModal: React.FC<{
                     e.preventDefault();
                     return false;
                   }}
-                  onCut={(e) => {
+                  onPaste={(e) => {
                     e.preventDefault();
                     return false;
                   }}
