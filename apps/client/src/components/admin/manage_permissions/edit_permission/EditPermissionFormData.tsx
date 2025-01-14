@@ -487,7 +487,7 @@ const EditPermissionFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "321px",
+              maxHeight: "450px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -608,7 +608,7 @@ const EditPermissionFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "321px",
+              maxHeight: "450px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",
@@ -740,7 +740,7 @@ const EditPermissionFormData: React.FC<{
             span={8}
             style={{
               overflowY: "auto",
-              maxHeight: "321px",
+              maxHeight: "450px",
               padding: "7px",
               border: "1px solid #013B5A",
               borderRadius: "8px",

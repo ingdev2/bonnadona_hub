@@ -26,6 +26,7 @@ const initialState: User = {
   createdAt: "",
   updateAt: "",
   deletedAt: "",
+  hasChanges: false,
   errors: [],
 };
 
