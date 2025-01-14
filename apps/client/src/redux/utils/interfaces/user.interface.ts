@@ -32,7 +32,7 @@ interface User {
   createdAt: string;
   updateAt: string;
   deletedAt: string;
-  hasChanges: boolean;
+  hasChanges?: boolean;
   errors: [];
   user_blood_group?: number;
   profile_photo?: string;
