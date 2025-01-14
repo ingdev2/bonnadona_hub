@@ -308,6 +308,7 @@ const AllApplicationsContent: React.FC = () => {
                 isLoadingSwitch: isSubmittingBan,
               })}
               onClickUpdateCustomTable={handleButtonUpdate}
+              isLoading={!transformedData || !allApplicationsData}
             />
           </div>
         }

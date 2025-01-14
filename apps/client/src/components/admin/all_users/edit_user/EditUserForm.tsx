@@ -21,6 +21,7 @@ import {
   setPermissionIdsToAddSelectedUser,
   setRoleIdsToAddSelectedUser,
   setPermissionSelectedUser,
+  setHasChangesSelectedUser,
 } from "@/redux/features/user/selectedUserSlice";
 import EditUserFormData from "./EditUserFormData";
 import { useGetAllRolesQuery } from "@/redux/apis/role/roleApi";
@@ -68,9 +69,10 @@ const EditUserForm: React.FC = () => {
   const positionUserState = useAppSelector(
     (state) => state.selectedUser.collaborator_position
   );
+  const hasChangesState = useAppSelector(
+    (state) => state.selectedUser.hasChanges
+  );
   const userErrorsState = useAppSelector((state) => state.selectedUser.errors);
-
-  const [hasChanges, setHasChanges] = useState(false);
 
   const [principalEmailUserLocalState, setPrincipalEmailUserLocalState] =
     useState("");
@@ -127,13 +129,19 @@ const EditUserForm: React.FC = () => {
     fixedCacheKey: "updateUserData",
   });
 
+  const userRoles = userData?.role;
+  const userPermissions = userData?.permission;
+
+  const rolesIds = userRoles?.map((role) => role.id);
+  const permissionIds = userPermissions?.map((permission) => permission.id);
+
   useEffect(() => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
     if (roleSelectedUserState || permissionSelectedUserState) {
-      dispatch(setRoleIdsToAddSelectedUser(roleSelectedUserState));
-      dispatch(setPermissionIdsToAddSelectedUser(permissionSelectedUserState));
+      dispatch(setRoleIdsToAddSelectedUser(rolesIds));
+      dispatch(setPermissionIdsToAddSelectedUser(permissionIds));
     }
   }, [
     userData,
@@ -173,7 +181,7 @@ const EditUserForm: React.FC = () => {
       let editUserDataValidationData = response.data?.message;
 
       if (editUserDataError || editUserDataStatus !== 202) {
-        setHasChanges(false);
+        dispatch(setHasChangesSelectedUser(false));
 
         const errorMessage = editUserDataError?.data.message;
         const validationDataMessage = editUserDataValidationData;
@@ -200,7 +208,7 @@ const EditUserForm: React.FC = () => {
       }
 
       if (editUserDataStatus === 202 && !editUserDataError) {
-        setHasChanges(false);
+        dispatch(setHasChangesSelectedUser(false));
         dispatch(
           setPrincipalEmailSelectedUser(
             principalEmailUserLocalState || principalEmailUserState
@@ -227,10 +235,6 @@ const EditUserForm: React.FC = () => {
             parseInt(corporateCellphoneUserLocalState, 10) ||
               corporateCellphoneUserState
           )
-        );
-        dispatch(setRoleSelectedUser(selectedRoleIdsToAddUserState));
-        dispatch(
-          setPermissionSelectedUser(selectedPermissionIdsToAddUserState)
         );
 
         setSuccessMessage("¡Datos del usuario actualizados correctamente!");
@@ -271,19 +275,19 @@ const EditUserForm: React.FC = () => {
       <EditUserFormData
         principalEmailUserFormData={principalEmailUserState || NOT_REGISTER}
         onChangePrincipalEmailUserFormData={(e) => {
-          setHasChanges(true);
+          dispatch(setHasChangesSelectedUser(true));
 
           setPrincipalEmailUserLocalState(e.target.value);
         }}
         corporateEmailUserFormData={corporateEmailUserState || NOT_REGISTER}
         onChangeCorporateEmailUserFormData={(e) => {
-          setHasChanges(true);
+          dispatch(setHasChangesSelectedUser(true));
 
           setCorporateEmailUserLocalState(e.target.value);
         }}
         personalEmailUserFormData={personalEmailUserState || NOT_REGISTER}
         onChangePersonalEmailUserFormData={(e) => {
-          setHasChanges(true);
+          dispatch(setHasChangesSelectedUser(true));
 
           setPersonalEmailUserLocalState(e.target.value);
         }}
@@ -293,7 +297,7 @@ const EditUserForm: React.FC = () => {
           undefined
         }
         onChangePersonalCellphoneFormData={(e) => {
-          setHasChanges(true);
+          dispatch(setHasChangesSelectedUser(true));
 
           setPersonalCellphoneUserLocalState(e.target.value);
         }}
@@ -303,7 +307,7 @@ const EditUserForm: React.FC = () => {
           undefined
         }
         onChangeCorporateCellphoneFormData={(e) => {
-          setHasChanges(true);
+          dispatch(setHasChangesSelectedUser(true));
 
           setCorporateCellphoneUserLocalState(e.target.value);
         }}
@@ -311,14 +315,14 @@ const EditUserForm: React.FC = () => {
         allRolesFormData={allRolesData}
         roleUserFormData={selectedRoleIdsToAddUserState || []}
         onChangeRoleUserFormData={(checkedValues) => {
-          setHasChanges(true);
+          dispatch(setHasChangesSelectedUser(true));
 
           dispatch(setRoleIdsToAddSelectedUser(checkedValues));
         }}
         allPermissionsFormData={allPermissionsData}
         permissionUserFormData={selectedPermissionIdsToAddUserState || []}
         onChangePermissionUserFormData={(checkedValues) => {
-          setHasChanges(true);
+          dispatch(setHasChangesSelectedUser(true));
 
           dispatch(setPermissionIdsToAddSelectedUser(checkedValues));
         }}
@@ -336,7 +340,7 @@ const EditUserForm: React.FC = () => {
           "edit-user-position": positionUserState || NOT_REGISTER,
         }}
         isSubmittingEditUserData={isSubmittingUpdatePersonal}
-        hasChangesFormData={hasChanges}
+        hasChangesFormData={hasChangesState}
         handleButtonClickFormData={handleButtonClick}
       />
     </>

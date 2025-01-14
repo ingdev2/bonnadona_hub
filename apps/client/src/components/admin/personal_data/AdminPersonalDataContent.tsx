@@ -199,7 +199,7 @@ const AdminPersonalDataContent: React.FC = () => {
         customLayoutContent={
           <div
             style={{
-              width: "80%",
+              width: "88%",
               display: "flex",
               flexFlow: "column wrap",
             }}

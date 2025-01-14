@@ -268,8 +268,7 @@ export class AuthService {
     emailDetailsToSend.userNameToEmail = collaboratorFound.name;
     emailDetailsToSend.subject = SUBJECT_EMAIL_VERIFICATION_CODE;
     emailDetailsToSend.emailTemplate = EMAIL_VERIFICATION_CODE;
-    emailDetailsToSend.verificationCode =
-      verifiedCollaboratorRole.verification_code;
+    emailDetailsToSend.verificationCode = verificationCode;
 
     await this.nodemailerService.sendEmail(emailDetailsToSend);
 
@@ -355,8 +354,7 @@ export class AuthService {
     emailDetailsToSend.userNameToEmail = adminOrAuditorFound.name;
     emailDetailsToSend.subject = SUBJECT_EMAIL_VERIFICATION_CODE;
     emailDetailsToSend.emailTemplate = EMAIL_VERIFICATION_CODE;
-    emailDetailsToSend.verificationCode =
-      verifiedAdminOrAuditorRole.verification_code;
+    emailDetailsToSend.verificationCode = verificationCode;
 
     await this.nodemailerService.sendEmail(emailDetailsToSend);
 

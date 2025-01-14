@@ -71,19 +71,34 @@ export class UsersController {
 
   // GET METHODS //
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.AUDITOR,
+    RolesEnum.COLLABORATOR,
+  )
   @Get('/getAllActiveUsers')
   async getAllActiveUsers() {
     return await this.usersService.getAllActiveUsers();
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.AUDITOR,
+    RolesEnum.COLLABORATOR,
+  )
   @Get('/getAllUsers')
   async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
-  @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN, RolesEnum.AUDITOR)
+  @Auth(
+    RolesEnum.SUPER_ADMIN,
+    RolesEnum.ADMIN,
+    RolesEnum.AUDITOR,
+    RolesEnum.COLLABORATOR,
+  )
   @Get('/getAllUsersWithProfile')
   async getAllUsersWithProfile() {
     return await this.usersService.getAllUsersWithProfile();

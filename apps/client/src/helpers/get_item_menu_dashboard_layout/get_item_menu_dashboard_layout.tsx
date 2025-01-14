@@ -1,6 +1,8 @@
 import { Badge } from "antd";
 import { MenuItem } from "./types/menu_item_type";
 
+import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+
 export function getItem(
   label: React.ReactNode,
   key: React.Key,
@@ -29,5 +31,14 @@ export function getItem(
     ) : (
       icon
     ),
+  } as MenuItem;
+}
+
+export function getItemSpin(key: React.Key): MenuItem {
+  return {
+    key,
+    label: <CustomSpin />,
+    icon: null,
+    children: [],
   } as MenuItem;
 }

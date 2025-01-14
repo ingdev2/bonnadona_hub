@@ -14,8 +14,9 @@ import { MdDriveFileRenameOutline } from "react-icons/md";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 
 import {
-  setSelectedActionsPermission,
   setSelectedModulesPermission,
+  setSelectedActionsPermission,
+  setSelectedApplicationsPermission,
 } from "@/redux/features/permission/permissionSlice";
 
 const EditPermissionFormData: React.FC<{
@@ -55,6 +56,9 @@ const EditPermissionFormData: React.FC<{
 }) => {
   const dispatch = useAppDispatch();
 
+  const selectedAppsPermissionState = useAppSelector(
+    (state) => state.permission.selected_applications
+  );
   const selectedModulesPermissionState = useAppSelector(
     (state) => state.permission.selected_modules
   );
@@ -71,6 +75,20 @@ const EditPermissionFormData: React.FC<{
   const [selectedActionsByModule, setSelectedActionsByModule] = useState<{
     [moduleId: number]: number[];
   }>({});
+
+  const [filterTextApp, setFilterTextApp] = useState("");
+  const [autocompleteResultsApps, setAutocompleteResultsApps] = useState<
+    IApplication[]
+  >([]);
+  const [selectAllApps, setSelectAllApps] = useState(false);
+
+  const [filterTextModule, setFilterTextModule] = useState("");
+  const [autocompleteResultsModules, setAutocompleteResultsModules] = useState<
+    IApplicationModule[]
+  >([]);
+  const [selectAllModules, setSelectAllModules] = useState(false);
+
+  const [selectAllModuleActions, setSelectAllModuleActions] = useState(false);
 
   useEffect(() => {
     if (
@@ -130,6 +148,152 @@ const EditPermissionFormData: React.FC<{
     allAppModulesFormData,
     allModuleActionsFormData,
   ]);
+
+  useEffect(() => {
+    if (filterTextApp.trim() && allAppsFormData) {
+      const regex = new RegExp(filterTextApp.trim(), "i");
+
+      const results = allAppsFormData.filter((app) => regex.test(app.name));
+
+      setAutocompleteResultsApps(results);
+    } else {
+      setAutocompleteResultsApps([]);
+    }
+
+    if (filterTextModule.trim() && allAppModulesFormData) {
+      const regex = new RegExp(filterTextModule.trim(), "i");
+
+      const results = allAppModulesFormData.filter((module) =>
+        regex.test(module.name)
+      );
+
+      setAutocompleteResultsModules(results);
+    } else {
+      setAutocompleteResultsModules([]);
+    }
+  }, [filterTextApp, filterTextModule, allAppsFormData, allAppModulesFormData]);
+
+  const handleAutocompleteSelectApp = (app: IApplication) => {
+    const appId = app.id;
+
+    if (selectedAppsFormData?.includes(appId)) {
+      const updatedAppIds = selectedAppsPermissionState?.filter(
+        (id) => id !== appId
+      );
+
+      dispatch(setSelectedApplicationsPermission(updatedAppIds));
+
+      setHasChangesFormData(true);
+    } else {
+      dispatch(
+        setSelectedApplicationsPermission([
+          ...(selectedAppsPermissionState || []),
+          appId,
+        ])
+      );
+    }
+
+    setHasChangesFormData(true);
+
+    setFilterTextApp("");
+    setAutocompleteResultsApps([]);
+  };
+
+  const handleAutocompleteSelectModule = (module: IApplicationModule) => {
+    const moduleId = module.id;
+    const appId = module.app_id;
+
+    if (selectedModulesPermissionState?.includes(moduleId)) {
+      const updatedModuleIds = selectedModulesPermissionState.filter(
+        (id) => id !== moduleId
+      );
+
+      dispatch(setSelectedModulesPermission(updatedModuleIds));
+
+      setSelectedModulesByApp((prev) => ({
+        ...prev,
+        [appId]: prev[appId]?.filter((id) => id !== moduleId) || [],
+      }));
+
+      setHasChangesFormData(true);
+    } else {
+      dispatch(
+        setSelectedModulesPermission([
+          ...(selectedModulesPermissionState || []),
+          moduleId,
+        ])
+      );
+
+      setSelectedModulesByApp((prev) => ({
+        ...prev,
+        [appId]: [...(prev[appId] || []), moduleId],
+      }));
+
+      setHasChangesFormData(true);
+    }
+
+    setFilterTextModule("");
+    setAutocompleteResultsModules([]);
+  };
+
+  const handleSelectAllApps = (checked: boolean) => {
+    setSelectAllApps(checked);
+
+    if (checked && allAppsFormData) {
+      const allAppIds = allAppsFormData.map((app) => app.id);
+      onChangeAppsFormData(allAppIds);
+    } else {
+      onChangeAppsFormData([]);
+    }
+
+    setHasChangesFormData(true);
+  };
+
+  const handleSelectAllModules = (checked: boolean) => {
+    setSelectAllModules(checked);
+
+    if (checked && allAppModulesFormData && expandedApp) {
+      const appModules = allAppModulesFormData.filter(
+        (module) => module.app_id === expandedApp
+      );
+
+      const allModulesIds = appModules.map((module) => module.id);
+
+      setSelectedModulesByApp((prev) => ({
+        ...prev,
+        [expandedApp]: allModulesIds,
+      }));
+
+      setHasChangesFormData(true);
+    } else if (expandedApp) {
+      setSelectedModulesByApp((prev) => ({
+        ...prev,
+        [expandedApp]: [],
+      }));
+
+      setHasChangesFormData(true);
+    }
+  };
+
+  const handleSelectAllActions = (checked: boolean) => {
+    setSelectAllModuleActions(checked);
+
+    if (checked && filteredActions) {
+      const allActionIds = filteredActions.map((action) => action.id);
+
+      setSelectedActionsByModule((prev) => ({
+        ...prev,
+        [expandedModule as number]: allActionIds,
+      }));
+    } else if (expandedModule) {
+      setSelectedActionsByModule((prev) => ({
+        ...prev,
+        [expandedModule as number]: [],
+      }));
+    }
+
+    setHasChangesFormData(true);
+  };
 
   const selectedModules = selectedModulesByApp[expandedApp as number] || [];
 
@@ -333,6 +497,73 @@ const EditPermissionFormData: React.FC<{
               Aplicaciones
             </h3>
 
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                backgroundColor: "#013B5A31",
+                justifyContent: "center",
+                alignContent: "center",
+                alignItems: "center",
+                padding: "0px",
+                marginBottom: "17px",
+                borderRadius: "7px",
+              }}
+            >
+              <Checkbox
+                checked={selectAllApps}
+                onChange={(e) => handleSelectAllApps(e.target.checked)}
+                style={{ marginBlock: "7px" }}
+              >
+                SELECCIONAR TODAS
+              </Checkbox>
+            </div>
+
+            <Input
+              placeholder="Buscar aplicación"
+              value={filterTextApp}
+              onChange={(e) => {
+                const inputValue = e.target.value || "";
+
+                const transformedValue = inputValue
+                  .toUpperCase()
+                  .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
+
+                setFilterTextApp(transformedValue);
+              }}
+              allowClear
+              style={{ marginBottom: "17px" }}
+            />
+
+            {autocompleteResultsApps.length > 0 && (
+              <div
+                style={{
+                  width: "100%",
+                  maxHeight: "113px",
+                  backgroundColor: "#F7F7F7",
+                  border: "0.7px solid #A7AFBA",
+                  borderRadius: "7px",
+                  overflowY: "auto",
+                  zIndex: 2,
+                  marginBottom: "13px",
+                }}
+              >
+                {autocompleteResultsApps.map((app) => (
+                  <div
+                    key={app.id}
+                    style={{
+                      padding: "8px",
+                      cursor: "pointer",
+                      borderBottom: "0.7px solid #eee",
+                    }}
+                    onClick={() => handleAutocompleteSelectApp(app)}
+                  >
+                    {app.name}
+                  </div>
+                ))}
+              </div>
+            )}
+
             <Checkbox.Group
               value={selectedAppsFormData}
               onChange={onChangeAppsFormData}
@@ -384,6 +615,86 @@ const EditPermissionFormData: React.FC<{
             }}
           >
             <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Módulos</h3>
+
+            <Row
+              gutter={24}
+              justify={"center"}
+              align={"middle"}
+              style={{
+                paddingInline: "13px",
+              }}
+            >
+              {filteredModules && filteredModules?.length > 0 ? (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      width: "100%",
+                      backgroundColor: "#013B5A31",
+                      justifyContent: "center",
+                      alignContent: "center",
+                      alignItems: "center",
+                      padding: "0px",
+                      marginBottom: "17px",
+                      borderRadius: "7px",
+                    }}
+                  >
+                    <Checkbox
+                      checked={selectAllModules}
+                      onChange={(e) => handleSelectAllModules(e.target.checked)}
+                      style={{ marginBlock: "7px" }}
+                    >
+                      SELECCIONAR TODOS
+                    </Checkbox>
+                  </div>
+
+                  <Input
+                    placeholder="Buscar módulo"
+                    value={filterTextModule}
+                    onChange={(e) => {
+                      const inputValue = e.target.value || "";
+
+                      const transformedValue = inputValue
+                        .toUpperCase()
+                        .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
+
+                      setFilterTextModule(transformedValue);
+                    }}
+                    allowClear
+                    style={{ marginBottom: "17px" }}
+                  />
+                </>
+              ) : null}
+
+              {autocompleteResultsModules.length > 0 && (
+                <div
+                  style={{
+                    width: "100%",
+                    maxHeight: "113px",
+                    backgroundColor: "#F7F7F7",
+                    border: "0.7px solid #A7AFBA",
+                    borderRadius: "7px",
+                    overflowY: "auto",
+                    zIndex: 2,
+                    marginBottom: "13px",
+                  }}
+                >
+                  {autocompleteResultsModules.map((module) => (
+                    <div
+                      key={module.id}
+                      style={{
+                        padding: "8px",
+                        cursor: "pointer",
+                        borderBottom: "0.7px solid #eee",
+                      }}
+                      onClick={() => handleAutocompleteSelectModule(module)}
+                    >
+                      {module.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Row>
 
             <Checkbox.Group
               value={selectedModules}
@@ -444,7 +755,7 @@ const EditPermissionFormData: React.FC<{
                   fontStyle: "italic",
                   color: "#A7AFBA",
                   marginTop: "2px",
-                  marginBottom: "22px",
+                  marginBottom: "13px",
                 }}
               >
                 Acciones de:&nbsp;
@@ -454,6 +765,30 @@ const EditPermissionFormData: React.FC<{
                 </b>
               </p>
             ) : null}
+
+            {filteredActions && filteredActions.length > 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  backgroundColor: "#013B5A31",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  alignItems: "center",
+                  padding: "0px",
+                  marginBottom: "17px",
+                  borderRadius: "7px",
+                }}
+              >
+                <Checkbox
+                  checked={selectAllModuleActions}
+                  onChange={(e) => handleSelectAllActions(e.target.checked)}
+                  style={{ marginBlock: "7px" }}
+                >
+                  SELECCIONAR TODAS
+                </Checkbox>
+              </div>
+            )}
 
             <Checkbox.Group
               value={selectedActions}

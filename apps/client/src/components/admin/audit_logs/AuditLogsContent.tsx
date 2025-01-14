@@ -9,6 +9,7 @@ import { tableColumnsAuditLogs } from "./table_columns_audit_logs/TableColumnsAu
 import ModalAuditLogDetails from "./modal_audit_log_details/ModalAuditLogDetails";
 import CustomModalNoContent from "@/components/common/custom_modal_no_content/CustomModalNoContent";
 import CustomMessage from "@/components/common/custom_messages/CustomMessage";
+import { titleStyleCss } from "@/theme/text_styles";
 
 import { setTableRowId } from "@/redux/features/common/modal/modalSlice";
 import {
@@ -180,9 +181,7 @@ const AuditLogsContent: React.FC = () => {
                     selectedRowDataLocalState?.operating_system
                   }
                   labelDateOfAuditLog="Fecha de acción"
-                  selectedDateOfAuditLog={formatDate(
-                    selectedRowDataLocalState?.createdAt
-                  )}
+                  selectedDateOfAuditLog={selectedRowDataLocalState?.createdAt}
                   labelHourOfAuditLog="Hora de acción"
                   selectedHourOfAuditLog={selectedRowDataLocalState?.timeAt}
                 />
@@ -201,12 +200,25 @@ const AuditLogsContent: React.FC = () => {
               flexFlow: "column wrap",
             }}
           >
+            <h2
+              className="audit-logs-title-table"
+              style={{
+                ...titleStyleCss,
+                textAlign: "center",
+                marginTop: "7px",
+                marginBottom: "13px",
+              }}
+            >
+              <b>Total de registros</b>
+            </h2>
+
             <CustomTableFiltersAndSorting
               dataCustomTable={transformedData || []}
               columnsCustomTable={tableColumnsAuditLogs({
                 handleClickSeeMore: handleClickSeeMore,
               })}
               onClickUpdateCustomTable={handleButtonUpdate}
+              isLoading={!transformedData || !allAuditLogsData}
             />
           </div>
         }

@@ -135,6 +135,7 @@ const handler = NextAuth({
         return {
           ...token,
           ...user,
+          access_token_expires_in: Date.now() + 60 * 1000,
         };
       }
 
@@ -142,24 +143,18 @@ const handler = NextAuth({
         token?.access_token_expires_in &&
         typeof token.access_token_expires_in === "number"
       ) {
-        if (Date.now() < token.access_token_expires_in) {
+        if (Date.now() < (token.access_token_expires_in || 0)) {
           return token;
-        } else {
-          const refreshedToken = await refreshAccessToken(token);
-
-          if (!refreshedToken.error) {
-            return {
-              ...token,
-              access_token: refreshedToken.access_token,
-              access_token_expires_in: refreshedToken.access_token_expires_in,
-            };
-          } else {
-            return {};
-          }
         }
-      }
 
-      return token;
+        const refreshedToken = await refreshAccessToken(token);
+
+        if (refreshedToken.error) {
+          return { ...token, error: refreshedToken.error };
+        }
+
+        return refreshedToken;
+      }
     },
     async session({ session, token }) {
       if (token) {

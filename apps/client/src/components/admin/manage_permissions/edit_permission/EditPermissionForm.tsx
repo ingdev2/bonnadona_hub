@@ -118,6 +118,14 @@ const EditPermissionForm: React.FC = () => {
     fixedCacheKey: "updatePermissionData",
   });
 
+  const appsIds = permissionData?.applications?.map((appsIds) => appsIds);
+  const modulesIds = permissionData?.module_actions?.map(
+    (modulesIds) => modulesIds
+  );
+  const actionsIds = permissionData?.module_actions?.map(
+    (actionsIds) => actionsIds
+  );
+
   useEffect(() => {
     if (
       permissionData &&
@@ -130,9 +138,7 @@ const EditPermissionForm: React.FC = () => {
     if (
       titleNamePermissionState ||
       descriptionPermissionState ||
-      appsPermissionState ||
-      modulesPermissionState ||
-      actionsPermissionState
+      (appsPermissionState && modulesPermissionState && actionsPermissionState)
     ) {
       setTitleNamePermissionLocalState(titleNamePermissionState);
       setDescriptionPermissionLocalState(descriptionPermissionState);

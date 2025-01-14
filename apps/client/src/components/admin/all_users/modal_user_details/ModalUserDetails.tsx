@@ -127,7 +127,7 @@ const ModalUserDetails: React.FC<{
     >
       <Card
         title="Detalles de usuario"
-        style={{ marginBlock: "22px", padding: "0px" }}
+        style={{ marginTop: "22px", marginBottom: "7px", padding: "0px" }}
       >
         <Row
           gutter={24}

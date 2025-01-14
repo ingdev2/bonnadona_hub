@@ -247,6 +247,7 @@ const ManagePermissionsContent: React.FC = () => {
                 handleClickSeeMore: handleClickSeeMore,
               })}
               onClickUpdateCustomTable={handleButtonUpdate}
+              isLoading={!transformedData || !allPermissionsData}
             />
           </div>
         }

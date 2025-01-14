@@ -554,8 +554,6 @@ const AllUsersContent: React.FC = () => {
                         marginBlock: "13px",
                       }}
                       onClick={() => {
-                        refecthAllUsersWithProfile();
-
                         setIsEditUserVisibleLocalState(true);
                       }}
                     >
@@ -610,6 +608,7 @@ const AllUsersContent: React.FC = () => {
                 genderTypesData: allGenderTypesData,
               })}
               onClickUpdateCustomTable={handleButtonUpdate}
+              isLoading={!transformedData || !allUsersWithProfileData}
             />
           </div>
         }
