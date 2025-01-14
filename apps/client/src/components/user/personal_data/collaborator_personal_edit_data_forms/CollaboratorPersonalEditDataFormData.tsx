@@ -123,6 +123,15 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             className="current-edit-user-principal-email"
             label="Correo principal:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toLowerCase()
+                .replace(/[^a-záéíóúñ0-9@._%+-]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               {
                 required: true,
@@ -156,7 +165,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
             style={{ marginBottom: "13px" }}
             rules={[
               {
-                required: true,
+                required: false,
                 message: "¡Por favor ingrese el correo personal!",
               },
               {
@@ -174,6 +183,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               placeholder="Correo personal"
               onChange={onChangePersonalEmailUserFormData}
               autoComplete="off"
+              disabled={true}
             />
           </Form.Item>
         </Col>
@@ -220,6 +230,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               onChange={onChangePersonalCellphoneFormData}
               autoComplete="off"
               min={0}
+              disabled={true}
             />
           </Form.Item>
         </Col>
@@ -292,6 +303,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               placeholder="Afiliación eps"
               onChange={onChangeAffiliationEpsUserProfileFormData}
               autoComplete="off"
+              disabled={true}
             />
           </Form.Item>
         </Col>
@@ -464,6 +476,7 @@ const CollaboratorPersonalEditDataFormData: React.FC<{
               placeholder="Dirección"
               onChange={onChangeResidenceAddressUserProfileFormData}
               autoComplete="off"
+              disabled={true}
             />
           </Form.Item>
         </Col>

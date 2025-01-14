@@ -236,7 +236,7 @@ const ChangePasswordModal: React.FC<{
                   },
                 ]}
               >
-                <Input
+                <Input.Password
                   id="current-password-input"
                   className="current-password-input"
                   type="password"
@@ -273,7 +273,7 @@ const ChangePasswordModal: React.FC<{
                   },
                 ]}
               >
-                <Input
+                <Input.Password
                   id="new-password-input"
                   className="new-password-input"
                   type="password"
@@ -295,6 +295,76 @@ const ChangePasswordModal: React.FC<{
                   onChange={(e) => setNewPasswordLocalState(e.target.value)}
                   autoComplete="off"
                   min={0}
+                  onCopy={(e) => {
+                    e.preventDefault();
+                    return false;
+                  }}
+                  onCut={(e) => {
+                    e.preventDefault();
+                    return false;
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                id="verify-new-password-form"
+                className="verify-new-password-form"
+                name={"verify-new-password-form"}
+                label="Verificar contraseña nueva"
+                style={{ textAlign: "center" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "¡Por favor verifica tu contraseña!",
+                  },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (
+                        !value ||
+                        getFieldValue("new-password-form") === value
+                      ) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject("Las contraseñas no coinciden.");
+                    },
+                  }),
+                ]}
+                hasFeedback
+              >
+                <Input.Password
+                  id="verify-new-password-input"
+                  className="verify-new-password-input"
+                  type="password"
+                  prefix={
+                    <RiLockPasswordLine
+                      className="verify-new-password-item-icon"
+                      style={{ paddingInline: "1px", color: "#3F97AF" }}
+                    />
+                  }
+                  style={{
+                    width: "100%",
+                    fontSize: "14px",
+                    borderWidth: "2px",
+                    marginBottom: "4px",
+                    borderRadius: "30px",
+                  }}
+                  placeholder="Verificar contraseña nueva"
+                  value={newPasswordLocalState}
+                  onChange={(e) => setNewPasswordLocalState(e.target.value)}
+                  autoComplete="off"
+                  min={0}
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    return false;
+                  }}
+                  onCopy={(e) => {
+                    e.preventDefault();
+                    return false;
+                  }}
+                  onCut={(e) => {
+                    e.preventDefault();
+                    return false;
+                  }}
                 />
               </Form.Item>
 
