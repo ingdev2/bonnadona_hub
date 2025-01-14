@@ -47,7 +47,7 @@ const AdminPersonalDataFormData: React.FC<{
       style={{
         margin: "0px",
         paddingInline: "13px",
-        paddingTop: "22px",
+        paddingTop: "13px",
       }}
     >
       <h2

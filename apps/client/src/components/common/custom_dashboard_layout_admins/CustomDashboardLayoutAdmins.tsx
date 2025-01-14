@@ -113,7 +113,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
           onOpenChange={handleOpenChange}
           onClick={({ key }) => handleMenuClick(key)}
           style={{
-            height: "100vh",
+            minHeight: "100vh",
             margin: "0px",
             padding: "0px",
           }}
@@ -123,7 +123,6 @@ const CustomDashboardLayoutAdmins: React.FC<{
         className="custom-dashboard-layout-components"
         style={{
           display: "flex",
-          flexFlow: "column wrap",
           backgroundColor: "#DFEBF2",
           margin: "0px",
           padding: "0px",
@@ -196,7 +195,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
         </Header>
         <Content
           className="custom--dashboard-layout-content"
-          style={{ margin: "13px" }}
+          style={{ padding: "0px", margin: "22px 13px" }}
         >
           <div
             style={{
@@ -209,6 +208,7 @@ const CustomDashboardLayoutAdmins: React.FC<{
               borderRadius: borderRadiusLG,
               boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
               padding: "13px",
+              margin: "0px",
             }}
           >
             {customLayoutContent}
