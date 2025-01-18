@@ -360,7 +360,7 @@ const ManagePasswordFormData: React.FC<{
                 typeCustomButton="primary"
                 titleCustomButton="Actualizar Política"
                 sizeCustomButton="large"
-                onClickCustomButton={() => {}}
+                onClickCustomButton={handleClickSubmit}
                 disabledCustomButton={
                   hasChanges() && !updatePasswordPolicyLoading ? false : true
                 }
