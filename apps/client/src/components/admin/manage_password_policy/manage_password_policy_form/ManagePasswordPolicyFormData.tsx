@@ -36,6 +36,7 @@ const ManagePasswordFormData: React.FC<{
   setRequireSpecialCharactersLocalState: (value: boolean) => void;
   hasChanges: () => boolean;
   handleClickSubmit: () => void;
+  handleOnClickButton: () => void;
 }> = ({
   minLenghtPasswordFormData,
   requireUpperCasePasswordFormData,
@@ -57,6 +58,7 @@ const ManagePasswordFormData: React.FC<{
   setRequireSpecialCharactersLocalState,
   hasChanges,
   handleClickSubmit,
+  handleOnClickButton,
 }) => {
   return (
     <Col
@@ -353,14 +355,13 @@ const ManagePasswordFormData: React.FC<{
           style={{ width: "100%", justifyContent: "center" }}
         >
           <Col>
-            <Form.Item style={{ width: "100%", marginBottom: "-5px" }}>
+            <Form.Item style={{ width: "100%" }}>
               <CustomButton
                 idCustomButton="update-password-policy"
                 classNameCustomButton="update-password-policy"
-                typeCustomButton="primary"
                 titleCustomButton="Actualizar Política"
                 sizeCustomButton="large"
-                onClickCustomButton={() => {}}
+                onClickCustomButton={handleOnClickButton}
                 disabledCustomButton={
                   hasChanges() && !updatePasswordPolicyLoading ? false : true
                 }
@@ -370,6 +371,8 @@ const ManagePasswordFormData: React.FC<{
                   paddingInline: "45px",
                   borderRadius: "31px",
                 }}
+                typeCustomButton="primary"
+                htmlTypeCustomButton="submit"
               />
             </Form.Item>
           </Col>

@@ -142,6 +142,15 @@ const EditUserFormData: React.FC<{
     }
   };
 
+  const removePermissionTag = (permissionId: string) => {
+    const updatedPermissions = selectedPermissionIdsToAddUserState?.filter(
+      (id) => id !== permissionId
+    );
+
+    dispatch(setHasChangesSelectedUser(true));
+    dispatch(setPermissionIdsToAddSelectedUser(updatedPermissions));
+  };
+
   const addSelectedPermissionsAsTags = () => {
     if (
       !selectedPermissionIdsToAddUserState ||
@@ -161,10 +170,12 @@ const EditUserFormData: React.FC<{
       return (
         <CustomTags
           key={permission.id}
-          tag={{
-            label: permission.name,
-            color: "#015E90B2",
-            textColor: "#F7F7F7",
+          label={permission.name}
+          color="#015E90B2"
+          textColor="#F7F7F7"
+          closableCustomTagRender={true}
+          onCloseCustomTagRender={() => {
+            removePermissionTag(permission.id);
           }}
         />
       );

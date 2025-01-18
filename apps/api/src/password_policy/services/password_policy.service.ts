@@ -89,7 +89,7 @@ export class PasswordPolicyService {
     await this.auditLogService.createAuditLog(auditLogData);
 
     throw new HttpException(
-      `¡Datos guardados correctamente!`,
+      `¡Política de contraseña actualizada correctamente!`,
       HttpStatus.ACCEPTED,
     );
   }

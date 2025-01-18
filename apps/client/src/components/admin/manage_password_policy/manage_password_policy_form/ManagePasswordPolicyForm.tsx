@@ -190,6 +190,11 @@ const ManagePasswordPolicyForm: React.FC = () => {
     }
   };
 
+  const handleButtonClick = () => {
+    dispatch(setErrorsPasswordPolicy([]));
+    setShowErrorMessage(false);
+  };
+
   return (
     <>
       {!inactivityDaysPasswordPolicyState ||
@@ -242,6 +247,7 @@ const ManagePasswordPolicyForm: React.FC = () => {
             }
             hasChanges={hasChanges}
             handleClickSubmit={handleClickSubmit}
+            handleOnClickButton={handleButtonClick}
           />
         </div>
       )}
