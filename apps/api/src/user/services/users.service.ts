@@ -571,6 +571,7 @@ export class UsersService {
       query_type: QueryTypesEnum.POST,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: userCollaboratorCreated.id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -736,6 +737,7 @@ export class UsersService {
       query_type: QueryTypesEnum.POST,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: userCollaboratorCreated.id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -1506,6 +1508,7 @@ export class UsersService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -1578,6 +1581,7 @@ export class UsersService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -1684,6 +1688,7 @@ export class UsersService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -1727,6 +1732,7 @@ export class UsersService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -1833,6 +1839,7 @@ export class UsersService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -2138,6 +2145,7 @@ export class UsersService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);

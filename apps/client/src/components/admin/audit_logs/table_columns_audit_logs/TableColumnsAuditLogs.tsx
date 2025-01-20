@@ -6,6 +6,7 @@ import { ModuleNameEnum } from "@/utils/enums/audit_logs_enums/module_names.enum
 import { QueryTypesEnum } from "@/utils/enums/audit_logs_enums/query_types.enum";
 
 import { RolesEnum } from "@/utils/enums/roles/roles.enum";
+import { ApplicationsEnum } from "@/utils/enums/permissions/applications/applications.enum";
 
 const enumDataFilters = (enumData: Object) =>
   Object.values(enumData).map((value) => ({
@@ -19,6 +20,7 @@ const userIdNumberAuditLogKey: keyof AuditLogs = "user_id_number";
 const userEmailAuditLogKey: keyof AuditLogs = "user_email";
 const userRoleAuditLogKey: keyof AuditLogs = "user_role";
 const actionTypeAuditLogKey: keyof AuditLogs = "action_type";
+const appNameAuditLogKey: keyof AuditLogs = "app_accessed";
 const moduleNameAuditLogKey: keyof AuditLogs = "module_name";
 const queryTypeAuditLogKey: keyof AuditLogs = "query_type";
 const moduleRecordIdAuditLogKey: keyof AuditLogs = "module_record_id";
@@ -68,6 +70,18 @@ export const tableColumnsAuditLogs = ({
     },
     ellipsis: true,
     render: (actionType: string) => actionType,
+  },
+  {
+    title: "NOMBRE DE APLICACIÓN",
+    key: appNameAuditLogKey,
+    dataIndex: appNameAuditLogKey,
+    width: 103,
+    filters: enumDataFilters(ApplicationsEnum),
+    onFilter: (value: any, record: any) => {
+      return String(record.app_accessed) === String(value);
+    },
+    ellipsis: true,
+    render: (appName: string) => appName,
   },
   {
     title: "FECHA DE ACCIÓN",

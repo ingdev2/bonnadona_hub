@@ -33,7 +33,10 @@ export class AuditLogs {
   @Column({ enum: QueryTypesEnum })
   query_type: QueryTypesEnum;
 
-  @Column({ enum: ModuleNameEnum })
+  @Column({ type: 'text', nullable: true })
+  app_accessed: string;
+
+  @Column({ enum: ModuleNameEnum, nullable: true })
   module_name: ModuleNameEnum;
 
   @Column({ type: 'text', nullable: true })

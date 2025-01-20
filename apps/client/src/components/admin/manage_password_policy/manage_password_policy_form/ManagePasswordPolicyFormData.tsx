@@ -7,9 +7,9 @@ import { Col, Form, Input, Row, Switch, Typography } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
 
 import { MdOutlineBlock } from "react-icons/md";
-import { RiPassExpiredLine } from "react-icons/ri";
-import { IoRecordingOutline } from "react-icons/io5";
-import { FaArrowsAltH } from "react-icons/fa";
+import { TbPasswordUser } from "react-icons/tb";
+import { IoMdTimer } from "react-icons/io";
+import { FaArrowsAltH, FaHistory } from "react-icons/fa";
 
 import CustomButton from "@/components/common/custom_button/CustomButton";
 
@@ -177,7 +177,7 @@ const ManagePasswordFormData: React.FC<{
               >
                 <Input
                   id="password-expiry-days-input"
-                  prefix={<RiPassExpiredLine className="site-form-item-icon" />}
+                  prefix={<TbPasswordUser className="site-form-item-icon" />}
                   style={{
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -273,9 +273,7 @@ const ManagePasswordFormData: React.FC<{
               >
                 <Input
                   id="password-history-limit-input"
-                  prefix={
-                    <IoRecordingOutline className="site-form-item-icon" />
-                  }
+                  prefix={<FaHistory className="site-form-item-icon" />}
                   style={{
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -323,9 +321,7 @@ const ManagePasswordFormData: React.FC<{
               >
                 <Input
                   id="maximun-minutes-of-inactivity-in-app-input"
-                  prefix={
-                    <IoRecordingOutline className="site-form-item-icon" />
-                  }
+                  prefix={<IoMdTimer className="site-form-item-icon" />}
                   style={{
                     overflow: "hidden",
                     textOverflow: "ellipsis",

@@ -19,12 +19,6 @@ export const passwordPolicyApi = createApi({
     },
   }),
 
-  refetchOnMountOrArgChange: true,
-
-  refetchOnFocus: true,
-
-  refetchOnReconnect: true,
-
   endpoints: (builder) => ({
     getPasswordPolicy: builder.query<PasswordPolicy, null>({
       query: () => "getPasswordPolicy",

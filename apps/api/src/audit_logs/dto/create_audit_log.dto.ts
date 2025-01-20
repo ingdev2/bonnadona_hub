@@ -28,6 +28,10 @@ export class CreateAuditLogDto {
   @IsEnum(QueryTypesEnum)
   query_type: QueryTypesEnum;
 
+  @IsOptional()
+  @IsString()
+  app_accessed: string;
+
   @IsNotEmpty()
   @IsEnum(ModuleNameEnum)
   module_name: ModuleNameEnum;

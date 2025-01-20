@@ -6,6 +6,7 @@ interface AuditLogs {
   user_role: string;
   action_type: string;
   query_type: string;
+  app_accessed: string;
   module_name: string;
   module_record_id: string;
   ip_address: string;

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { Col, Descriptions } from "antd";
+import { Card, Col, Descriptions, Row } from "antd";
 
 import { titleStyleCss, subtitleStyleCss } from "@/theme/text_styles";
 
@@ -20,6 +20,8 @@ const ModalAuditLogDetails: React.FC<{
   selectedUserRoleAuditLog: string | undefined;
   labelActionTypeAuditLog: string;
   selectedActionTypeAuditLog: string | undefined;
+  labelAppNameAuditLog: string;
+  selectedAppNameAuditLog: string | undefined;
   labelQueryTypeAuditLog: string;
   selectedQueryTypeAuditLog: string | undefined;
   labelModuleNameAuditLog: string;
@@ -52,6 +54,8 @@ const ModalAuditLogDetails: React.FC<{
   selectedUserRoleAuditLog,
   labelActionTypeAuditLog,
   selectedActionTypeAuditLog,
+  labelAppNameAuditLog,
+  selectedAppNameAuditLog,
   labelQueryTypeAuditLog,
   selectedQueryTypeAuditLog,
   selectedModuleNameAuditLog,
@@ -77,174 +81,145 @@ const ModalAuditLogDetails: React.FC<{
       sm={24}
       md={24}
       lg={24}
-      style={{
-        width: "100%",
-        display: "flex",
-        flexFlow: "row wrap",
-        justifyContent: "center",
-        alignContent: "center",
-        alignItems: "center",
-        padding: "2px",
-        margin: "0px",
-      }}
+      style={{ padding: "0px", margin: "0px" }}
     >
-      <h2
-        style={{
-          width: "100%",
-          ...titleStyleCss,
-          margin: "0px",
-          paddingBottom: "13px",
-          fontSize: "22px",
-        }}
+      <Card
+        title="Registros de auditoría"
+        style={{ marginTop: "22px", marginBottom: "7px", padding: "0px" }}
       >
-        {titleDescription}
-      </h2>
-
-      <Descriptions
-        className="description-audit-log-details-admin"
-        layout="vertical"
-        size="middle"
-        style={{ width: "100%", paddingBlock: "7px" }}
-        labelStyle={{
-          ...titleStyleCss,
-        }}
-        contentStyle={{
-          ...subtitleStyleCss,
-        }}
-        bordered
-        column={12}
-      >
-        <Descriptions.Item
-          label={labelAuditLogId}
-          style={{ textAlign: "center" }}
-          span={12}
+        <Row
+          gutter={24}
+          justify={"center"}
+          align={"middle"}
+          style={{ padding: "0px", margin: "0px" }}
         >
-          {selectedAuditLogId}
-        </Descriptions.Item>
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={12}
+            style={{ margin: "0px", paddingInline: "7px", paddingBlock: "7px" }}
+          >
+            <Descriptions
+              size="small"
+              column={1}
+              labelStyle={{
+                ...titleStyleCss,
+                width: "222px",
+                paddingInlineEnd: "0px",
+                margin: "0px",
+              }}
+              contentStyle={subtitleStyleCss}
+              layout="horizontal"
+              bordered
+            >
+              <Descriptions.Item label={labelAuditLogId}>
+                {selectedAuditLogId}
+              </Descriptions.Item>
 
-        {/* FILA 1 */}
+              <Descriptions.Item label={labelUserNameAuditLog}>
+                {selectedUserNameAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserNameAuditLog}
-          style={{ textAlign: "center" }}
-          span={8}
-        >
-          {selectedUserNameAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserRoleAuditLog}>
+                {selectedUserRoleAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserRoleAuditLog}
-          style={{ textAlign: "center" }}
-          span={2}
-        >
-          {selectedUserRoleAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserIdNumberAuditLog}>
+                {selectedUserIdNumberAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserIdNumberAuditLog}
-          style={{ textAlign: "center" }}
-          span={2}
-        >
-          {selectedUserIdNumberAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelUserEmailAuditLog}>
+                {selectedUserEmailAuditLog}
+              </Descriptions.Item>
+            </Descriptions>
+          </Col>
 
-        {/* FILA 2 */}
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={12}
+            style={{ margin: "0px", paddingInline: "7px", paddingBlock: "7px" }}
+          >
+            <Descriptions
+              size="small"
+              column={1}
+              labelStyle={{
+                ...titleStyleCss,
+                width: "222px",
+                paddingInlineEnd: "0px",
+                margin: "0px",
+              }}
+              contentStyle={subtitleStyleCss}
+              layout="horizontal"
+              bordered
+            >
+              <Descriptions.Item label={labelModuleRecordIdAuditLog}>
+                {selectedModuleRecordIdAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelUserEmailAuditLog}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedUserEmailAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelIpAddressAuditLog}>
+                {selectedIpAddressAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelActionTypeAuditLog}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedActionTypeAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelIsMobileAuditLog}>
+                {selectedIsMobileAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelQueryTypeAuditLog}
-          style={{ textAlign: "center" }}
-          span={2}
-        >
-          {selectedQueryTypeAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelBrowserVersionAuditLog}>
+                {selectedBrowserVersionAuditLog}
+              </Descriptions.Item>
 
-        {/* FILA 3 */}
+              <Descriptions.Item label={labelOperatingSystemAuditLog}>
+                {selectedOperatingSystemAuditLog}
+              </Descriptions.Item>
+            </Descriptions>
+          </Col>
 
-        <Descriptions.Item
-          label={labelModuleNameAuditLog}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedModuleNameAuditLog}
-        </Descriptions.Item>
+          <Col
+            xs={24}
+            sm={24}
+            md={24}
+            lg={14}
+            style={{ margin: "0px", paddingInline: "7px", paddingBlock: "7px" }}
+          >
+            <Descriptions
+              size="small"
+              column={1}
+              labelStyle={{
+                ...titleStyleCss,
+                width: "222px",
+                paddingInlineEnd: "0px",
+                margin: "0px",
+              }}
+              contentStyle={subtitleStyleCss}
+              layout="horizontal"
+              bordered
+            >
+              <Descriptions.Item label={labelModuleNameAuditLog}>
+                {selectedModuleNameAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelModuleRecordIdAuditLog}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedModuleRecordIdAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelActionTypeAuditLog}>
+                {selectedActionTypeAuditLog}
+              </Descriptions.Item>
 
-        {/* FILA 4 */}
+              <Descriptions.Item label={labelAppNameAuditLog}>
+                {selectedAppNameAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelIpAddressAuditLog}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedIpAddressAuditLog}
-        </Descriptions.Item>
+              <Descriptions.Item label={labelDateOfAuditLog}>
+                {selectedDateOfAuditLog}
+              </Descriptions.Item>
 
-        <Descriptions.Item
-          label={labelIsMobileAuditLog}
-          style={{ textAlign: "center" }}
-          span={2}
-        >
-          {selectedIsMobileAuditLog}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelBrowserVersionAuditLog}
-          style={{ textAlign: "center" }}
-          span={4}
-        >
-          {selectedBrowserVersionAuditLog}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelOperatingSystemAuditLog}
-          style={{ textAlign: "center" }}
-          span={2}
-        >
-          {selectedOperatingSystemAuditLog}
-        </Descriptions.Item>
-
-        {/* FILA 5 */}
-
-        <Descriptions.Item
-          label={labelDateOfAuditLog}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedDateOfAuditLog}
-        </Descriptions.Item>
-
-        <Descriptions.Item
-          label={labelHourOfAuditLog}
-          style={{ textAlign: "center" }}
-          span={6}
-        >
-          {selectedHourOfAuditLog}
-        </Descriptions.Item>
-        {/* FILA 6 */}
-      </Descriptions>
+              <Descriptions.Item label={labelHourOfAuditLog}>
+                {selectedHourOfAuditLog}
+              </Descriptions.Item>
+            </Descriptions>
+          </Col>
+        </Row>
+      </Card>
     </Col>
   );
 };

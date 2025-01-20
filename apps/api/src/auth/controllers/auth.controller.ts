@@ -77,14 +77,17 @@ export class AuthController {
     return await this.authService.loginAdminAndAuditorUser(loginCollaborator);
   }
 
+  @EnableAuditLog()
   @Post('verifyCodeAndLoginCollaboratorUser/:principal_email')
   async verifyCodeAndLoginCollaboratorUser(
     @Param('principal_email') principal_email: string,
     @Body('verification_code') verification_code: number,
+    @Req() requestAuditLog: any,
   ) {
     return await this.authService.verifyCodeAndLoginCollaboratorUser(
       principal_email,
       verification_code,
+      requestAuditLog,
     );
   }
 
@@ -98,6 +101,20 @@ export class AuthController {
     return await this.authService.verifyCodeAndLoginAdminAndAuditorUser(
       principal_email,
       verification_code,
+      requestAuditLog,
+    );
+  }
+
+  @EnableAuditLog()
+  @Post('userLoginToApp/:userIdNumber')
+  async userLoginToApp(
+    @Param('userIdNumber') userIdNumber: number,
+    @Body('appName') appName: string,
+    @Req() requestAuditLog: any,
+  ) {
+    return await this.authService.userLoginToApp(
+      userIdNumber,
+      appName,
       requestAuditLog,
     );
   }

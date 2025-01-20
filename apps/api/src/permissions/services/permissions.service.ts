@@ -118,6 +118,7 @@ export class PermissionsService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.PERMISSIONS_MODULE,
       module_record_id: permission.id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -280,6 +281,7 @@ export class PermissionsService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.PERMISSIONS_MODULE,
       module_record_id: permissionId,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);

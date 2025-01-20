@@ -46,6 +46,7 @@ export class ApplicationService {
       query_type: QueryTypesEnum.POST,
       module_name: ModuleNameEnum.APP_MODULE,
       module_record_id: newApplication.id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -156,6 +157,7 @@ export class ApplicationService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.APP_MODULE,
       module_record_id: id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -193,6 +195,7 @@ export class ApplicationService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.APP_MODULE,
       module_record_id: applicationFound.id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);

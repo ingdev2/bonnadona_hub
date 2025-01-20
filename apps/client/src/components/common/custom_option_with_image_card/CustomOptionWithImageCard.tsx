@@ -9,18 +9,21 @@ const CustomOptionWithImageCard: React.FC<{
   classNameCardCustomOptionWithImageCard: string | undefined;
   styleImgCustomOptionWithImageCard: React.CSSProperties | undefined;
   entryLinkUrlCustomOptionWithImageCard: string;
+  onClickCustomOptionWithImageCard?: () => void;
 }> = ({
   srcCustomOptionWithImageCard,
   altCustomOptionWithImageCard,
   classNameCardCustomOptionWithImageCard,
   styleImgCustomOptionWithImageCard,
   entryLinkUrlCustomOptionWithImageCard,
+  onClickCustomOptionWithImageCard,
 }) => {
   return (
     <a
       href={entryLinkUrlCustomOptionWithImageCard}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={onClickCustomOptionWithImageCard}
     >
       <Card
         className={classNameCardCustomOptionWithImageCard}

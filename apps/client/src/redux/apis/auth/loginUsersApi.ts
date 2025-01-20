@@ -31,6 +31,18 @@ export const loginUserApi = createApi({
       }),
     }),
 
+    userLoginToApp: builder.mutation<
+      any,
+      { userIdNumber: number; appName: string }
+    >({
+      query: ({ userIdNumber, appName }) => ({
+        url: `userLoginToApp/${userIdNumber}`,
+        method: "POST",
+        params: { userIdNumber },
+        body: { appName },
+      }),
+    }),
+
     resendVerificationUserCode: builder.mutation<
       Partial<UserLogin>,
       { principal_email: string }
@@ -47,5 +59,6 @@ export const loginUserApi = createApi({
 export const {
   useLoginCollaboratorUserMutation,
   useVerifyCodeAndLoginCollaboratorUserMutation,
+  useUserLoginToAppMutation,
   useResendVerificationUserCodeMutation,
 } = loginUserApi;

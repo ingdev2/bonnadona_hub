@@ -590,7 +590,9 @@ const EditPermissionFormData: React.FC<{
                   <Button
                     size="middle"
                     type="dashed"
-                    onClick={() => toggleExpandedApp(app.id)}
+                    onClick={() => {
+                      toggleExpandedApp(app.id), setSelectAllModules(false);
+                    }}
                     icon={
                       expandedApp === app.id ? (
                         <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
@@ -722,7 +724,10 @@ const EditPermissionFormData: React.FC<{
                   <Button
                     size="middle"
                     type="dashed"
-                    onClick={() => toggleExpandedModule(module.id)}
+                    onClick={() => {
+                      toggleExpandedModule(module.id),
+                        setSelectAllModuleActions(false);
+                    }}
                     icon={
                       expandedModule === module.id ? (
                         <EyeInvisibleOutlined style={{ color: "#1D8348" }} />

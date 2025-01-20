@@ -84,6 +84,7 @@ export class PasswordPolicyService {
       query_type: QueryTypesEnum.PATCH,
       module_name: ModuleNameEnum.PASSWORD_POLICY_MODULE,
       module_record_id: passwordPolicyFound[0].id,
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);

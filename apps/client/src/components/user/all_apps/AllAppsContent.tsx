@@ -25,6 +25,7 @@ import {
 import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/passwordPolicyApi";
 
 import { checkPasswordExpiry } from "@/helpers/check_password_expiry/CheckPasswordExpiry";
+import { useUserLoginToAppMutation } from "@/redux/apis/auth/loginUsersApi";
 
 const AllAppsContent: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -44,6 +45,18 @@ const AllAppsContent: React.FC = () => {
   const modalIsOpenChangePasswordExpiry = useAppSelector(
     (state) => state.modal.changePasswordExpiryModalIsOpen
   );
+
+  const [
+    userLoginToApp,
+    {
+      data: isUserLoginToAppData,
+      isLoading: isUserLoginToAppLoading,
+      isSuccess: isUserLoginToAppSuccess,
+      isError: isUserLoginToAppError,
+    },
+  ] = useUserLoginToAppMutation({
+    fixedCacheKey: "userLoginToAppData",
+  });
 
   const {
     data: userActiveDatabyIdNumberData,
@@ -109,6 +122,17 @@ const AllAppsContent: React.FC = () => {
     passwordPolicyData,
     lastPasswordUpdateCollaboratorState,
   ]);
+
+  const handleAppClick = async (appName: string) => {
+    try {
+      await userLoginToApp({
+        userIdNumber: idNumberUserState,
+        appName,
+      }).unwrap();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -180,6 +204,9 @@ const AllAppsContent: React.FC = () => {
                                 entryLinkUrlCustomOptionWithImageCard={
                                   application.entry_link
                                 }
+                                onClickCustomOptionWithImageCard={() => {
+                                  handleAppClick(application.name);
+                                }}
                               />
                             </Col>
                           ))}

@@ -18,26 +18,30 @@ import { Cron } from '@nestjs/schedule';
 import { UsersService } from 'src/user/services/users.service';
 import { NodemailerService } from 'src/nodemailer/services/nodemailer.service';
 import { AuditLogsService } from 'src/audit_logs/services/audit_logs.service';
+import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
 
 import { CreateUserDto } from 'src/user/dto/create_user.dto';
 import { LoginDto } from '../dto/login.dto';
-import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
 import { SendEmailDto } from 'src/nodemailer/dto/send_email.dto';
+import { CreateAuditLogDto } from 'src/audit_logs/dto/create_audit_log.dto';
+import { PrincipalEmailDto } from '../dto/principal_email.dto';
 
 const schedule = require('node-schedule');
+
+import { RolesEnum } from 'src/utils/enums/roles/roles.enum';
+import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
+import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
+import { ApplicationsEnum } from 'src/utils/enums/applications/applications.enum';
+import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
+
+import { Payload } from '../interfaces/payload.interface';
+import { Tokens } from '../interfaces/tokens.interface';
+import { IUserSession } from 'src/utils/interfaces/user_session.interface';
 
 import {
   SUBJECT_EMAIL_VERIFICATION_CODE,
   EMAIL_VERIFICATION_CODE,
 } from 'src/nodemailer/constants/email_config.constant';
-import { Payload } from '../interfaces/payload.interface';
-import { Tokens } from '../interfaces/tokens.interface';
-import { ActionTypesEnum } from 'src/utils/enums/audit_logs_enums/action_types.enum';
-import { QueryTypesEnum } from 'src/utils/enums/audit_logs_enums/query_types.enum';
-import { ModuleNameEnum } from 'src/utils/enums/audit_logs_enums/module_names.enum';
-import { UserSessionLogService } from 'src/user_session_log/services/user_session_log.service';
-import { PrincipalEmailDto } from '../dto/principal_email.dto';
-import { IUserSession } from 'src/utils/interfaces/user_session.interface';
 
 @Injectable()
 export class AuthService {
@@ -440,6 +444,7 @@ export class AuthService {
   async verifyCodeAndLoginCollaboratorUser(
     principal_email: string,
     verification_code: number,
+    @Req() requestAuditLog: any,
   ) {
     const collaboratorUserRoleFound = await this.roleRepository.find({
       where: { name: In([RolesEnum.COLLABORATOR]) },
@@ -502,6 +507,31 @@ export class AuthService {
 
     const { access_token, refresh_token, access_token_expires_in } =
       await this.generateTokens(payload);
+
+    const roleNames = collaboratorFound?.role.map((role) => role.name) || [
+      'NO REGISTRA',
+    ];
+
+    const auditLogData = {
+      user_name:
+        `${collaboratorFound.name} ${collaboratorFound.last_name}` ||
+        'NO REGISTRA',
+      user_id_number: collaboratorFound.id_number.toString(),
+      user_email: collaboratorFound.principal_email || 'NO REGISTRA',
+      user_role: roleNames,
+      is_mobile: requestAuditLog.headers['sec-ch-ua-mobile'] || 'NO REGISTRA',
+      browser_version: requestAuditLog.headers['sec-ch-ua'] || 'NO REGISTRA',
+      operating_system:
+        requestAuditLog.headers['sec-ch-ua-platform'] || 'NO REGISTRA',
+      ip_address: requestAuditLog.ip || 'NO REGISTRA',
+      action_type: ActionTypesEnum.LOGIN,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.USER_MODULE,
+      module_record_id: 'NO REGISTRA',
+      app_accessed: 'NO APLICA',
+    };
+
+    await this.auditLogService.createAuditLog(auditLogData);
 
     return {
       access_token,
@@ -603,6 +633,7 @@ export class AuthService {
       query_type: QueryTypesEnum.POST,
       module_name: ModuleNameEnum.USER_MODULE,
       module_record_id: 'NO REGISTRA',
+      app_accessed: 'NO APLICA',
     };
 
     await this.auditLogService.createAuditLog(auditLogData);
@@ -615,6 +646,42 @@ export class AuthService {
       email: payload.email,
       role: payload.role,
     };
+  }
+
+  async userLoginToApp(
+    userIdNumber: number,
+    appName: string,
+    @Req() requestAuditLog: any,
+  ) {
+    const userFound =
+      await this.userService.getUserActiveByIdNumber(userIdNumber);
+
+    if (!userFound) {
+      throw new UnauthorizedException(`¡Usuario no existe o no está activo!`);
+    }
+
+    const roleNames = userFound?.role.map((role) => role.name) || [
+      'NO REGISTRA',
+    ];
+
+    const auditLogData: CreateAuditLogDto = {
+      user_name: `${userFound.name} ${userFound.last_name}` || 'NO REGISTRA',
+      user_id_number: userFound.id_number.toString(),
+      user_email: userFound.principal_email || 'NO REGISTRA',
+      user_role: roleNames,
+      is_mobile: requestAuditLog.headers['sec-ch-ua-mobile'] || 'NO REGISTRA',
+      browser_version: requestAuditLog.headers['sec-ch-ua'] || 'NO REGISTRA',
+      operating_system:
+        requestAuditLog.headers['sec-ch-ua-platform'] || 'NO REGISTRA',
+      ip_address: requestAuditLog.ip || 'NO REGISTRA',
+      action_type: ActionTypesEnum.LOGIN_TO_APP,
+      app_accessed: appName,
+      query_type: QueryTypesEnum.POST,
+      module_name: ModuleNameEnum.APP_MODULE,
+      module_record_id: 'NO REGISTRA',
+    };
+
+    return await this.auditLogService.createAuditLog(auditLogData);
   }
 
   async resendVerificationUserCode({ principal_email }: PrincipalEmailDto) {

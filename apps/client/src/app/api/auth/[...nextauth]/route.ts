@@ -24,16 +24,20 @@ async function getPasswordPolicy() {
   }
 }
 
-let maxSessionAge = 780;
+async function initializeMaxSessionAge() {
+  let maxSessionAge = 780;
 
-(async () => {
   const passwordPolicy = await getPasswordPolicy();
 
   if (passwordPolicy?.maximum_minutes_of_inactivity_in_application) {
     maxSessionAge =
       passwordPolicy.maximum_minutes_of_inactivity_in_application * 60;
   }
-})();
+
+  return maxSessionAge;
+}
+
+const maxSessionAge = await initializeMaxSessionAge();
 
 async function refreshAccessToken(token: any) {
   try {
@@ -202,6 +206,7 @@ const handler = NextAuth({
   pages: {
     signIn: "/login",
   },
+
   session: {
     strategy: "jwt",
     maxAge: maxSessionAge,

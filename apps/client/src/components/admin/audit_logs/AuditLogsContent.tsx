@@ -109,7 +109,7 @@ const AuditLogsContent: React.FC = () => {
       {isModalVisibleLocalState && (
         <CustomModalNoContent
           key={"custom-modal-audit-log-details"}
-          widthCustomModalNoContent={"69%"}
+          widthCustomModalNoContent={"96%"}
           minWidthCustomModalNoContent="321px"
           openCustomModalState={isModalVisibleLocalState}
           closableCustomModal={true}
@@ -155,6 +155,10 @@ const AuditLogsContent: React.FC = () => {
                   labelQueryTypeAuditLog="Tipo de query ejecutado"
                   selectedQueryTypeAuditLog={
                     selectedRowDataLocalState?.query_type
+                  }
+                  labelAppNameAuditLog="Aplicativo al que ingreso"
+                  selectedAppNameAuditLog={
+                    selectedRowDataLocalState?.app_accessed
                   }
                   labelModuleNameAuditLog="Nombre de modulo modificado"
                   selectedModuleNameAuditLog={
