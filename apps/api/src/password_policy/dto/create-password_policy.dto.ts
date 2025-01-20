@@ -42,4 +42,9 @@ export class CreatePasswordPolicyDto {
   @Min(1, { message: 'El límite de historial debe ser al menos de 1' })
   @Max(10, { message: 'El límite de historial no puede superar los 10' })
   password_history_limit: number;
+
+  @IsNotEmpty()
+  @Min(1, { message: 'El límite de historial debe ser al menos de 1' })
+  @Max(60, { message: 'El límite de historial no puede superar los 60' })
+  maximum_minutes_of_inactivity_in_application: number;
 }

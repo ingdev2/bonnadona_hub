@@ -58,6 +58,10 @@ const ManagePasswordPolicyForm: React.FC = () => {
     (state) => state.passwordPolicy.password_history_limit
   );
 
+  const maximunMinutesOfInactivityInAppState = useAppSelector(
+    (state) => state.passwordPolicy.maximum_minutes_of_inactivity_in_application
+  );
+
   const errorsState = useAppSelector((state) => state.passwordPolicy.errors);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -71,6 +75,10 @@ const ManagePasswordPolicyForm: React.FC = () => {
   const [inactivityDaysLocalState, setInactivityDaysLocalState] = useState(0);
   const [passwordHistoryLimitLocalState, setPasswordHistoryLimitLocalState] =
     useState(0);
+  const [
+    maximunMinutesOfInactivityInAppLocalState,
+    setMaximunMinutesOfInactivityInAppLocalState,
+  ] = useState(0);
   const [requireUpperCaseLocalState, setRequireUpperCaseLocalState] =
     useState(false);
   const [requireLowerCaseLocalState, setRequireLowerCaseLocalState] =
@@ -102,6 +110,9 @@ const ManagePasswordPolicyForm: React.FC = () => {
     setPasswordExpiryDaysLocalState(passwordExpiryDaysPasswordPolicyState);
     setInactivityDaysLocalState(inactivityDaysPasswordPolicyState);
     setPasswordHistoryLimitLocalState(passwordHistoryLimitPasswordPolicyState);
+    setMaximunMinutesOfInactivityInAppLocalState(
+      maximunMinutesOfInactivityInAppState
+    );
     setRequireUpperCaseLocalState(requireUpperCasePasswordPolicyState);
     setRequireLowerCaseLocalState(requireLowerCasePasswordPolicyState);
     setRequireNumbersLocalState(requireNumbersPasswordPolicyState);
@@ -110,36 +121,39 @@ const ManagePasswordPolicyForm: React.FC = () => {
     );
   }, [
     minLenghtPasswordPolicyState,
+    passwordExpiryDaysPasswordPolicyState,
+    inactivityDaysPasswordPolicyState,
+    passwordHistoryLimitPasswordPolicyState,
+    maximunMinutesOfInactivityInAppState,
     requireUpperCasePasswordPolicyState,
     requireLowerCasePasswordPolicyState,
     requireNumbersPasswordPolicyState,
     requireSpecialCharactersPasswordPolicyState,
-    passwordExpiryDaysPasswordPolicyState,
-    inactivityDaysPasswordPolicyState,
-    passwordHistoryLimitPasswordPolicyState,
   ]);
 
   const hasChanges = () => {
     const initialData = {
       dataMinLenght: minLenghtPasswordPolicyState,
+      dataPasswordExpiryDays: passwordExpiryDaysPasswordPolicyState,
+      dataInactivityDays: inactivityDaysPasswordPolicyState,
+      dataPasswordHistoryLimit: passwordHistoryLimitPasswordPolicyState,
+      dataMaximunMinutesOfInactivity: maximunMinutesOfInactivityInAppState,
       dataRequireUpperCase: requireUpperCasePasswordPolicyState,
       dataRequireLowerCase: requireLowerCasePasswordPolicyState,
       dataRequireNumber: requireNumbersPasswordPolicyState,
       dataRequireSpecialCharacter: requireSpecialCharactersPasswordPolicyState,
-      dataPasswordExpiryDays: passwordExpiryDaysPasswordPolicyState,
-      dataInactivityDays: inactivityDaysPasswordPolicyState,
-      dataPasswordHistoryLimit: passwordHistoryLimitPasswordPolicyState,
     };
 
     const currentData = {
       dataMinLenght: minLenghtPasswordLocalState,
+      dataPasswordExpiryDays: passwordExpiryDaysLocalState,
+      dataInactivityDays: inactivityDaysLocalState,
+      dataPasswordHistoryLimit: passwordHistoryLimitLocalState,
+      dataMaximunMinutesOfInactivity: maximunMinutesOfInactivityInAppLocalState,
       dataRequireUpperCase: requireUpperCaseLocalState,
       dataRequireLowerCase: requireLowerCaseLocalState,
       dataRequireNumber: requireNumbersLocalState,
       dataRequireSpecialCharacter: requireSpecialCharactersLocalState,
-      dataPasswordExpiryDays: passwordExpiryDaysLocalState,
-      dataInactivityDays: inactivityDaysLocalState,
-      dataPasswordHistoryLimit: passwordHistoryLimitLocalState,
     };
 
     return areDataDifferent(initialData, currentData);
@@ -155,6 +169,8 @@ const ManagePasswordPolicyForm: React.FC = () => {
           password_expiry_days: passwordExpiryDaysLocalState,
           inactivity_days: inactivityDaysLocalState,
           password_history_limit: passwordHistoryLimitLocalState,
+          maximum_minutes_of_inactivity_in_application:
+            maximunMinutesOfInactivityInAppLocalState,
           require_uppercase: requireUpperCaseLocalState,
           require_lowercase: requireLowerCaseLocalState,
           require_numbers: requireNumbersLocalState,
@@ -200,7 +216,8 @@ const ManagePasswordPolicyForm: React.FC = () => {
       {!inactivityDaysPasswordPolicyState ||
       !minLenghtPasswordPolicyState ||
       !passwordExpiryDaysPasswordPolicyState ||
-      !passwordHistoryLimitPasswordPolicyState ? (
+      !passwordHistoryLimitPasswordPolicyState ||
+      !maximunMinutesOfInactivityInAppState ? (
         <CustomSpin />
       ) : (
         <div>
@@ -231,13 +248,18 @@ const ManagePasswordPolicyForm: React.FC = () => {
               requireSpecialCharactersLocalState
             }
             requireUpperCasePasswordFormData={requireUpperCaseLocalState}
+            maximunMinutesInactivityInAppFormData={
+              maximunMinutesOfInactivityInAppState
+            }
             updatePasswordPolicyLoading={updatePasswordPolicyLoading}
-            editPasswordPolicyAction={editPasswordPolicyAction}
             setMinLenghtPasswordLocalState={setMinLenghtPasswordLocalState}
             setPasswordExpiryDaysLocalState={setPasswordExpiryDaysLocalState}
             setInactivityDaysLocalState={setInactivityDaysLocalState}
             setPasswordHistoryLimitLocalState={
               setPasswordHistoryLimitLocalState
+            }
+            setMaximunMinutesInactivityInAppLocalState={
+              setMaximunMinutesOfInactivityInAppLocalState
             }
             setRequireUpperCaseLocalState={setRequireUpperCaseLocalState}
             setRequireLowerCaseLocalState={setRequireLowerCaseLocalState}

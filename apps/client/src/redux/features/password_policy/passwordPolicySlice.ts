@@ -10,6 +10,7 @@ const initialState: PasswordPolicy = {
   password_expiry_days: 0,
   inactivity_days: 0,
   password_history_limit: 0,
+  maximum_minutes_of_inactivity_in_application: 0,
   errors: [],
 };
 
@@ -44,6 +45,9 @@ export const passwordPolicySlice = createSlice({
     setPasswordHistoryLimitPasswordPolicy: (state, action) => {
       state.password_history_limit = action.payload;
     },
+    setMaximunMinutesOfInactivityInApp: (state, action) => {
+      state.maximum_minutes_of_inactivity_in_application = action.payload;
+    },
     setErrorsPasswordPolicy: (state, action) => {
       state.errors = action.payload;
     },
@@ -57,6 +61,7 @@ export const passwordPolicySlice = createSlice({
       state.password_expiry_days = 0;
       state.inactivity_days = 0;
       state.password_history_limit = 0;
+      state.maximum_minutes_of_inactivity_in_application = 0;
       state.errors = [];
     },
   },
@@ -70,6 +75,7 @@ export const {
   setPasswordExpiryDaysPasswordPolicy,
   setInactivityDaysPasswordPolicy,
   setPasswordHistoryLimitPasswordPolicy,
+  setMaximunMinutesOfInactivityInApp,
   setRequireSpecialCharactersPasswordPolicy,
   setRequireLowerCasePasswordPolicy,
   setErrorsPasswordPolicy,

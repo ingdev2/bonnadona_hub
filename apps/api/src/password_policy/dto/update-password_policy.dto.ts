@@ -42,4 +42,15 @@ export class UpdatePasswordPolicyDto {
   @Min(1, { message: 'El límite de historial debe ser al menos de 1' })
   @Max(10, { message: 'El límite de historial no puede superar los 10' })
   password_history_limit: number;
+
+  @IsOptional()
+  @Min(1, {
+    message:
+      'El límite de minutos de inactividad en aplicativo debe ser al menos de 1',
+  })
+  @Max(60, {
+    message:
+      'El límite de minutos de inactividad en aplicativo no puede superar los 60',
+  })
+  maximum_minutes_of_inactivity_in_application: number;
 }

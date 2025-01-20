@@ -8,5 +8,6 @@ interface PasswordPolicy {
   password_expiry_days: number;
   inactivity_days: number;
   password_history_limit: number;
+  maximum_minutes_of_inactivity_in_application: number;
   errors: [];
 }

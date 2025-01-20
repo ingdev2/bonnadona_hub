@@ -11,6 +11,7 @@ import { useGetPasswordPolicyQuery } from "@/redux/apis/password_policy/password
 
 import {
   setInactivityDaysPasswordPolicy,
+  setMaximunMinutesOfInactivityInApp,
   setMinLenghtPasswordPolicy,
   setPasswordExpiryDaysPasswordPolicy,
   setPasswordHistoryLimitPasswordPolicy,
@@ -84,6 +85,11 @@ const ManagePasswordPolicyContent: React.FC = () => {
       dispatch(
         setPasswordHistoryLimitPasswordPolicy(
           passwordPolicyData.password_history_limit
+        )
+      );
+      dispatch(
+        setMaximunMinutesOfInactivityInApp(
+          passwordPolicyData.maximum_minutes_of_inactivity_in_application
         )
       );
     }

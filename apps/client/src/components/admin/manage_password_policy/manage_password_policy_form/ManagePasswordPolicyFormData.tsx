@@ -7,11 +7,9 @@ import { Col, Form, Input, Row, Switch, Typography } from "antd";
 import { titleStyleCss } from "@/theme/text_styles";
 
 import { MdOutlineBlock } from "react-icons/md";
-import { FaRegCircleCheck } from "react-icons/fa6";
 import { RiPassExpiredLine } from "react-icons/ri";
 import { IoRecordingOutline } from "react-icons/io5";
 import { FaArrowsAltH } from "react-icons/fa";
-import { LoadingOutlined } from "@ant-design/icons";
 
 import CustomButton from "@/components/common/custom_button/CustomButton";
 
@@ -24,12 +22,13 @@ const ManagePasswordFormData: React.FC<{
   passwordExpiryDaysFormData: number;
   inactivityDaysFormData: number;
   passwordHistoryLimitFormData: number;
+  maximunMinutesInactivityInAppFormData: number;
   updatePasswordPolicyLoading: boolean;
-  editPasswordPolicyAction: boolean;
   setMinLenghtPasswordLocalState: (value: number) => void;
   setPasswordExpiryDaysLocalState: (value: number) => void;
   setInactivityDaysLocalState: (value: number) => void;
   setPasswordHistoryLimitLocalState: (value: number) => void;
+  setMaximunMinutesInactivityInAppLocalState: (value: number) => void;
   setRequireUpperCaseLocalState: (value: boolean) => void;
   setRequireLowerCaseLocalState: (value: boolean) => void;
   setRequireNumbersLocalState: (value: boolean) => void;
@@ -46,12 +45,13 @@ const ManagePasswordFormData: React.FC<{
   passwordExpiryDaysFormData,
   inactivityDaysFormData,
   passwordHistoryLimitFormData,
+  maximunMinutesInactivityInAppFormData,
   updatePasswordPolicyLoading,
-  editPasswordPolicyAction,
   setMinLenghtPasswordLocalState,
   setPasswordExpiryDaysLocalState,
   setInactivityDaysLocalState,
   setPasswordHistoryLimitLocalState,
+  setMaximunMinutesInactivityInAppLocalState,
   setRequireUpperCaseLocalState,
   setRequireLowerCaseLocalState,
   setRequireNumbersLocalState,
@@ -90,17 +90,19 @@ const ManagePasswordFormData: React.FC<{
           "password-expiry-days-input": passwordExpiryDaysFormData,
           "inactivity-days-input": inactivityDaysFormData,
           "password-history-limit-input": passwordHistoryLimitFormData,
+          "maximun-minutes-of-inactivity-in-app-input":
+            maximunMinutesInactivityInAppFormData,
           "require-uppercase-switch": requireUpperCasePasswordFormData,
           "require-lowercase-switch": requireLowerCasePasswordFormData,
           "require-numbers-switch": requireNumbersPasswordFormData,
           "require-special-characters-checkbox":
             requireSpecialCharactersFormData,
         }}
-        autoComplete="false"
+        autoComplete="off"
         onFinish={handleClickSubmit}
       >
         <Row gutter={24}>
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 Longitud mínima de la contraseña:
@@ -129,19 +131,25 @@ const ManagePasswordFormData: React.FC<{
                 <Input
                   id="min-length-input"
                   prefix={<FaArrowsAltH className="site-form-item-icon" />}
-                  style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    width: "27%",
+                  }}
                   value={String(minLenghtPasswordFormData)}
                   onChange={(e) =>
                     setMinLenghtPasswordLocalState(
                       Number(e.target.value.replace(/[^0-9]/g, ""))
                     )
                   }
+                  maxLength={2}
+                  autoComplete="off"
                 />
               </Form.Item>
             </div>
           </Col>
 
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 Días hasta la expiración de la contraseña:
@@ -170,13 +178,19 @@ const ManagePasswordFormData: React.FC<{
                 <Input
                   id="password-expiry-days-input"
                   prefix={<RiPassExpiredLine className="site-form-item-icon" />}
-                  style={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    width: "27%",
+                  }}
                   value={String(passwordExpiryDaysFormData)}
                   onChange={(e) =>
                     setPasswordExpiryDaysLocalState(
                       Number(e.target.value.replace(/[^0-9]/g, ""))
                     )
                   }
+                  maxLength={2}
+                  autoComplete="off"
                 />
               </Form.Item>
             </div>
@@ -184,7 +198,7 @@ const ManagePasswordFormData: React.FC<{
         </Row>
 
         <Row gutter={24}>
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 Días de inactividad para bloqueo:
@@ -213,19 +227,25 @@ const ManagePasswordFormData: React.FC<{
                 <Input
                   id="inactivity-days-input"
                   prefix={<MdOutlineBlock className="site-form-item-icon" />}
-                  style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                  value={passwordHistoryLimitFormData}
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    width: "27%",
+                  }}
+                  value={inactivityDaysFormData}
                   onChange={(e) =>
                     setInactivityDaysLocalState(
                       Number(e.target.value.replace(/[^0-9]/g, ""))
                     )
                   }
+                  maxLength={2}
+                  autoComplete="off"
                 />
               </Form.Item>
             </div>
           </Col>
 
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 Límite de historial de contraseñas:
@@ -256,13 +276,69 @@ const ManagePasswordFormData: React.FC<{
                   prefix={
                     <IoRecordingOutline className="site-form-item-icon" />
                   }
-                  style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-                  value={passwordExpiryDaysFormData}
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    width: "27%",
+                  }}
+                  value={passwordHistoryLimitFormData}
                   onChange={(e) =>
                     setPasswordHistoryLimitLocalState(
                       Number(e.target.value.replace(/[^0-9]/g, ""))
                     )
                   }
+                  maxLength={2}
+                  autoComplete="off"
+                />
+              </Form.Item>
+            </div>
+          </Col>
+
+          <Col span={24}>
+            <div style={{ textAlign: "start" }}>
+              <Typography.Title style={{ marginTop: 7 }} level={5}>
+                Minutos máximo de inactividad:
+              </Typography.Title>
+
+              <Form.Item
+                id="maximun-minutes-of-inactivity-in-app-input"
+                className="maximun-minutes-of-inactivity-in-app-input"
+                name="maximun-minutes-of-inactivity-in-app-input"
+                normalize={(value) => {
+                  if (!value) return "";
+
+                  return value.replace(/[^0-9]/g, "");
+                }}
+                rules={[
+                  {
+                    required: true,
+                    message:
+                      "¡Ingresa los minutos máximos de inactividad en app!",
+                  },
+                  {
+                    pattern: /^[0-9]+$/,
+                    message: "¡Ingresa número sin puntos, ni comas!",
+                  },
+                ]}
+              >
+                <Input
+                  id="maximun-minutes-of-inactivity-in-app-input"
+                  prefix={
+                    <IoRecordingOutline className="site-form-item-icon" />
+                  }
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    width: "13%",
+                  }}
+                  value={maximunMinutesInactivityInAppFormData}
+                  onChange={(e) =>
+                    setMaximunMinutesInactivityInAppLocalState(
+                      Number(e.target.value.replace(/[^0-9]/g, ""))
+                    )
+                  }
+                  maxLength={2}
+                  autoComplete="off"
                 />
               </Form.Item>
             </div>
@@ -270,7 +346,7 @@ const ManagePasswordFormData: React.FC<{
         </Row>
 
         <Row gutter={24}>
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 ¿Requiere mayúsculas?:
@@ -289,7 +365,7 @@ const ManagePasswordFormData: React.FC<{
             </div>
           </Col>
 
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 ¿Requiere minúsculas?:
@@ -310,7 +386,7 @@ const ManagePasswordFormData: React.FC<{
         </Row>
 
         <Row gutter={24}>
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 ¿Requiere números?:
@@ -329,7 +405,7 @@ const ManagePasswordFormData: React.FC<{
             </div>
           </Col>
 
-          <Col span={12} style={{ marginBottom: "13px" }}>
+          <Col span={12}>
             <div style={{ textAlign: "start" }}>
               <Typography.Title style={{ marginTop: 7 }} level={5}>
                 ¿Requiere caracteres especiales?:
@@ -350,11 +426,16 @@ const ManagePasswordFormData: React.FC<{
             </div>
           </Col>
         </Row>
+
         <Row
-          gutter={[16, 16]}
-          style={{ width: "100%", justifyContent: "center" }}
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            padding: "0px",
+            margin: "0px",
+          }}
         >
-          <Col>
+          <Col style={{ paddingTop: "7px", margin: "0px" }}>
             <Form.Item style={{ width: "100%" }}>
               <CustomButton
                 idCustomButton="update-password-policy"

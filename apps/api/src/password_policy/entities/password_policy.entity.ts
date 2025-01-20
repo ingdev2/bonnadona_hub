@@ -36,7 +36,7 @@ export class PasswordPolicy {
   @Column({ type: 'int', default: 3 })
   password_history_limit: number;
 
-  @Column({ type: 'int', default: 15 })
+  @Column({ type: 'int', default: 13 })
   maximum_minutes_of_inactivity_in_application: number;
 
   @CreateDateColumn()

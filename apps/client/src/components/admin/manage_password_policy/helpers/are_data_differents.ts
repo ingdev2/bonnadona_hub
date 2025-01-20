@@ -8,6 +8,7 @@ export const areDataDifferent = (
     dataPasswordExpiryDays: number;
     dataInactivityDays: number;
     dataPasswordHistoryLimit: number;
+    dataMaximunMinutesOfInactivity: number;
   },
   currentData: {
     dataMinLenght: number;
@@ -18,6 +19,7 @@ export const areDataDifferent = (
     dataPasswordExpiryDays: number;
     dataInactivityDays: number;
     dataPasswordHistoryLimit: number;
+    dataMaximunMinutesOfInactivity: number;
   }
 ): boolean => {
   return (
@@ -30,6 +32,8 @@ export const areDataDifferent = (
     initialData.dataPasswordExpiryDays !== currentData.dataPasswordExpiryDays ||
     initialData.dataInactivityDays !== currentData.dataInactivityDays ||
     initialData.dataPasswordHistoryLimit !==
-      currentData.dataPasswordHistoryLimit
+      currentData.dataPasswordHistoryLimit ||
+    initialData.dataMaximunMinutesOfInactivity !==
+      currentData.dataMaximunMinutesOfInactivity
   );
 };
