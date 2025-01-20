@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsDateString,
+  IsBoolean,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -46,6 +47,10 @@ export class CreateUserDto {
 
   @IsOptional()
   personal_cellphone: number;
+
+  @IsOptional()
+  @IsBoolean()
+  from_kactus?: boolean;
 
   @Transform(({ value }) => value.trim())
   @IsOptional()

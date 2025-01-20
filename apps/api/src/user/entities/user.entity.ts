@@ -129,6 +129,9 @@ export class User {
   @Column({ type: 'boolean', default: true })
   is_active: boolean;
 
+  @Column({ type: 'boolean', default: true })
+  from_kactus: boolean;
+
   @Column({ type: 'timestamp', nullable: true })
   banned_user_until: Date;
 

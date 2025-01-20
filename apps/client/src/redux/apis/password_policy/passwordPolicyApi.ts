@@ -29,7 +29,7 @@ export const passwordPolicyApi = createApi({
       { updatePasswordPolicy: Partial<PasswordPolicy> }
     >({
       query: ({ updatePasswordPolicy }) => ({
-        url: `update/`,
+        url: `update`,
         method: "PATCH",
         body: updatePasswordPolicy,
       }),

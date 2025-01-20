@@ -56,7 +56,7 @@ export class UsersController {
   @Auth(RolesEnum.SUPER_ADMIN, RolesEnum.ADMIN)
   @Post('/getAllCollaboratorFromKactus')
   async getAllCollaboratorFromKactus() {
-    return await this.usersService.getAllCollaboratorFromKactus();
+    return await this.usersService.getAllActiveCollaboratorsFromKactus();
   }
 
   @Post('/updateUserDataFromKactus/:userId')
@@ -317,6 +317,11 @@ export class UsersController {
   @Patch('/ban/:id')
   async banUser(@Param('id') id: string, @Req() requestAuditLog: any) {
     return await this.usersService.banUser(id, requestAuditLog);
+  }
+
+  @Patch('/banAllUsersForWithdrawalFromKactus')
+  async banAllUsersForWithdrawalFromKactus() {
+    return await this.usersService.banAllUsersForWithdrawalFromKactus();
   }
 
   @Patch('/banAllUsersForInactivity')

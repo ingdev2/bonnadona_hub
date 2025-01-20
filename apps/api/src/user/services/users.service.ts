@@ -119,6 +119,14 @@ export class UsersService {
   // }
 
   // @Cron('0 21 * * *', {
+  //   name: 'BAN ALL USERS FOR WITHDRAWAL',
+  //   timeZone: 'America/Bogota',
+  // })
+  // async handleCron() {
+  //   await this.banAllUsersForWithdrawalFromKactus();
+  // }
+
+  // @Cron('0 22 * * *', {
   //   name: 'BAN ALL USERS FOR INACTIVITY',
   //   timeZone: 'America/Bogota',
   // })
@@ -128,7 +136,7 @@ export class UsersService {
 
   // CREATE FUNTIONS //
 
-  async getAllCollaboratorFromKactus() {
+  async getAllActiveCollaboratorsFromKactus() {
     try {
       const AUTH_VALUE = process.env.X_AUTH_VALUE;
 
@@ -669,6 +677,8 @@ export class UsersService {
       );
     }
 
+    userCollaborator.from_kactus = false;
+
     const userCollaboratorCreate =
       await this.userRepository.create(userCollaborator);
 
@@ -1032,6 +1042,7 @@ export class UsersService {
         updatedUsers,
       };
     } catch (error) {
+      console.error('Error al actualizar datos de usuarios:', error);
       throw new HttpException(
         'Hubo un error al actualizar los datos de los usuarios.',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -2138,62 +2149,121 @@ export class UsersService {
     throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
   }
 
-  async banAllUsersForInactivity() {
-    const users = await this.userRepository.find({
-      where: { is_active: true },
-    });
+  async banAllUsersForWithdrawalFromKactus() {
+    try {
+      const allUsersCreatedFromKactus = await this.userRepository.find({
+        where: { is_active: true, from_kactus: true },
+      });
 
-    const passwordPolicy = await this.passwordPolicyService.getPasswordPolicy();
+      const allActiveUsersFromKactus =
+        await this.getAllActiveCollaboratorsFromKactus();
 
-    if (!passwordPolicy) {
+      const activeKactusIds = new Set(
+        allActiveUsersFromKactus.map((user: any) => user.empDoc),
+      );
+
+      const usersToDeactivate = allUsersCreatedFromKactus.filter(
+        (user) => !activeKactusIds.has(user.id_number),
+      );
+
+      if (usersToDeactivate.length > 0) {
+        const userIdsToDeactivate = usersToDeactivate.map(
+          (user) => user.id_number,
+        );
+
+        await this.userRepository.update(
+          { id_number: In(userIdsToDeactivate) },
+          { is_active: false },
+        );
+
+        return {
+          message: `Se inactivaron ${usersToDeactivate.length} usuario(s) que no están activos en Kactus.`,
+          deactivatedUsers: usersToDeactivate.map((user) => ({
+            nombre: user.name,
+            número_identificación: user.id_number,
+            cargo: user.collaborator_position,
+          })),
+        };
+      } else {
+        return {
+          message: 'No se encontraron usuarios para inactivar.',
+          deactivatedUsers: [],
+        };
+      }
+    } catch (error) {
+      console.error('Error al inactivar usuarios:', error);
       throw new HttpException(
-        `No hay política de contraseña definida`,
-        HttpStatus.CONFLICT,
+        'Hubo un error al intentar inactivar usuarios.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
 
-    const currentDate = new Date();
-    const inactivityThreshold = new Date(currentDate);
-    inactivityThreshold.setDate(
-      currentDate.getDate() - passwordPolicy.inactivity_days,
-    );
+  async banAllUsersForInactivity() {
+    try {
+      const users = await this.userRepository.find({
+        where: { is_active: true },
+      });
 
-    const inactiveUsers = [];
+      const passwordPolicy =
+        await this.passwordPolicyService.getPasswordPolicy();
 
-    for (const user of users) {
-      if (
-        user.user_session_log &&
-        user.user_session_log.last_login !== null &&
-        user.user_session_log.successful_login_counter >= 1
-      ) {
-        const sessionLog = await this.userSessionLogRepository.findOne({
-          where: { id: user.user_session_log.id },
-        });
+      if (!passwordPolicy) {
+        throw new HttpException(
+          `No hay política de contraseña definida`,
+          HttpStatus.CONFLICT,
+        );
+      }
 
-        if (!sessionLog) {
-          throw new HttpException(
-            `Session de usuario no encontrada para el ID: ${user.id_number}.`,
-            HttpStatus.NOT_FOUND,
-          );
-        }
+      const currentDate = new Date();
+      const inactivityThreshold = new Date(currentDate);
+      inactivityThreshold.setDate(
+        currentDate.getDate() - passwordPolicy.inactivity_days,
+      );
 
-        if (sessionLog.last_login < inactivityThreshold) {
-          user.is_active = false;
-          inactiveUsers.push(user);
+      const inactiveUsers = [];
+
+      for (const user of users) {
+        if (
+          user.user_session_log &&
+          user.user_session_log.last_login !== null &&
+          user.user_session_log.successful_login_counter >= 1
+        ) {
+          const sessionLog = await this.userSessionLogRepository.findOne({
+            where: { id: user.user_session_log.id },
+          });
+
+          if (!sessionLog) {
+            throw new HttpException(
+              `Session de usuario no encontrada para el ID: ${user.id_number}.`,
+              HttpStatus.NOT_FOUND,
+            );
+          }
+
+          if (sessionLog.last_login < inactivityThreshold) {
+            user.is_active = false;
+            inactiveUsers.push(user);
+          }
         }
       }
-    }
 
-    if (inactiveUsers.length > 0) {
-      await this.userRepository.save(inactiveUsers);
+      if (inactiveUsers.length > 0) {
+        await this.userRepository.save(inactiveUsers);
 
-      const statusMessage = `Se han inactivado ${inactiveUsers.length} usuarios por inactividad.`;
+        const statusMessage = `Se han inactivado ${inactiveUsers.length} usuarios por inactividad.`;
 
-      throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
-    } else {
+        throw new HttpException(statusMessage, HttpStatus.ACCEPTED);
+      } else {
+        throw new HttpException(
+          'No se encontraron usuarios para inactivar.',
+          HttpStatus.OK,
+        );
+      }
+    } catch (error) {
+      console.error('Error al inactivar usuarios:', error);
       throw new HttpException(
-        'No se encontraron usuarios para inactivar.',
-        HttpStatus.OK,
+        'Hubo un error al intentar inactivar usuarios.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

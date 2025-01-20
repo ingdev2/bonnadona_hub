@@ -137,7 +137,7 @@ export class AuthService {
   async createAllNewUsersFromKactus() {
     try {
       const collaborators =
-        await this.userService.getAllCollaboratorFromKactus();
+        await this.userService.getAllActiveCollaboratorsFromKactus();
 
       const createdUsers = [];
 
