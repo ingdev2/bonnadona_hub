@@ -128,18 +128,16 @@ const EditPermissionForm: React.FC = () => {
 
   useEffect(() => {
     if (
-      permissionData &&
-      !idPermissionState &&
-      !permissionLoading &&
-      !permissionFetching
-    ) {
-      dispatch(setIdPermission(permissionData.id));
-    }
-    if (
-      (!idPermissionState && titleNamePermissionState) ||
+      (permissionData &&
+        !idPermissionState &&
+        !permissionLoading &&
+        !permissionFetching &&
+        titleNamePermissionState) ||
       descriptionPermissionState ||
       (appsPermissionState && modulesPermissionState && actionsPermissionState)
     ) {
+      dispatch(setIdPermission(permissionData?.id));
+
       setTitleNamePermissionLocalState(titleNamePermissionState);
       setDescriptionPermissionLocalState(descriptionPermissionState);
 
@@ -149,6 +147,8 @@ const EditPermissionForm: React.FC = () => {
     }
   }, [
     permissionData,
+    permissionLoading,
+    permissionFetching,
     idPermissionState,
     titleNamePermissionState,
     descriptionPermissionState,

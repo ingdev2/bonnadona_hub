@@ -142,19 +142,24 @@ const EditUserForm: React.FC = () => {
   const permissionIds = userPermissions?.map((permission) => permission.id);
 
   useEffect(() => {
-    if (userData && !idUserState && !userLoading && !userFetching) {
-      dispatch(setIdSelectedUser(userData.id));
-    }
     if (
-      (!idUserState && roleSelectedUserState) ||
+      (userData &&
+        !idUserState &&
+        !userLoading &&
+        !userFetching &&
+        roleSelectedUserState) ||
       permissionSelectedUserState
     ) {
+      dispatch(setIdSelectedUser(userData?.id));
+
       dispatch(setRoleIdsToAddSelectedUser(rolesIds));
       dispatch(setPermissionIdsToAddSelectedUser(permissionIds));
     }
   }, [
     userData,
     idUserState,
+    userLoading,
+    userFetching,
     roleSelectedUserState,
     permissionSelectedUserState,
   ]);
