@@ -280,8 +280,6 @@ const AllUsersContent: React.FC = () => {
     : [];
 
   const handleClickSeeMore = async (record: User) => {
-    refecthAllUsersWithProfile();
-
     dispatch(setTableRowId(""));
     setSelectedRowDataLocalState(record);
 
@@ -608,7 +606,12 @@ const AllUsersContent: React.FC = () => {
                 genderTypesData: allGenderTypesData,
               })}
               onClickUpdateCustomTable={handleButtonUpdate}
-              isLoading={!transformedData || !allUsersWithProfileData}
+              isLoading={
+                !transformedData ||
+                !allUsersWithProfileData ||
+                allUsersWithProfileLoading ||
+                allUsersWithProfileFetching
+              }
             />
           </div>
         }

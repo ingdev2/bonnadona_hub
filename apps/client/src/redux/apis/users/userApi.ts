@@ -24,9 +24,9 @@ export const userApi = createApi({
 
   refetchOnMountOrArgChange: true,
 
-  refetchOnFocus: true,
+  // refetchOnFocus: true,
 
-  refetchOnReconnect: true,
+  // refetchOnReconnect: true,
 
   endpoints: (builder) => ({
     getAllActiveUsers: builder.query<User[], null>({

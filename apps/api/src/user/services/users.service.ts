@@ -1096,74 +1096,73 @@ export class UsersService {
   }
 
   async getAllUsersWithProfile() {
-    const allUsersWithProfile = await this.userRepository.find({
-      order: {
-        name: 'ASC',
-      },
-    });
+    const allUsersWithProfile = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.permission', 'permission')
+      .leftJoinAndSelect('user.role', 'role')
+      .leftJoinAndSelect('user.user_profile', 'user_profile')
+      .orderBy('user.name', 'ASC')
+      .getMany();
 
     if (!allUsersWithProfile.length) {
       throw new HttpException(
-        `No hay usuarios registrados en la base de datos`,
+        'No hay usuarios registrados en la base de datos',
         HttpStatus.NOT_FOUND,
       );
-    } else {
-      const result = [];
-
-      allUsersWithProfile.map((item) => {
-        const userPermissionsId = item.permission?.map(
-          (permission, index: number) => permission.id,
-        );
-
-        const userRoleId = item.role?.map((role, index: number) => role.id);
-
-        result.push({
-          id: item.id,
-          name: item.name,
-          last_name: item.last_name,
-          user_id_type: item.user_id_type,
-          id_number: item.id_number,
-          user_gender: item.user_gender,
-          birthdate: item.birthdate,
-          principal_email: item.principal_email,
-          corporate_email: item.corporate_email,
-          personal_email: item.personal_email,
-          personal_cellphone: item.personal_cellphone,
-          corporate_cellphone: item.corporate_cellphone,
-          collaborator_service_type: item.collaborator_service_type,
-          collaborator_immediate_boss: item.collaborator_immediate_boss,
-          collaborator_unit: item.collaborator_unit,
-          collaborator_service: item.collaborator_service,
-          collaborator_position: item.collaborator_position,
-          collaborator_position_level: item.collaborator_position_level,
-          password: item.password,
-          reset_password_token: item.reset_password_token,
-          last_password_update: item.last_password_update,
-          verification_code: item.verification_code,
-          is_active: item.is_active,
-          banned_user_until: item.banned_user_until,
-          user_profile: item.user_profile,
-          user_session_log: item.user_session_log,
-          user_blood_group: item.user_profile?.user_blood_group,
-          profile_photo: item.user_profile?.profile_photo,
-          affiliation_eps: item.user_profile?.affiliation_eps,
-          residence_department: item.user_profile?.residence_department,
-          residence_city: item.user_profile?.residence_city,
-          residence_address: item.user_profile?.residence_address,
-          residence_neighborhood: item.user_profile?.residence_neighborhood,
-          digital_signature: item.user_profile?.digital_signature,
-          user_height: item.user_profile?.user_height,
-          user_weight: item.user_profile?.user_weight,
-          user_shirt_size: item.user_profile?.user_shirt_size,
-          user_pants_size: item.user_profile?.user_pants_size,
-          user_shoe_size: item.user_profile?.user_shoe_size,
-          role: userRoleId,
-          permission: userPermissionsId,
-        });
-      });
-
-      return result;
     }
+
+    const result = allUsersWithProfile.map((item) => {
+      const userPermissionsId = item.permission.map(
+        (permission) => permission.id,
+      );
+      const userRoleId = item.role.map((role) => role.id);
+
+      return {
+        id: item.id,
+        name: item.name,
+        last_name: item.last_name,
+        user_id_type: item.user_id_type,
+        id_number: item.id_number,
+        user_gender: item.user_gender,
+        birthdate: item.birthdate,
+        principal_email: item.principal_email,
+        corporate_email: item.corporate_email,
+        personal_email: item.personal_email,
+        personal_cellphone: item.personal_cellphone,
+        corporate_cellphone: item.corporate_cellphone,
+        collaborator_service_type: item.collaborator_service_type,
+        collaborator_immediate_boss: item.collaborator_immediate_boss,
+        collaborator_unit: item.collaborator_unit,
+        collaborator_service: item.collaborator_service,
+        collaborator_position: item.collaborator_position,
+        collaborator_position_level: item.collaborator_position_level,
+        password: item.password,
+        reset_password_token: item.reset_password_token,
+        last_password_update: item.last_password_update,
+        verification_code: item.verification_code,
+        is_active: item.is_active,
+        banned_user_until: item.banned_user_until,
+        user_profile: item.user_profile,
+        user_session_log: item.user_session_log,
+        user_blood_group: item.user_profile?.user_blood_group,
+        profile_photo: item.user_profile?.profile_photo,
+        affiliation_eps: item.user_profile?.affiliation_eps,
+        residence_department: item.user_profile?.residence_department,
+        residence_city: item.user_profile?.residence_city,
+        residence_address: item.user_profile?.residence_address,
+        residence_neighborhood: item.user_profile?.residence_neighborhood,
+        digital_signature: item.user_profile?.digital_signature,
+        user_height: item.user_profile?.user_height,
+        user_weight: item.user_profile?.user_weight,
+        user_shirt_size: item.user_profile?.user_shirt_size,
+        user_pants_size: item.user_profile?.user_pants_size,
+        user_shoe_size: item.user_profile?.user_shoe_size,
+        role: userRoleId,
+        permission: userPermissionsId,
+      };
+    });
+
+    return result;
   }
 
   async getUserById(id: string) {

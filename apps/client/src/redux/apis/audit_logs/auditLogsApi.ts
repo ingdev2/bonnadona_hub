@@ -22,9 +22,9 @@ export const auditLogsApi = createApi({
 
   refetchOnMountOrArgChange: true,
 
-  refetchOnFocus: true,
+  // refetchOnFocus: true,
 
-  refetchOnReconnect: true,
+  // refetchOnReconnect: true,
 
   endpoints: (builder) => ({
     getAllAuditLogs: builder.query<AuditLogs[], null>({
