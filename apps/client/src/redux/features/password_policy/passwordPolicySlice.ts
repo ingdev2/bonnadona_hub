@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState: PasswordPolicy = {
+const initialState: IPasswordPolicy = {
   id: 0,
   min_length: 0,
   require_uppercase: false,

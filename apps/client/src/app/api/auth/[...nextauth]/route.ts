@@ -1,15 +1,15 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+let updatedMaxAge: number | null = null;
+
 async function getPasswordPolicy() {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/password-policy/getPasswordPolicy`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }
     );
 
@@ -17,27 +17,19 @@ async function getPasswordPolicy() {
       throw new Error("No se pudo obtener la política de contraseñas");
     }
 
-    return await response.json();
+    const passwordPolicyData = await response.json();
+
+    const maximunMinutesOfInactivityInApplication =
+      passwordPolicyData?.maximum_minutes_of_inactivity_in_application;
+
+    return maximunMinutesOfInactivityInApplication * 60;
   } catch (error) {
     console.error("Error al obtener la política de contraseñas:", error);
     return null;
   }
 }
 
-async function initializeMaxSessionAge() {
-  let maxSessionAge = 780;
-
-  const passwordPolicy = await getPasswordPolicy();
-
-  if (passwordPolicy?.maximum_minutes_of_inactivity_in_application) {
-    maxSessionAge =
-      passwordPolicy.maximum_minutes_of_inactivity_in_application * 60;
-  }
-
-  return maxSessionAge;
-}
-
-const maxSessionAge = await initializeMaxSessionAge();
+updatedMaxAge = (await getPasswordPolicy()) || 780;
 
 async function refreshAccessToken(token: any) {
   try {
@@ -200,16 +192,16 @@ const handler = NextAuth({
       } else {
         session.user;
       }
+
       return session;
     },
   },
   pages: {
     signIn: "/login",
   },
-
   session: {
     strategy: "jwt",
-    maxAge: maxSessionAge,
+    maxAge: updatedMaxAge,
   },
 });
 

@@ -136,7 +136,7 @@ const EditPermissionForm: React.FC = () => {
       dispatch(setIdPermission(permissionData.id));
     }
     if (
-      titleNamePermissionState ||
+      (!idPermissionState && titleNamePermissionState) ||
       descriptionPermissionState ||
       (appsPermissionState && modulesPermissionState && actionsPermissionState)
     ) {

@@ -1,4 +1,4 @@
-interface PasswordPolicy {
+interface IPasswordPolicy {
   id: number;
   min_length: number;
   require_uppercase: boolean;

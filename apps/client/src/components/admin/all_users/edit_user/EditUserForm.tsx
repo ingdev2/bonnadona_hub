@@ -139,7 +139,10 @@ const EditUserForm: React.FC = () => {
     if (userData && !idUserState && !userLoading && !userFetching) {
       dispatch(setIdSelectedUser(userData.id));
     }
-    if (roleSelectedUserState || permissionSelectedUserState) {
+    if (
+      (!idUserState && roleSelectedUserState) ||
+      permissionSelectedUserState
+    ) {
       dispatch(setRoleIdsToAddSelectedUser(rolesIds));
       dispatch(setPermissionIdsToAddSelectedUser(permissionIds));
     }

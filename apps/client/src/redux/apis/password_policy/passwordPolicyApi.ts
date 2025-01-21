@@ -20,13 +20,13 @@ export const passwordPolicyApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    getPasswordPolicy: builder.query<PasswordPolicy, null>({
+    getPasswordPolicy: builder.query<IPasswordPolicy, null>({
       query: () => "getPasswordPolicy",
     }),
 
     updatePasswordPolicy: builder.mutation<
       any,
-      { updatePasswordPolicy: Partial<PasswordPolicy> }
+      { updatePasswordPolicy: Partial<IPasswordPolicy> }
     >({
       query: ({ updatePasswordPolicy }) => ({
         url: `update`,

@@ -8,6 +8,7 @@ const initialState: AuditLogs = {
   user_role: "",
   action_type: "",
   query_type: "",
+  app_accessed: "",
   module_name: "",
   module_record_id: "",
   ip_address: "",
@@ -44,6 +45,9 @@ export const auditLogSlice = createSlice({
     setQueryTypeAuditLog: (state, action) => {
       state.query_type = action.payload;
     },
+    setAppAccessedAuditLog: (state, action) => {
+      state.app_accessed = action.payload;
+    },
     setModuleNameAuditLog: (state, action) => {
       state.module_name = action.payload;
     },
@@ -79,6 +83,7 @@ export const auditLogSlice = createSlice({
       state.user_role = "";
       state.action_type = "";
       state.query_type = "";
+      state.app_accessed = "";
       state.module_name = "";
       state.module_record_id = "";
       state.ip_address = "";
@@ -99,6 +104,7 @@ export const {
   setUserRoleAuditLog,
   setActionTypeAuditLog,
   setQueryTypeAuditLog,
+  setAppAccessedAuditLog,
   setModuleNameAuditLog,
   setModuleRecordIdAuditLog,
   setIpAddressAuditLog,
