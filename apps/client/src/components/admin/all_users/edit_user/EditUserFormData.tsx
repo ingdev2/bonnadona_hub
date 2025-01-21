@@ -215,6 +215,15 @@ const EditUserFormData: React.FC<{
             name="edit-user-principal-email"
             label="Correo principal:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toLowerCase()
+                .replace(/[^a-záéíóúñ0-9@._%+-]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               { required: true, message: "¡Por favor ingrese el correo!" },
               {
@@ -242,6 +251,15 @@ const EditUserFormData: React.FC<{
             name="edit-user-corporate-email"
             label="Correo corporativo:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toLowerCase()
+                .replace(/[^a-záéíóúñ0-9@._%+-]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               {
                 pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -270,6 +288,15 @@ const EditUserFormData: React.FC<{
             name="edit-user-personal-email"
             label="Correo personal:"
             style={{ marginBottom: "13px" }}
+            normalize={(value) => {
+              if (!value) return "";
+
+              const filteredValue = value
+                .toLowerCase()
+                .replace(/[^a-záéíóúñ0-9@._%+-]/g, "");
+
+              return filteredValue;
+            }}
             rules={[
               { required: true, message: "¡Por favor ingrese el correo!" },
               {

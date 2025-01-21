@@ -51,6 +51,15 @@ const EditUserForm: React.FC = () => {
   const personalCellphoneUserState = useAppSelector(
     (state) => state.selectedUser.personal_cellphone
   );
+  const positionUserState = useAppSelector(
+    (state) => state.selectedUser.collaborator_position
+  );
+  const unitUserState = useAppSelector(
+    (state) => state.selectedUser.collaborator_unit
+  );
+  const serviceTypeUserState = useAppSelector(
+    (state) => state.selectedUser.collaborator_service_type
+  );
 
   const roleSelectedUserState = useAppSelector(
     (state) => state.selectedUser.role
@@ -66,9 +75,6 @@ const EditUserForm: React.FC = () => {
     (state) => state.selectedUser.selectedPermissionIdsToAdd
   );
 
-  const positionUserState = useAppSelector(
-    (state) => state.selectedUser.collaborator_position
-  );
   const hasChangesState = useAppSelector(
     (state) => state.selectedUser.hasChanges
   );
