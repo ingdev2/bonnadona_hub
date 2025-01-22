@@ -41,8 +41,9 @@ const CustomDashboardLayoutCollaborators: React.FC<{
           style={{
             position: "sticky",
             display: "flex",
-            flexFlow: "column wrap",
+            alignItems: "center",
             alignContent: "center",
+            justifyContent: "center",
             backgroundColor: "#013B5A",
             top: "0px",
             padding: "0px",

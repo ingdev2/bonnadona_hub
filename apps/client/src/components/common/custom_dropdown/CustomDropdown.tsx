@@ -4,7 +4,6 @@ import React, { ReactNode } from "react";
 
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
-import { DownOutlined } from "@ant-design/icons";
 import { CiCircleChevDown } from "react-icons/ci";
 
 const CustomDropdown: React.FC<{
@@ -66,7 +65,7 @@ const CustomDropdown: React.FC<{
 
           {iconCustomDropdown}
 
-          <CiCircleChevDown style={{ color: "#f7f7f7" }} />
+          <CiCircleChevDown size={17} style={{ color: "#3F97AF" }} />
         </Space>
       </a>
     </Dropdown>

@@ -424,182 +424,190 @@ const EditUserFormData: React.FC<{
         </Col>
       </Row>
 
-      <Row
-        gutter={24}
-        justify={"center"}
-        align={"top"}
-        style={{ paddingBottom: "13px" }}
-      >
-        <Col
-          span={24}
-          style={{
-            display: "flex",
-            flexFlow: "row",
-            gap: "13px",
-            justifyContent: "center",
-            alignContent: "center",
-          }}
+      {!roleUserFormData || !selectedPermissionIdsToAddUserState ? (
+        <CustomSpin />
+      ) : (
+        <Row
+          gutter={24}
+          justify={"center"}
+          align={"top"}
+          style={{ paddingBottom: "13px" }}
         >
           <Col
-            span={6}
+            span={24}
             style={{
-              height: "450px",
-              padding: "8px",
-              border: "1px solid #013B5A",
-              borderRadius: "8px",
-              overflowY: "auto",
+              display: "flex",
+              flexFlow: "row",
+              gap: "13px",
+              justifyContent: "center",
+              alignContent: "center",
             }}
           >
-            <h3 style={{ marginTop: "2px", marginBottom: "13px" }}>Roles</h3>
-
-            {loadingAllRolesFormData || fetchingAllRolesFormData ? (
-              <CustomSpin />
-            ) : (
-              <Checkbox.Group
-                value={roleUserFormData}
-                onChange={onChangeRoleUserFormData}
-                style={{ display: "flex", flexDirection: "column" }}
-              >
-                {allRolesFormData?.map((role: IRole) => (
-                  <Checkbox
-                    key={role.id}
-                    value={role.id}
-                    style={{ marginBottom: "8px", paddingBlock: "2px" }}
-                  >
-                    <Tooltip title={role.name}>{role.name}</Tooltip>
-                  </Checkbox>
-                ))}
-              </Checkbox.Group>
-            )}
-          </Col>
-
-          <Col
-            span={18}
-            style={{
-              height: "450px",
-              paddingInline: "13px",
-              border: "1px solid #013B5A",
-              borderRadius: "8px",
-              overflow: "auto",
-            }}
-          >
-            <div
+            <Col
+              span={6}
               style={{
-                top: 0,
-                position: "sticky",
-                paddingBottom: "13px",
-                margin: "0px",
-                backgroundColor: "#FFFFFF",
-                zIndex: 1,
+                height: "450px",
+                padding: "8px",
+                border: "1px solid #013B5A",
+                borderRadius: "8px",
+                overflowY: "auto",
               }}
             >
-              <h3 style={{ paddingBlock: "7px" }}>Permisos</h3>
+              <h3 style={{ marginTop: "2px", marginBottom: "13px" }}>Roles</h3>
 
-              <Row
-                gutter={24}
-                justify={"center"}
-                align={"middle"}
+              {loadingAllRolesFormData || fetchingAllRolesFormData ? (
+                <CustomSpin />
+              ) : (
+                <Checkbox.Group
+                  value={roleUserFormData}
+                  onChange={onChangeRoleUserFormData}
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
+                  {allRolesFormData?.map((role: IRole) => (
+                    <Checkbox
+                      key={role.id}
+                      value={role.id}
+                      style={{ marginBottom: "8px", paddingBlock: "2px" }}
+                    >
+                      <Tooltip title={role.name}>{role.name}</Tooltip>
+                    </Checkbox>
+                  ))}
+                </Checkbox.Group>
+              )}
+            </Col>
+
+            <Col
+              span={18}
+              style={{
+                height: "450px",
+                paddingInline: "13px",
+                border: "1px solid #013B5A",
+                borderRadius: "8px",
+                overflow: "auto",
+              }}
+            >
+              <div
                 style={{
-                  paddingInline: "13px",
+                  top: 0,
+                  position: "sticky",
+                  paddingBottom: "13px",
+                  margin: "0px",
+                  backgroundColor: "#FFFFFF",
+                  zIndex: 1,
                 }}
               >
-                <Input
-                  placeholder="Buscar permiso"
-                  value={filterText}
-                  onChange={(e) => {
-                    const inputValue = e.target.value || "";
+                <h3 style={{ paddingBlock: "7px" }}>Permisos</h3>
 
-                    const transformedValue = inputValue
-                      .toUpperCase()
-                      .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
-
-                    setFilterText(transformedValue);
+                <Row
+                  gutter={24}
+                  justify={"center"}
+                  align={"middle"}
+                  style={{
+                    paddingInline: "13px",
                   }}
-                  allowClear
-                  style={{ marginBottom: "8px" }}
-                />
+                >
+                  <Input
+                    placeholder="Buscar permiso"
+                    value={filterText}
+                    onChange={(e) => {
+                      const inputValue = e.target.value || "";
 
-                {autocompleteResults.length > 0 && (
-                  <div
-                    style={{
-                      width: "100%",
-                      maxHeight: "113px",
-                      backgroundColor: "#F7F7F7",
-                      border: "0.7px solid #A7AFBA",
-                      borderRadius: "7px",
-                      overflowY: "auto",
-                      zIndex: 2,
-                      marginBottom: "13px",
+                      const transformedValue = inputValue
+                        .toUpperCase()
+                        .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
+
+                      setFilterText(transformedValue);
                     }}
-                  >
-                    {autocompleteResults.map((permission) => (
-                      <div
-                        key={permission.id}
-                        style={{
-                          padding: "8px",
-                          cursor: "pointer",
-                          borderBottom: "0.7px solid #eee",
-                        }}
-                        onClick={() => handleAutocompleteSelect(permission)}
-                      >
-                        {permission.name}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                    allowClear
+                    style={{ marginBottom: "8px" }}
+                  />
 
-                {/* <Checkbox
+                  {autocompleteResults.length > 0 && (
+                    <div
+                      style={{
+                        width: "100%",
+                        maxHeight: "113px",
+                        backgroundColor: "#F7F7F7",
+                        border: "0.7px solid #A7AFBA",
+                        borderRadius: "7px",
+                        overflowY: "auto",
+                        zIndex: 2,
+                        marginBottom: "13px",
+                      }}
+                    >
+                      {autocompleteResults.map((permission) => (
+                        <div
+                          key={permission.id}
+                          style={{
+                            padding: "8px",
+                            cursor: "pointer",
+                            borderBottom: "0.7px solid #eee",
+                          }}
+                          onClick={() => handleAutocompleteSelect(permission)}
+                        >
+                          {permission.name}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* <Checkbox
                   checked={selectAll}
                   onChange={(e) => handleSelectAll(e.target.checked)}
                   style={{ marginBottom: "8px" }}
                 >
                   SELECCIONAR TODOS
                 </Checkbox> */}
-              </Row>
+                </Row>
 
-              {addSelectedPermissionsAsTags()}
-            </div>
+                {addSelectedPermissionsAsTags()}
+              </div>
 
-            {loadingAllPermissionFormData || fetchingAllPermissionFormData ? (
-              <CustomSpin />
-            ) : (
-              <>
-                <Checkbox.Group
-                  value={selectedPermissionIdsToAddUserState}
-                  onChange={onChangePermissionUserFormData}
-                  style={{ display: "flex", flexDirection: "column" }}
-                >
-                  <Row gutter={16}>
-                    {allPermissionsFormData?.map((permission: IPermission) => (
-                      <Col
-                        key={permission.id}
-                        span={12}
-                        style={{ marginBottom: "8px" }}
-                      >
-                        <Checkbox
-                          key={permission.id}
-                          value={permission.id}
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            paddingBlock: "2px",
-                          }}
-                        >
-                          <span style={{ textAlign: "left", width: "100%" }}>
-                            <Tooltip title={permission.name}>
-                              {permission.name}
-                            </Tooltip>
-                          </span>
-                        </Checkbox>
-                      </Col>
-                    ))}
-                  </Row>
-                </Checkbox.Group>
-              </>
-            )}
+              {loadingAllPermissionFormData || fetchingAllPermissionFormData ? (
+                <CustomSpin />
+              ) : (
+                <>
+                  <Checkbox.Group
+                    value={selectedPermissionIdsToAddUserState}
+                    onChange={onChangePermissionUserFormData}
+                    style={{ display: "flex", flexDirection: "column" }}
+                  >
+                    <Row gutter={16}>
+                      {allPermissionsFormData?.map(
+                        (permission: IPermission) => (
+                          <Col
+                            key={permission.id}
+                            span={12}
+                            style={{ marginBottom: "8px" }}
+                          >
+                            <Checkbox
+                              key={permission.id}
+                              value={permission.id}
+                              style={{
+                                display: "flex",
+                                alignItems: "flex-start",
+                                paddingBlock: "2px",
+                              }}
+                            >
+                              <span
+                                style={{ textAlign: "left", width: "100%" }}
+                              >
+                                <Tooltip title={permission.name}>
+                                  {permission.name}
+                                </Tooltip>
+                              </span>
+                            </Checkbox>
+                          </Col>
+                        )
+                      )}
+                    </Row>
+                  </Checkbox.Group>
+                </>
+              )}
+            </Col>
           </Col>
-        </Col>
-      </Row>
+        </Row>
+      )}
 
       <Form.Item
         style={{

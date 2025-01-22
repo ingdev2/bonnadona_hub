@@ -131,10 +131,12 @@ const CustomDashboardLayoutAdmins: React.FC<{
         <Header
           className="custom--dashboard-layout-header"
           style={{
+            position: "sticky",
             display: "flex",
-            flexFlow: "row wrap",
-            background: "#013B5A",
             alignItems: "center",
+            alignContent: "center",
+            justifyContent: "center",
+            background: "#013B5A",
             padding: "0px",
             margin: "0px",
           }}

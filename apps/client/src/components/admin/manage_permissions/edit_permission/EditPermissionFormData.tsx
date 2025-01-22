@@ -473,305 +473,35 @@ const EditPermissionFormData: React.FC<{
           Modificar acceso
         </h2>
 
-        <Col
-          span={24}
-          style={{
-            display: "flex",
-            flexFlow: "row",
-            gap: "13px",
-            justifyContent: "center",
-            alignContent: "center",
-          }}
-        >
+        {!allAppsFormData &&
+        !allAppModulesFormData &&
+        !allModuleActionsFormData ? (
+          <CustomSpin />
+        ) : (
           <Col
-            span={8}
+            span={24}
             style={{
-              overflowY: "auto",
-              maxHeight: "450px",
-              padding: "7px",
-              border: "1px solid #013B5A",
-              borderRadius: "8px",
+              display: "flex",
+              flexFlow: "row",
+              gap: "13px",
+              justifyContent: "center",
+              alignContent: "center",
             }}
           >
-            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>
-              Aplicaciones
-            </h3>
-
-            <div
+            <Col
+              span={8}
               style={{
-                display: "flex",
-                width: "100%",
-                backgroundColor: "#013B5A31",
-                justifyContent: "center",
-                alignContent: "center",
-                alignItems: "center",
-                padding: "0px",
-                marginBottom: "17px",
-                borderRadius: "7px",
+                overflowY: "auto",
+                maxHeight: "450px",
+                padding: "7px",
+                border: "1px solid #013B5A",
+                borderRadius: "8px",
               }}
             >
-              <Checkbox
-                checked={selectAllApps}
-                onChange={(e) => handleSelectAllApps(e.target.checked)}
-                style={{ marginBlock: "7px" }}
-              >
-                SELECCIONAR TODAS
-              </Checkbox>
-            </div>
+              <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>
+                Aplicaciones
+              </h3>
 
-            <Input
-              placeholder="Buscar aplicación"
-              value={filterTextApp}
-              onChange={(e) => {
-                const inputValue = e.target.value || "";
-
-                const transformedValue = inputValue
-                  .toUpperCase()
-                  .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
-
-                setFilterTextApp(transformedValue);
-              }}
-              allowClear
-              style={{ marginBottom: "17px" }}
-            />
-
-            {autocompleteResultsApps.length > 0 && (
-              <div
-                style={{
-                  width: "100%",
-                  maxHeight: "113px",
-                  backgroundColor: "#F7F7F7",
-                  border: "0.7px solid #A7AFBA",
-                  borderRadius: "7px",
-                  overflowY: "auto",
-                  zIndex: 2,
-                  marginBottom: "13px",
-                }}
-              >
-                {autocompleteResultsApps.map((app) => (
-                  <div
-                    key={app.id}
-                    style={{
-                      padding: "8px",
-                      cursor: "pointer",
-                      borderBottom: "0.7px solid #eee",
-                    }}
-                    onClick={() => handleAutocompleteSelectApp(app)}
-                  >
-                    {app.name}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <Checkbox.Group
-              value={selectedAppsFormData}
-              onChange={onChangeAppsFormData}
-              style={{
-                display: "flex",
-                flexFlow: "column wrap",
-                gap: "13px",
-                paddingBottom: "13px",
-              }}
-            >
-              {allAppsFormData?.map((app) => (
-                <div
-                  key={app.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Checkbox value={app.id} style={{ width: "96%" }}>
-                    <Tooltip title={app.name}>{app.name}</Tooltip>
-                  </Checkbox>
-
-                  <Button
-                    size="middle"
-                    type="dashed"
-                    onClick={() => {
-                      toggleExpandedApp(app.id), setSelectAllModules(false);
-                    }}
-                    icon={
-                      expandedApp === app.id ? (
-                        <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
-                      ) : (
-                        <EyeOutlined style={{ color: "#8C1111" }} />
-                      )
-                    }
-                  />
-                </div>
-              ))}
-            </Checkbox.Group>
-          </Col>
-
-          <Col
-            span={8}
-            style={{
-              overflowY: "auto",
-              maxHeight: "450px",
-              padding: "7px",
-              border: "1px solid #013B5A",
-              borderRadius: "8px",
-            }}
-          >
-            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Módulos</h3>
-
-            <Row
-              gutter={24}
-              justify={"center"}
-              align={"middle"}
-              style={{
-                paddingInline: "13px",
-              }}
-            >
-              {filteredModules && filteredModules?.length > 0 ? (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      width: "100%",
-                      backgroundColor: "#013B5A31",
-                      justifyContent: "center",
-                      alignContent: "center",
-                      alignItems: "center",
-                      padding: "0px",
-                      marginBottom: "17px",
-                      borderRadius: "7px",
-                    }}
-                  >
-                    <Checkbox
-                      checked={selectAllModules}
-                      onChange={(e) => handleSelectAllModules(e.target.checked)}
-                      style={{ marginBlock: "7px" }}
-                    >
-                      SELECCIONAR TODOS
-                    </Checkbox>
-                  </div>
-
-                  <Input
-                    placeholder="Buscar módulo"
-                    value={filterTextModule}
-                    onChange={(e) => {
-                      const inputValue = e.target.value || "";
-
-                      const transformedValue = inputValue
-                        .toUpperCase()
-                        .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
-
-                      setFilterTextModule(transformedValue);
-                    }}
-                    allowClear
-                    style={{ marginBottom: "17px" }}
-                  />
-                </>
-              ) : null}
-
-              {autocompleteResultsModules.length > 0 && (
-                <div
-                  style={{
-                    width: "100%",
-                    maxHeight: "113px",
-                    backgroundColor: "#F7F7F7",
-                    border: "0.7px solid #A7AFBA",
-                    borderRadius: "7px",
-                    overflowY: "auto",
-                    zIndex: 2,
-                    marginBottom: "13px",
-                  }}
-                >
-                  {autocompleteResultsModules.map((module) => (
-                    <div
-                      key={module.id}
-                      style={{
-                        padding: "8px",
-                        cursor: "pointer",
-                        borderBottom: "0.7px solid #eee",
-                      }}
-                      onClick={() => handleAutocompleteSelectModule(module)}
-                    >
-                      {module.name}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Row>
-
-            <Checkbox.Group
-              value={selectedModules}
-              onChange={handleModuleSelectionChange}
-              style={{
-                display: "flex",
-                flexFlow: "column wrap",
-                gap: "22px",
-                paddingBottom: "13px",
-              }}
-            >
-              {filteredModules?.map((module) => (
-                <div
-                  key={module.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Checkbox value={module.id} style={{ width: "96%" }}>
-                    <Tooltip title={module.name}>{module.name}</Tooltip>
-                  </Checkbox>
-
-                  <Button
-                    size="middle"
-                    type="dashed"
-                    onClick={() => {
-                      toggleExpandedModule(module.id),
-                        setSelectAllModuleActions(false);
-                    }}
-                    icon={
-                      expandedModule === module.id ? (
-                        <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
-                      ) : (
-                        <EyeOutlined style={{ color: "#8C1111" }} />
-                      )
-                    }
-                  />
-                </div>
-              ))}
-            </Checkbox.Group>
-          </Col>
-
-          <Col
-            span={8}
-            style={{
-              overflowY: "auto",
-              maxHeight: "450px",
-              padding: "7px",
-              border: "1px solid #013B5A",
-              borderRadius: "8px",
-            }}
-          >
-            <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>Acciones</h3>
-
-            {expandedApp && expandedModule ? (
-              <p
-                style={{
-                  ...subtitleStyleCss,
-                  fontStyle: "italic",
-                  color: "#A7AFBA",
-                  marginTop: "2px",
-                  marginBottom: "13px",
-                }}
-              >
-                Acciones de:&nbsp;
-                <b>
-                  {allAppsFormData?.find((app) => app.id === expandedApp)
-                    ?.name || null}
-                </b>
-              </p>
-            ) : null}
-
-            {filteredActions && filteredActions.length > 0 && (
               <div
                 style={{
                   display: "flex",
@@ -786,37 +516,319 @@ const EditPermissionFormData: React.FC<{
                 }}
               >
                 <Checkbox
-                  checked={selectAllModuleActions}
-                  onChange={(e) => handleSelectAllActions(e.target.checked)}
+                  checked={selectAllApps}
+                  onChange={(e) => handleSelectAllApps(e.target.checked)}
                   style={{ marginBlock: "7px" }}
                 >
                   SELECCIONAR TODAS
                 </Checkbox>
               </div>
-            )}
 
-            <Checkbox.Group
-              value={selectedActions}
-              onChange={handleActionSelectionChange}
+              <Input
+                placeholder="Buscar aplicación"
+                value={filterTextApp}
+                onChange={(e) => {
+                  const inputValue = e.target.value || "";
+
+                  const transformedValue = inputValue
+                    .toUpperCase()
+                    .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
+
+                  setFilterTextApp(transformedValue);
+                }}
+                allowClear
+                style={{ marginBottom: "17px" }}
+              />
+
+              {autocompleteResultsApps.length > 0 && (
+                <div
+                  style={{
+                    width: "100%",
+                    maxHeight: "113px",
+                    backgroundColor: "#F7F7F7",
+                    border: "0.7px solid #A7AFBA",
+                    borderRadius: "7px",
+                    overflowY: "auto",
+                    zIndex: 2,
+                    marginBottom: "13px",
+                  }}
+                >
+                  {autocompleteResultsApps.map((app) => (
+                    <div
+                      key={app.id}
+                      style={{
+                        padding: "8px",
+                        cursor: "pointer",
+                        borderBottom: "0.7px solid #eee",
+                      }}
+                      onClick={() => handleAutocompleteSelectApp(app)}
+                    >
+                      {app.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Checkbox.Group
+                value={selectedAppsFormData}
+                onChange={onChangeAppsFormData}
+                style={{
+                  display: "flex",
+                  flexFlow: "column wrap",
+                  gap: "13px",
+                  paddingBottom: "13px",
+                }}
+              >
+                {allAppsFormData?.map((app) => (
+                  <div
+                    key={app.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Checkbox value={app.id} style={{ width: "96%" }}>
+                      <Tooltip title={app.name}>{app.name}</Tooltip>
+                    </Checkbox>
+
+                    <Button
+                      size="middle"
+                      type="dashed"
+                      onClick={() => {
+                        toggleExpandedApp(app.id), setSelectAllModules(false);
+                      }}
+                      icon={
+                        expandedApp === app.id ? (
+                          <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+                        ) : (
+                          <EyeOutlined style={{ color: "#8C1111" }} />
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+              </Checkbox.Group>
+            </Col>
+
+            <Col
+              span={8}
               style={{
-                display: "flex",
-                flexFlow: "column wrap",
-                gap: "22px",
-                paddingBottom: "13px",
+                overflowY: "auto",
+                maxHeight: "450px",
+                padding: "7px",
+                border: "1px solid #013B5A",
+                borderRadius: "8px",
               }}
             >
-              {filteredActions?.map((action) => (
-                <Checkbox
-                  key={action.id}
-                  value={action.id}
-                  style={{ width: "96%" }}
+              <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>
+                Módulos
+              </h3>
+
+              <Row
+                gutter={24}
+                justify={"center"}
+                align={"middle"}
+                style={{
+                  paddingInline: "13px",
+                }}
+              >
+                {filteredModules && filteredModules?.length > 0 ? (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        backgroundColor: "#013B5A31",
+                        justifyContent: "center",
+                        alignContent: "center",
+                        alignItems: "center",
+                        padding: "0px",
+                        marginBottom: "17px",
+                        borderRadius: "7px",
+                      }}
+                    >
+                      <Checkbox
+                        checked={selectAllModules}
+                        onChange={(e) =>
+                          handleSelectAllModules(e.target.checked)
+                        }
+                        style={{ marginBlock: "7px" }}
+                      >
+                        SELECCIONAR TODOS
+                      </Checkbox>
+                    </div>
+
+                    <Input
+                      placeholder="Buscar módulo"
+                      value={filterTextModule}
+                      onChange={(e) => {
+                        const inputValue = e.target.value || "";
+
+                        const transformedValue = inputValue
+                          .toUpperCase()
+                          .replace(/[^A-ZÁÉÍÓÚÜÑ0-9\s]/g, "");
+
+                        setFilterTextModule(transformedValue);
+                      }}
+                      allowClear
+                      style={{ marginBottom: "17px" }}
+                    />
+                  </>
+                ) : null}
+
+                {autocompleteResultsModules.length > 0 && (
+                  <div
+                    style={{
+                      width: "100%",
+                      maxHeight: "113px",
+                      backgroundColor: "#F7F7F7",
+                      border: "0.7px solid #A7AFBA",
+                      borderRadius: "7px",
+                      overflowY: "auto",
+                      zIndex: 2,
+                      marginBottom: "13px",
+                    }}
+                  >
+                    {autocompleteResultsModules.map((module) => (
+                      <div
+                        key={module.id}
+                        style={{
+                          padding: "8px",
+                          cursor: "pointer",
+                          borderBottom: "0.7px solid #eee",
+                        }}
+                        onClick={() => handleAutocompleteSelectModule(module)}
+                      >
+                        {module.name}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Row>
+
+              <Checkbox.Group
+                value={selectedModules}
+                onChange={handleModuleSelectionChange}
+                style={{
+                  display: "flex",
+                  flexFlow: "column wrap",
+                  gap: "22px",
+                  paddingBottom: "13px",
+                }}
+              >
+                {filteredModules?.map((module) => (
+                  <div
+                    key={module.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Checkbox value={module.id} style={{ width: "96%" }}>
+                      <Tooltip title={module.name}>{module.name}</Tooltip>
+                    </Checkbox>
+
+                    <Button
+                      size="middle"
+                      type="dashed"
+                      onClick={() => {
+                        toggleExpandedModule(module.id),
+                          setSelectAllModuleActions(false);
+                      }}
+                      icon={
+                        expandedModule === module.id ? (
+                          <EyeInvisibleOutlined style={{ color: "#1D8348" }} />
+                        ) : (
+                          <EyeOutlined style={{ color: "#8C1111" }} />
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+              </Checkbox.Group>
+            </Col>
+
+            <Col
+              span={8}
+              style={{
+                overflowY: "auto",
+                maxHeight: "450px",
+                padding: "7px",
+                border: "1px solid #013B5A",
+                borderRadius: "8px",
+              }}
+            >
+              <h3 style={{ marginTop: "7px", marginBottom: "13px" }}>
+                Acciones
+              </h3>
+
+              {expandedApp && expandedModule ? (
+                <p
+                  style={{
+                    ...subtitleStyleCss,
+                    fontStyle: "italic",
+                    color: "#A7AFBA",
+                    marginTop: "2px",
+                    marginBottom: "13px",
+                  }}
                 >
-                  <Tooltip title={action.name}>{action.name}</Tooltip>
-                </Checkbox>
-              ))}
-            </Checkbox.Group>
+                  Acciones de:&nbsp;
+                  <b>
+                    {allAppsFormData?.find((app) => app.id === expandedApp)
+                      ?.name || null}
+                  </b>
+                </p>
+              ) : null}
+
+              {filteredActions && filteredActions.length > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    width: "100%",
+                    backgroundColor: "#013B5A31",
+                    justifyContent: "center",
+                    alignContent: "center",
+                    alignItems: "center",
+                    padding: "0px",
+                    marginBottom: "17px",
+                    borderRadius: "7px",
+                  }}
+                >
+                  <Checkbox
+                    checked={selectAllModuleActions}
+                    onChange={(e) => handleSelectAllActions(e.target.checked)}
+                    style={{ marginBlock: "7px" }}
+                  >
+                    SELECCIONAR TODAS
+                  </Checkbox>
+                </div>
+              )}
+
+              <Checkbox.Group
+                value={selectedActions}
+                onChange={handleActionSelectionChange}
+                style={{
+                  display: "flex",
+                  flexFlow: "column wrap",
+                  gap: "22px",
+                  paddingBottom: "13px",
+                }}
+              >
+                {filteredActions?.map((action) => (
+                  <Checkbox
+                    key={action.id}
+                    value={action.id}
+                    style={{ width: "96%" }}
+                  >
+                    <Tooltip title={action.name}>{action.name}</Tooltip>
+                  </Checkbox>
+                ))}
+              </Checkbox.Group>
+            </Col>
           </Col>
-        </Col>
+        )}
       </Row>
 
       <Form.Item

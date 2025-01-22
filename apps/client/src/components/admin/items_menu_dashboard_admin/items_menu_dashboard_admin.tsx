@@ -86,10 +86,7 @@ export const useMenuItems = () => {
     }
   }, [idNumberUserSessionState]);
 
-  const waitAdminData =
-    idNumberUserSession && idNumberUserSessionState && userSessionData;
-
-  if (!waitAdminData) {
+  if (!userSessionData || userSessionLoading || userSessionFetching) {
     return [getItemSpin("spiner")];
   }
 

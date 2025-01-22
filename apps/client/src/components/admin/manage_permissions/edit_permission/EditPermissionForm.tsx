@@ -80,7 +80,9 @@ const EditPermissionForm: React.FC = () => {
     isLoading: permissionLoading,
     isFetching: permissionFetching,
     error: permissionError,
-  } = useGetPermissionByIdQuery(idPermissionState);
+  } = useGetPermissionByIdQuery(idPermissionState, {
+    skip: !idPermissionState,
+  });
 
   const {
     data: allActiveApplicationsData,
