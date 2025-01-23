@@ -1,21 +1,23 @@
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { notFound } from "next/navigation";
 import { AllowedRoleType } from "../types/allowed_role_type";
 
 export const useRoleValidation = (allowedRoles: AllowedRoleType[]) => {
   const { data: session, status } = useSession();
 
-  useEffect(() => {
-    if (
-      status === "authenticated" &&
-      session &&
-      Array.isArray(session?.user.role)
-    ) {
-      const userRoles = session?.user.role.map(
-        (role: { name: string }) => role.name
-      );
+  const userSessionRoles = session?.user.role;
 
+  const userRoles = useMemo(() => {
+    if (userSessionRoles && Array.isArray(userSessionRoles)) {
+      return userSessionRoles.map((role: { name: string }) => role.name);
+    }
+
+    return [];
+  }, [userSessionRoles]);
+
+  useEffect(() => {
+    if (status === "authenticated" && userRoles.length > 0) {
       const hasAllowedRole = allowedRoles.some((allowedRole) =>
         userRoles.includes(allowedRole as AllowedRoleType)
       );
@@ -24,5 +26,5 @@ export const useRoleValidation = (allowedRoles: AllowedRoleType[]) => {
         notFound();
       }
     }
-  }, [session, status, allowedRoles]);
+  }, [status, userRoles, allowedRoles]);
 };

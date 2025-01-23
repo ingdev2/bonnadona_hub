@@ -76,15 +76,6 @@ const EditPermissionForm: React.FC = () => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const {
-    data: permissionData,
-    isLoading: permissionLoading,
-    isFetching: permissionFetching,
-    error: permissionError,
-  } = useGetPermissionByIdQuery(idPermissionState, {
-    skip: !idPermissionState,
-  });
-
-  const {
     data: allActiveApplicationsData,
     isLoading: allActiveApplicationsLoading,
     isFetching: allActiveApplicationsFetching,
@@ -120,26 +111,15 @@ const EditPermissionForm: React.FC = () => {
     fixedCacheKey: "updatePermissionData",
   });
 
-  const appsIds = permissionData?.applications?.map((appsIds) => appsIds);
-  const modulesIds = permissionData?.module_actions?.map(
-    (modulesIds) => modulesIds
-  );
-  const actionsIds = permissionData?.module_actions?.map(
-    (actionsIds) => actionsIds
-  );
-
   useEffect(() => {
     if (
-      (permissionData &&
-        !idPermissionState &&
-        !permissionLoading &&
-        !permissionFetching &&
-        titleNamePermissionState) ||
+      idPermissionState ||
+      titleNamePermissionState ||
       descriptionPermissionState ||
-      (appsPermissionState && modulesPermissionState && actionsPermissionState)
+      appsPermissionState ||
+      modulesPermissionState ||
+      actionsPermissionState
     ) {
-      dispatch(setIdPermission(permissionData?.id));
-
       setTitleNamePermissionLocalState(titleNamePermissionState);
       setDescriptionPermissionLocalState(descriptionPermissionState);
 
@@ -148,9 +128,6 @@ const EditPermissionForm: React.FC = () => {
       dispatch(setSelectedActionsPermission(actionsPermissionState));
     }
   }, [
-    permissionData,
-    permissionLoading,
-    permissionFetching,
     idPermissionState,
     titleNamePermissionState,
     descriptionPermissionState,

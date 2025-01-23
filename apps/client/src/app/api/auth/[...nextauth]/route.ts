@@ -1,35 +1,34 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-let updatedMaxAge: number | null = null;
+let dynamicMaxAge: number = 720;
 
-async function getPasswordPolicy() {
+const cache = { maxAge: dynamicMaxAge, lastUpdated: Date.now() };
+
+async function updateMaxAge() {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/password-policy/getPasswordPolicy`,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/password-policy/getPasswordPolicy`
     );
 
-    if (!response.ok) {
-      throw new Error("No se pudo obtener la política de contraseñas");
+    if (response.ok) {
+      const data = await response.json();
+
+      cache.maxAge = data.maximum_minutes_of_inactivity_in_application * 60;
+
+      cache.lastUpdated = Date.now();
     }
-
-    const passwordPolicyData = await response.json();
-
-    const maximunMinutesOfInactivityInApplication =
-      passwordPolicyData?.maximum_minutes_of_inactivity_in_application;
-
-    return maximunMinutesOfInactivityInApplication * 60;
   } catch (error) {
-    console.error("Error al obtener la política de contraseñas:", error);
-    return null;
+    console.error("Error al actualizar MaxAge:", error);
   }
 }
 
-updatedMaxAge = (await getPasswordPolicy()) || 780;
+async function getDynamicMaxAge() {
+  if (Date.now() - cache.lastUpdated > 60000 * 5) {
+    await updateMaxAge();
+  }
+  return cache.maxAge;
+}
 
 async function refreshAccessToken(token: any) {
   try {
@@ -65,144 +64,148 @@ async function refreshAccessToken(token: any) {
   }
 }
 
-const handler = NextAuth({
-  providers: [
-    CredentialsProvider({
-      id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
-      name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
-      credentials: {
-        principal_email: {
-          label: "Correo",
-          type: "string",
-          inputMode: "text",
+export const GET = async (req: any, res: any) => {
+  const updatedMaxAge = await getDynamicMaxAge();
+
+  return NextAuth(req, res, {
+    providers: [
+      CredentialsProvider({
+        id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
+        name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_ADMINS,
+        credentials: {
+          principal_email: {
+            label: "Correo",
+            type: "string",
+            inputMode: "text",
+          },
+          verification_code: {
+            label: "Código de verificación",
+            type: "number",
+            inputMode: "numeric",
+            pattern: "[0-9]*",
+          },
         },
-        verification_code: {
-          label: "Código de verificación",
-          type: "number",
-          inputMode: "numeric",
-          pattern: "[0-9]*",
-        },
-      },
 
-      async authorize(credentials) {
-        if (!credentials) {
-          throw new Error("Credenciales no definidas.");
-        }
-
-        const { principal_email } = credentials;
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verifyCodeAndLoginAdminAndAuditorUser/${principal_email}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              principal_email: credentials?.principal_email,
-              verification_code: credentials?.verification_code,
-            }),
-            headers: { "Content-Type": "application/json" },
+        async authorize(credentials) {
+          if (!credentials) {
+            throw new Error("Credenciales no definidas.");
           }
-        );
 
-        const admin = await res.json();
+          const { principal_email } = credentials;
 
-        if (admin.error) throw admin;
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verifyCodeAndLoginAdminAndAuditorUser/${principal_email}`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                principal_email: credentials?.principal_email,
+                verification_code: credentials?.verification_code,
+              }),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-        return admin;
-      },
-    }),
+          const admin = await res.json();
 
-    CredentialsProvider({
-      id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
-      name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
-      credentials: {
-        principal_email: {
-          label: "Correo",
-          type: "string",
-          inputMode: "text",
+          if (admin.error) throw admin;
+
+          return admin;
         },
-        verification_code: {
-          label: "Código de verificación",
-          type: "number",
-          inputMode: "numeric",
-          pattern: "[0-9]*",
+      }),
+
+      CredentialsProvider({
+        id: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
+        name: process.env.NEXT_PUBLIC_NAME_AUTH_CREDENTIALS_USERS,
+        credentials: {
+          principal_email: {
+            label: "Correo",
+            type: "string",
+            inputMode: "text",
+          },
+          verification_code: {
+            label: "Código de verificación",
+            type: "number",
+            inputMode: "numeric",
+            pattern: "[0-9]*",
+          },
         },
-      },
 
-      async authorize(credentials) {
-        if (!credentials) {
-          throw new Error("Credenciales no definidas.");
-        }
-
-        const { principal_email } = credentials;
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verifyCodeAndLoginCollaboratorUser/${principal_email}`,
-          {
-            method: "POST",
-            body: JSON.stringify({
-              principal_email: credentials?.principal_email,
-              verification_code: credentials?.verification_code,
-            }),
-            headers: { "Content-Type": "application/json" },
+        async authorize(credentials) {
+          if (!credentials) {
+            throw new Error("Credenciales no definidas.");
           }
-        );
 
-        const user = await res.json();
+          const { principal_email } = credentials;
 
-        if (user.error) throw user;
+          const res = await fetch(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/verifyCodeAndLoginCollaboratorUser/${principal_email}`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                principal_email: credentials?.principal_email,
+                verification_code: credentials?.verification_code,
+              }),
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-        return user;
-      },
-    }),
-  ],
-  jwt: {
+          const user = await res.json();
+
+          if (user.error) throw user;
+
+          return user;
+        },
+      }),
+    ],
+    jwt: {
+      secret: process.env.NEXTAUTH_SECRET,
+    },
     secret: process.env.NEXTAUTH_SECRET,
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async jwt({ token, user, account }) {
-      if (account && user && token) {
-        return {
-          ...token,
-          ...user,
-          access_token_expires_in: Date.now() + 60 * 1000,
-        };
-      }
-
-      if (
-        token?.access_token_expires_in &&
-        typeof token.access_token_expires_in === "number"
-      ) {
-        if (Date.now() < (token.access_token_expires_in || 0)) {
-          return token;
+    callbacks: {
+      async jwt({ token, user, account }) {
+        if (account && user && token) {
+          return {
+            ...token,
+            ...user,
+            access_token_expires_in: Date.now() + 60 * 1000,
+          };
         }
 
-        const refreshedToken = await refreshAccessToken(token);
+        if (
+          token?.access_token_expires_in &&
+          typeof token.access_token_expires_in === "number"
+        ) {
+          if (Date.now() < (token.access_token_expires_in || 0)) {
+            return token;
+          }
 
-        if (refreshedToken.error) {
-          return { ...token, error: refreshedToken.error };
+          const refreshedToken = await refreshAccessToken(token);
+
+          if (refreshedToken.error) {
+            return { ...token, error: refreshedToken.error };
+          }
+
+          return refreshedToken;
+        }
+      },
+      async session({ session, token }) {
+        if (token) {
+          session.user = token;
+        } else {
+          session.user;
         }
 
-        return refreshedToken;
-      }
+        return session;
+      },
     },
-    async session({ session, token }) {
-      if (token) {
-        session.user = token;
-      } else {
-        session.user;
-      }
-
-      return session;
+    pages: {
+      signIn: "/login",
     },
-  },
-  pages: {
-    signIn: "/login",
-  },
-  session: {
-    strategy: "jwt",
-    maxAge: updatedMaxAge,
-  },
-});
+    session: {
+      strategy: "jwt",
+      maxAge: updatedMaxAge,
+    },
+  });
+};
 
-export { handler as GET, handler as POST };
+export const POST = GET;

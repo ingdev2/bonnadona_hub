@@ -71,44 +71,16 @@ const CollaboratorPersonalDataContent = () => {
     (state) => state.modal.changePasswordExpiryModalIsOpen
   );
 
-  const idNumberUserState = useAppSelector((state) => state.user.id_number);
-
+  const idUserState = useAppSelector((state) => state.user.id);
   const nameUserState = useAppSelector((state) => state.user.name);
   const lastNameUserState = useAppSelector((state) => state.user.last_name);
   const idTypeNumberUserState = useAppSelector(
     (state) => state.user.user_id_type
   );
+  const idNumberUserState = useAppSelector((state) => state.user.id_number);
   const genderNumberUserState = useAppSelector(
     (state) => state.user.user_gender
   );
-  const collaboratorPositionUserState = useAppSelector(
-    (state) => state.user.collaborator_position
-  );
-
-  const collaboratorServiceUserState = useAppSelector(
-    (state) => state.user.collaborator_service
-  );
-
-  const personalEmailUserState = useAppSelector(
-    (state) => state.user.personal_email
-  );
-
-  const principalEmailUserState = useAppSelector(
-    (state) => state.user.principal_email
-  );
-
-  const corporateEmailUserState = useAppSelector(
-    (state) => state.user.corporate_email
-  );
-
-  const personalCellphoneUserState = useAppSelector(
-    (state) => state.user.personal_cellphone
-  );
-
-  const corporateCellphoneUserState = useAppSelector(
-    (state) => state.user.corporate_cellphone
-  );
-
   const bloodGroupNameUserProfileState = useAppSelector(
     (state) => state.userProfile.user_blood_group
   );
@@ -182,20 +154,13 @@ const CollaboratorPersonalDataContent = () => {
     }
 
     if (
-      !nameUserState ||
-      !lastNameUserState ||
-      !idTypeNumberUserState ||
-      !genderNumberUserState ||
-      !collaboratorPositionUserState ||
-      !collaboratorServiceUserState ||
-      !personalEmailUserState ||
-      !principalEmailUserState ||
-      !corporateCellphoneUserState ||
-      !corporateEmailUserState ||
-      (!personalCellphoneUserState &&
-        userActiveByIdNumberData &&
-        !userActiveByIdNumberLoading &&
-        !userActiveByIdNumberFetching)
+      !idUserState &&
+      !nameUserState &&
+      !lastNameUserState &&
+      !idNumberUserState &&
+      !idTypeNumberUserState &&
+      userActiveByIdNumberData &&
+      userActiveProfileByIdData
     ) {
       dispatch(setIdUser(userActiveByIdNumberData?.id));
       dispatch(setNameUser(userActiveByIdNumberData?.name));
@@ -230,11 +195,8 @@ const CollaboratorPersonalDataContent = () => {
           userActiveByIdNumberData?.collaborator_immediate_boss
         )
       );
-    }
 
-    if (userActiveProfileByIdData) {
       dispatch(setIdUserProfile(userActiveProfileByIdData.id));
-
       dispatch(
         setBloodGroupUserProfile(userActiveProfileByIdData.user_blood_group)
       );
@@ -291,25 +253,15 @@ const CollaboratorPersonalDataContent = () => {
     }
   }, [
     passwordPolicyData,
-    lastPasswordUpdateCollaboratorState,
-    nameUserState,
-    lastNameUserState,
-    idTypeNumberUserState,
-    genderNumberUserState,
-    collaboratorPositionUserState,
-    collaboratorServiceUserState,
-    personalEmailUserState,
-    principalEmailUserState,
-    corporateCellphoneUserState,
-    corporateEmailUserState,
+    idUserState,
     userActiveByIdNumberData,
-    userActiveByIdNumberLoading,
-    userActiveByIdNumberFetching,
-    bloodGroupNameUserProfileState,
-    allIdTypesData,
-    allGenderTypesData,
-    allBloodGroupsData,
     userActiveProfileByIdData,
+    allIdTypesData,
+    idTypeNumberUserState,
+    allGenderTypesData,
+    genderNumberUserState,
+    allBloodGroupsData,
+    bloodGroupNameUserProfileState,
   ]);
 
   return (

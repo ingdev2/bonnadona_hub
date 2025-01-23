@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
 
@@ -15,33 +15,45 @@ export const PermissionsActionsValidation = ({
 }: PermissionValidationParams) => {
   const { data: session, status } = useSession();
 
-  const [hasPermission, setHasPermission] = useState(false);
-
   const idNumberUserState = useAppSelector((state) => state.user.id_number);
+
+  const [hasPermission, setHasPermission] = useState(false);
 
   const {
     data: userPermissionsData,
-    isLoading: userPermissionsLoading,
-    isFetching: userPermissionsFetching,
-    isError: userPermissionsError,
+    isLoading: userPermissionsIsLoadingData,
+    isFetching: userPermissionsIsFetchingData,
+    error: userPermissionsIsErrorData,
   } = useGetUserPermissionsQuery(idNumberUserState, {
     skip: !idNumberUserState,
   });
 
-  useEffect(() => {
-    if (status === "authenticated" && userPermissionsData) {
-      const hasActionPermission =
-        allowedActions.length > 0
-          ? userPermissionsData.some((permission) =>
-              permission.module_actions.some((action: IModuleAction) =>
-                allowedActions.includes(action.name as ModuleActionsEnum)
-              )
-            )
-          : true;
+  const permissionsValid = useMemo(() => {
+    if (!userPermissionsData || allowedActions.length === 0) return true;
 
-      setHasPermission(hasActionPermission);
+    return userPermissionsData.some((permission) =>
+      permission.module_actions.some((action: IModuleAction) =>
+        allowedActions.includes(action.name as ModuleActionsEnum)
+      )
+    );
+  }, [userPermissionsData, allowedActions]);
+
+  useEffect(() => {
+    if (
+      status === "authenticated" &&
+      userPermissionsData &&
+      !userPermissionsIsLoadingData &&
+      !userPermissionsIsFetchingData
+    ) {
+      setHasPermission(permissionsValid);
     }
-  }, [status, allowedActions, userPermissionsData]);
+  }, [
+    status,
+    permissionsValid,
+    userPermissionsData,
+    userPermissionsIsLoadingData,
+    userPermissionsIsFetchingData,
+  ]);
 
   return hasPermission;
 };

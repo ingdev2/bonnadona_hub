@@ -33,6 +33,7 @@ const CustomOptionWithImageCard: React.FC<{
           src={srcCustomOptionWithImageCard}
           alt={altCustomOptionWithImageCard}
           style={styleImgCustomOptionWithImageCard}
+          loading="lazy"
         />
       </Card>
     </a>

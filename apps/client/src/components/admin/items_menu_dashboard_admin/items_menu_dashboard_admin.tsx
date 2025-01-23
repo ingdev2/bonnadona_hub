@@ -1,16 +1,15 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
-import { PermissionsAppAndModuleValidationInComponent } from "@/helpers/permission_validation/permissionsAppAndModuleValidationInComponent";
+import { usePermissionsAppAndModuleValidationInPage } from "@/utils/hooks/use_permissions_app_and_module_validation_in_page";
 
-import { MenuItem } from "@/helpers/get_item_menu_dashboard_layout/types/menu_item_type";
 import {
   getItem,
   getItemSpin,
 } from "@/helpers/get_item_menu_dashboard_layout/get_item_menu_dashboard_layout";
-import CustomSpin from "@/components/common/custom_spin/CustomSpin";
+
 import { FaUsers } from "react-icons/fa";
 import { FaUsers as Fa6Users } from "react-icons/fa6";
 import { MdLockPerson } from "react-icons/md";
@@ -25,8 +24,6 @@ import { PiUserListBold } from "react-icons/pi";
 
 import { setIdNumberUser } from "@/redux/features/user/userSlice";
 
-import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
-
 import {
   ItemKeys,
   ItemNames,
@@ -36,149 +33,156 @@ import { ApplicationsEnum } from "@/utils/enums/permissions/applications/applica
 import { ApplicationModulesEnum } from "@/utils/enums/permissions/application_modules/application_modules.enum";
 
 export const useMenuItems = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const dispatch = useAppDispatch();
 
   const idNumberUserSession = session?.user?.id_number;
 
-  const allUsersModule = PermissionsAppAndModuleValidationInComponent({
+  const idNumberUserSessionState = useAppSelector(
+    (state) => state.user.id_number
+  );
+
+  useEffect(() => {
+    if (!idNumberUserSessionState && idNumberUserSession) {
+      dispatch(setIdNumberUser(idNumberUserSession));
+    }
+  }, [idNumberUserSessionState, idNumberUserSession]);
+
+  const allUsers = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_ALL_USERS],
   });
 
-  const permissionsModule = PermissionsAppAndModuleValidationInComponent({
+  const managePermissions = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
   });
 
-  const applicationsAndModulesModule =
-    PermissionsAppAndModuleValidationInComponent({
+  const manageApplicationsAndModules =
+    usePermissionsAppAndModuleValidationInPage({
       allowedApplications: [ApplicationsEnum.BONNA_HUB],
       allowedModules: [
         ApplicationModulesEnum.BONNA_HUB_APPLICATIONS_AND_MODULES,
       ],
     });
 
-  const passwordPolicyModule = PermissionsAppAndModuleValidationInComponent({
+  const managePasswordPolicy = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PASSWORD_POLICY],
   });
 
-  const auditLogsModule = PermissionsAppAndModuleValidationInComponent({
+  const auditLogs = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_LOG_FOR_AUDITS],
   });
 
-  const idNumberUserSessionState = useAppSelector(
-    (state) => state.user.id_number
-  );
-
-  const {
-    data: userSessionData,
-    isLoading: userSessionLoading,
-    isFetching: userSessionFetching,
-    error: userSessionError,
-  } = useGetUserActiveByIdNumberQuery(idNumberUserSessionState);
-
-  useEffect(() => {
-    if (!idNumberUserSessionState) {
-      dispatch(setIdNumberUser(idNumberUserSession));
+  const menuItems = useMemo(() => {
+    if (
+      !allUsers &&
+      !managePermissions &&
+      !manageApplicationsAndModules &&
+      !managePasswordPolicy &&
+      !auditLogs
+    ) {
+      return [getItemSpin("spinner")];
     }
-  }, [idNumberUserSessionState]);
 
-  if (!userSessionData || userSessionLoading || userSessionFetching) {
-    return [getItemSpin("spiner")];
-  }
+    return [
+      allUsers
+        ? getItem(
+            ItemNames.ITEM_USERS,
+            ItemKeys.ITEM_USERS_KEY,
+            <FaUsers size={17} />,
+            [
+              getItem(
+                ItemNames.SUB_USERS,
+                ItemKeys.SUB_USERS_KEY,
+                <Fa6Users size={15} />
+              ),
+            ]
+          )
+        : null,
 
-  const items: MenuItem[] = [
-    allUsersModule
-      ? getItem(
-          ItemNames.ITEM_USERS,
-          ItemKeys.ITEM_USERS_KEY,
-          <FaUsers size={17} />,
-          [
-            getItem(
-              ItemNames.SUB_USERS,
-              ItemKeys.SUB_USERS_KEY,
-              <Fa6Users size={15} />
-            ),
-          ].filter(Boolean)
-        )
-      : null,
+      managePermissions
+        ? getItem(
+            ItemNames.ITEM_PERMISSIONS,
+            ItemKeys.ITEM_PERMISSIONS_KEY,
+            <MdLockPerson size={17} />,
+            [
+              getItem(
+                ItemNames.SUB_MANAGE_PERMISSIONS,
+                ItemKeys.SUB_MANAGE_PERMISSIONS_KEY,
+                <SiAdblock size={15} />
+              ),
+            ]
+          )
+        : null,
 
-    permissionsModule
-      ? getItem(
-          ItemNames.ITEM_PERMISSIONS,
-          ItemKeys.ITEM_PERMISSIONS_KEY,
-          <MdLockPerson size={17} />,
-          [
-            getItem(
-              ItemNames.SUB_MANAGE_PERMISSIONS,
-              ItemKeys.SUB_MANAGE_PERMISSIONS_KEY,
-              <SiAdblock size={15} />
-            ),
-          ].filter(Boolean)
-        )
-      : null,
+      managePasswordPolicy
+        ? getItem(
+            ItemNames.ITEM_PASSWORD_POLICY,
+            ItemKeys.ITEM_PASSWORD_POLICY_KEY,
+            <TbPasswordUser size={17} />,
+            [
+              getItem(
+                ItemNames.SUB_MANAGE_PASSWORD,
+                ItemKeys.SUB_MANAGE_PASSWORD_POLICY_KEY,
+                <MdPassword size={15} />
+              ),
+            ]
+          )
+        : null,
 
-    passwordPolicyModule
-      ? getItem(
-          ItemNames.ITEM_PASSWORD_POLICY,
-          ItemKeys.ITEM_PASSWORD_POLICY_KEY,
-          <TbPasswordUser size={17} />,
-          [
-            getItem(
-              ItemNames.SUB_MANAGE_PASSWORD,
-              ItemKeys.SUB_MANAGE_PASSWORD_POLICY_KEY,
-              <MdPassword size={15} />
-            ),
-          ].filter(Boolean)
-        )
-      : null,
+      manageApplicationsAndModules
+        ? getItem(
+            ItemNames.ITEM_APPLICATIONS_AND_MODULES,
+            ItemKeys.ITEM_APPLICATIONS_AND_MODULES_KEY,
+            <TbApps size={17} />,
+            [
+              getItem(
+                ItemNames.SUB_APPLICATIONS,
+                ItemKeys.SUB_APPLICATIONS_KEY,
+                <IoIosApps size={15} />
+              ),
+            ]
+          )
+        : null,
 
-    applicationsAndModulesModule
-      ? getItem(
-          ItemNames.ITEM_APPLICATIONS_AND_MODULES,
-          ItemKeys.ITEM_APPLICATIONS_AND_MODULES_KEY,
-          <TbApps size={17} />,
-          [
-            getItem(
-              ItemNames.SUB_APPLICATIONS,
-              ItemKeys.SUB_APPLICATIONS_KEY,
-              <IoIosApps size={15} />
-            ),
-          ].filter(Boolean)
-        )
-      : null,
+      auditLogs
+        ? getItem(
+            ItemNames.ITEM_AUDIT,
+            ItemKeys.ITEM_AUDIT_KEY,
+            <AiOutlineAudit size={17} />,
+            [
+              getItem(
+                ItemNames.SUB_AUDIT_LOGS,
+                ItemKeys.SUB_AUDIT_LOGS_KEY,
+                <IoIosApps size={15} />
+              ),
+            ]
+          )
+        : null,
 
-    auditLogsModule
-      ? getItem(
-          ItemNames.ITEM_AUDIT,
-          ItemKeys.ITEM_AUDIT_KEY,
-          <AiOutlineAudit size={17} />,
-          [
-            getItem(
-              ItemNames.SUB_AUDIT_LOGS,
-              ItemKeys.SUB_AUDIT_LOGS_KEY,
-              <IoIosApps size={15} />
-            ),
-          ].filter(Boolean)
-        )
-      : null,
+      getItem(
+        ItemNames.ITEM_MY_PROFILE,
+        ItemKeys.ITEM_MY_PROFILE_KEY,
+        <CgProfile size={17} />,
+        [
+          getItem(
+            ItemNames.SUB_UPDATE_PERSONAL_DATA,
+            ItemKeys.SUB_UPDATE_PERSONAL_DATA_KEY,
+            <PiUserListBold size={15} />
+          ),
+        ]
+      ),
+    ].filter(Boolean);
+  }, [
+    allUsers,
+    managePermissions,
+    manageApplicationsAndModules,
+    managePasswordPolicy,
+    auditLogs,
+  ]);
 
-    getItem(
-      ItemNames.ITEM_MY_PROFILE,
-      ItemKeys.ITEM_MY_PROFILE_KEY,
-      <CgProfile size={17} />,
-      [
-        getItem(
-          ItemNames.SUB_UPDATE_PERSONAL_DATA,
-          ItemKeys.SUB_UPDATE_PERSONAL_DATA_KEY,
-          <PiUserListBold size={15} />
-        ),
-      ].filter(Boolean)
-    ),
-  ].filter(Boolean);
-
-  return items;
+  return menuItems;
 };

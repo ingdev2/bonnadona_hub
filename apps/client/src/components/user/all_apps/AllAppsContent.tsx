@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 import { Col, Empty, Row } from "antd";
@@ -16,9 +16,42 @@ import {
   setChangePasswordExpiryModalIsOpen,
   setFirstLoginModalIsOpen,
 } from "@/redux/features/common/modal/modalSlice";
+import {
+  setIdUser,
+  setNameUser,
+  setLastNameUser,
+  setGenderUser,
+  setGenderAbbrevUser,
+  setIdTypeUser,
+  setIdTypeAbbrevUser,
+  setCollaboratorInmediateBossUser,
+  setCollaboratorPositionUser,
+  setCollaboratorServiceUser,
+  setCorporateCellphoneUser,
+  setCorporateEmailUser,
+  setPersonalCellphoneUser,
+  setPersonalEmailUser,
+  setPrincipalEmailUser,
+} from "@/redux/features/user/userSlice";
+import {
+  setIdUserProfile,
+  setAffiliationEpsUserProfile,
+  setBloodGroupAbbrevUserProfile,
+  setBloodGroupUserProfile,
+  setResidenceAddressUserProfile,
+  setResidenceCityUserProfile,
+  setResidenceDepartmentUserProfile,
+  setResidenceNeighborhoodUserProfile,
+  setUserHeightUserProfile,
+  setUserPantsSizeUserProfile,
+  setUserShirtSizeUserProfile,
+  setUserShoeSizeUserProfile,
+  setUserWeightUserProfile,
+} from "@/redux/features/user_profile/userProfileSlice";
 
 import {
   useGetUserActiveByIdNumberQuery,
+  useGetUserActiveProfileByIdQuery,
   useGetUserPermissionsQuery,
   useGetUserSessionLogByEmailQuery,
 } from "@/redux/apis/users/userApi";
@@ -65,6 +98,15 @@ const AllAppsContent: React.FC = () => {
     isError: userActiveDatabyIdNumberError,
   } = useGetUserActiveByIdNumberQuery(idNumberUserState, {
     skip: !idNumberUserState,
+  });
+
+  const {
+    data: userActiveProfileByIdData,
+    isLoading: userActiveProfileByIdLoading,
+    isFetching: userActiveProfileByIdFetching,
+    error: userActiveProfileByIdError,
+  } = useGetUserActiveProfileByIdQuery(userActiveDatabyIdNumberData?.id!, {
+    skip: !userActiveDatabyIdNumberData?.id,
   });
 
   const {
@@ -117,10 +159,102 @@ const AllAppsContent: React.FC = () => {
     } else {
       dispatch(setChangePasswordExpiryModalIsOpen(false));
     }
+
+    if (
+      userActiveDatabyIdNumberData &&
+      !userActiveDatabyIdNumberLoading &&
+      !userActiveDatabyIdNumberFetching
+    ) {
+      dispatch(setIdUser(userActiveDatabyIdNumberData?.id));
+      dispatch(setNameUser(userActiveDatabyIdNumberData?.name));
+      dispatch(setLastNameUser(userActiveDatabyIdNumberData?.last_name));
+      dispatch(setIdTypeUser(userActiveDatabyIdNumberData?.user_id_type));
+      dispatch(setGenderUser(userActiveDatabyIdNumberData?.user_gender));
+      dispatch(
+        setCollaboratorPositionUser(
+          userActiveDatabyIdNumberData?.collaborator_position
+        )
+      );
+      dispatch(
+        setCollaboratorServiceUser(
+          userActiveDatabyIdNumberData?.collaborator_service
+        )
+      );
+      dispatch(
+        setPrincipalEmailUser(userActiveDatabyIdNumberData?.principal_email)
+      );
+      dispatch(
+        setPersonalEmailUser(userActiveDatabyIdNumberData?.personal_email)
+      );
+      dispatch(
+        setPersonalCellphoneUser(
+          userActiveDatabyIdNumberData?.personal_cellphone
+        )
+      );
+      dispatch(
+        setCorporateEmailUser(userActiveDatabyIdNumberData?.corporate_email)
+      );
+      dispatch(
+        setCorporateCellphoneUser(
+          userActiveDatabyIdNumberData?.corporate_cellphone
+        )
+      );
+      dispatch(
+        setCollaboratorInmediateBossUser(
+          userActiveDatabyIdNumberData?.collaborator_immediate_boss
+        )
+      );
+    }
+
+    if (
+      userActiveProfileByIdData &&
+      !userActiveProfileByIdLoading &&
+      !userActiveProfileByIdFetching
+    ) {
+      dispatch(setIdUserProfile(userActiveProfileByIdData.id));
+
+      dispatch(
+        setBloodGroupUserProfile(userActiveProfileByIdData.user_blood_group)
+      );
+      dispatch(
+        setAffiliationEpsUserProfile(userActiveProfileByIdData.affiliation_eps)
+      );
+      dispatch(
+        setResidenceDepartmentUserProfile(
+          userActiveProfileByIdData.residence_department
+        )
+      );
+      dispatch(
+        setResidenceCityUserProfile(userActiveProfileByIdData.residence_city)
+      );
+      dispatch(
+        setResidenceAddressUserProfile(
+          userActiveProfileByIdData.residence_address
+        )
+      );
+      dispatch(
+        setResidenceNeighborhoodUserProfile(
+          userActiveProfileByIdData.residence_neighborhood
+        )
+      );
+      dispatch(setUserHeightUserProfile(userActiveProfileByIdData.user_height));
+      dispatch(setUserWeightUserProfile(userActiveProfileByIdData.user_weight));
+      dispatch(
+        setUserShirtSizeUserProfile(userActiveProfileByIdData.user_shirt_size)
+      );
+      dispatch(
+        setUserPantsSizeUserProfile(userActiveProfileByIdData.user_pants_size)
+      );
+      dispatch(
+        setUserShoeSizeUserProfile(userActiveProfileByIdData.user_shoe_size)
+      );
+    }
   }, [
     userSessionLogData,
     passwordPolicyData,
     lastPasswordUpdateCollaboratorState,
+    userActiveDatabyIdNumberData,
+    userActiveProfileByIdData,
   ]);
 
   const handleAppClick = async (appName: string) => {
@@ -133,6 +267,18 @@ const AllAppsContent: React.FC = () => {
       console.error(error);
     }
   };
+
+  const filteredApplications = useMemo(() => {
+    if (!userPermissionsData) return [];
+
+    return userPermissionsData
+      .flatMap((data: IPermissions) => data.applications || [])
+      .filter(
+        (app: IApplication, index: number, self: IApplication[]) =>
+          (app.is_active ?? true) &&
+          self.findIndex((a) => a.id === app.id) === index
+      );
+  }, [userPermissionsData]);
 
   return (
     <>
@@ -161,70 +307,55 @@ const AllAppsContent: React.FC = () => {
           customLayoutHeader={<UserHeaderLayout />}
           customLayoutContent={
             <>
-              {userPermissionsData &&
-              !userPermissionsFetching &&
-              !userPermissionsLoading ? (
+              {userPermissionsFetching || userPermissionsLoading ? (
+                <CustomSpin />
+              ) : filteredApplications.length > 0 ? (
                 <div style={{ width: "100%" }}>
-                  <Row gutter={[0, 24]} justify="center" align={"middle"}>
-                    {userPermissionsData ? (
-                      <>
-                        {userPermissionsData
-                          ?.flatMap((data) => data.applications || [])
-                          .filter(
-                            (app, index, self) =>
-                              (app.is_active ?? true) &&
-                              self.findIndex((a) => a.id === app.id) === index
-                          )
-                          .map((application: IApplication, index: number) => (
-                            <Col
-                              key={index}
-                              xs={12}
-                              sm={8}
-                              md={6}
-                              lg={4}
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                paddingBlock: "22px",
-                                margin: "0px",
-                              }}
-                            >
-                              <CustomOptionWithImageCard
-                                altCustomOptionWithImageCard={application.name}
-                                srcCustomOptionWithImageCard={
-                                  application.image_path
-                                }
-                                classNameCardCustomOptionWithImageCard={
-                                  styles.card
-                                }
-                                styleImgCustomOptionWithImageCard={{
-                                  width: "72px",
-                                  objectFit: "contain",
-                                }}
-                                entryLinkUrlCustomOptionWithImageCard={
-                                  application.entry_link
-                                }
-                                onClickCustomOptionWithImageCard={() => {
-                                  handleAppClick(application.name);
-                                }}
-                              />
-                            </Col>
-                          ))}
-                      </>
-                    ) : (
-                      <Col
-                        span={24}
-                        style={{ display: "flex", justifyContent: "center" }}
-                      >
-                        <Empty
-                          description={"No hay applicaciones para mostrar"}
-                        />
-                      </Col>
+                  <Row gutter={[0, 24]} justify="center" align="middle">
+                    {filteredApplications.map(
+                      (application: IApplication, index: number) => (
+                        <Col
+                          key={application.id}
+                          xs={12}
+                          sm={8}
+                          md={6}
+                          lg={4}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            paddingBlock: "22px",
+                            margin: "0px",
+                          }}
+                        >
+                          <CustomOptionWithImageCard
+                            altCustomOptionWithImageCard={application.name}
+                            srcCustomOptionWithImageCard={
+                              application.image_path
+                            }
+                            classNameCardCustomOptionWithImageCard={styles.card}
+                            styleImgCustomOptionWithImageCard={{
+                              width: "72px",
+                              objectFit: "contain",
+                            }}
+                            entryLinkUrlCustomOptionWithImageCard={
+                              application.entry_link
+                            }
+                            onClickCustomOptionWithImageCard={() =>
+                              handleAppClick(application.name)
+                            }
+                          />
+                        </Col>
+                      )
                     )}
                   </Row>
                 </div>
               ) : (
-                <CustomSpin />
+                <Col
+                  span={24}
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <Empty description={"No hay aplicaciones para mostrar"} />
+                </Col>
               )}
             </>
           }

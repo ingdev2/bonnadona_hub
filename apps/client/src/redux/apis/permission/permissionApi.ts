@@ -23,9 +23,9 @@ export const permissionApi = createApi({
 
   refetchOnMountOrArgChange: true,
 
-  refetchOnFocus: true,
+  // refetchOnFocus: true,
 
-  refetchOnReconnect: true,
+  // refetchOnReconnect: true,
 
   endpoints: (builder) => ({
     createPermission: builder.mutation<IPermission, Partial<IPermission>>({

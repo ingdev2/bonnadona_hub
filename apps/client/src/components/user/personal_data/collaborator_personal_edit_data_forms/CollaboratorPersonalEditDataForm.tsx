@@ -171,6 +171,7 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
     isLoading: userActiveByIdNumberLoading,
     isFetching: userActiveByIdNumberFetching,
     error: userActiveByIdNumberError,
+    refetch: userActiveByIdNumberRefecth,
   } = useGetUserActiveByIdNumberQuery(idNumberUserState);
 
   const {
@@ -264,50 +265,141 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
   const handleChangeEditUser = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       setIsSubmittingEditUser(true);
-      const [userResponse, profileResponse]: any = await Promise.all([
-        updateUser({
-          id: idUserState,
-          updateUser: {
-            principal_email:
-              principalEmailUserLocalState || principalEmailUserState,
-            personal_email:
-              personalEmailUserLocalState || personalEmailUserState,
-            personal_cellphone:
-              parseInt(personalCellphoneUserLocalState, 10) ||
-              personalCellphoneUserState,
-          },
-        }),
-        updateProfileUser({
-          id: idUserState,
-          updateUserProfile: {
-            user_blood_group:
-              bloodGroupUserProfileLocalState || bloodGroupNameUserProfileState,
-            affiliation_eps:
-              affiliationEpsUserProfileLocalState ||
-              affiliationEpsUserProfileState,
-            residence_department:
-              residenceDepartmentUserProfileLocalState ||
-              residenceDepartmentUserProfileState,
-            residence_city:
-              residenceCityUserProfileLocalState ||
-              residenceCityUserProfileState,
-            residence_address:
-              residenceAddressUserProfileLocalState ||
-              residenceAddressUserProfileState,
-            residence_neighborhood:
-              residenceNeighborhoodUserProfileLocalState ||
-              residenceNeighborhoodUserProfileState,
-            user_height: heightUserProfileLocalState || heightUserProfileState,
-            user_weight: weightUserProfileLocalState || weightUserProfileState,
-            user_shirt_size:
-              shirtSizeUserProfileLocalState || shirtSizeUserProfileState,
-            user_pants_size:
-              pantsSizeUserProfileLocalState || pantsSizeUserProfileState,
-            user_shoe_size:
-              shoeSizeUserProfileLocalState || shoeSizeUserProfileState,
-          },
-        }),
+
+      const updateUserPayload = {
+        id: idUserState,
+        updateUser: {
+          principal_email:
+            principalEmailUserLocalState || principalEmailUserState,
+          personal_email: personalEmailUserLocalState || personalEmailUserState,
+          personal_cellphone:
+            parseInt(personalCellphoneUserLocalState, 10) ||
+            personalCellphoneUserState,
+        },
+      };
+
+      const updateProfilePayload = {
+        id: idUserState,
+        updateUserProfile: {
+          user_blood_group:
+            bloodGroupUserProfileLocalState || bloodGroupNameUserProfileState,
+          affiliation_eps:
+            affiliationEpsUserProfileLocalState ||
+            affiliationEpsUserProfileState,
+          residence_department:
+            residenceDepartmentUserProfileLocalState ||
+            residenceDepartmentUserProfileState,
+          residence_city:
+            residenceCityUserProfileLocalState || residenceCityUserProfileState,
+          residence_address:
+            residenceAddressUserProfileLocalState ||
+            residenceAddressUserProfileState,
+          residence_neighborhood:
+            residenceNeighborhoodUserProfileLocalState ||
+            residenceNeighborhoodUserProfileState,
+          user_height: heightUserProfileLocalState || heightUserProfileState,
+          user_weight: weightUserProfileLocalState || weightUserProfileState,
+          user_shirt_size:
+            shirtSizeUserProfileLocalState || shirtSizeUserProfileState,
+          user_pants_size:
+            pantsSizeUserProfileLocalState || pantsSizeUserProfileState,
+          user_shoe_size:
+            shoeSizeUserProfileLocalState || shoeSizeUserProfileState,
+        },
+      };
+
+      const [userResponse, profileResponse] = await Promise.all([
+        updateUser(updateUserPayload).unwrap(),
+        updateProfileUser(updateProfilePayload).unwrap(),
       ]);
+
+      if (userResponse?.statusCode === 202) {
+        dispatch(
+          setPrincipalEmailUser(
+            principalEmailUserLocalState || principalEmailUserState
+          )
+        );
+        dispatch(
+          setPersonalEmailUser(
+            personalEmailUserLocalState || personalEmailUserState
+          )
+        );
+        dispatch(
+          setPersonalCellphoneUser(
+            parseInt(personalCellphoneUserLocalState, 10) ||
+              personalCellphoneUserState
+          )
+        );
+      }
+
+      if (profileResponse?.status === 202) {
+        dispatch(
+          setBloodGroupUserProfile(
+            bloodGroupUserProfileLocalState || bloodGroupNameUserProfileState
+          )
+        );
+        dispatch(
+          setAffiliationEpsUserProfile(
+            affiliationEpsUserProfileLocalState ||
+              affiliationEpsUserProfileState
+          )
+        );
+        dispatch(
+          setResidenceDepartmentUserProfile(
+            residenceDepartmentUserProfileLocalState ||
+              residenceDepartmentUserProfileState
+          )
+        );
+        dispatch(
+          setResidenceCityUserProfile(
+            residenceCityUserProfileLocalState || residenceCityUserProfileState
+          )
+        );
+        dispatch(
+          setResidenceAddressUserProfile(
+            residenceAddressUserProfileLocalState ||
+              residenceAddressUserProfileState
+          )
+        );
+        dispatch(
+          setResidenceNeighborhoodUserProfile(
+            residenceNeighborhoodUserProfileLocalState ||
+              residenceNeighborhoodUserProfileState
+          )
+        );
+        dispatch(
+          setUserHeightUserProfile(
+            heightUserProfileLocalState || heightUserProfileState
+          )
+        );
+        dispatch(
+          setUserWeightUserProfile(
+            weightUserProfileLocalState || weightUserProfileState
+          )
+        );
+        dispatch(
+          setUserShirtSizeUserProfile(
+            shirtSizeUserProfileLocalState || shirtSizeUserProfileState
+          )
+        );
+        dispatch(
+          setUserPantsSizeUserProfile(
+            pantsSizeUserProfileLocalState || pantsSizeUserProfileState
+          )
+        );
+        dispatch(
+          setUserShoeSizeUserProfile(
+            shoeSizeUserProfileLocalState || shoeSizeUserProfileState
+          )
+        );
+      }
+
+      userActiveByIdNumberRefecth();
+      userActiveProfileByIdRefetch();
+
+      setSuccessMessage("¡Datos actualizados correctamente!");
+      setShowSuccessMessage(true);
+      setHasChanges(false);
 
       let editUserDataError = userResponse.error;
       let editUserDataStatus = userResponse.data?.statusCode;
@@ -346,89 +438,8 @@ const CollaboratorPersonalEditDataForm: React.FC = () => {
         setShowErrorMessage(true);
         return;
       }
-
-      userActiveProfileByIdRefetch();
-      setSuccessMessage("¡Datos actualizados correctamente!");
-      setShowSuccessMessage(true);
-      setHasChanges(false);
-
-      dispatch(
-        setPrincipalEmailUser(
-          principalEmailUserLocalState || principalEmailUserState
-        )
-      );
-      dispatch(
-        setPersonalEmailUser(
-          personalEmailUserLocalState || personalEmailUserState
-        )
-      );
-      dispatch(
-        setPersonalCellphoneUser(
-          parseInt(personalCellphoneUserLocalState, 10) ||
-            personalCellphoneUserState
-        )
-      );
-
-      dispatch(
-        setBloodGroupUserProfile(
-          bloodGroupUserProfileLocalState || bloodGroupNameUserProfileState
-        )
-      );
-      dispatch(
-        setAffiliationEpsUserProfile(
-          affiliationEpsUserProfileLocalState || affiliationEpsUserProfileState
-        )
-      );
-      dispatch(
-        setResidenceDepartmentUserProfile(
-          residenceDepartmentUserProfileLocalState ||
-            residenceDepartmentUserProfileState
-        )
-      );
-      dispatch(
-        setResidenceCityUserProfile(
-          residenceCityUserProfileLocalState || residenceCityUserProfileState
-        )
-      );
-      dispatch(
-        setResidenceAddressUserProfile(
-          residenceAddressUserProfileLocalState ||
-            residenceAddressUserProfileState
-        )
-      );
-      dispatch(
-        setResidenceNeighborhoodUserProfile(
-          residenceNeighborhoodUserProfileLocalState ||
-            residenceNeighborhoodUserProfileState
-        )
-      );
-      dispatch(
-        setUserHeightUserProfile(
-          heightUserProfileLocalState || heightUserProfileState
-        )
-      );
-      dispatch(
-        setUserWeightUserProfile(
-          weightUserProfileLocalState || weightUserProfileState
-        )
-      );
-      dispatch(
-        setUserShirtSizeUserProfile(
-          shirtSizeUserProfileLocalState || shirtSizeUserProfileState
-        )
-      );
-      dispatch(
-        setUserPantsSizeUserProfile(
-          pantsSizeUserProfileLocalState || pantsSizeUserProfileState
-        )
-      );
-      dispatch(
-        setUserShoeSizeUserProfile(
-          shoeSizeUserProfileLocalState || shoeSizeUserProfileState
-        )
-      );
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error("Error en handleChangeEditUser:", error);
     } finally {
       setIsSubmittingEditUser(false);
     }
