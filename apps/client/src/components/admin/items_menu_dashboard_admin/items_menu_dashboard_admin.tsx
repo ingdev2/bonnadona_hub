@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useSession } from "next-auth/react";
 import { usePermissionsAppAndModuleValidationInPage } from "@/utils/hooks/use_permissions_app_and_module_validation_in_page";
@@ -35,6 +35,8 @@ import { ApplicationModulesEnum } from "@/utils/enums/permissions/application_mo
 export const useMenuItems = () => {
   const { data: session } = useSession();
   const dispatch = useAppDispatch();
+
+  const [isLoadingLocalState, setIsLoadingLocalState] = useState(true);
 
   const idNumberUserSession = session?.user?.id_number;
 
@@ -81,14 +83,25 @@ export const useMenuItems = () => {
     shouldRedirectOnError: false,
   });
 
+  const isLoadingPermission =
+    allUsers === null ||
+    managePermissions === null ||
+    manageApplicationsAndModules === null ||
+    managePasswordPolicy === null ||
+    auditLogs === null;
+
+  useEffect(() => {
+    setIsLoadingLocalState(isLoadingPermission);
+  }, [
+    allUsers,
+    managePermissions,
+    manageApplicationsAndModules,
+    managePasswordPolicy,
+    auditLogs,
+  ]);
+
   const menuItems = useMemo(() => {
-    if (
-      !allUsers &&
-      !managePermissions &&
-      !manageApplicationsAndModules &&
-      !managePasswordPolicy &&
-      !auditLogs
-    ) {
+    if (isLoadingLocalState) {
       return [getItemSpin("spinner")];
     }
 
