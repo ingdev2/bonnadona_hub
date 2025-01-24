@@ -62,18 +62,20 @@ const AdminHeaderLayout: React.FC = () => {
     }
   };
 
-  const handleClickSignOut = () => {
+  const handleClickSignOut = async () => {
     try {
       dispatch(resetLoginStateAdmin());
       dispatch(setDefaultValuesUser());
       dispatch(setResetModalAdmin());
-      signOut({
+
+      await signOut({
         redirect: true,
         callbackUrl: "/login_admin",
       });
     } catch (error) {
       console.error(error);
     } finally {
+      await signOut();
     }
   };
 

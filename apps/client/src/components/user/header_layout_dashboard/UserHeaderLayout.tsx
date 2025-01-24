@@ -62,17 +62,19 @@ const UserHeaderLayout: React.FC = () => {
     }
   };
 
-  const handleClickSignOut = () => {
+  const handleClickSignOut = async () => {
     try {
       dispatch(resetLoginStateUser());
       dispatch(setDefaultValuesUser());
-      signOut({
+
+      await signOut({
         redirect: true,
         callbackUrl: "/login",
       });
     } catch (error) {
       console.error(error);
     } finally {
+      await signOut();
     }
   };
 
