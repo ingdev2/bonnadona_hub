@@ -51,11 +51,13 @@ export const useMenuItems = () => {
   const allUsers = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_ALL_USERS],
+    shouldRedirectOnError: false,
   });
 
   const managePermissions = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PERMISSIONS],
+    shouldRedirectOnError: false,
   });
 
   const manageApplicationsAndModules =
@@ -64,16 +66,19 @@ export const useMenuItems = () => {
       allowedModules: [
         ApplicationModulesEnum.BONNA_HUB_APPLICATIONS_AND_MODULES,
       ],
+      shouldRedirectOnError: false,
     });
 
   const managePasswordPolicy = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_MANAGE_PASSWORD_POLICY],
+    shouldRedirectOnError: false,
   });
 
   const auditLogs = usePermissionsAppAndModuleValidationInPage({
     allowedApplications: [ApplicationsEnum.BONNA_HUB],
     allowedModules: [ApplicationModulesEnum.BONNA_HUB_LOG_FOR_AUDITS],
+    shouldRedirectOnError: false,
   });
 
   const menuItems = useMemo(() => {

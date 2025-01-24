@@ -3,7 +3,8 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { persistor } from "@/redux/store";
+import { redirect, useRouter } from "next/navigation";
 
 import { getFirstName } from "@/helpers/get_first_name/get_first_name";
 
@@ -63,20 +64,11 @@ const AdminHeaderLayout: React.FC = () => {
   };
 
   const handleClickSignOut = async () => {
-    try {
-      dispatch(resetLoginStateAdmin());
-      dispatch(setDefaultValuesUser());
-      dispatch(setResetModalAdmin());
+    await persistor.purge();
 
-      await signOut({
-        redirect: true,
-        callbackUrl: "/login_admin",
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      await signOut();
-    }
+    await signOut();
+
+    await redirect("/login_admin");
   };
 
   return (

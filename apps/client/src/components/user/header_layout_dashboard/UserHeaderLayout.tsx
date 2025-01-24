@@ -3,7 +3,8 @@
 import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { persistor } from "@/redux/store";
+import { redirect, useRouter } from "next/navigation";
 
 import { Col, Row } from "antd";
 import CustomDropdown from "@/components/common/custom_dropdown/CustomDropdown";
@@ -13,12 +14,7 @@ import { FaSignOutAlt } from "react-icons/fa";
 import { UserOutlined } from "@ant-design/icons";
 import { PiUserListBold } from "react-icons/pi";
 
-import { resetLoginStateUser } from "@/redux/features/login/userLoginSlice";
-import {
-  setDefaultValuesUser,
-  setLastNameUser,
-  setNameUser,
-} from "@/redux/features/user/userSlice";
+import { setLastNameUser, setNameUser } from "@/redux/features/user/userSlice";
 
 import { getFirstName } from "@/helpers/get_first_name/get_first_name";
 import { useGetUserActiveByIdNumberQuery } from "@/redux/apis/users/userApi";
@@ -63,19 +59,11 @@ const UserHeaderLayout: React.FC = () => {
   };
 
   const handleClickSignOut = async () => {
-    try {
-      dispatch(resetLoginStateUser());
-      dispatch(setDefaultValuesUser());
+    await persistor.purge();
 
-      await signOut({
-        redirect: true,
-        callbackUrl: "/login",
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      await signOut();
-    }
+    await signOut();
+
+    await redirect("/login");
   };
 
   return (

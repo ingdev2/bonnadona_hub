@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { persistReducer } from "redux-persist";
+import { persistReducer, persistStore } from "redux-persist";
 import storage from "./storage/storage";
 
 import userReducer from "./features/user/userSlice";
@@ -112,6 +112,8 @@ export const store = configureStore({
       registerUserApi.middleware,
     ]),
 });
+
+export const persistor = persistStore(store);
 
 setupListeners(store.dispatch);
 

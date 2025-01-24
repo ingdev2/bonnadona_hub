@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { redirect } from "next/navigation";
 
 import { setIdNumberUser } from "@/redux/features/user/userSlice";
@@ -11,19 +11,15 @@ const useAuthValidation = () => {
 
   const idNumberUserSession = session?.user?.id_number;
 
-  const idNumberUserSessionState = useAppSelector(
-    (state) => state.user.id_number
-  );
-
   useEffect(() => {
-    if (!idNumberUserSessionState) {
+    if (idNumberUserSession) {
       dispatch(setIdNumberUser(idNumberUserSession));
     }
 
     if (status === "unauthenticated") {
       redirect(`${process.env.NEXT_PUBLIC_BONNA_HUB_URL}/login`);
     }
-  }, [status, idNumberUserSessionState, session]);
+  }, [status, idNumberUserSession, session]);
 };
 
 export default useAuthValidation;
